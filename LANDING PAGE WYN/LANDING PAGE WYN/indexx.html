@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>WYN - DASHBOARD CLIENTE</title>
+		<link
+			rel="apple-touch-icon"
+			sizes="180x180"
+			href="/w/1.png"
+		/>
+		<link
+			rel="icon"
+			type="image/png"
+			sizes="32x32"
+			href="/w/1.png"
+		/>
+		<link
+			rel="icon"
+			type="image/png"
+			sizes="16x16"
+			href="/w/1.png"
+		/>
+
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1, maximum-scale=1"
+		/>
+
+		<link
+			href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+			rel="stylesheet"
+		/>
+		<link rel="stylesheet" type="text/css" href="vendors/styles/core.css" />
+		<link
+			rel="stylesheet"
+			type="text/css"
+			href="vendors/styles/icon-font.min.css"
+		/>
+		<link
+			rel="stylesheet"
+			type="text/css"
+			href="src/plugins/datatables/css/dataTables.bootstrap4.min.css"
+		/>
+		<link
+			rel="stylesheet"
+			type="text/css"
+			href="src/plugins/datatables/css/responsive.bootstrap4.min.css"
+		/>
+		<link rel="stylesheet" type="text/css" href="vendors/styles/style.css" />
+
+        <style>
+            /* Adiciona estilo para a foto de perfil no header */
+            .user-icon img.profile-pic-header {
+                border-radius: 50% !important; /* Usa !important para garantir que sobrescreva outros estilos */
+                object-fit: cover; /* Garante que a imagem cubra o espaço */
+                width: 40px; /* Garante um tamanho fixo se necessário */
+                height: 40px; /* Garante um tamanho fixo se necessário */
+            }
+
+            /* Estilo para os novos botões/cards de ação */
+            .action-card {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                padding: 20px;
+                text-align: center;
+                height: 100%; /* Garante que os cards tenham a mesma altura na linha */
+                transition: transform 0.2s ease-in-out; /* Adiciona um efeito hover */
+            }
+
+            .action-card:hover {
+                transform: translateY(-5px); /* Move ligeiramente para cima no hover */
+            }
+
+            .action-card .icon {
+                font-size: 3rem; /* Tamanho maior para o ícone */
+                margin-bottom: 15px;
+            }
+
+             .action-card h5 {
+                 margin-bottom: 0;
+             }
+        </style>
+
+		<script
+			async
+			src="https://www.googletagmanager.com/gtag/js?id=G-GBZ3SGGX85"
+		></script>
+		<script
+			async
+			src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2973766580778258"
+			crossorigin="anonymous"
+		></script>
+		<script>
+			window.dataLayer = window.dataLayer || [];
+			function gtag() {
+				dataLayer.push(arguments);
+			}
+			gtag("js", new Date());
+
+			gtag("config", "G-GBZ3SGGX85");
+		</script>
+		<script>
+			(function (w, d, s, l, i) {
+				w[l] = w[l] || [];
+				w[l].push({ "gtm.start": new Date().getTime(), event: "gtm.js" });
+				var f = d.getElementsByTagName(s)[0],
+					j = d.createElement(s),
+					dl = l != "dataLayer" ? "&l=" + l : "";
+				j.async = true;
+				j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
+				f.parentNode.insertBefore(j, f);
+			})(window, document, "script", "dataLayer", "GTM-NXZMQSS");
+		</script>
+		</head>
+	<body>
+  <div class="pre-loader">
+			<div class="pre-loader-box">
+				<div class="loader-logo">
+					<img src="/Tela Inicial copy/w.png" alt="" />
+				</div>
+				<div class="loader-progress" id="progress_div">
+					<div class="bar" id="bar1"></div>
+				</div>
+				<div class="percent" id="percent1">0%</div>
+				<div class="loading-text">Carregando...</div>
+			</div>
+		</div>
+
+		<div class="header">
+			<div class="header-left">
+				<div class="menu-icon bi bi-list"></div>
+				<div
+					class="search-toggle-icon bi bi-search"
+					data-toggle="header_search"
+				></div>
+				<div class="header-search">
+					<form>
+						<div class="form-group mb-0">
+							<i class="dw dw-search2 search-icon"></i>
+							<input
+								type="text"
+								class="form-control search-input"
+								placeholder="Search Here"
+							/>
+							<div class="dropdown">
+								<a
+									class="dropdown-toggle no-arrow"
+									href="#"
+									role="button"
+									data-toggle="dropdown"
+								>
+									<i class="ion-arrow-down-c"></i>
+								</a>
+								<div class="dropdown-menu dropdown-menu-right">
+									<div class="form-group row">
+										<label class="col-sm-12 col-md-2 col-form-label"
+											>De</label
+										>
+										<div class="col-sm-12 col-md-10">
+											<input
+												class="form-control form-control-sm form-control-line"
+												type="text"
+											/>
+										</div>
+									</div>
+									<div class="form-group row">
+										<label class="col-sm-12 col-md-2 col-form-label">Para</label>
+										<div class="col-sm-12 col-md-10">
+											<input
+												class="form-control form-control-sm form-control-line"
+												type="text"
+											/>
+										</div>
+									</div>
+									<div class="form-group row">
+										<label class="col-sm-12 col-md-2 col-form-label"
+											>Sujeito</label
+										>
+										<div class="col-sm-12 col-md-10">
+											<input
+												class="form-control form-control-sm form-control-line"
+												type="text"
+											/>
+										</div>
+									</div>
+									<div class="text-right">
+										<button class="btn btn-primary">Pesquisar</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+			<div class="header-right">
+				<div class="dashboard-setting user-notification">
+					<div class="dropdown">
+						<a
+							class="dropdown-toggle no-arrow"
+							href="javascript:;"
+							data-toggle="right-sidebar"
+						>
+							<i class="dw dw-settings2"></i>
+						</a>
+					</div>
+				</div>
+
+				<div class="user-info-dropdown">
+					<div class="dropdown">
+						<a
+							class="dropdown-toggle"
+							href="#"
+							role="button"
+							data-toggle="dropdown"
+						>
+							<span class="user-icon">
+								<img src="vendors/images/photo1.jpg" id="user-profile-pic" class="profile-pic-header" alt="" />
+							</span>
+							<span class="user-name">Cliente</span>
+						</a>
+						<div
+							class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list"
+						>
+							<a class="dropdown-item" href="profile.html"
+								><i class="dw dw-user1"></i> Perfil</a
+							>
+							<a class="dropdown-item" href="profile.html"
+								><i class="dw dw-settings2"></i>Configurações</a
+							>
+							<a class="dropdown-item" href="faq.html"
+								><i class="dw dw-help"></i> Ajuda</a
+							>
+							<a class="dropdown-item" href="#" id="logout-link"
+								><i class="dw dw-logout"></i> Sair</a
+							>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="right-sidebar">
+			<div class="sidebar-title">
+				<h3 class="weight-600 font-16 text-blue">
+					Configuração de Layout
+					<span class="btn-block font-weight-400 font-12"
+						>Personalização</span
+					>
+				</h3>
+				<div class="close-sidebar" data-toggle="right-sidebar-close">
+					<i class="icon-copy ion-close-round"></i>
+				</div>
+			</div>
+			<div class="right-sidebar-body customscroll">
+				<div class="right-sidebar-body-content">
+					<h4 class="weight-600 font-18 pb-10">Fundo</h4>
+					<div class="sidebar-btn-group pb-30 mb-10">
+						<a
+							href="javascript:void(0);"
+							class="btn btn-outline-primary header-white active"
+							>Claro</a
+						>
+						<a
+							href="javascript:void(0);"
+							class="btn btn-outline-primary header-dark"
+							>Escuro</a
+						>
+					</div>
+
+					<h4 class="weight-600 font-18 pb-10">Menu Lateral</h4>
+					<div class="sidebar-btn-group pb-30 mb-10">
+						<a
+							href="javascript:void(0);"
+							class="btn btn-outline-primary sidebar-light"
+							>Claro</a
+						>
+						<a
+							href="javascript:void(0);"
+							class="btn btn-outline-primary sidebar-dark active"
+							>Escuro</a
+						>
+					</div>
+
+					<h4 class="weight-600 font-18 pb-10">Icone Dropdown</h4>
+					<div class="sidebar-radio-group pb-10 mb-10">
+						<div class="custom-control custom-radio custom-control-inline">
+							<input
+								type="radio"
+								id="sidebaricon-1"
+								name="menu-dropdown-icon"
+								class="custom-control-input"
+								value="icon-style-1"
+								checked=""
+							/>
+							<label class="custom-control-label" for="sidebaricon-1"
+								><i class="fa fa-angle-down"></i
+							></label>
+						</div>
+						<div class="custom-control custom-radio custom-control-inline">
+							<input
+								type="radio"
+								id="sidebaricon-2"
+								name="menu-dropdown-icon"
+								class="custom-control-input"
+								value="icon-style-2"
+							/>
+							<label class="custom-control-label" for="sidebaricon-2"
+								><i class="ion-plus-round"></i
+							></label>
+						</div>
+						<div class="custom-control custom-radio custom-control-inline">
+							<input
+								type="radio"
+								id="sidebariconlist-3"
+								name="menu-list-icon"
+								class="custom-control-input"
+								value="icon-list-style-3"
+							/>
+							<label class="custom-control-label" for="sidebariconlist-3"
+								><i class="fa fa-angle-double-right"></i
+							></label>
+						</div>
+					</div>
+
+					<h4 class="weight-600 font-18 pb-10">Icones do Menu</h4>
+					<div class="sidebar-radio-group pb-30 mb-10">
+						<div class="custom-control custom-radio custom-control-inline">
+							<input
+								type="radio"
+								id="sidebariconlist-1"
+								name="menu-list-icon"
+								class="custom-control-input"
+								value="icon-list-style-1"
+								checked=""
+							/>
+							<label class="custom-control-label" for="sidebariconlist-1"
+								><i class="ion-minus-round"></i
+							></label>
+						</div>
+						<div class="custom-control custom-radio custom-control-inline">
+							<input
+								type="radio"
+								id="sidebariconlist-2"
+								name="menu-list-icon"
+								class="custom-control-input"
+								value="icon-list-style-2"
+							/>
+							<label class="custom-control-label" for="sidebariconlist-2"
+								><i class="fa fa-circle-o" aria-hidden="true"></i
+							></label>
+						</div>
+						<div class="custom-control custom-radio custom-control-inline">
+							<input
+								type="radio"
+								id="sidebariconlist-3"
+								name="menu-list-icon"
+								class="custom-control-input"
+								value="icon-list-style-3"
+							/>
+							<label class="custom-control-label" for="sidebariconlist-3"
+								><i class="dw dw-check"></i
+							></label>
+						</div>
+						<div class="custom-control custom-radio custom-control-inline">
+							<input
+								type="radio"
+								id="sidebariconlist-4"
+								name="menu-list-icon"
+								class="custom-control-input"
+								value="icon-list-style-4"
+								checked=""
+							/>
+							<label class="custom-control-label" for="sidebariconlist-4"
+								><i class="icon-copy dw dw-next-2"></i
+							></label>
+						</div>
+						<div class="custom-control custom-radio custom-control-inline">
+							<input
+								type="radio"
+								id="sidebariconlist-5"
+								name="menu-list-icon"
+								class="custom-control-input"
+								value="icon-list-style-5"
+							/>
+							<label class="custom-control-label" for="sidebariconlist-5"
+								><i class="dw dw-fast-forward-1"></i
+							></label>
+						</div>
+						<div class="custom-control custom-radio custom-control-inline">
+							<input
+								type="radio"
+								id="sidebariconlist-6"
+								name="menu-list-icon"
+								class="custom-control-input"
+								value="icon-list-style-6"
+							/>
+							<label class="custom-control-label" for="sidebariconlist-6"
+								><i class="dw dw-next"></i
+							></label>
+						</div>
+					</div>
+
+					<div class="reset-options pt-30 text-center">
+						<button class="btn btn-danger" id="reset-settings">
+							Resetar Configurações
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="left-side-bar">
+			<div class="brand-logo">
+				<a href="indexx.html"> <img src="/Tela Inicial copy/w (1).png" alt="" class="dark-logo" />
+					<img
+						src="/Tela Inicial copy/w (1).png"
+						alt=""
+						class="light-logo"
+					/>
+				</a>
+				<div class="close-sidebar" data-toggle="left-sidebar-close">
+					<i class="ion-close-round"></i>
+				</div>
+			</div>
+			<div class="menu-block customscroll">
+				<div class="sidebar-menu">
+					<ul id="accordion-menu">
+						<li>
+							<a href="indexx.html" class="dropdown-toggle no-arrow active">
+                                <span class="micon bi bi-house"></span
+								><span class="mtext">Dashboard</span>
+							</a>
+						</li>
+						<li>
+							<a href="catalogo.html" class="dropdown-toggle no-arrow"> <span class="micon bi bi-grid"></span
+								><span class="mtext">Catálogo de Serviços</span>
+							</a>
+						</li>
+						<li>
+							<a href="contratos.html" class="dropdown-toggle no-arrow">
+                                <span class="micon bi bi-journal-check"></span
+								><span class="mtext">Meus Pedidos</span>
+							</a>
+						</li>
+                        <li>
+							<a href="chat-list.html" class="dropdown-toggle no-arrow">
+                                <span class="micon bi bi-chat-dots"></span>
+                                <span class="mtext">Chat de Pedidos</span>
+                                <span id="unread-chat-count-sidebar-cliente" class="badge badge-pill badge-danger" style="display: none; margin-left: 5px;">0</span>
+                            </a>
+                        </li>
+                         <li>
+							<a href="avaliar-prestador.html" class="dropdown-toggle no-arrow">
+                                <span class="micon bi bi-star-fill"></span>
+                                <span class="mtext">Avaliar Prestadores</span>
+                            </a>
+                        </li>
+                         <li>
+							<a href="profile.html" class="dropdown-toggle no-arrow">
+                                <span class="micon bi bi-person"></span>
+                                <span class="mtext">Meu Perfil</span>
+                            </a>
+                        </li>
+
+						<li class="dropdown">
+							<a href="javascript:;" class="dropdown-toggle">
+								<span class="micon bi bi-file-pdf"></span
+								><span class="mtext">Documentação</span>
+							</a>
+							<ul class="submenu">
+								<li><a href="/Tela Inicial copy/Termos e Condições.docx">Termos e Condições</a></li>
+								</ul>
+						</li>
+						</ul>
+				</div>
+			</div>
+		</div>
+		<div class="mobile-menu-overlay"></div>
+		<div class="main-container">
+			<div class="xs-pd-20-10 pd-ltr-20">
+				<div class="title pb-20">
+					<div class="welcome-message card-box p-4 mb-20">
+						<h1 class="h3 text-center mb-20">Bem-vindo à Plataforma WYN</h1>
+						<p class="text-center font-16">Estamos felizes em tê-lo aqui. Use nosso painel para gerenciar suas solicitações.</p>
+					</div>
+
+                    <div class="row pb-20">
+                        <div class="col-md-6 mb-20">
+                            <a href="catalogo.html" style="text-decoration: none;">
+                                <div class="card-box height-100-p action-card bg-primary text-white">
+                                     <div class="icon">
+                                         <i class="dw dw-add"></i> </div>
+                                    <h5 class="text-white">Fazer Novo Pedido</h5>
+                                    <p class="text-white-50">Explore os serviços disponíveis e solicite um novo.</p>
+                                </div>
+                            </a>
+                        </div>
+                         <div class="col-md-6 mb-20">
+                            <a href="contratos.html" style="text-decoration: none;">
+                                <div class="card-box height-100-p action-card bg-secondary text-white">
+                                     <div class="icon">
+                                         <i class="dw dw-list3"></i> </div>
+                                    <h5 class="text-white">Ver Meus Pedidos</h5>
+                                    <p class="text-white-50">Acompanhe o status dos seus pedidos, pagamentos e avaliações.</p>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                    <div>
+						<h2 class="h3 mb-0">Visão Geral dos Pedidos</h2>
+					</div>
+
+					<div class="row pb-10">
+						<div class="col-xl-3 col-lg-3 col-md-6 mb-20">
+							<a href="contratos.html" style="text-decoration: none;"> <div class="card-box height-100-p widget-style3 cursor-pointer">
+									<div class="d-flex flex-wrap">
+										<div class="widget-data">
+											<div class="weight-700 font-24 text-dark" id="total-solicitados">0</div>
+											<div class="font-14 text-secondary weight-500">Solicitações</div>
+										</div>
+										<div class="widget-icon">
+											<div class="icon" data-color="#00eccf">
+												<i class="icon-copy dw dw-calendar1"></i>
+											</div>
+										</div>
+									</div>
+								</div>
+							</a>
+						</div>
+
+						<div class="col-xl-3 col-lg-3 col-md-6 mb-20">
+							<a href="contratos.html?status=pendente" style="text-decoration: none;">
+								<div class="card-box height-100-p widget-style3 cursor-pointer">
+									<div class="d-flex flex-wrap">
+										<div class="widget-data">
+											<div class="weight-700 font-24 text-dark" id="total-pendentes">0</div>
+											<div class="font-14 text-secondary weight-500">Pedidos Pendentes</div>
+										</div>
+										<div class="widget-icon">
+											<div class="icon" data-color="#f39c12">
+												<i class="icon-copy dw dw-clock"></i>
+											</div>
+										</div>
+									</div>
+								</div>
+							</a>
+						</div>
+
+						<div class="col-xl-3 col-lg-3 col-md-6 mb-20">
+							<a href="contratos.html?status=concluido" style="text-decoration: none;"> <div class="card-box height-100-p widget-style3 cursor-pointer">
+									<div class="d-flex flex-wrap">
+										<div class="widget-data">
+											<div class="weight-700 font-24 text-dark" id="total-concluidos">0</div>
+											<div class="font-14 text-secondary weight-500">Serviços Concluídos</div>
+										</div>
+										<div class="widget-icon">
+											<div class="icon" data-color="#2ecc71">
+												<i class="icon-copy dw dw-check"></i>
+											</div>
+										</div>
+									</div>
+								</div>
+							</a>
+						</div>
+
+						<div class="col-xl-3 col-lg-3 col-md-6 mb-20">
+							<a href="avaliar-prestador.html" style="text-decoration: none;"> <div class="card-box height-100-p widget-style3 cursor-pointer">
+									<div class="d-flex flex-wrap">
+										<div class="widget-data">
+											<div class="weight-700 font-24 text-dark" id="total-avaliacoes">0</div>
+											<div class="font-14 text-secondary weight-500">Avaliações Pendentes</div>
+										</div>
+										<div class="widget-icon">
+											<div class="icon" data-color="#f1c40f">
+												<i class="icon-copy dw dw-star"></i>
+											</div>
+										</div>
+									</div>
+								</div>
+							</a>
+						</div>
+                         <div class="col-xl-3 col-lg-3 col-md-6 mb-20">
+                             <div class="card-box height-100-p widget-style3">
+                                 <div class="d-flex flex-wrap">
+                                     <div class="widget-data">
+                                         <div class="weight-700 font-24 text-dark" id="total-notificacoes">0</div>
+                                         <div class="font-14 text-secondary weight-500">Notificações</div>
+                                     </div>
+                                     <div class="widget-icon">
+                                         <div class="icon" data-color="#3498db"> <i class="icon-copy dw dw-notification"></i> </div>
+                                     </div>
+                                 </div>
+                             </div>
+                         </div>
+                         <div class="col-xl-3 col-lg-3 col-md-6 mb-20">
+                              <div class="card-box height-100-p widget-style3">
+                                  <div class="d-flex flex-wrap">
+                                      <div class="widget-data">
+                                          <div class="weight-700 font-24 text-dark" id="valor-total">R$ 0.00</div>
+                                          <div class="font-14 text-secondary weight-500">Valor Total de Pedidos</div>
+                                      </div>
+                                      <div class="widget-icon">
+                                          <div class="icon" data-color="#9b59b6"> <i class="icon-copy dw dw-money-2"></i> </div>
+                                      </div>
+                                  </div>
+                              </div>
+                         </div>
+                         <div class="col-xl-3 col-lg-3 col-md-6 mb-20">
+                              <div class="card-box height-100-p widget-style3">
+                                  <div class="d-flex flex-wrap">
+                                      <div class="widget-data">
+                                          <div class="weight-700 font-24 text-dark" id="total-mensagens">0</div>
+                                          <div class="font-14 text-secondary weight-500">Mensagens Não Lidas</div>
+                                      </div>
+                                      <div class="widget-icon">
+                                          <div class="icon" data-color="#e74c3c"> <i class="icon-copy dw dw-chat"></i> </div>
+                                      </div>
+                                  </div>
+                              </div>
+                         </div>
+					</div>
+
+					<script>
+						let usuarioLogado = null; // Variável para armazenar os dados do usuário logado
+                        let unreadMessagesPollingInterval = null; // Variável para o intervalo de polling de mensagens não lidas
+
+						async function carregarPerfilUsuario() {
+							const token = localStorage.getItem('token');
+							const usuarioCache = localStorage.getItem('usuario'); // Chave correta para usuário
+
+							if (!token || !usuarioCache) {
+								console.warn("Usuário não autenticado. Redirecionando para login.");
+								window.location.href = "login.html"; // Redirecionar para login do usuário
+								return;
+							}
+
+							try {
+								 // Parse do cache para obter o ID e nome rapidamente
+								 usuarioLogado = JSON.parse(usuarioCache);
+								 const nomeSpan = document.querySelector(".user-name");
+                                 const userProfilePicImg = document.getElementById("user-profile-pic"); // Pega a tag img da foto
+
+								 if (nomeSpan && usuarioLogado?.nome) {
+									 nomeSpan.textContent = usuarioLogado.nome;
+								 }
+                                 // Exibe a foto de perfil do cache se existir
+                                 if (userProfilePicImg && usuarioLogado?.foto_perfil_url) {
+                                     userProfilePicImg.src = usuarioLogado.foto_perfil_url;
+                                     userProfilePicImg.onerror = function() {
+                                         // Fallback para imagem padrão se a URL da foto falhar
+                                         this.onerror = null; // Evita loop infinito de erro
+                                         this.src = "vendors/images/photo1.jpg";
+                                     };
+                                 } else if (userProfilePicImg) {
+                                      // Se não houver foto no cache, usa a imagem padrão
+                                      userProfilePicImg.src = "vendors/images/photo1.jpg";
+                                 }
+
+
+								// Chamada ao backend para validar o token e obter dados completos
+								 // Usando a rota /perfil que agora verifica o tipo no token
+								 const res = await fetch('http://localhost:3000/perfil', {
+									 headers: { 'Authorization': 'Bearer ' + token }
+								 });
+
+								 const resClone = res.clone(); // Clonar para ler o body se der erro de JSON
+
+								 if (!res.ok) {
+									 if (res.status === 401 || res.status === 403) {
+										 console.error("Token inválido ou expirado. Redirecionando para login.");
+										 alert("Sua sessão expirou. Por favor, faça login novamente.");
+										 window.location.href = "login.html";
+										 return;
+									 }
+									 throw new Error(`Erro HTTP ao buscar perfil: ${res.status}`);
+								 }
+
+								let data = {};
+								 try {
+									 data = await res.json();
+								 } catch(jsonError) {
+									 console.error("Erro ao parsear JSON do perfil:", await resClone.text());
+									 throw new Error("Resposta de perfil inválida.");
+								 }
+
+
+								// Verifique se o perfil retornado é de um usuário cliente
+								 if (data.tipo !== 'usuario' || !data.usuario?._id) {
+									  console.error("Token válido, mas não corresponde a um usuário cliente.");
+									  alert("Acesso negado para este tipo de usuário.");
+									  window.location.href = "login-prestador.html"; // Redireciona para login do prestador se for prestador
+									  return;
+								 }
+
+								 // Atualiza a variável global com os dados completos do usuário
+								 usuarioLogado = data.usuario;
+
+								// Atualiza o nome na interface (se a chamada backend for bem sucedida)
+								if (usuarioLogado?.nome && nomeSpan) {
+									nomeSpan.textContent = usuarioLogado.nome;
+								}
+                                // Atualiza a foto de perfil com a URL retornada pelo backend
+                                 if (userProfilePicImg && usuarioLogado?.foto_perfil_url) {
+                                     userProfilePicImg.src = usuarioLogado.foto_perfil_url;
+                                      userProfilePicImg.onerror = function() {
+                                         this.onerror = null; // Evita loop infinito de erro
+                                         this.src = "vendors/images/photo1.jpg";
+                                     };
+                                 } else if (userProfilePicImg) {
+                                      // Se não houver foto retornada pelo backend, usa a imagem padrão
+                                      userProfilePicImg.src = "vendors/images/photo1.jpg";
+                                 }
+
+
+								console.log("Perfil do usuário carregado:", usuarioLogado);
+
+                                // Carregar dados do dashboard (incluindo contadores) após carregar o perfil
+                                carregarDadosDashboardCliente();
+                                // Iniciar polling de mensagens não lidas após carregar o perfil
+                                iniciarPollingMensagensNaoLidas();
+
+
+							} catch (err) {
+								console.error('Erro ao carregar perfil do usuário:', err);
+								 // Se já tentou parsear do cache e deu erro, alertar. Senão, talvez o erro já tenha sido alertado no redirect.
+								 if (usuarioLogado) { // Se usuarioLogado foi populado do cache mas a chamada falhou
+									 alert('Erro ao validar sessão do usuário. Pode haver problemas na conexão.');
+								 } else { // Se nem o cache existia ou deu erro no parse
+									 alert('Ocorreu um erro ao carregar informações do usuário.');
+								 }
+								// Não redireciona aqui se o redirect já aconteceu acima
+							}
+						}
+
+						// Função de Logout
+						document.getElementById('logout-link').addEventListener('click', (e) => {
+							 e.preventDefault();
+							 localStorage.removeItem('token');
+							 localStorage.removeItem('usuario'); // Limpa também o cache do usuário
+                             // Limpa o intervalo de polling ao sair
+                             if (unreadMessagesPollingInterval) {
+                                 clearInterval(unreadMessagesPollingInterval);
+                             }
+							 window.location.href = 'login.html'; // Redireciona para a página de login do usuário
+						});
+
+
+						// Mapeamento de status do backend para texto amigável
+						const statusMapCliente = { // Mapeamento específico para a visão do cliente
+							 'pendente': 'Pendente',
+							 'aceito_pelo_prestador': 'Aceito pelo Prestador',
+							 'recusado_pelo_prestador': 'Recusado',
+							 'concluido_pelo_prestador': 'Concluído',
+							 'avaliado_pelo_cliente': 'Avaliado',
+							 'cancelado': 'Cancelado'
+						};
+
+						// Função para carregar os serviços do usuário e atualizar cards/tabela
+						async function carregarDadosDashboardCliente() {
+							// Elementos dos contadores (IDs corrigidos)
+							const totalSolicitadosEl = document.getElementById("total-solicitados");
+							const totalPendentesEl = document.getElementById("total-pendentes");
+							const totalConcluidosEl = document.getElementById("total-concluidos");
+							const totalAvaliacoesEl = document.getElementById("total-avaliacoes");
+                            const totalNotificacoesEl = document.getElementById("total-notificacoes"); // Novo
+                            const valorTotalEl = document.getElementById("valor-total"); // Novo
+                            // O elemento totalMensagensEl será atualizado pela função de polling separada
+
+
+							const token = localStorage.getItem("token"); // Obter token
+
+
+							if (!token) {
+								console.warn("Autenticação necessária para carregar dados do dashboard.");
+								// Não exibe feedback na tabela, pois esta função é para os cards
+								return;
+							}
+
+
+							try {
+								// Chamar o endpoint correto para buscar TODOS os serviços do usuário logado
+								const responseServicos = await fetch("http://localhost:3000/meus-servicos", {
+									 headers: { 'Authorization': `Bearer ${token}` } // Incluir o token
+								});
+
+								if (!responseServicos.ok) {
+									 if (responseServicos.status === 401 || responseServicos.status === 403) {
+										  alert("Sua sessão expirou ou você não tem permissão. Faça login novamente.");
+										  window.location.href = "login.html"; // Redireciona para login do usuário
+										  return;
+									 }
+									throw new Error(`Erro HTTP ao buscar seus serviços: ${responseServicos.status}`);
+								}
+
+								const servicos = await responseServicos.json();
+								console.log("Meus serviços carregados para dashboard:", servicos); // Log para ver os dados
+
+								// Calcular contadores no frontend com base nos serviços retornados
+								let totalPedidos = servicos.length;
+								let totalPendentes = 0;
+								let totalConcluidos = 0;
+								let totalAvaliacoesPendentes = 0; // Serviços concluídos que ainda não foram avaliados
+                                let valorTotalPedidos = 0; // Para calcular o valor total
+
+								servicos.forEach((servico) => {
+									if (servico.status === 'pendente') totalPendentes++;
+									// Consideramos concluído se o prestador marcou como concluído OU se o cliente já avaliou
+									if (servico.status === 'concluido_pelo_prestador' || servico.status === 'avaliado_pelo_cliente') {
+										totalConcluidos++;
+                                        // Se o status é concluído pelo prestador E ainda não foi avaliado pelo cliente, conta como avaliação pendente
+                                        if (servico.status === 'concluido_pelo_prestador') {
+                                             totalAvaliacoesPendentes++;
+                                        }
+									}
+                                    // Somar valor se disponível
+                                    if (servico.valor_servico && !isNaN(servico.valor_servico)) {
+                                         valorTotalPedidos += servico.valor_servico;
+                                    }
+								});
+
+								// Atualizar os elementos dos cards com os contadores calculados
+								if(totalSolicitadosEl) totalSolicitadosEl.innerText = totalPedidos;
+								if(totalPendentesEl) totalPendentesEl.innerText = totalPendentes;
+								if(totalConcluidosEl) totalConcluidosEl.innerText = totalConcluidos;
+								if(totalAvaliacoesEl) totalAvaliacoesEl.innerText = totalAvaliacoesPendentes;
+                                if(valorTotalEl) valorTotalEl.innerText = `R$ ${valorTotalPedidos.toFixed(2)}`;
+
+
+                                // --- CHAMADA PARA CONTAR NOTIFICAÇÕES (REQUER BACKEND) ---
+                                // ESTA CHAMADA ESTÁ COMENTADA POIS O ENDPOINT AINDA PRECISA SER CRIADO NO BACKEND
+                                /*
+                                // Contagem de Notificações (exemplo)
+                                fetch(`http://localhost:3000/api/notificacoes/quantidade`, { headers: { 'Authorization': `Bearer ${token}` } }) // Endpoint hipotético
+                                    .then(res => {
+                                         if (!res.ok) {
+                                              console.error(`Erro HTTP ao buscar notificações: ${res.status}`);
+                                              throw new Error("Erro ao buscar notificações.");
+                                         }
+                                         return res.json();
+                                     })
+                                    .then(data => {
+                                         if(totalNotificacoesEl) totalNotificacoesEl.innerText = data.total || 0;
+                                     })
+                                    .catch(err => {
+                                         console.error("Erro ao buscar notificações:", err);
+                                         if(totalNotificacoesEl) totalNotificacoesEl.innerText = 'Erro'; // Exibe "Erro" no card
+                                     });
+                                */
+                                // --- FIM DA CHAMADA PARA NOTIFICAÇÕES ---
+
+
+							} catch (error) {
+								console.error("Erro ao carregar dados do dashboard:", error);
+								// Não exibe feedback na tabela, pois esta função é para os cards
+                                // Opcional: Exibir erro em algum lugar na tela se os cards não carregarem
+							} finally {
+								// Não há loading específico para os cards, o loading da tabela já cobre
+							}
+						}
+
+                        // --- NOVA FUNÇÃO PARA POLLING DE MENSAGENS NÃO LIDAS ---
+                        async function atualizarContadorMensagensNaoLidas() {
+                            const totalMensagensEl = document.getElementById("total-mensagens");
+                            // Usa o ID específico do cliente
+                            const unreadChatCountSidebarEl = document.getElementById("unread-chat-count-sidebar-cliente");
+                            const token = localStorage.getItem("token");
+
+                            if (!token || !totalMensagensEl || !unreadChatCountSidebarEl) {
+                                console.warn("Não é possível atualizar contador de mensagens: Token ou elemento faltando.");
+                                if(totalMensagensEl) totalMensagensEl.innerText = '--'; // Indica que não foi possível carregar
+                                if(unreadChatCountSidebarEl) unreadChatCountSidebarEl.style.display = 'none';
+                                return;
+                            }
+
+                            try {
+                                const response = await fetch(`http://localhost:3000/api/chat/unread-count`, {
+                                    headers: { 'Authorization': `Bearer ${token}` }
+                                });
+
+                                if (!response.ok) {
+                                    console.error(`Erro HTTP ao buscar mensagens não lidas: ${response.status}`);
+                                     // Continua tentando no próximo intervalo, não precisa alertar o usuário a cada falha
+                                    return;
+                                }
+
+                                const data = await response.json();
+                                const unreadCount = data.total || 0;
+
+                                // Atualiza o texto do elemento no card
+                                totalMensagensEl.innerText = unreadCount;
+
+                                // Atualiza o badge na sidebar
+                                if (unreadCount > 0) {
+                                    unreadChatCountSidebarEl.textContent = unreadCount;
+                                    unreadChatCountSidebarEl.style.display = 'inline';
+                                } else {
+                                    unreadChatCountSidebarEl.style.display = 'none';
+                                }
+
+
+                            } catch (error) {
+                                console.error("Erro ao buscar mensagens não lidas:", error);
+                                if(totalMensagensEl) totalMensagensEl.innerText = 'Erro'; // Exibe "Erro" no card em caso de falha persistente
+                                if(unreadChatCountSidebarEl) unreadChatCountSidebarEl.style.display = 'none';
+                            }
+                        }
+
+                        // --- NOVA FUNÇÃO PARA INICIAR O POLLING ---
+                        function iniciarPollingMensagensNaoLidas() {
+                            // Limpa qualquer intervalo existente para evitar duplicação
+                            if (unreadMessagesPollingInterval) {
+                                clearInterval(unreadMessagesPollingInterval);
+                            }
+                            // Chama a função de atualização imediatamente e depois a cada X milissegundos
+                            atualizarContadorMensagensNaoLidas();
+                            // Define o intervalo de polling (ex: a cada 5 segundos = 5000 ms)
+                            unreadMessagesPollingInterval = setInterval(atualizarContadorMensagensNaoLidas, 5000); // Ajuste o intervalo conforme necessário
+                            console.log("Polling de mensagens não lidas iniciado.");
+                        }
+
+                        // Limpa o intervalo de polling ao sair da página (navegação ou fechar aba)
+                        window.addEventListener('beforeunload', () => {
+                            if (unreadMessagesPollingInterval) {
+                                clearInterval(unreadMessagesPollingInterval);
+                                console.log("Polling de mensagens não lidas parado.");
+                            }
+                        });
+
+
+						// Chamar carregarPerfilUsuario ao carregar a página
+						document.addEventListener("DOMContentLoaded", () => {
+							 carregarPerfilUsuario();
+							 // carregarDadosDashboardCliente e iniciarPollingMensagensNaoLidas
+                             // são chamados dentro de carregarPerfilUsuario após o perfil ser carregado com sucesso.
+						});
+					</script>
+				</div>
+			</div>
+		</div>
+
+
+					<div class="footer-wrap pd-20 mb-20 card-box">
+						Plataforma WYN-TECH
+					</div>
+			</div>
+		</div>
+		<script src="vendors/scripts/core.js"></script>
+		<script src="vendors/scripts/script.min.js"></script>
+		<script src="vendors/scripts/process.js"></script>
+		<script src="vendors/scripts/layout-settings.js"></script>
+		<script src="src/plugins/datatables/js/jquery.dataTables.min.js"></script>
+		<script src="src/plugins/datatables/js/dataTables.bootstrap4.min.js"></script>
+		<script src="src/plugins/datatables/js/dataTables.responsive.min.js"></script>
+		<script src="src/plugins/datatables/js/responsive.bootstrap4.min.js"></script>
+		<noscript
+			><iframe
+				src="https://www.googletagmanager.com/ns.html?id=GTM-NXZMQSS"
+				height="0"
+				width="0"
+				style="display: none; visibility: hidden"
+			></iframe
+		></noscript>
+
+
+</body>
+</html>

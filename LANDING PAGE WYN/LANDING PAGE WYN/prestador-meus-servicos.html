@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>WYN - Meus Serviços Aceitos</title> <link
+        rel="apple-touch-icon"
+        sizes="180x180"
+        href="/w/1.png"
+    />
+    <link
+        rel="icon"
+        type="image/png"
+        sizes="32x32"
+        href="/w/1.png"
+    />
+    <link
+        rel="icon"
+        type="image/png"
+        sizes="16x16"
+        href="/w/1.png"
+    />
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1"
+    />
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    />
+    <link rel="stylesheet" type="text/css" href="vendors/styles/core.css" />
+    <link
+        rel="stylesheet"
+        type="text/css"
+        href="vendors/styles/icon-font.min.css"
+    />
+    <link
+        rel="stylesheet"
+        type="text/css"
+        href="src/plugins/datatables/css/dataTables.bootstrap4.min.css"
+    />
+    <link
+        rel="stylesheet"
+        type="text/css"
+        href="src/plugins/datatables/css/responsive.bootstrap4.min.css"
+    />
+    <link rel="stylesheet" type="text/css" href="vendors/styles/style.css" />
+
+    <script>
+        (function (w, d, s, l, i) {
+            w[l] = w[l] || [];
+            w[l].push({ "gtm.start": new Date().getTime(), event: "gtm.js" });
+            var f = d.getElementsByTagName(s)[0],
+                j = d.createElement(s),
+                dl = l != "dataLayer" ? "&l=" + l : "";
+            j.async = true;
+            j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
+            f.parentNode.insertBefore(j, f);
+        })(window, document, "script", "dataLayer", "GTM-NXZMQSS");
+    </script>
+    </head>
+<body>
+    <div class="pre-loader">
+        <div class="pre-loader-box">
+            <div class="loader-logo">
+                <img src="/Tela Inicial copy/w.png" alt="" />
+            </div>
+            <div class="loader-progress" id="progress_div">
+                <div class="bar" id="bar1"></div>
+            </div>
+            <div class="percent" id="percent1">0%</div>
+            <div class="loading-text">Carregando...</div>
+        </div>
+    </div>
+
+    <div class="header">
+        <div class="header-left">
+            <div class="menu-icon bi bi-list"></div>
+            <div
+                class="search-toggle-icon bi bi-search"
+                data-toggle="header_search"
+            ></div>
+            <div class="header-search">
+                <form>
+                    <div class="form-group mb-0">
+                        <i class="dw dw-search2 search-icon"></i>
+                        <input
+                            type="text"
+                            class="form-control search-input"
+                            placeholder="Search Here"
+                        />
+                        <div class="dropdown">
+                            <a
+                                class="dropdown-toggle no-arrow"
+                                href="#"
+                                role="button"
+                                data-toggle="dropdown"
+                            >
+                                <i class="ion-arrow-down-c"></i>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <div class="form-group row">
+                                    <label class="col-sm-12 col-md-2 col-form-label"
+                                        >De</label
+                                    >
+                                    <div class="col-sm-12 col-md-10">
+                                        <input
+                                            class="form-control form-control-sm form-control-line"
+                                            type="text"
+                                        />
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-12 col-md-2 col-form-label">Para</label>
+                                    <div class="col-sm-12 col-md-10">
+                                        <input
+                                            class="form-control form-control-sm form-control-line"
+                                            type="text"
+                                        />
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-12 col-md-2 col-form-label"
+                                        >Sujeito</label
+                                    >
+                                    <div class="col-sm-12 col-md-10">
+                                        <input
+                                            class="form-control form-control-sm form-control-line"
+                                            type="text"
+                                        />
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <button class="btn btn-primary">Pesquisar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="dashboard-setting user-notification">
+                <div class="dropdown">
+                    <a
+                        class="dropdown-toggle no-arrow"
+                        href="javascript:;"
+                        data-toggle="right-sidebar"
+                    >
+                        <i class="dw dw-settings2"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="user-info-dropdown">
+                <div class="dropdown">
+                    <a
+                        class="dropdown-toggle"
+                        href="#"
+                        role="button"
+                        data-toggle="dropdown"
+                    >
+                        <span class="user-icon">
+                            <img src="/w/1.png" alt="" />
+                        </span>
+                        <span class="user-name">Prestador</span>
+                    </a>
+                    <div
+                        class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list"
+                    >
+                        <a class="dropdown-item" href="profile.html"
+                            ><i class="dw dw-user1"></i> Perfil</a
+                        >
+                        <a class="dropdown-item" href="profile.html"
+                            ><i class="dw dw-settings2"></i>Configurações</a
+                        >
+                        <a class="dropdown-item" href="faq.html"
+                            ><i class="dw dw-help"></i> Ajuda</a
+                        >
+                        <a class="dropdown-item" href="#" id="logout-link"
+                            ><i class="dw dw-logout"></i> Sair</a
+                        >
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="right-sidebar">
+        <div class="sidebar-title">
+            <h3 class="weight-600 font-16 text-blue">
+                Configuração de Layout
+                <span class="btn-block font-weight-400 font-12"
+                    >Personalização</span
+                >
+            </h3>
+            <div class="close-sidebar" data-toggle="right-sidebar-close">
+                <i class="icon-copy ion-close-round"></i>
+            </div>
+        </div>
+        <div class="right-sidebar-body customscroll">
+            <div class="right-sidebar-body-content">
+                <h4 class="weight-600 font-18 pb-10">Fundo</h4>
+                <div class="sidebar-btn-group pb-30 mb-10">
+                    <a
+                        href="javascript:void(0);"
+                        class="btn btn-outline-primary header-white active"
+                        >Claro</a
+                    >
+                    <a
+                        href="javascript:void(0);"
+                        class="btn btn-outline-primary header-dark"
+                        >Escuro</a
+                    >
+                </div>
+
+                <h4 class="weight-600 font-18 pb-10">Menu Lateral</h4> <div class="sidebar-btn-group pb-30 mb-10">
+                    <a
+                        href="javascript:void(0);"
+                        class="btn btn-outline-primary sidebar-light"
+                        >Claro</a
+                    >
+                    <a
+                        href="javascript:void(0);"
+                        class="btn btn-outline-primary sidebar-dark active"
+                        >Escuro</a
+                    >
+                </div>
+
+                <h4 class="weight-600 font-18 pb-10">Icone Dropdown</h4> <div class="sidebar-radio-group pb-10 mb-10">
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input
+                            type="radio"
+                            id="sidebaricon-1"
+                            name="menu-dropdown-icon"
+                            class="custom-control-input"
+                            value="icon-style-1"
+                            checked=""
+                        />
+                        <label class="custom-control-label" for="sidebaricon-1"
+                            ><i class="fa fa-angle-down"></i
+                        ></label>
+                    </div>
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input
+                            type="radio"
+                            id="sidebaricon-2"
+                            name="menu-dropdown-icon"
+                            class="custom-control-input"
+                            value="icon-style-2"
+                        />
+                        <label class="custom-control-label" for="sidebaricon-2"
+                            ><i class="ion-plus-round"></i
+                        ></label>
+                    </div>
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input
+                            type="radio"
+                            id="sidebaricon-3"
+                            name="menu-dropdown-icon"
+
+                            class="custom-control-input"
+                            value="icon-style-3"
+                        />
+                        <label class="custom-control-label" for="sidebaricon-3"
+                            ><i class="fa fa-angle-double-right"></i
+                        ></label>
+                    </div>
+                </div>
+
+                <h4 class="weight-600 font-18 pb-10">Icones do Menu</h4>
+                <div class="sidebar-radio-group pb-30 mb-10">
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input
+                            type="radio"
+                            id="sidebariconlist-1"
+                            name="menu-list-icon"
+                            class="custom-control-input"
+                            value="icon-list-style-1"
+                            checked=""
+                        />
+                        <label class="custom-control-label" for="sidebariconlist-1"
+                            ><i class="ion-minus-round"></i
+                        ></label>
+                    </div>
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input
+                            type="radio"
+                            id="sidebariconlist-2"
+                            name="menu-list-icon"
+                            class="custom-control-input"
+                            value="icon-list-style-2"
+                        />
+                        <label class="custom-control-label" for="sidebariconlist-2"
+                            ><i class="fa fa-circle-o" aria-hidden="true"></i
+                        ></label>
+                    </div>
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input
+                            type="radio"
+                            id="sidebariconlist-3"
+                            name="menu-list-icon"
+                            class="custom-control-input"
+                            value="icon-list-style-3"
+                        />
+                        <label class="custom-control-label" for="sidebariconlist-3"
+                            ><i class="dw dw-check"></i
+                        ></label>
+                    </div>
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input
+                            type="radio"
+                            id="sidebariconlist-4"
+                            name="menu-list-icon"
+                            class="custom-control-input"
+                            value="icon-list-style-4"
+                            checked=""
+                        />
+                        <label class="custom-control-label" for="sidebariconlist-4"
+                            ><i class="icon-copy dw dw-next-2"></i
+                        ></label>
+                    </div>
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input
+                            type="radio"
+                            id="sidebariconlist-5"
+                            name="menu-list-icon"
+                            class="custom-control-input"
+                            value="icon-list-style-5"
+                        />
+                        <label class="custom-control-label" for="sidebariconlist-5"
+                            ><i class="dw dw-fast-forward-1"></i
+                        ></label>
+                    </div>
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input
+                            type="radio"
+                            id="sidebariconlist-6"
+                            name="menu-list-icon"
+                            class="custom-control-input"
+                            value="icon-list-style-6"
+                        />
+                        <label class="custom-control-label" for="sidebariconlist-6"
+                            ><i class="dw dw-next"></i
+                        ></label>
+                    </div>
+                </div>
+
+                <div class="reset-options pt-30 text-center">
+                    <button class="btn btn-danger" id="reset-settings">
+                        Resetar Configurações
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="left-side-bar">
+        <div class="brand-logo">
+            <a href="index.html"> <img src="/Tela Inicial copy/w (1).png" alt="" class="dark-logo" />
+                <img
+                    src="/Tela Inicial copy/w (1).png"
+                    alt=""
+                    class="light-logo"
+                />
+            </a>
+            <div class="close-sidebar" data-toggle="left-sidebar-close">
+                <i class="ion-close-round"></i>
+            </div>
+        </div>
+        <div class="menu-block customscroll">
+            <div class="sidebar-menu">
+                <ul id="accordion-menu">
+                    <li>
+                        <a href="index.html" class="dropdown-toggle no-arrow"> <span class="micon bi bi-house"></span
+                            ><span class="mtext">Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="prestador-solicitacoes.html" class="dropdown-toggle no-arrow"> <span class="micon bi bi-textarea-resize"></span
+                            ><span class="mtext">Solicitações Pendentes</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="prestador-meus-servicos.html" class="dropdown-toggle no-arrow"> <span class="micon bi bi-check-circle"></span
+                            ><span class="mtext">Meus Serviços Aceitos</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="prestador-historico.html" class="dropdown-toggle no-arrow"> <span class="micon bi bi-clock-history"></span
+                            ><span class="mtext">Histórico de Serviços</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="prestador-avaliacoes.html" class="dropdown-toggle no-arrow"> <span class="micon bi bi-star-fill"></span
+                            ><span class="mtext">Minhas Avaliações</span>
+                        </a>
+                    </li>
+                    <li class="dropdown">
+                        <a href="javascript:;" class="dropdown-toggle">
+                            <span class="micon bi bi-file-pdf"></span
+                            ><span class="mtext">Documentação</span>
+                        </a>
+                        <ul class="submenu">
+                            <li><a href="/Tela Inicial copy/Termos e Condições.docx">Termos e Condições</a></li>
+                            </ul>
+                    </li>
+                    </ul>
+            </div>
+        </div>
+    </div>
+    <div class="mobile-menu-overlay"></div>
+
+    <div class="main-container">
+        <div class="xs-pd-20-10 pd-ltr-20">
+            <div class="card-box pb-10">
+                <div class="h5 pd-20 mb-0">Meus Serviços Aceitos</div> <div id="loading" style="text-align: center; display: none;">Carregando...</div>
+                <div id="feedback" style="text-align: center; color: red; display: none;"></div>
+                 <div style="margin-bottom: 10px;">
+                    <input type="text" id="filtro-cliente" placeholder="Filtrar por nome do Cliente" style="padding: 5px; width: 200px;" />
+                </div>
+                <table class="data-table table nowrap">
+                    <thead>
+                        <tr>
+                            <th class="table-plus">Cliente</th>
+                            <th>Tipo de Serviço</th>
+                            <th>Endereço</th>
+                            <th>Urgente</th>
+                            <th>Data</th>
+                            <th>Notas</th>
+                            <th>Status</th>
+                            <th class="datatable-nosort">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="servicos-aceitos-tabela">
+                        </tbody>
+                </table>
+            </div>
+
+             <div id="upload-section" class="card-box pd-20 mb-30" style="display: none;">
+                 <h4 class="h4 text-blue mb-20">Comprovar Conclusão do Serviço</h4>
+                 <p id="upload-service-info"></p> <form id="formComprovacao" enctype="multipart/form-data"> <input type="hidden" id="service-id-upload" name="serviceId"> <div class="form-group">
+                         <label for="comprovacaoImagem">Anexar Fotos/Arquivos (Máx. 5)</label>
+                         <input type="file" class="form-control-file" id="comprovacaoImagem" name="comprovacaoImagem" accept="image/*,application/pdf" multiple required>
+                         <small class="form-text text-muted">Tipos permitidos: Imagens (jpg, png, etc), PDF. Máximo de 5 arquivos.</small>
+                     </div>
+
+                     <button type="submit" class="btn btn-primary">Enviar Comprovação e Concluir</button>
+                     <button type="button" class="btn btn-secondary" id="cancel-upload">Cancelar</button>
+                 </form>
+             </div>
+
+
+            <div class="footer-wrap pd-20 mb-20 card-box">
+                Plataforma WYN-TECH
+            </div>
+        </div>
+    </div>
+
+    <script src="vendors/scripts/core.js"></script>
+    <script src="vendors/scripts/script.min.js"></script>
+    <script src="vendors/scripts/process.js"></script>
+    <script src="vendors/scripts/layout-settings.js"></script>
+    <script src="src/plugins/datatables/js/jquery.dataTables.min.js"></script>
+    <script src="src/plugins/datatables/js/dataTables.bootstrap4.min.js"></script>
+    <script src="src/plugins/datatables/js/responsive.bootstrap4.min.js"></script>
+
+    <noscript>
+        <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NXZMQSS" height="0" width="0" style="display: none; visibility: hidden"></iframe>
+    </noscript>
+
+    <script>
+        let prestadorLogado = null; // Variável para armazenar os dados do prestador logado
+
+        async function carregarPerfilPrestador() {
+            const token = localStorage.getItem('token');
+            const prestadorCache = localStorage.getItem('prestador'); // Chave correta para prestador
+
+            if (!token || !prestadorCache) {
+                console.warn("Prestador não autenticado. Redirecionando para login.");
+                window.location.href = "login.html"; // Redirecionar para login do prestador
+                return;
+            }
+
+            try {
+                 // Parse do cache para obter o ID e nome rapidamente
+                 prestadorLogado = JSON.parse(prestadorCache);
+                 const nomeSpan = document.querySelector(".user-name");
+                 if (nomeSpan && prestadorLogado?.nome) {
+                     nomeSpan.textContent = prestadorLogado.nome;
+                 }
+
+
+                // Chamada ao backend para validar o token e obter dados completos
+                 // Usando a rota /perfil que agora verifica o tipo no token
+                 const res = await fetch('http://localhost:3000/perfil', {
+                     headers: { 'Authorization': 'Bearer ' + token }
+                 });
+
+                 const resClone = res.clone(); // Clonar para ler o body se der erro de JSON
+
+                 if (!res.ok) {
+                     if (res.status === 401 || res.status === 403) {
+                         console.error("Token inválido ou expirado. Redirecionando para login.");
+                         alert("Sua sessão expirou. Por favor, faça login novamente.");
+                         window.location.href = "login.html";
+                         return;
+                     }
+                     throw new Error(`Erro HTTP ao buscar perfil: ${res.status}`);
+                 }
+
+                let data = {};
+                 try {
+                     data = await res.json();
+                 } catch(jsonError) {
+                     console.error("Erro ao parsear JSON do perfil:", await resClone.text());
+                     throw new Error("Resposta de perfil inválida.");
+                 }
+
+
+                // Verifique se o perfil retornado é de um prestador
+                 if (data.tipo !== 'prestador' || !data.prestador?._id) {
+                      console.error("Token válido, mas não corresponde a um prestador.");
+                      alert("Acesso negado para este tipo de usuário.");
+                      // Redireciona para o dashboard do cliente se for usuário cliente
+                      window.location.href = "indexx.html"; // Assumindo que indexx.html é o dashboard do cliente
+                      return;
+                 }
+
+                 // Atualiza a variável global com os dados completos do prestador
+                 prestadorLogado = data.prestador;
+
+                // Atualiza o nome na interface (se a chamada backend for bem sucedida)
+                if (prestadorLogado?.nome && nomeSpan) {
+                    nomeSpan.textContent = prestadorLogado.nome;
+                }
+
+                console.log("Perfil do prestador carregado:", prestadorLogado);
+
+
+            } catch (err) {
+                console.error('Erro ao carregar perfil do prestador:', err);
+                // Se já tentou parsear do cache e deu erro, alertar. Senão, talvez o erro já tenha sido alertado no redirect.
+                 if (prestadorLogado) { // Se prestadorLogado foi populado do cache mas a chamada falhou
+                     alert('Erro ao validar sessão do prestador. Pode haver problemas na conexão.');
+                 } else { // Se nem o cache existia ou deu erro no parse
+                     alert('Ocorreu um erro ao carregar informações do prestador.');
+                 }
+                // Não redireciona aqui se o redirect já aconteceu acima
+            }
+        }
+
+        // Função de Logout
+        document.getElementById('logout-link').addEventListener('click', (e) => {
+             e.preventDefault();
+             localStorage.removeItem('token');
+             localStorage.removeItem('prestador'); // Limpa também o cache do prestador
+             window.location.href = 'login.html'; // Redireciona para a página de login do prestador
+        });
+
+
+        // Chamar carregarPerfilPrestador ao carregar a página
+        document.addEventListener("DOMContentLoaded", () => {
+             carregarPerfilPrestador();
+             // Chamar carregarMeusServicosAceitos somente depois de tentar carregar o perfil para garantir o token/ID
+             // Adicionar um pequeno delay se necessário para garantir que prestadorLogado seja populado
+             setTimeout(carregarMeusServicosAceitos, 150); // Ajuste o delay se necessário
+        });
+    </script>
+
+
+    <script>
+        // Mapeamento de status do backend para texto amigável
+        const statusMapPrestador = { // Mapeamento específico para a visão do prestador
+             'pendente': 'Pendente',
+             'aceito_pelo_prestador': 'Aceito',
+             'recusado_pelo_prestador': 'Recusado',
+             'concluido_pelo_prestador': 'Concluído',
+             'avaliado_pelo_cliente': 'Avaliado',
+             'cancelado': 'Cancelado'
+        };
+
+        async function carregarMeusServicosAceitos() { // Função para carregar serviços aceitos
+            const loading = document.getElementById("loading"); // ID do loading na tabela
+            const tabela = document.getElementById("servicos-aceitos-tabela"); // ID da tabela
+            const feedback = document.getElementById("feedback"); // ID do feedback da tabela
+            const token = localStorage.getItem("token"); // Obter token
+
+            loading.style.display = "block";
+            feedback.style.display = "none";
+            tabela.innerHTML = ""; // Limpa a tabela antes de carregar
+
+            if (!token) {
+                feedback.textContent = "Autenticação necessária para carregar seus serviços aceitos.";
+                feedback.style.display = "block";
+                loading.style.display = "none";
+                return;
+            }
+
+            try {
+                // *** CHAMANDO O ENDPOINT CORRETO para serviços aceitos pelo prestador ***
+                const response = await fetch("http://localhost:3000/meus-servicos-prestador", {
+                     headers: { 'Authorization': `Bearer ${token}` } // Incluir o token
+                });
+
+                if (!response.ok) {
+                     if (response.status === 401 || response.status === 403) {
+                          alert("Sua sessão expirou ou você não tem permissão. Faça login novamente.");
+                          window.location.href = "login.html"; // Redireciona para login do prestador
+                          return;
+                     }
+                    throw new Error(`Erro HTTP ao buscar seus serviços aceitos: ${response.status}`);
+                }
+
+                const servicos = await response.json();
+                console.log("Meus serviços aceitos carregados:", servicos); // Log para ver os dados
+
+
+                if (servicos.length === 0) {
+                    tabela.innerHTML = '<tr><td colspan="8">Nenhum serviço aceito encontrado.</td></tr>'; // Colspan ajustado
+                } else {
+                    servicos.forEach((servico) => {
+                        const row = document.createElement("tr");
+
+                        // Para serviços ACEITOS ou CONCLUÍDOS, mostre as ações relevantes
+                        let actionsHtml = '';
+                        // Botão para marcar como concluído (se ainda não foi)
+                        if (servico.status === 'aceito_pelo_prestador') {
+                             // Adiciona um botão para abrir a seção de upload
+                             actionsHtml += `<a href="#" data-id="${servico._id}" data-cliente="${servico.nome_cliente}" data-servico="${servico.tipo_servico}" class="marcar-concluido btn btn-sm btn-success mr-1">Marcar como Concluído</a>`;
+                        }
+
+                        // Botão de Chat (aparece para serviços aceitos ou concluídos/avaliados)
+                        // Adicionado mr-1 para espaçamento
+                        if (['aceito_pelo_prestador', 'concluido_pelo_prestador', 'avaliado_pelo_cliente'].includes(servico.status)) {
+                             actionsHtml += `<a href="chat.html?serviceId=${servico._id}" class="btn btn-sm btn-secondary mr-1">Chat</a>`;
+                        }
+
+
+                        // Botão para ver detalhes/comprovantes (se concluído ou avaliado)
+                        if (['concluido_pelo_prestador', 'avaliado_pelo_cliente'].includes(servico.status)) {
+                            // Adiciona data-id para o botão de ver detalhes
+                            actionsHtml += `<a href="#" data-id="${servico._id}" class="ver-detalhes-prestador btn btn-sm btn-info">Ver Detalhes</a>`;
+                        }
+
+
+                        row.innerHTML = `
+                            <td class="table-plus">
+                                <div class="name-avatar d-flex align-items-center">
+                                    <div class="avatar mr-2 flex-shrink-0">
+                                        <img src="vendors/images/photo4.jpg" class="border-radius-100 shadow" width="40" height="40" alt="" />
+                                    </div>
+                                    <div class="txt">
+                                        <div class="weight-600">${servico.nome_cliente}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>${servico.tipo_servico}</td>
+                            <td>${servico.endereco_servico || "Não informado"}</td>
+                            <td>${servico.urgente ? "Sim" : "Não"}</td>
+                            <td>${new Date(servico.data_solicitacao).toLocaleDateString()}</td>
+                            <td>${servico.notas_adicionais || "Nenhuma"}</td>
+                            <td>${statusMapPrestador[servico.status] || servico.status}</td> <td>
+                                <div class="table-actions">
+                                    ${actionsHtml}
+                                </div>
+                            </td>
+                        `;
+                        tabela.appendChild(row);
+                    });
+                }
+
+            } catch (error) {
+                console.error("Erro ao carregar serviços aceitos:", error);
+                feedback.textContent = "Erro ao carregar seus serviços aceitos. Verifique a conexão ou faça login novamente.";
+                feedback.style.display = "block";
+            } finally {
+                loading.style.display = "none";
+            }
+        }
+
+        // Filtro de nome do cliente (opcional nesta página)
+        document.getElementById("filtro-cliente").addEventListener("input", (event) => {
+            const filtro = event.target.value.toLowerCase();
+            const rows = document.querySelectorAll("#servicos-aceitos-tabela tr"); // Seleciona as linhas da tabela correta
+            rows.forEach((row) => {
+                // Filtra pelo nome do cliente na primeira célula (coluna Cliente)
+                const clienteCell = row.querySelector(".weight-600");
+                if (clienteCell) {
+                    const cliente = clienteCell.textContent.toLowerCase();
+                    row.style.display = cliente.includes(filtro) ? "" : "none";
+                }
+            });
+        });
+
+
+        // Listener para os cliques nos botões de ação (usando delegação de evento)
+        document.addEventListener("click", async (event) => {
+            const target = event.target;
+            const serviceId = target.dataset.id;
+            const token = localStorage.getItem("token");
+            const prestadorId = prestadorLogado?._id; // ID do prestador logado
+
+            if (!serviceId || !token || !prestadorId) {
+                 // Não faz nada se não tiver ID, token ou ID do prestador
+                 console.warn("Ação de serviço clicada sem ID de serviço, token ou ID de prestador.", { serviceId, hasToken: !!token, prestadorId });
+                 return;
+            }
+
+            // Ação de Marcar como Concluído (Abre a seção de upload)
+            if (target.classList.contains("marcar-concluido")) {
+                event.preventDefault();
+                const clienteNome = target.dataset.cliente;
+                const tipoServico = target.dataset.servico;
+
+                // Preenche a seção de upload com as informações do serviço
+                document.getElementById("upload-service-info").innerText = `Serviço: ${tipoServico} para ${clienteNome}`;
+                document.getElementById("service-id-upload").value = serviceId; // Define o ID do serviço no campo oculto
+
+                // Mostra a seção de upload
+                document.getElementById("upload-section").style.display = "block";
+
+                // Opcional: Rolar a página para a seção de upload
+                document.getElementById("upload-section").scrollIntoView({ behavior: 'smooth' });
+            }
+
+            // Ação de Ver Detalhes (Prestador) - Pode mostrar detalhes e comprovantes
+            if (target.classList.contains("ver-detalhes-prestador")) {
+                event.preventDefault();
+                // Implementar a lógica para mostrar os detalhes do serviço e os comprovantes em um modal ou seção.
+                // Você pode usar a rota GET /servico/:id que já implementamos no backend.
+                alert("Funcionalidade de ver detalhes do serviço (Prestador) a ser implementada.");
+                console.log("Clicado em Ver Detalhes serviço ID:", serviceId);
+
+                // *** AQUI VOCÊ CHAMARIA A LÓGICA PARA BUSCAR E EXIBIR DETALHES/COMPROVANTES ***
+                // Exemplo: carregarDetalhesServicoPrestador(serviceId, token);
+            }
+
+            // Ação de Chat (Cliente e Prestador) - Já implementada no backend e chat.html
+            // O link direto <a href="chat.html?serviceId=${servico._id}">Chat</a> já funciona
+            // Não precisa de um listener aqui, a navegação é direta pelo link.
+
+
+        });
+
+        // Listener para o botão Cancelar na seção de upload
+        document.getElementById("cancel-upload").addEventListener("click", () => {
+             // Oculta a seção de upload e limpa o formulário
+             document.getElementById("upload-section").style.display = "none";
+             document.getElementById("formComprovacao").reset();
+             document.getElementById("service-id-upload").value = ""; // Limpa o ID
+        });
+
+
+        // Listener para o envio do formulário de comprovação
+        document.getElementById("formComprovacao").addEventListener("submit", async (event) => {
+            event.preventDefault(); // Previne o envio padrão do formulário
+
+            const serviceId = document.getElementById("service-id-upload").value;
+            const fileInput = document.getElementById("comprovacaoImagem");
+            const files = fileInput.files;
+
+            if (!serviceId) {
+                alert("Erro: ID do serviço não encontrado para upload.");
+                return;
+            }
+
+            if (files.length === 0) {
+                alert("Por favor, selecione pelo menos um arquivo para comprovar a conclusão.");
+                return;
+            }
+
+            if (files.length > 5) {
+                 alert("Você pode anexar no máximo 5 arquivos.");
+                 // Opcional: Limpar o input de arquivo aqui
+                 fileInput.value = ''; // Limpa os arquivos selecionados
+                 return;
+            }
+
+            const token = localStorage.getItem("token");
+            if (!token) {
+                alert("Sessão expirada. Faça login novamente.");
+                window.location.href = "login.html"; // Redireciona para login do prestador
+                return;
+            }
+
+            // Usar FormData para enviar arquivos e outros dados
+            const formData = new FormData();
+            // Não precisamos adicionar o serviceId aqui, pois ele vai na URL
+            // formData.append('serviceId', serviceId); // Removido
+            // Adiciona cada arquivo selecionado ao FormData
+            for (let i = 0; i < files.length; i++) {
+                formData.append('comprovacaoImagem', files[i]); // 'comprovacaoImagem' deve corresponder ao nome esperado no backend (upload.array('comprovacaoImagem'))
+            }
+
+            // Opcional: Adicionar outros campos de texto se necessário para a comprovação (ex: notas do prestador)
+            // formData.append('notasPrestador', document.getElementById('notas-prestador').value);
+
+
+            // Desabilitar o botão de envio enquanto a requisição está em andamento
+            const submitButton = event.target.querySelector('button[type="submit"]');
+            submitButton.disabled = true;
+            submitButton.textContent = "Enviando...";
+
+
+            try {
+                // *** CHAMANDO O ENDPOINT CORRETO PARA CONCLUIR SERVIÇO E UPLOAD ***
+                // O backend espera o ID do serviço na URL e os arquivos no body (via multer)
+                const response = await fetch(`http://localhost:3000/concluir-servico/${serviceId}`, {
+                    method: "POST", // Ou PUT, mas POST é comum para enviar dados de formulário com arquivos
+                    headers: {
+                        // Não defina 'Content-Type': 'application/json' quando usar FormData com upload de arquivo.
+                        // O navegador define o Content-Type correto ('multipart/form-data') automaticamente com o boundary.
+                        // 'Content-Type': 'application/json', // Removido
+                        'Authorization': `Bearer ${token}` // Incluir o token
+                    },
+                    body: formData // Envia o FormData com os arquivos
+                });
+
+                const result = await response.json(); // Leia a resposta JSON
+
+                if (!response.ok) {
+                     // Se a resposta não for OK (status >= 400), lance um erro com a mensagem do backend
+                     const errorText = await response.text();
+                     console.error("Erro HTTP ao enviar comprovação:", response.status, errorText);
+                     try {
+                          const errorJson = JSON.parse(errorText);
+                          throw new Error(errorJson.message || errorText || `Erro HTTP: ${response.status}`);
+                     } catch (parseError) {
+                          throw new Error(errorText || `Erro HTTP: ${response.status}`);
+                     }
+                }
+
+                // Se a resposta for OK
+                alert(result.message || "Serviço marcado como concluído e comprovação enviada com sucesso!");
+
+                // Oculta a seção de upload e limpa o formulário
+                document.getElementById("upload-section").style.display = "none";
+                document.getElementById("formComprovacao").reset();
+                document.getElementById("service-id-upload").value = ""; // Limpa o ID
+
+                // Recarrega a lista de serviços aceitos (o serviço concluído não aparecerá mais aqui)
+                carregarMeusServicosAceitos();
+
+            } catch (error) {
+                console.error("Erro ao enviar comprovação:", error);
+                // Exiba a mensagem de erro do backend se disponível, caso contrário, uma genérica
+                alert(error.message || "Não foi possível enviar a comprovação. Verifique sua conexão ou tente novamente.");
+            } finally {
+                 // Reabilitar o botão de envio
+                 submitButton.disabled = false;
+                 submitButton.textContent = "Enviar Comprovação e Concluir";
+            }
+        });
+
+
+        // Função para carregar detalhes do serviço para o prestador (exemplo, pode ser em um modal)
+        // Esta função usaria o endpoint GET /servico/:id
+        async function carregarDetalhesServicoPrestador(serviceId, token) {
+            // Implementar lógica para buscar e exibir detalhes em um modal ou seção
+            console.log(`Buscando detalhes para o serviço ID ${serviceId} (Prestador)`);
+            try {
+                const response = await fetch(`http://localhost:3000/servico/${serviceId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error("Erro HTTP ao buscar detalhes (Prestador):", response.status, errorText);
+                    throw new Error(errorText || `Erro HTTP: ${response.status}`);
+                }
+                const servicoDetalhes = await response.json();
+                console.log("Detalhes do serviço (Prestador):", servicoDetalhes);
+                // Exibir servicoDetalhes em um modal ou seção na página
+                alert("Detalhes do Serviço Carregados (Ver console para detalhes completos)"); // Exemplo simples
+            } catch (error) {
+                console.error("Erro ao carregar detalhes do serviço (Prestador):", error);
+                alert("Erro ao carregar detalhes do serviço: " + (error.message || "Verifique a conexão."));
+            }
+        }
+
+
+        // Inicialização da tela (carregarMeusServicosAceitos é chamado após carregarPerfilPrestador)
+        // REMOVIDO: carregarMeusServicosAceitos(); // Removido chamada duplicada
+
+    </script>
+
+</body>
+</html>

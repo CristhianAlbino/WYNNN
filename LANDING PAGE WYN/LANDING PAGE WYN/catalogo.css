@@ -1,0 +1,323 @@
+/* Variáveis CSS para temas (podem ser definidas em style.css globalmente se preferir) */
+:root {
+    --primary-color: #1b00ff;
+    --primary-color-dark: #0056b3;
+    --primary-color-light: #6610f2;
+    --success-color: #28a745;
+    --success-color-dark: #218838;
+    --success-color-light: #2ecc71;
+    --card-background: #fff;
+    --text-color: #555;
+    --section-title-color: #1b00ff;
+    --button-text-color: #fff;
+    --input-background: #fff;
+    --input-text-color: #000;
+    --input-border-color: #ccc;
+    --error-color: #dc3545; /* Cor para mensagens de erro */
+    --selected-card-border: 2px solid var(--primary-color); /* Borda para card selecionado */
+}
+
+body.dark-mode {
+    --primary-color: #6610f2; /* Cor primária mais clara para tema escuro */
+    --primary-color-dark: #5a0cdb;
+    --primary-color-light: #7b39f5;
+    --success-color: #2ecc71; /* Verde mais vibrante */
+    --success-color-dark: #27ae60;
+    --success-color-light: #58d68d;
+    --card-background: #333;
+    --text-color: #ccc;
+    --section-title-color: #6610f2; /* Título mais claro */
+    --button-text-color: #fff;
+    --input-background: #444;
+    --input-text-color: #fff;
+    --input-border-color: #555;
+    --error-color: #dc3545; /* Manter vermelho para erros */
+    --selected-card-border: 2px solid var(--dark-primary-color); /* Borda para card selecionado no tema escuro */
+}
+
+
+/* Estilos customizados para o catálogo */
+.service-catalog-grid {
+    display: grid;
+    /* Configura o grid: colunas flexíveis que se ajustam, com tamanho mínimo de 250px */
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px; /* Espaçamento entre os cards */
+    padding: 0; /* Removido padding daqui para usar o card-box pai */
+    /* Removido background-color e border-radius daqui para usar o card-box */
+}
+
+/* Estilos para os cards de serviço */
+.service-card {
+    background-color: var(--card-background); /* Usa variável para tema */
+    border-radius: 8px;
+    overflow: hidden; /* Garante que a imagem não vaze dos cantos arredondados */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra suave */
+    display: flex;
+    flex-direction: column;
+    cursor: pointer; /* Indica que o card é clicável */
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out, background-color 0.3s ease, border 0.2s ease; /* Animação ao passar o mouse e transição de tema */
+    border: 1px solid transparent; /* Borda transparente por padrão */
+}
+
+ body.dark-mode .service-card {
+     background-color: var(--dark-card-background); /* Tema escuro */
+ }
+
+/* Estilo para o card selecionado */
+.service-card.selected {
+    border: var(--selected-card-border); /* Borda destacada para o card selecionado */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25); /* Sombra mais forte */
+}
+
+
+.service-card:hover {
+    transform: translateY(-5px); /* Efeito de "levantar" ao passar o mouse */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Sombra mais proeminente */
+}
+
+.service-card img {
+    width: 100%; /* Imagem ocupa toda a largura do card */
+    height: 150px; /* Altura fixa para as imagens (ajuste se necessário) */
+    object-fit: cover; /* Garante que a imagem cubra a área sem distorcer */
+    border-bottom: 1px solid #eee; /* Linha sutil abaixo da imagem */
+}
+
+.service-card-content {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1; /* Permite que o conteúdo cresça para preencher o espaço */
+}
+
+.service-card-content h4 {
+    margin-top: 0;
+    margin-bottom: 5px;
+    font-size: 1.1em; /* Tamanho do título */
+    color: var(--section-title-color); /* Usa variável para tema */
+     transition: color 0.3s ease;
+}
+ body.dark-mode .service-card-content h4 {
+     color: var(--dark-section-title-color); /* Tema escuro */
+ }
+
+.service-card-content .description {
+    font-size: 0.9em; /* Tamanho da descrição */
+    color: var(--text-color); /* Usa variável para tema */
+     transition: color 0.3s ease;
+    margin-bottom: 10px;
+    flex-grow: 1; /* Descrição ocupa o espaço restante */
+}
+ body.dark-mode .service-card-content .description {
+     color: var(--dark-text-color); /* Tema escuro */
+ }
+
+
+.service-card-footer {
+    display: flex;
+    justify-content: space-between; /* Alinha preço e botão */
+    align-items: center;
+    padding: 0 15px 15px 15px; /* Padding na parte inferior */
+}
+
+.service-card-footer .price {
+    font-size: 1.1em; /* Tamanho do preço */
+    font-weight: 600;
+    color: #28a745; /* Cor verde para o preço (pode manter fixa ou usar variável) */
+}
+
+.service-card-footer .select-button {
+    background-color: var(--primary-color); /* Usa variável para tema */
+    color: var(--button-text-color); /* Usa variável para tema */
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: background-color 0.2s ease, color 0.3s ease;
+}
+
+.service-card-footer .select-button:hover {
+    background-color: var(--primary-color-dark); /* Usa variável para tema */
+}
+ body.dark-mode .service-card-footer .select-button {
+     background-color: var(--dark-primary-color); /* Tema escuro */
+     color: var(--dark-button-text-color); /* Tema escuro */
+ }
+ body.dark-mode .service-card-footer .select-button:hover {
+     background-color: var(--dark-primary-color-light); /* Tema escuro */
+ }
+
+
+ /* Estilos para o modal de solicitação */
+ .solicitation-section {
+      display: none; /* Hidden by default */
+      position: fixed; /* Stay in place */
+      z-index: 1000; /* Sit on top */
+      left: 0;
+      top: 0;
+      width: 100%; /* Full width */
+      height: 100%; /* Full height */
+      overflow: auto; /* Enable scroll if needed */
+      background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+      justify-content: center; /* Centraliza horizontalmente */
+      align-items: center; /* Centraliza verticalmente */
+ }
+
+ .solicitation-form-container {
+      background-color: var(--card-background); /* Usa variável para tema */
+      margin: 5% auto; /* 15% from the top and centered */
+      padding: 20px;
+      border: 1px solid #888;
+      width: 90%; /* Could be more or less, depending on screen size */
+      max-width: 600px; /* Maximum width */
+      border-radius: 8px;
+      position: relative; /* Needed for close button positioning */
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra */
+      transition: background-color 0.3s ease, color 0.3s ease;
+ }
+  body.dark-mode .solicitation-form-container {
+      background-color: var(--dark-card-background); /* Tema escuro */
+      color: var(--dark-text-color);
+  }
+
+
+ .close-solicitation {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      position: absolute;
+      top: 10px;
+      right: 20px;
+      cursor: pointer;
+ }
+
+ .close-solicitation:hover,
+ .close-solicitation:focus {
+      color: black;
+      text-decoration: none;
+      cursor: pointer;
+ }
+
+ /* Estilos para o formulário dentro do modal */
+ .solicitation-form-container form {
+      margin-top: 20px;
+ }
+
+ .solicitation-form-container .form-group {
+      margin-bottom: 15px;
+ }
+
+ .solicitation-form-container label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 600;
+      color: var(--text-color); /* Usa variável para tema */
+       transition: color 0.3s ease;
+ }
+  body.dark-mode .solicitation-form-container label {
+      color: var(--dark-text-color); /* Tema escuro */
+  }
+
+
+ .solicitation-form-container input[type="text"],
+ .solicitation-form-container input[type="email"],
+ .solicitation-form-container input[type="tel"],
+ .solicitation-form-container textarea,
+ .solicitation-form-container input[type="date"], /* Estilo para input de data */
+ .solicitation-form-container input[type="time"], /* Estilo para input de hora */
+ .solicitation-form-container select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid var(--input-border-color); /* Usa variável para tema */
+      border-radius: 4 intimidade;
+      box-sizing: border-box; /* Include padding and border in element's total width and height */
+       background-color: var(--input-background); /* Usa variável para tema */
+       color: var(--input-text-color); /* Usa variável para tema */
+       transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+ }
+  body.dark-mode .solicitation-form-container input[type="text"],
+  body.dark-mode .solicitation-form-container input[type="email"],
+  body.dark-mode .solicitation-form-container input[type="tel"],
+  body.dark-mode .solicitation-form-container textarea,
+  body.dark-mode .solicitation-form-container input[type="date"],
+  body.dark-mode .solicitation-form-container input[type="time"],
+  body.dark-mode .solicitation-form-container select {
+      background-color: var(--dark-input-background); /* Tema escuro */
+      color: var(--dark-input-text-color); /* Tema escuro */
+      border-color: var(--dark-input-border-color); /* Tema escuro */
+  }
+
+/* Estilo para feedback de validação */
+.solicitation-form-container .form-control.is-invalid {
+    border-color: var(--error-color);
+}
+
+.solicitation-form-container .invalid-feedback {
+    color: var(--error-color);
+    font-size: 0.8em;
+    margin-top: 0.25rem;
+}
+
+
+ .solicitation-form-container .checkbox-group {
+      margin-top: 15px;
+ }
+
+ .solicitation-form-container .checkbox-group input[type="checkbox"] {
+      margin-right: 5px;
+ }
+
+ .solicitation-form-container button[type="submit"] {
+      background-color: var(--success-color); /* Usa variável para tema */
+      color: var(--button-text-color); /* Usa variável para tema */
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1em;
+      margin-top: 20px;
+      transition: background-color 0.2s ease, color 0.3s ease;
+ }
+
+ .solicitation-form-container button[type="submit"]:hover {
+      background-color: var(--success-color-dark); /* Usa variável para tema */
+ }
+  body.dark-mode .solicitation-form-container button[type="submit"] {
+      background-color: var(--dark-success-color); /* Tema escuro */
+      color: var(--dark-button-text-color); /* Tema escuro */
+  }
+  body.dark-mode .solicitation-form-container button[type="submit"]:hover {
+      background-color: var(--dark-success-color-light); /* Tema escuro */
+  }
+
+  /* Estilo para o spinner dentro do botão */
+  .solicitation-form-container button[type="submit"] .spinner-border {
+      margin-right: 5px;
+  }
+
+
+  .solicitation-details h4 {
+     color: var(--section-title-color); /* Usa variável para tema */
+     transition: color 0.3s ease;
+  }
+  body.dark-mode .solicitation-details h4 {
+      color: var(--dark-section-title-color); /* Tema escuro */
+  }
+
+   .solicitation-details p {
+     color: var(--text-color); /* Usa variável para tema */
+     transition: color 0.3s ease;
+  }
+   body.dark-mode .solicitation-details p {
+       color: var(--dark-text-color); /* Tema escuro */
+   }
+
+   .solicitation-details strong {
+     color: var(--text-color); /* Usa variável para tema */
+     transition: color 0.3s ease;
+  }
+   body.dark-mode .solicitation-details strong {
+       color: var(--dark-text-color); /* Tema escuro */
+   }
+

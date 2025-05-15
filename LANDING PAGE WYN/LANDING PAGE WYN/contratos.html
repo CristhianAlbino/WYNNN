@@ -1,0 +1,1189 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>WYN - Meus Pedidos</title> <link
+			rel="apple-touch-icon"
+			sizes="180x180"
+			href="/w/1.png"
+		/>
+		<link
+			rel="icon"
+			type="image/png"
+			sizes="32x32"
+			href="/w/1.png"
+		/>
+		<link
+			rel="icon"
+			type="image/png"
+			sizes="16x16"
+			href="/w/1.png"
+		/>
+
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1, maximum-scale=1"
+		/>
+
+		<link
+			href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+			rel="stylesheet"
+		/>
+		<link rel="stylesheet" type="text/css" href="vendors/styles/core.css" />
+		<link
+			rel="stylesheet"
+			type="text/css"
+			href="vendors/styles/icon-font.min.css"
+		/>
+		<link
+			rel="stylesheet"
+			type="text/css"
+			href="src/plugins/datatables/css/dataTables.bootstrap4.min.css"
+		/>
+		<link
+			rel="stylesheet"
+			type="text/css"
+			href="src/plugins/datatables/css/responsive.bootstrap4.min.css"
+		/>
+		<link rel="stylesheet" type="text/css" href="vendors/styles/style.css" />
+        <style>
+            /* Estilos básicos para as novas seções */
+            #detalhes-servico-section,
+            #avaliacao-section {
+                margin-top: 20px;
+                padding: 20px;
+                border: 1px solid #e0e0e0;
+                border-radius: 5px;
+                background-color: #fff;
+            }
+            #detalhes-servico-content img,
+            #detalhes-servico-content embed {
+                max-width: 100%;
+                height: auto;
+                margin-bottom: 10px;
+                border: 1px solid #ccc;
+                padding: 5px;
+            }
+             .attachment-preview {
+                 margin-top: 15px;
+                 border-top: 1px solid #eee;
+                 padding-top: 15px;
+             }
+             .attachment-preview h5 {
+                 margin-bottom: 10px;
+             }
+             .attachment-item {
+                 margin-bottom: 10px;
+             }
+             .attachment-item a {
+                 display: inline-block;
+                 margin-right: 10px;
+             }
+             /* Estilo para o spinner dentro do botão */
+             .btn .spinner-border {
+                 margin-right: 5px;
+             }
+
+             /* --- ESTILOS PARA A COLUNA DE AÇÕES RESTAURADOS --- */
+             /* Removido os estilos flexbox que causaram o problema */
+             /* Os botões voltarão a se comportar como elementos inline-block dentro da célula da tabela */
+             /* Se precisar de um pequeno espaço entre eles, pode ser adicionado margin-right aos botões */
+             .table-actions .btn {
+                  margin-right: 5px; /* Ajuste este valor se o espaçamento padrão da sua template for diferente */
+             }
+             /* --- FIM ESTILOS RESTAURADOS --- */
+
+        </style>
+
+
+		<script>
+			(function (w, d, s, l, i) {
+				w[l] = w[l] || [];
+				w[l].push({ "gtm.start": new Date().getTime(), event: "gtm.js" });
+				var f = d.getElementsByTagName(s)[0],
+					j = d.createElement(s),
+					dl = l != "dataLayer" ? "&l=" + l : "";
+				j.async = true;
+				j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
+				f.parentNode.insertBefore(j, f);
+			})(window, document, "script", "dataLayer", "GTM-NXZMQSS");
+		</script>
+		</head>
+	<body>
+		<div class="pre-loader">
+			<div class="pre-loader-box">
+				<div class="loader-logo">
+					<img src="/w/1.png" alt="" />
+				</div>
+				<div class="loader-progress" id="progress_div">
+					<div class="bar" id="bar1"></div>
+				</div>
+				<div class="percent" id="percent1">0%</div>
+				<div class="loading-text">Carregando...</div>
+			</div>
+		</div>
+
+		<div class="header">
+			<div class="header-left">
+				<div class="menu-icon bi bi-list"></div>
+				<div
+					class="search-toggle-icon bi bi-search"
+					data-toggle="header_search"
+				></div>
+				<div class="header-search">
+					<form>
+						<div class="form-group mb-0">
+							<i class="dw dw-search2 search-icon"></i>
+							<input
+								type="text"
+								class="form-control search-input"
+								placeholder="Search Here"
+							/>
+							<div class="dropdown">
+								<a
+									class="dropdown-toggle no-arrow"
+									href="#"
+									role="button"
+									data-toggle="dropdown"
+								>
+									<i class="ion-arrow-down-c"></i>
+								</a>
+								<div class="dropdown-menu dropdown-menu-right">
+									<div class="form-group row">
+										<label class="col-sm-12 col-md-2 col-form-label"
+											>De</label
+										>
+										<div class="col-sm-12 col-md-10">
+											<input
+												class="form-control form-control-sm form-control-line"
+												type="text"
+											/>
+										</div>
+									</div>
+									<div class="form-group row">
+										<label class="col-sm-12 col-md-2 col-form-label">Para</label>
+										<div class="col-sm-12 col-md-10">
+											<input
+												class="form-control form-control-sm form-control-line"
+												type="text"
+											/>
+										</div>
+									</div>
+									<div class="form-group row">
+										<label class="col-sm-12 col-md-2 col-form-label"
+											>Sujeito</label
+										>
+										<div class="col-sm-12 col-md-10">
+											<input
+												class="form-control form-control-sm form-control-line"
+												type="text"
+											/>
+										</div>
+									</div>
+									<div class="text-right">
+										<button class="btn btn-primary">Pesquisar</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+			<div class="header-right">
+				<div class="dashboard-setting user-notification">
+					<div class="dropdown">
+						<a
+							class="dropdown-toggle no-arrow"
+							href="javascript:;"
+							data-toggle="right-sidebar"
+						>
+							<i class="dw dw-settings2"></i>
+						</a>
+					</div>
+				</div>
+
+				<div class="user-info-dropdown">
+					<div class="dropdown">
+						<a
+							class="dropdown-toggle"
+							href="#"
+							role="button"
+							data-toggle="dropdown"
+						>
+							<span class="user-icon">
+								<img src="/w/1.png" alt="" />
+							</span>
+							<span class="user-name">Cliente</span>
+						</a>
+						<div
+							class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list"
+						>
+							<a class="dropdown-item" href="profile.html"
+								><i class="dw dw-user1"></i> Perfil</a
+							>
+							<a class="dropdown-item" href="profile.html"
+								><i class="dw dw-settings2"></i>Configurações</a
+							>
+							<a class="dropdown-item" href="faq.html"
+								><i class="dw dw-help"></i> Ajuda</a
+							>
+							<a class="dropdown-item" href="#" id="logout-link"
+								><i class="dw dw-logout"></i> Sair</a
+							>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="right-sidebar">
+			<div class="sidebar-title">
+				<h3 class="weight-600 font-16 text-blue">
+					Configuração de Layout
+					<span class="btn-block font-weight-400 font-12"
+						>Personalização</span
+					>
+				</h3>
+				<div class="close-sidebar" data-toggle="right-sidebar-close">
+					<i class="icon-copy ion-close-round"></i>
+				</div>
+			</div>
+			<div class="right-sidebar-body customscroll">
+				<div class="right-sidebar-body-content">
+					<h4 class="weight-600 font-18 pb-10">Fundo</h4>
+					<div class="sidebar-btn-group pb-30 mb-10">
+						<a
+							href="javascript:void(0);"
+							class="btn btn-outline-primary header-white active"
+							>Claro</a
+						>
+						<a
+							href="javascript:void(0);"
+							class="btn btn-outline-primary header-dark"
+							>Escuro</a
+						>
+					</div>
+
+					<h4 class="weight-600 font-18 pb-10">Menu Lateral</h4> <div class="sidebar-btn-group pb-30 mb-10">
+						<a
+							href="javascript:void(0);"
+							class="btn btn-outline-primary sidebar-light"
+							>Claro</a
+						>
+						<a
+							href="javascript:void(0);"
+							class="btn btn-outline-primary sidebar-dark active"
+							>Escuro</a
+						>
+					</div>
+
+					<h4 class="weight-600 font-18 pb-10">Icone Dropdown</h4> <div class="sidebar-radio-group pb-10 mb-10">
+						<div class="custom-control custom-radio custom-control-inline">
+							<input
+								type="radio"
+								id="sidebaricon-1"
+								name="menu-dropdown-icon"
+								class="custom-control-input"
+								value="icon-style-1"
+								checked=""
+							/>
+							<label class="custom-control-label" for="sidebaricon-1"
+								><i class="fa fa-angle-down"></i
+							></label>
+						</div>
+						<div class="custom-control custom-radio custom-control-inline">
+							<input
+								type="radio"
+								id="sidebaricon-2"
+								name="menu-dropdown-icon"
+								class="custom-control-input"
+								value="icon-style-2"
+							/>
+							<label class="custom-control-label" for="sidebaricon-2"
+								><i class="ion-plus-round"></i
+							></label>
+						</div>
+						<div class="custom-control custom-radio custom-control-inline">
+							<input
+								type="radio"
+								id="sidebariconlist-3"
+								name="menu-list-icon"
+								class="custom-control-input"
+								value="icon-list-style-3"
+							/>
+							<label class="custom-control-label" for="sidebariconlist-3"
+								><i class="fa fa-angle-double-right"></i
+							></label>
+						</div>
+					</div>
+
+					<h4 class="weight-600 font-18 pb-10">Icones do Menu</h4>
+					<div class="sidebar-radio-group pb-30 mb-10">
+						<div class="custom-control custom-radio custom-control-inline">
+							<input
+								type="radio"
+								id="sidebariconlist-1"
+								name="menu-list-icon"
+								class="custom-control-input"
+								value="icon-list-style-1"
+								checked=""
+							/>
+							<label class="custom-control-label" for="sidebariconlist-1"
+								><i class="ion-minus-round"></i
+							></label>
+						</div>
+						<div class="custom-control custom-radio custom-control-inline">
+							<input
+								type="radio"
+								id="sidebariconlist-2"
+								name="menu-list-icon"
+								class="custom-control-input"
+								value="icon-list-style-2"
+							/>
+							<label class="custom-control-label" for="sidebariconlist-2"
+								><i class="fa fa-circle-o" aria-hidden="true"></i
+							></label>
+						</div>
+						<div class="custom-control custom-radio custom-control-inline">
+							<input
+								type="radio"
+								id="sidebariconlist-3"
+								name="menu-list-icon"
+								class="custom-control-input"
+								value="icon-list-style-3"
+							/>
+							<label class="custom-control-label" for="sidebariconlist-3"
+								><i class="dw dw-check"></i
+							></label>
+						</div>
+						<div class="custom-control custom-radio custom-control-inline">
+							<input
+								type="radio"
+								id="sidebariconlist-4"
+								name="menu-list-icon"
+								class="custom-control-input"
+								value="icon-list-style-4"
+								checked=""
+							/>
+							<label class="custom-control-label" for="sidebariconlist-4"
+								><i class="icon-copy dw dw-next-2"></i
+							></label>
+						</div>
+						<div class="custom-control custom-radio custom-control-inline">
+							<input
+								type="radio"
+								id="sidebariconlist-5"
+								name="menu-list-icon"
+								class="custom-control-input"
+								value="icon-list-style-5"
+							/>
+							<label class="custom-control-label" for="sidebariconlist-5"
+								><i class="dw dw-fast-forward-1"></i
+							></label>
+						</div>
+						<div class="custom-control custom-radio custom-control-inline">
+							<input
+								type="radio"
+								id="sidebariconlist-6"
+								name="menu-list-icon"
+								class="custom-control-input"
+								value="icon-list-style-6"
+							/>
+							<label class="custom-control-label" for="sidebariconlist-6"
+								><i class="dw dw-next"></i
+							></label>
+						</div>
+					</div>
+
+					<div class="reset-options pt-30 text-center">
+						<button class="btn btn-danger" id="reset-settings">
+							Resetar Configurações
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="left-side-bar">
+			<div class="brand-logo">
+				<a href="indexx.html">
+					<img src="/Tela Inicial copy/w (1).png" alt="" class="dark-logo" />
+					<img
+						src="/Tela Inicial copy/w (1).png"
+						alt=""
+						class="light-logo"
+					/>
+				</a>
+				<div class="close-sidebar" data-toggle="left-sidebar-close">
+					<i class="ion-close-round"></i>
+				</div>
+			</div>
+			<div class="menu-block customscroll">
+				<div class="sidebar-menu">
+					<ul id="accordion-menu">
+						<li class="dropdown">
+							<a href="javascript:;" class="dropdown-toggle">
+								<span class="micon bi bi-house"></span
+								><span class="mtext">Inicio</span>
+							</a>
+							<ul class="submenu">
+								<li><a href="indexx.html">Dashboard</a></li>
+							</ul>
+						</li>
+						<li class="dropdown">
+							<a href="javascript:;" class="dropdown-toggle">
+								<span class="micon bi bi-textarea-resize"></span
+								><span class="mtext">Histórico</span>
+							</a>
+							<ul class="submenu">
+								<li><a href="/em breve/index.html">Histórico</a></li> <li><a href="/LANDING PAGE WYN/LANDING PAGE WYN/catalogo.html">Fazer Pedidos</a></li> <li><a href="/LANDING PAGE WYN/LANDING PAGE WYN/contratos.html">Meus Pedidos</a></li> </ul>
+						</li>
+						<li>
+							<a href="/Tela Cliente/serviços/dist/index.html" class="dropdown-toggle no-arrow">
+								<span class="micon bi-chat-right-dots"></span
+								><span class="mtext">Serviços</span> </a>
+						</li>
+
+						<li>
+							<a href="javascript:;" class="dropdown-toggle">
+								<span class="micon bi bi-file-pdf"></span
+								><span class="mtext">Documentação</span>
+							</a>
+							<ul class="submenu">
+								<li><a href="/Tela Inicial copy/Termos e Condições.docx">Termos e Condições</a></li>
+							</ul>
+						</li>
+						<li>
+
+					</ul>
+				</div>
+			</div>
+		</div>
+		<div class="mobile-menu-overlay"></div>
+		<div class="main-container">
+		  <div class="card-box pb-10">
+			<div class="h5 pd-20 mb-0">Meus Pedidos</div>
+			<div id="loading" style="text-align: center; display: none;">Carregando...</div>
+			<div id="feedback" style="text-align: center; color: red; display: none;"></div>
+
+            <div class="row pd-20">
+			  <div class="col-md-4 col-sm-12 mb-10">
+			    <input type="text" class="form-control" id="filtro-nome" placeholder="Filtrar por nome do Cliente" />
+              </div>
+               <div class="col-md-4 col-sm-12 mb-10">
+                   <select class="form-control" id="filtro-status">
+                       <option value="">Filtrar por Status</option>
+                       </select>
+               </div>
+               <div class="col-md-4 col-sm-12 mb-10">
+                   <select class="form-control" id="filtro-tipo-servico">
+                       <option value="">Filtrar por Tipo de Serviço</option>
+                        </select>
+               </div>
+            </div>
+            <table class="data-table table nowrap">
+			  <thead>
+				<tr>
+				  <th class="table-plus">Cliente</th> <th>Tipo de Serviço</th> <th>Endereço</th>
+				  <th>Urgente</th>
+				  <th>Data</th>
+				  <th>Notas Adicionais</th> <th>Status</th>
+				  <th>Prestador</th>
+				  <th class="datatable-nosort">Ações</th>
+				</tr>
+			  </thead>
+			  <tbody id="servicos-tabela"></tbody>
+			</table>
+		  </div>
+
+          <div id="detalhes-servico-section" class="card-box pd-20 mb-30" style="display: none;">
+              <h4 class="h4 text-blue mb-20">Detalhes do Pedido</h4>
+              <div id="detalhes-servico-content">
+                  </div>
+              <button type="button" class="btn btn-secondary mt-2" id="close-detalhes">Fechar</button>
+          </div>
+
+          <div id="avaliacao-section" class="card-box pd-20 mb-30" style="display: none;">
+              <h4 class="h4 text-blue mb-20">Avaliar Serviço</h4>
+              <p id="avaliacao-service-info"></p> <form id="formAvaliacao">
+                  <input type="hidden" id="service-id-avaliacao" name="serviceId"> <div class="form-group">
+                      <label for="rating">Nota (1 a 5)</label>
+                      <select class="form-control" id="rating" name="rating" required>
+                          <option value="">Selecione a nota</option>
+                          <option value="1">1</option>
+                          <option value="2">2</option>
+                          <option value="3">3</option>
+                          <option value="4">4</option>
+                          <option value="5">5</option>
+                      </select>
+                  </div>
+
+                  <div class="form-group">
+                      <label for="comment">Comentário</label>
+                      <textarea class="form-control" id="comment" name="comment" rows="3" required></textarea>
+                  </div>
+
+                  <button type="submit" class="btn btn-primary">Enviar Avaliação</button>
+                  <button type="button" class="btn btn-secondary" id="cancel-avaliacao">Cancelar</button>
+              </form>
+          </div>
+
+
+		  <div class="footer-wrap pd-20 mb-20 card-box">
+			Plataforma WYN-TECH
+		  </div>
+		</div>
+
+		<script src="vendors/scripts/core.js"></script>
+		<script src="vendors/scripts/script.min.js"></script>
+		<script src="vendors/scripts/process.js"></script>
+		<script src="vendors/scripts/layout-settings.js"></script>
+		<script src="src/plugins/datatables/js/jquery.dataTables.min.js"></script>
+		<script src="src/plugins/datatables/js/dataTables.bootstrap4.min.js"></script>
+		<script src="src/plugins/datatables/js/dataTables.responsive.min.js"></script>
+		<script src="src/plugins/datatables/js/responsive.bootstrap4.min.js"></script>
+
+		<noscript>
+			<iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NXZMQSS" height="0" width="0" style="display: none; visibility: hidden"></iframe>
+		</noscript>
+
+		<script>
+			let usuarioLogado = null; // Variável para armazenar os dados do usuário logado
+            let allPedidos = []; // Array para armazenar todos os pedidos carregados
+
+
+			async function carregarPerfilUsuario() {
+				const token = localStorage.getItem('token');
+				const usuarioCache = localStorage.getItem('usuario'); // Chave correta para usuário
+
+				if (!token || !usuarioCache) {
+					console.warn("Usuário não autenticado. Redirecionando para login.");
+					window.location.href = "login.html"; // Redirecionar para login do usuário
+					return;
+				}
+
+				try {
+					 // Parse do cache para obter o ID e nome rapidamente
+					 usuarioLogado = JSON.parse(usuarioCache);
+					 const nomeSpan = document.querySelector(".user-name");
+					 if (nomeSpan && usuarioLogado?.nome) {
+						 nomeSpan.textContent = usuarioLogado.nome;
+					 }
+
+
+					// Chamada ao backend para validar o token e obter dados completos
+					 // Usando a rota /perfil que agora verifica o tipo no token
+					 const res = await fetch('http://localhost:3000/perfil', {
+						 headers: { 'Authorization': 'Bearer ' + token }
+					 });
+
+					 const resClone = res.clone(); // Clonar para ler o body se der erro de JSON
+
+					 if (!res.ok) {
+						 if (res.status === 401 || res.status === 403) {
+							 console.error("Token inválido ou expirado. Redirecionando para login.");
+							 alert("Sua sessão expirou. Por favor, faça login novamente.");
+							 window.location.href = "login.html";
+							 return;
+						 }
+						 throw new Error(`Erro HTTP: ${res.status}`);
+					 }
+
+					let data = {};
+					 try {
+						 data = await res.json();
+					 } catch(jsonError) {
+						 console.error("Erro ao parsear JSON do perfil:", await resClone.text());
+						 throw new Error("Resposta de perfil inválida.");
+					 }
+
+
+					// Verifique se o perfil retornado é de um usuário cliente
+					 if (data.tipo !== 'usuario' || !data.usuario?._id) {
+						  console.error("Token válido, mas não corresponde a um usuário cliente.");
+						  alert("Acesso negado para este tipo de usuário.");
+						  // Redireciona para o dashboard do prestador se for um prestador
+						  window.location.href = "index.html"; // Assumindo que index.html é o dashboard do prestador
+						  return;
+					 }
+
+					 // Atualiza a variável global com os dados completos do usuário
+					 usuarioLogado = data.usuario;
+
+					// Atualiza o nome na interface (se a chamada backend for bem sucedida)
+					if (usuarioLogado?.nome && nomeSpan) {
+						nomeSpan.textContent = usuarioLogado.nome;
+					}
+
+					console.log("Perfil do usuário carregado:", usuarioLogado);
+
+                    // Agora que o perfil está carregado, carregar os pedidos
+                    carregarPedidos();
+
+
+				} catch (err) {
+					console.error('Erro ao carregar perfil do usuário:', err);
+					 // Se já tentou parsear do cache e deu erro, alertar. Senão, talvez o erro já tenha sido alertado no redirect.
+					 if (usuarioLogado) { // Se usuarioLogado foi populado do cache mas a chamada falhou
+						 alert('Erro ao validar sessão do usuário. Pode haver problemas na conexão.');
+					 } else { // Se nem o cache existia ou deu erro no parse
+						 alert('Ocorreu um erro ao carregar informações do usuário.');
+					 }
+					// Não redireciona aqui se o redirect já aconteceu acima
+				}
+			}
+
+			// Função de Logout
+			document.getElementById('logout-link').addEventListener('click', (e) => {
+				 e.preventDefault();
+				 localStorage.removeItem('token');
+				 localStorage.removeItem('usuario'); // Limpa também o cache do usuário
+				 window.location.href = 'login.html'; // Redireciona para a página de login do usuário
+			});
+
+
+			// Chamar carregarPerfilUsuario ao carregar a página
+			document.addEventListener("DOMContentLoaded", () => {
+				 carregarPerfilUsuario();
+				 // REMOVIDO: carregarPedidos() é chamado dentro de carregarPerfilUsuario agora
+				 // setTimeout(carregarPedidos, 150); // Ajuste o delay se necessário
+			});
+		</script>
+
+
+		<script>
+			// Mapeamento de status do backend para texto amigável
+			const statusMapCliente = { // Mapeamento específico para a visão do cliente
+				 'aguardando_aceite_prestador': 'Aguardando Prestador', // Corrigido para o status do backend
+				 'aguardando_pagamento_cliente': 'Aguardando Pagamento', // Corrigido para o status do backend
+				 'aguardando_confirmacao_pagamento': 'Aguardando Confirmação', // Adicionado status do backend
+				 'aceito_pelo_prestador': 'Em Andamento', // Corrigido para o status do backend
+				 'recusado_pelo_prestador': 'Recusado',
+				 'concluido_pelo_prestador': 'Concluído',
+				 'avaliado_pelo_cliente': 'Avaliado',
+				 'cancelado': 'Cancelado'
+			};
+
+            // Mapeamento inverso para obter a chave do status a partir do texto amigável
+            const statusMapClienteInverse = Object.keys(statusMapCliente).reduce((acc, key) => {
+                acc[statusMapCliente[key]] = key;
+                return acc;
+            }, {});
+
+
+			// Função para carregar os pedidos feitos pelo usuário logado
+			async function carregarPedidos() {
+			  const loading = document.getElementById("loading");
+			  const tabela = document.getElementById("servicos-tabela");
+			  const feedback = document.getElementById("feedback");
+			  const token = localStorage.getItem("token");
+
+			  loading.style.display = "block";
+			  feedback.style.display = "none";
+			  tabela.innerHTML = ""; // Limpa a tabela antes de carregar
+
+			  if (!token) {
+				feedback.textContent = "Usuário não autenticado. Faça login novamente.";
+				feedback.style.display = "block";
+				loading.style.display = "none";
+				return;
+			  }
+
+			  try {
+				const response = await fetch("http://localhost:3000/meus-servicos", {
+				  headers: {
+					'Authorization': `Bearer ${token}` // Incluir o token
+				  }
+				});
+
+				if (!response.ok) {
+					 if (response.status === 401 || response.status === 403) {
+						  alert("Sua sessão expirou ou você não tem permissão. Faça login novamente.");
+						  window.location.href = "login.html"; // Redireciona para login do usuário
+						  return;
+					 }
+					throw new Error(`Erro HTTP: ${response.status}`);
+				}
+
+				const servicos = await response.json();
+                allPedidos = servicos; // Armazena todos os pedidos carregados
+
+				if (servicos.length === 0) {
+				  tabela.innerHTML = '<tr><td colspan="9">Nenhum pedido encontrado.</td></tr>'; // Colspan ajustado para 9 colunas
+                  // Preenche os filtros mesmo que não haja pedidos para que o usuário possa tentar outra busca
+                  populateFilters(servicos);
+				  return;
+				}
+
+                // Popula os filtros com base nos dados carregados
+                populateFilters(servicos);
+                // Exibe os pedidos na tabela (sem filtro inicial, a menos que já haja algo nos campos)
+                displayPedidos(servicos);
+
+
+			  } catch (error) {
+				console.error("Erro ao carregar seus pedidos:", error); // Mensagem ajustada
+				feedback.textContent = "Erro ao carregar seus pedidos. Verifique a conexão ou faça login novamente.";
+				feedback.style.display = "block";
+			  } finally {
+				loading.style.display = "none";
+			  }
+			}
+
+            // Função para popular os dropdowns de filtro (Status e Tipo de Serviço)
+            function populateFilters(servicos) {
+                 const statusFilterSelect = document.getElementById('filtro-status');
+                 const tipoServicoFilterSelect = document.getElementById('filtro-tipo-servico');
+
+                 // Limpa as opções atuais (exceto a primeira "Filtrar por...")
+                 statusFilterSelect.innerHTML = '<option value="">Filtrar por Status</option>';
+                 tipoServicoFilterSelect.innerHTML = '<option value="">Filtrar por Tipo de Serviço</option>';
+
+                 const uniqueStatuses = new Set();
+                 const uniqueTiposServico = new Set();
+
+                 servicos.forEach(servico => {
+                     // Adiciona o status mapeado (texto amigável)
+                     if (servico.status) {
+                          uniqueStatuses.add(statusMapCliente[servico.status] || servico.status);
+                     }
+                     if (servico.tipo_servico) {
+                          uniqueTiposServico.add(servico.tipo_servico);
+                     }
+                 });
+
+                 // Adiciona as opções de status
+                 uniqueStatuses.forEach(status => {
+                     const option = document.createElement('option');
+                     option.value = status; // O valor é o texto amigável
+                     option.textContent = status;
+                     statusFilterSelect.appendChild(option);
+                 });
+
+                 // Adiciona as opções de tipo de serviço
+                 uniqueTiposServico.forEach(tipo => {
+                     const option = document.createElement('option');
+                     option.value = tipo;
+                     option.textContent = tipo;
+                     tipoServicoFilterSelect.appendChild(option);
+                 });
+            }
+
+
+            // Função para exibir os pedidos na tabela com base em uma lista filtrada
+            function displayPedidos(servicosToDisplay) {
+                 const tabela = document.getElementById("servicos-tabela");
+                 tabela.innerHTML = ""; // Limpa a tabela
+
+                 if (servicosToDisplay.length === 0) {
+                      tabela.innerHTML = '<tr><td colspan="9">Nenhum pedido encontrado com os filtros aplicados.</td></tr>';
+                      return;
+                 }
+
+                 servicosToDisplay.forEach((servico) => {
+                      const row = document.createElement("tr");
+
+                      let actionsHtml = '';
+
+                      // --- Botão Pagar ---
+                      if (servico.status === 'aguardando_pagamento_cliente' && servico.payment_link) {
+                           actionsHtml += `<a href="pagamento-pendente.html?serviceId=${servico._id}" class="btn btn-sm btn-success" style="margin-right: 5px;">Pagar</a>`; // Adicionado margin-right
+                      }
+
+                      if (servico.status === 'aguardando_aceite_prestador') {
+                          actionsHtml += `<a href="#" data-id="${servico._id}" class="cancelar-servico btn btn-sm btn-warning" style="margin-right: 5px;">Cancelar</a>`; // Adicionado margin-right
+                      }
+                      // Cliente pode avaliar se o serviço foi concluído pelo prestador E AINDA NÃO FOI AVALIADO
+                      if (servico.status === 'concluido_pelo_prestador' && !servico.avaliacao) { // Verifica se NÃO há avaliação
+                          actionsHtml += `<a href="#" data-id="${servico._id}" data-servico="${servico.tipo_servico}" class="avaliar-servico btn btn-sm btn-info" style="margin-right: 5px;">Avaliar</a>`; // Adicionado margin-right
+                      }
+                      // Cliente pode ver detalhes ou comprovantes se o serviço foi concluído ou avaliado
+                      // Adicionado status 'aguardando_pagamento_cliente' e 'aceito_pelo_prestador' para ver detalhes mais cedo
+                      if (['aguardando_pagamento_cliente', 'aguardando_confirmacao_pagamento', 'aceito_pelo_prestador', 'concluido_pelo_prestador', 'avaliado_pelo_cliente'].includes(servico.status)) {
+                          actionsHtml += `<a href="#" data-id="${servico._id}" class="ver-detalhes btn btn-sm btn-secondary" style="margin-right: 5px;">Ver Detalhes</a>`; // Adicionado margin-right
+                      }
+                      // Cliente pode deletar se o status for aguardando_aceite_prestador, recusado ou cancelado
+                      if (['aguardando_aceite_prestador', 'recusado_pelo_prestador', 'cancelado'].includes(servico.status)) {
+                          actionsHtml += `<a href="#" data-id="${servico._id}" class="deletar-servico btn btn-sm btn-danger" style="margin-right: 5px;">Deletar</a>`; // Adicionado margin-right
+                      }
+
+                      // --- Botão de Chat ---
+                      if (servico.prestador_id && ['aguardando_pagamento_cliente', 'aguardando_confirmacao_pagamento', 'aceito_pelo_prestador', 'concluido_pelo_prestador', 'avaliado_pelo_cliente'].includes(servico.status)) {
+                           actionsHtml += `<a href="chat.html?serviceId=${servico._id}" class="btn btn-sm btn-primary" style="margin-right: 5px;">Chat</a>`; // Adicionado margin-right
+                      }
+
+
+                      row.innerHTML = `
+                        <td class="table-plus">
+                          <div class="name-avatar d-flex align-items-center">
+                            <div class="avatar mr-2 flex-shrink-0">
+                              <img src="vendors/images/photo4.jpg" class="border-radius-100 shadow" width="40" height="40" alt="" />
+                            </div>
+                            <div class="txt">
+                              <div class="weight-600">${servico.nome_cliente || "Cliente"}</div> </div>
+                          </div>
+                        </td>
+                        <td>${servico.tipo_servico || "N/A"}</td>
+                        <td>${servico.endereco_servico || "Não informado"}</td>
+                        <td>${servico.urgente ? "Sim" : "Não"}</td>
+                        <td>${new Date(servico.data_solicitacao).toLocaleDateString()}</td>
+                        <td>${servico.notas_adicionais || "Nenhuma"}</td>
+                        <td>${statusMapCliente[servico.status] || servico.status}</td>
+                        <td>${servico.prestador ? servico.prestador.nome : 'Aguardando Prestador'}</td>
+                        <td>
+                           ${actionsHtml} </td>
+                      `;
+                      tabela.appendChild(row);
+                 });
+            }
+
+
+            // Função para aplicar os filtros
+            function applyFilters() {
+                 const nomeFilter = document.getElementById('filtro-nome').value.toLowerCase();
+                 const statusFilter = document.getElementById('filtro-status').value; // Texto amigável
+                 const tipoServicoFilter = document.getElementById('filtro-tipo-servico').value;
+
+                 const filteredPedidos = allPedidos.filter(pedido => {
+                      const matchNome = pedido.nome_cliente ? pedido.nome_cliente.toLowerCase().includes(nomeFilter) : true; // Filtra por nome
+                      const matchStatus = statusFilter === "" || (statusMapCliente[pedido.status] || pedido.status) === statusFilter; // Filtra por status (texto amigável)
+                      const matchTipoServico = tipoServicoFilter === "" || pedido.tipo_servico === tipoServicoFilter; // Filtra por tipo
+
+                      return matchNome && matchStatus && matchTipoServico;
+                 });
+
+                 displayPedidos(filteredPedidos); // Exibe os resultados filtrados
+            }
+
+
+			// Listener para os inputs de filtro
+			document.getElementById("filtro-nome").addEventListener("input", applyFilters);
+            document.getElementById("filtro-status").addEventListener("change", applyFilters); // Usa 'change' para selects
+            document.getElementById("filtro-tipo-servico").addEventListener("change", applyFilters); // Usa 'change' para selects
+
+
+			// Listener para os cliques nos botões de ação do CLIENTE (usando delegação de evento)
+			document.addEventListener("click", async (event) => {
+				const target = event.target;
+				const serviceId = target.dataset.id;
+				const token = localStorage.getItem("token");
+
+				if (!serviceId || !token) {
+					 console.warn("Ação de serviço clicada sem ID de serviço ou token.", { serviceId, hasToken: !!token });
+					 return;
+				}
+
+				// Ação de Cancelar (Cliente)
+				if (target.classList.contains("cancelar-servico")) {
+					event.preventDefault();
+					if (!confirm("Tem certeza que deseja cancelar este serviço?")) return;
+
+					try {
+						// Usando a rota genérica de status por enquanto, mas idealmente seria uma rota específica no backend
+						const response = await fetch(`http://localhost:3000/atualizar-status-servico/${serviceId}`, { // Esta rota não existe no backend atual, precisa ser implementada
+							method: "POST", // Ou PUT
+							headers: {
+								 "Content-Type": "application/json",
+								 'Authorization': `Bearer ${token}`
+							},
+							body: JSON.stringify({ status: "cancelado" }) // Enviar status cancelado
+						});
+
+						const result = await response.json();
+
+						if (!response.ok) {
+							 throw new Error(result.message || "Erro ao cancelar serviço.");
+						}
+
+						alert("Serviço cancelado com sucesso!");
+						carregarPedidos(); // Recarrega a lista de pedidos
+					} catch (error) {
+						console.error("Erro ao cancelar serviço:", error);
+						alert(error.message || "Erro ao cancelar serviço.");
+					}
+				}
+
+				// Ação de Avaliar (Abre a seção de avaliação)
+				if (target.classList.contains("avaliar-servico")) {
+					event.preventDefault();
+                    const tipoServico = target.dataset.servico;
+
+                    // Preenche a seção de avaliação com as informações do serviço
+                    document.getElementById("avaliacao-service-info").innerText = `Avaliar Serviço: ${tipoServico}`;
+                    document.getElementById("service-id-avaliacao").value = serviceId; // Define o ID do serviço no campo oculto
+
+                    // Oculta a seção de detalhes se estiver visível
+                    document.getElementById("detalhes-servico-section").style.display = "none";
+
+                    // Mostra a seção de avaliação
+                    document.getElementById("avaliacao-section").style.display = "block";
+
+                    // Opcional: Rolar a página para a seção de avaliação
+                    document.getElementById("avaliacao-section").scrollIntoView({ behavior: 'smooth' });
+				}
+
+				// Ação de Ver Detalhes (Abre a seção de detalhes)
+				if (target.classList.contains("ver-detalhes")) {
+					event.preventDefault();
+
+                    // Oculta a seção de avaliação se estiver visível
+                    document.getElementById("avaliacao-section").style.display = "none";
+
+                    // Mostra a seção de detalhes e carrega os dados
+                    document.getElementById("detalhes-servico-section").style.display = "block";
+                    carregarDetalhesServico(serviceId, token); // Chama a função para carregar os detalhes
+
+                    // Opcional: Rolar a página para a seção de detalhes
+                    document.getElementById("detalhes-servico-section").scrollIntoView({ behavior: 'smooth' });
+				}
+
+				// Ação de Deletar (Cliente)
+				 if (target.classList.contains("deletar-servico")) {
+					 event.preventDefault();
+					 const botaoDeletar = target.closest(".deletar-servico");
+					 const id = botaoDeletar.dataset.id;
+
+					 if (!id) {
+						 alert("ID inválido ou não encontrado.");
+						 return;
+					 }
+
+					 if (!confirm("Você tem certeza que deseja deletar esta solicitação? Esta ação não pode ser desfeita.")) return;
+
+					 try {
+						 const response = await fetch(`http://localhost:3000/deletar-servico/${id}`, {
+							 method: "DELETE",
+							 headers: {
+								  "Content-Type": "application/json",
+								  'Authorization': `Bearer ${token}`
+							 },
+						 });
+
+						 const result = await response.json();
+
+						 if (!response.ok) {
+							 throw new Error(result.message || `Erro HTTP: ${response.status}`);
+						 }
+
+						 alert(result.message || "Solicitação deletada com sucesso!");
+						 carregarPedidos(); // Atualiza a interface
+					 } catch (error) {
+						 console.error("Erro ao deletar solicitação:", error);
+						 alert(error.message || "Não foi possível deletar a solicitação. Verifique sua conexão ou tente novamente.");
+					 }
+				 }
+
+			});
+
+            // Listener para o botão Fechar na seção de detalhes
+            document.getElementById("close-detalhes").addEventListener("click", () => {
+                 document.getElementById("detalhes-servico-section").style.display = "none";
+                 document.getElementById("detalhes-servico-content").innerHTML = ""; // Limpa o conteúdo
+            });
+
+            // Listener para o botão Cancelar na seção de avaliação
+            document.getElementById("cancel-avaliacao").addEventListener("click", () => {
+                 document.getElementById("avaliacao-section").style.display = "none";
+                 document.getElementById("formAvaliacao").reset(); // Limpa o formulário
+                 document.getElementById("service-id-avaliacao").value = ""; // Limpa o ID
+            });
+
+
+            // Listener para o envio do formulário de avaliação
+            document.getElementById("formAvaliacao").addEventListener("submit", async (event) => {
+                event.preventDefault(); // Previne o envio padrão do formulário
+
+                const serviceId = document.getElementById("service-id-avaliacao").value;
+                const rating = document.getElementById("rating").value; // Pega o valor do select
+                const comment = document.getElementById("comment").value;
+                const token = localStorage.getItem("token");
+
+                // *** VERIFICAÇÃO ADICIONADA AQUI ***
+                if (!serviceId || rating === "" || !comment || !token) { // Verifica se rating é string vazia
+                    alert("Por favor, selecione uma nota e preencha o comentário."); // Mensagem mais específica
+                    return; // Interrompe o envio se a nota for vazia ou outros campos estiverem faltando
+                }
+                // *** FIM DA VERIFICAÇÃO ***
+
+
+                // Desabilitar o botão de envio enquanto a requisição está em andamento
+                const submitButton = event.target.querySelector('button[type="submit"]');
+                submitButton.disabled = true;
+                submitButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Enviando...'; // Feedback com spinner
+
+
+                try {
+                    // *** CHAMANDO O ENDPOINT PARA ENVIAR A AVALIAÇÃO ***
+                    // Endpoint implementado no backend: POST /avaliar-servico/:id
+                    const response = await fetch(`http://localhost:3000/avaliar-servico/${serviceId}`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            'Authorization': `Bearer ${token}` // Incluir o token
+                        },
+                        body: JSON.stringify({ nota: parseInt(rating), comentario: comment }) // Envia a nota (como número) e o comentário
+                    });
+
+                    // Verifica se a resposta não foi OK antes de tentar parsear JSON
+                    if (!response.ok) {
+                         // Tenta ler a resposta como texto para depuração antes de lançar o erro
+                         const errorText = await response.text();
+                         console.error("Erro HTTP ao enviar avaliação:", response.status, errorText);
+                         // Tenta parsear o texto como JSON para ver a mensagem de erro do backend
+                         try {
+                              const errorJson = JSON.parse(errorText);
+                              throw new Error(errorJson.message || errorText || `Erro HTTP: ${response.status}`);
+                         } catch (parseError) {
+                              // Se não for JSON, lança o texto ou o status
+                              throw new Error(errorText || `Erro HTTP: ${response.status}`);
+                         }
+                    }
+
+                    const result = await response.json(); // Leia a resposta JSON (agora deve ser JSON em caso de sucesso/erro do backend)
+
+
+                    alert(result.message || "Avaliação enviada com sucesso!");
+
+                    // Oculta a seção de avaliação e limpa o formulário
+                    document.getElementById("avaliacao-section").style.display = "none";
+                    document.getElementById("formAvaliacao").reset();
+                    document.getElementById("service-id-avaliacao").value = "";
+
+                    // Recarrega a lista de pedidos para atualizar o status
+                    carregarPedidos();
+
+                } catch (error) {
+                    console.error("Erro ao enviar avaliação:", error);
+                    // Exiba a mensagem de erro do backend se disponível, caso contrário, uma genérica
+                    alert("Erro ao enviar avaliação: " + (error.message || "Verifique sua conexão ou tente novamente."));
+                } finally {
+                     // Reabilitar o botão de envio
+                     submitButton.disabled = false;
+                     submitButton.textContent = "Enviar Avaliação";
+                }
+            });
+
+
+            // Função para carregar os detalhes de um serviço específico
+            async function carregarDetalhesServico(serviceId, token) {
+                 const detalhesContent = document.getElementById("detalhes-servico-content");
+                 detalhesContent.innerHTML = '<p>Carregando detalhes...</p>'; // Mensagem de loading
+
+                 try {
+                     // *** CHAMANDO O ENDPOINT PARA BUSCAR DETALHES DE UM SERVIÇO ***
+                     // Endpoint implementado no backend: GET /servico/:id
+                     const response = await fetch(`http://localhost:3000/servico/${serviceId}`, {
+                         headers: {
+                             'Authorization': `Bearer ${token}` // Incluir o token
+                         }
+                     });
+
+                     // Verifica se a resposta não foi OK antes de tentar parsear JSON
+                     if (!response.ok) {
+                          // Tenta ler a resposta como texto para depuração antes de lançar o erro
+                          const errorText = await response.text();
+                          console.error("Erro HTTP ao buscar detalhes:", response.status, errorText);
+                           try {
+                              const errorJson = JSON.parse(errorText);
+                              throw new Error(errorJson.message || errorText || `Erro HTTP: ${response.status}`);
+                         } catch (parseError) {
+                              throw new Error(errorText || `Erro HTTP: ${response.status}`);
+                         }
+                     }
+
+
+                     const servico = await response.json(); // O backend deve retornar os detalhes do serviço, incluindo comprovantes
+
+                     console.log("Detalhes do serviço carregados:", servico); // Log para ver os dados
+
+                     // Preencher a seção de detalhes com as informações do serviço
+                     let detalhesHtml = `
+                         <p><strong>Tipo de Serviço:</strong> ${servico.tipo_servico || 'N/A'}</p>
+                         <p><strong>Endereço:</strong> ${servico.endereco_servico || 'Não informado'}</p>
+                         <p><strong>Urgente:</strong> ${servico.urgente ? 'Sim' : 'Não'}</p>
+                         <p><strong>Data da Solicitação:</strong> ${new Date(servico.data_solicitacao).toLocaleDateString()}</p>
+                         <p><strong>Notas Adicionais:</strong> ${servico.notas_adicionais || 'Nenhuma'}</p>
+                         <p><strong>Status:</strong> ${statusMapCliente[servico.status] || servico.status}</p>
+                         <p><strong>Prestador:</strong> ${servico.prestador ? servico.prestador.nome : 'Aguardando Prestador'}</p>
+                         `;
+
+                     // --- NOVO: Exibir avaliação se existir ---
+                     if (servico.avaliacao && servico.avaliacao.nota !== undefined && servico.avaliacao.comentario !== undefined) {
+                         detalhesHtml += `<div class="card-box pd-20 mt-20">
+                                              <h5>Sua Avaliação:</h5>
+                                              <p><strong>Nota:</strong> ${servico.avaliacao.nota}/5</p>
+                                              <p><strong>Comentário:</strong> ${servico.avaliacao.comentario || 'Nenhum comentário.'}</p>
+                                          </div>`;
+                     }
+                     // --- FIM NOVO: Exibir avaliação ---
+
+
+                     // Exibir comprovantes (anexos) se existirem
+                     if (servico.comprovantes && servico.comprovantes.length > 0) {
+                         detalhesHtml += `<div class="attachment-preview"><h5>Comprovantes Anexados:</h5>`;
+                         servico.comprovantes.forEach(comprovante => {
+                             // Assumindo que 'comprovante' é um objeto com 'url' e talvez 'filename' ou 'mimetype'
+                             if (comprovante.url) {
+                                 const fileExtension = comprovante.url.split('.').pop().toLowerCase();
+                                 const isImage = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].includes(fileExtension); // Adicionado mais tipos de imagem
+                                 const isPdf = fileExtension === 'pdf';
+
+                                 detalhesHtml += `<div class="attachment-item">`;
+                                 if (isImage) {
+                                     // Pré-visualização para imagens
+                                     detalhesHtml += `<img src="${comprovante.url}" alt="Comprovante" style="max-width: 200px; height: auto; cursor: pointer;" onclick="window.open('${comprovante.url}', '_blank');">`; // Adicionado onclick para abrir em nova aba
+                                 } else if (isPdf) {
+                                     // Link para abrir PDF em nova aba
+                                     detalhesHtml += `<p><a href="${comprovante.url}" target="_blank">Visualizar PDF</a></p>`;
+                                 } else {
+                                     // Link para download para outros tipos de arquivo
+                                     detalhesHtml += `<p><a href="${comprovante.url}" target="_blank">Baixar Arquivo (${comprovante.filename || 'Anexo'})</a></p>`;
+                                 }
+                                  // Opcional: Mostrar nome do arquivo se disponível
+                                  if (comprovante.filename) {
+                                       detalhesHtml += `<p>Nome do arquivo: ${comprovante.filename}</p>`;
+                                  }
+                                 detalhesHtml += `</div>`; // Fecha attachment-item
+                             }
+                         });
+                         detalhesHtml += `</div>`; // Fecha attachment-preview
+                     } else {
+                          detalhesHtml += `<p>Nenhum comprovante anexado pelo prestador.</p>`;
+                     }
+
+                     // --- Exibir link de pagamento se o status for 'aguardando_pagamento_cliente' ---
+                     if (servico.status === 'aguardando_pagamento_cliente' && servico.payment_link) {
+                         detalhesHtml += `<p><strong>Link para Pagamento:</strong> <a href="${servico.payment_link}" target="_blank" class="btn btn-success btn-sm ml-2">Pagar Agora</a></p>`;
+                     }
+                     // --- FIM Exibir link de pagamento ---
+
+
+                     detalhesContent.innerHTML = detalhesHtml;
+
+                 } catch (error) {
+                     console.error("Erro ao carregar detalhes do serviço:", error);
+                     detalhesContent.innerHTML = `<p style="color: red;">Erro ao carregar detalhes: ${error.message || 'Verifique a conexão.'}</p>`;
+                 }
+            }
+
+
+		  </script>
+		</div>
+
+
+		  <script src="vendors/scripts/core.js"></script>
+		  <script src="vendors/scripts/script.min.js"></script>
+		  <script src="vendors/scripts/process.js"></script>
+		  <script src="vendors/scripts/layout-settings.js"></script>
+		  <script src="src/plugins/datatables/js/jquery.dataTables.min.js"></script>
+		  <script src="src/plugins/datatables/js/dataTables.bootstrap4.min.js"></script>
+		  <script src="src/plugins/datatables/js/dataTables.responsive.min.js"></script>
+		  <script src="src/plugins/datatables/js/responsive.bootstrap4.min.js"></script>
+
+		  <noscript>
+			<iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NXZMQSS" height="0" width="0" style="display: none; visibility: hidden"></iframe>
+		  </noscript>
+
+
+		  </body>
+
+</html>

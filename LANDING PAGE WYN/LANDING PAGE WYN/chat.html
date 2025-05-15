@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>WYN - Chat do Serviço</title>
+
+    <link
+        rel="apple-touch-icon"
+        sizes="180x180"
+        href="/w/1.png"
+    />
+    <link
+        rel="icon"
+        type="image/png"
+        sizes="32x32"
+        href="/w/1.png"
+    />
+    <link
+        rel="icon"
+        type="image/png"
+        sizes="16x16"
+        href="/w/1.png"
+    />
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1"
+    />
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    />
+    <link rel="stylesheet" type="text/css" href="vendors/styles/core.css" />
+    <link
+        rel="stylesheet"
+        type="text/css"
+        href="vendors/styles/icon-font.min.css"
+    />
+    <link rel="stylesheet" type="text/css" href="vendors/styles/style.css" />
+
+    <style>
+        .chat-container {
+            max-width: 800px;
+            margin: 20px auto;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 150px); /* Ajuste a altura conforme necessário */
+        }
+
+        .chat-header {
+            background-color: #007bff;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 1.2em;
+            border-bottom: 1px solid #0056b3;
+        }
+
+        .chat-messages {
+            flex-grow: 1;
+            padding: 15px;
+            overflow-y: auto;
+            background-color: #f8f9fa;
+        }
+
+        .message {
+            margin-bottom: 10px;
+            padding: 8px 12px;
+            border-radius: 5px;
+            max-width: 70%;
+            word-wrap: break-word;
+        }
+
+        .message.sent {
+            background-color: #dcf8c6; /* Cor para mensagens enviadas (verde claro) */
+            margin-left: auto;
+        }
+
+        .message.received {
+            background-color: #ffffff; /* Cor para mensagens recebidas (branco) */
+            margin-right: auto;
+            border: 1px solid #e9e9eb;
+        }
+
+        .message strong {
+            display: block;
+            font-size: 0.9em;
+            margin-bottom: 3px;
+        }
+
+        .message span {
+            font-size: 0.8em;
+            color: #6c757d;
+            display: block;
+            text-align: right;
+            margin-top: 5px;
+        }
+
+        .chat-input {
+            padding: 15px;
+            border-top: 1px solid #e0e0e0;
+            background-color: #ffffff;
+            display: flex;
+        }
+
+        .chat-input input[type="text"] {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            margin-right: 10px;
+            font-size: 1em;
+        }
+
+        .chat-input button {
+            padding: 10px 20px;
+            background-color: #28a745; /* Cor para o botão de enviar (verde) */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+
+        .chat-input button:hover {
+            background-color: #218838;
+        }
+
+        #loading-messages {
+            text-align: center;
+            padding: 20px;
+        }
+    </style>
+
+    <script>
+        (function (w, d, s, l, i) {
+            w[l] = w[l] || [];
+            w[l].push({ "gtm.start": new Date().getTime(), event: "gtm.js" });
+            var f = d.getElementsByTagName(s)[0],
+                j = d.createElement(s),
+                dl = l != "dataLayer" ? "&l=" + l : "";
+            j.async = true;
+            j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
+            f.parentNode.insertBefore(j, f);
+        })(window, document, "script", "dataLayer", "GTM-NXZMQSS");
+    </script>
+    </head>
+<body>
+    <div class="pre-loader">
+        <div class="pre-loader-box">
+            <div class="loader-logo">
+                <img src="/Tela Inicial copy/w.png" alt="" />
+            </div>
+            <div class="loader-progress" id="progress_div">
+                <div class="bar" id="bar1"></div>
+            </div>
+            <div class="percent" id="percent1">0%</div>
+            <div class="loading-text">Carregando...</div>
+        </div>
+    </div>
+
+    <div class="header">
+        <div class="header-left">
+            <div class="menu-icon bi bi-list"></div>
+            <div
+                class="search-toggle-icon bi bi-search"
+                data-toggle="header_search"
+            ></div>
+            <div class="header-search">
+                <form>
+                    <div class="form-group mb-0">
+                        <i class="dw dw-search2 search-icon"></i>
+                        <input
+                            type="text"
+                            class="form-control search-input"
+                            placeholder="Search Here"
+                        />
+                        <div class="dropdown">
+                            <a
+                                class="dropdown-toggle no-arrow"
+                                href="#"
+                                role="button"
+                                data-toggle="dropdown"
+                            >
+                                <i class="ion-arrow-down-c"></i>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <div class="form-group row">
+                                    <label class="col-sm-12 col-md-2 col-form-label"
+                                        >De</label
+                                    >
+                                    <div class="col-sm-12 col-md-10">
+                                        <input
+                                            class="form-control form-control-sm form-control-line"
+                                            type="text"
+                                        />
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-12 col-md-2 col-form-label">Para</label>
+                                    <div class="col-sm-12 col-md-10">
+                                        <input
+                                            class="form-control form-control-sm form-control-line"
+                                            type="text"
+                                        />
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-12 col-md-2 col-form-label"
+                                        >Sujeito</label
+                                    >
+                                    <div class="col-sm-12 col-md-10">
+                                        <input
+                                            class="form-control form-control-sm form-control-line"
+                                            type="text"
+                                        />
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <button class="btn btn-primary">Pesquisar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="dashboard-setting user-notification">
+                <div class="dropdown">
+                    <a
+                        class="dropdown-toggle no-arrow"
+                        href="javascript:;"
+                        data-toggle="right-sidebar"
+                    >
+                        <i class="dw dw-settings2"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="user-info-dropdown">
+                <div class="dropdown">
+                    <a
+                        class="dropdown-toggle"
+                        href="#"
+                        role="button"
+                        data-toggle="dropdown"
+                    >
+                        <span class="user-icon">
+                            <img src="/w/1.png" alt="" />
+                        </span>
+                        <span class="user-name">Usuário/Prestador</span>
+                    </a>
+                    <div
+                        class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list"
+                    >
+                        <a class="dropdown-item" href="profile.html"
+                            ><i class="dw dw-user1"></i> Perfil</a
+                        >
+                        <a class="dropdown-item" href="profile.html"
+                            ><i class="dw dw-settings2"></i>Configurações</a
+                        >
+                        <a class="dropdown-item" href="faq.html"
+                            ><i class="dw dw-help"></i> Ajuda</a
+                        >
+                        <a class="dropdown-item" href="#" id="logout-link"
+                            ><i class="dw dw-logout"></i> Sair</a
+                        >
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+	<div class="left-side-bar">
+		<div class="brand-logo">
+			<a href="index.html"> <img src="/Tela Inicial copy/w (1).png" alt="" class="dark-logo" />
+				<img
+					src="/Tela Inicial copy/w (1).png"
+					alt=""
+					class="light-logo"
+				/>
+			</a>
+			<div class="close-sidebar" data-toggle="left-sidebar-close">
+				<i class="ion-close-round"></i>
+			</div>
+		</div>
+		<div class="menu-block customscroll">
+			<div class="sidebar-menu">
+				<ul id="accordion-menu">
+					<li>
+						<a href="chat-list.html" class="dropdown-toggle no-arrow" id="back-link">
+                            <span class="micon bi bi-arrow-left-circle"></span
+							><span class="mtext">Voltar para Chats</span>
+						</a>
+					</li>
+					</ul>
+			</div>
+		</div>
+	</div>
+    <div class="right-sidebar">
+        <div class="sidebar-title">
+            <h3 class="weight-600 font-16 text-blue">
+                Configuração de Layout
+                <span class="btn-block font-weight-400 font-12"
+                    >Personalização</span
+                >
+            </h3>
+            <div class="close-sidebar" data-toggle="right-sidebar-close">
+                <i class="icon-copy ion-close-round"></i>
+            </div>
+        </div>
+        <div class="right-sidebar-body customscroll">
+            <div class="right-sidebar-body-content">
+                <h4 class="weight-600 font-18 pb-10">Fundo</h4>
+                <div class="sidebar-btn-group pb-30 mb-10">
+                    <a
+                        href="javascript:void(0);"
+                        class="btn btn-outline-primary header-white active"
+                        >Claro</a
+                    >
+                    <a
+                        href="javascript:void(0);"
+                        class="btn btn-outline-primary header-dark"
+                        >Escuro</a
+                    >
+                </div>
+
+                <h4 class="weight-600 font-18 pb-10">Menu Lateral</h4> <div class="sidebar-btn-group pb-30 mb-10">
+                    <a
+                        href="javascript:void(0);"
+                        class="btn btn-outline-primary sidebar-light"
+                        >Claro</a
+                    >
+                    <a
+                        href="javascript:void(0);"
+                        class="btn btn-outline-primary sidebar-dark active"
+                        >Escuro</a
+                    >
+                </div>
+
+                <h4 class="weight-600 font-18 pb-10">Icone Dropdown</h4> <div class="sidebar-radio-group pb-10 mb-10">
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input
+                            type="radio"
+                            id="sidebaricon-1"
+                            name="menu-dropdown-icon"
+                            class="custom-control-input"
+                            value="icon-style-1"
+                            checked=""
+                        />
+                        <label class="custom-control-label" for="sidebaricon-1"
+                            ><i class="fa fa-angle-down"></i
+                        ></label>
+                    </div>
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input
+                            type="radio"
+                            id="sidebaricon-2"
+                            name="menu-dropdown-icon"
+                            class="custom-control-input"
+                            value="icon-style-2"
+                        />
+                        <label class="custom-control-label" for="sidebaricon-2"
+                            ><i class="ion-plus-round"></i
+                        ></label>
+                    </div>
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input
+                            type="radio"
+                            id="sidebaricon-3"
+                            name="menu-dropdown-icon"
+
+                            class="custom-control-input"
+                            value="icon-style-3"
+                        />
+                        <label class="custom-control-label" for="sidebaricon-3"
+                            ><i class="fa fa-angle-double-right"></i
+                        ></label>
+                    </div>
+                </div>
+
+                <h4 class="weight-600 font-18 pb-10">Icones do Menu</h4>
+                <div class="sidebar-radio-group pb-30 mb-10">
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input
+                            type="radio"
+                            id="sidebariconlist-1"
+                            name="menu-list-icon"
+                            class="custom-control-input"
+                            value="icon-list-style-1"
+                            checked=""
+                        />
+                        <label class="custom-control-label" for="sidebariconlist-1"
+                            ><i class="ion-minus-round"></i
+                        ></label>
+                    </div>
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input
+                            type="radio"
+                            id="sidebariconlist-2"
+                            name="menu-list-icon"
+                            class="custom-control-input"
+                            value="icon-list-style-2"
+                        />
+                        <label class="custom-control-label" for="sidebariconlist-2"
+                            ><i class="fa fa-circle-o" aria-hidden="true"></i
+                        ></label>
+                    </div>
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input
+                            type="radio"
+                            id="sidebariconlist-3"
+                            name="menu-list-icon"
+                            class="custom-control-input"
+                            value="icon-list-style-3"
+                        />
+                        <label class="custom-control-label" for="sidebariconlist-3"
+                            ><i class="dw dw-check"></i
+                        ></label>
+                    </div>
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input
+                            type="radio"
+                            id="sidebariconlist-4"
+                            name="menu-list-icon"
+                            class="custom-control-input"
+                            value="icon-list-style-4"
+                            checked=""
+                        />
+                        <label class="custom-control-label" for="sidebariconlist-4"
+                            ><i class="icon-copy dw dw-next-2"></i
+                        ></label>
+                    </div>
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input
+                            type="radio"
+                            id="sidebariconlist-5"
+                            name="menu-list-icon"
+                            class="custom-control-input"
+                            value="icon-list-style-5"
+                        />
+                        <label class="custom-control-label" for="sidebariconlist-5"
+                            ><i class="dw dw-fast-forward-1"></i
+                        ></label>
+                    </div>
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input
+                            type="radio"
+                            id="sidebariconlist-6"
+                            name="menu-list-icon"
+                            class="custom-control-input"
+                            value="icon-list-style-6"
+                        />
+                        <label class="custom-control-label" for="sidebariconlist-6"
+                            ><i class="dw dw-next"></i
+                        ></label>
+                    </div>
+                </div>
+
+                <div class="reset-options pt-30 text-center">
+                    <button class="btn btn-danger" id="reset-settings">
+                        Resetar Configurações
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="left-side-bar">
+        <div class="brand-logo">
+            <a href="index.html"> <img src="/Tela Inicial copy/w (1).png" alt="" class="dark-logo" />
+                <img
+                    src="/Tela Inicial copy/w (1).png"
+                    alt=""
+                    class="light-logo"
+                />
+            </a>
+            <div class="close-sidebar" data-toggle="left-sidebar-close">
+                <i class="ion-close-round"></i>
+            </div>
+        </div>
+        <div class="menu-block customscroll">
+            <div class="sidebar-menu">
+                <ul id="accordion-menu">
+                    <li>
+                        <a href="chat-list.html" class="dropdown-toggle no-arrow" id="back-link">
+                            <span class="micon bi bi-arrow-left-circle"></span
+                            ><span class="mtext">Voltar para Chats</span>
+                        </a>
+                    </li>
+                    </ul>
+            </div>
+        </div>
+    </div>
+    <div class="mobile-menu-overlay"></div>
+
+    <div class="main-container">
+        <div class="xs-pd-20-10 pd-ltr-20">
+            <div class="card-box pd-20 mb-30">
+                <div id="chat-header" class="chat-header">
+                    Chat do Serviço <span id="service-title"></span>
+                </div>
+                <div id="chat-messages" class="chat-messages">
+                    <div id="loading-messages">Carregando mensagens...</div>
+                    </div>
+                <div class="chat-input">
+                    <input type="text" id="message-input" placeholder="Digite sua mensagem..." />
+                    <button id="send-button">Enviar</button>
+                </div>
+            </div>
+
+            <div class="footer-wrap pd-20 mb-20 card-box">
+                Plataforma WYN-TECH
+            </div>
+        </div>
+    </div>
+
+    <script src="vendors/scripts/core.js"></script>
+    <script src="vendors/scripts/script.min.js"></script>
+    <script src="vendors/scripts/process.js"></script>
+    <script src="vendors/scripts/layout-settings.js"></script>
+
+    <noscript>
+        <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NXZMQSS" height="0" width="0" style="display: none; visibility: hidden"></iframe>
+    </noscript>
+
+    <script>
+        let usuarioLogado = null; // Variável para armazenar os dados do usuário/prestador logado
+        let usuarioTipo = null; // 'usuario' ou 'prestador'
+        let serviceId = null; // ID do serviço atual
+        let pollingInterval = null; // Variável para o intervalo de polling
+
+        async function carregarPerfil() {
+            const token = localStorage.getItem('token');
+            const usuarioCache = localStorage.getItem('usuario'); // Tenta carregar como usuário
+            const prestadorCache = localStorage.getItem('prestador'); // Tenta carregar como prestador
+
+            if (!token) {
+                console.warn("Não autenticado. Redirecionando para login.");
+                // Redireciona para a página de login principal ou uma de escolha
+                window.location.href = "login.html"; // Assumindo login.html como página principal de login
+                return;
+            }
+
+            try {
+                 // Tenta carregar do cache primeiro
+                 if (usuarioCache) {
+                      usuarioLogado = JSON.parse(usuarioCache);
+                      usuarioTipo = 'usuario';
+                 } else if (prestadorCache) {
+                      usuarioLogado = JSON.parse(prestadorCache);
+                      usuarioTipo = 'prestador';
+                 }
+
+                 const nomeSpan = document.querySelector(".user-name");
+                 if (nomeSpan && usuarioLogado?.nome) {
+                     nomeSpan.textContent = usuarioLogado.nome;
+                 }
+
+
+                // Chamada ao backend para validar o token e obter dados completos
+                 const res = await fetch('http://localhost:3000/perfil', {
+                     headers: { 'Authorization': 'Bearer ' + token }
+                 });
+
+                 const resClone = res.clone();
+
+                 if (!res.ok) {
+                     if (res.status === 401 || res.status === 403) {
+                         console.error("Token inválido ou expirado. Redirecionando para login.");
+                         alert("Sua sessão expirou. Por favor, faça login novamente.");
+                         window.location.href = "login.html";
+                         return;
+                     }
+                     throw new Error(`Erro HTTP ao buscar perfil: ${res.status}`);
+                 }
+
+                let data = {};
+                 try {
+                     data = await res.json();
+                 } catch(jsonError) {
+                     console.error("Erro ao parsear JSON do perfil:", await resClone.text());
+                     throw new Error("Resposta de perfil inválida.");
+                 }
+
+                // Atualiza a variável global com os dados completos e o tipo
+                if (data.tipo === 'usuario' && data.usuario?._id) {
+                    usuarioLogado = data.usuario;
+                    usuarioTipo = 'usuario';
+                    // Atualiza cache se necessário
+                    localStorage.setItem('usuario', JSON.stringify(usuarioLogado));
+                    localStorage.removeItem('prestador'); // Garante que o cache do outro tipo é limpo
+                } else if (data.tipo === 'prestador' && data.prestador?._id) {
+                    usuarioLogado = data.prestador;
+                    usuarioTipo = 'prestador';
+                     // Atualiza cache se necessário
+                    localStorage.setItem('prestador', JSON.stringify(usuarioLogado));
+                     localStorage.removeItem('usuario'); // Garante que o cache do outro tipo é limpo
+                } else {
+                     console.error("Token válido, mas tipo de usuário/prestador desconhecido ou dados incompletos.");
+                     alert("Erro ao carregar perfil. Faça login novamente.");
+                     window.location.href = "login.html";
+                     return;
+                }
+
+
+                // Atualiza o nome na interface (se a chamada backend for bem sucedida)
+                if (usuarioLogado?.nome && nomeSpan) {
+                    nomeSpan.textContent = usuarioLogado.nome;
+                }
+
+                console.log(`Perfil de ${usuarioTipo} carregado:`, usuarioLogado);
+
+                // Agora que o perfil está carregado, podemos carregar as mensagens
+                carregarMensagens();
+
+
+            } catch (err) {
+                console.error('Erro ao carregar perfil:', err);
+                alert('Ocorreu um erro ao carregar informações do perfil.');
+                // Não redireciona aqui se o redirect já aconteceu acima
+            }
+        }
+
+        // Função de Logout
+        document.getElementById('logout-link').addEventListener('click', (e) => {
+             e.preventDefault();
+             localStorage.removeItem('token');
+             localStorage.removeItem('usuario');
+             localStorage.removeItem('prestador');
+             // Limpa o intervalo de polling ao sair
+             if (pollingInterval) {
+                 clearInterval(pollingInterval);
+             }
+             window.location.href = 'login.html'; // Redireciona para a página de login principal
+        });
+
+        // Chamar carregarPerfil ao carregar a página
+        document.addEventListener("DOMContentLoaded", () => {
+             // Obtém o ID do serviço da URL
+             const urlParams = new URLSearchParams(window.location.search);
+             serviceId = urlParams.get('serviceId'); // O nome do parâmetro deve ser 'serviceId'
+
+             if (!serviceId) {
+                 alert("ID do serviço não fornecido na URL.");
+                 // Redireciona de volta ou mostra uma mensagem de erro
+                 window.history.back(); // Tenta voltar para a página anterior
+                 return;
+             }
+
+             console.log("Chat carregado para o serviço ID:", serviceId);
+
+             // Carrega o perfil do usuário/prestador logado
+             carregarPerfil();
+
+             // Configura o polling para carregar novas mensagens periodicamente (ex: a cada 3 segundos)
+             pollingInterval = setInterval(carregarMensagens, 3000); // Ajuste o intervalo conforme necessário
+
+             // MOVIDO PARA DENTRO DO DOMContentLoaded
+             // Listener para o link de "Voltar"
+             const backLinkElement = document.getElementById('back-link');
+             if (backLinkElement) {
+                 backLinkElement.addEventListener('click', (e) => {
+                     e.preventDefault();
+                     // Redireciona para a página de lista de chats
+                     window.location.href = 'chat-list.html';
+                 });
+             } else {
+                 console.error("Elemento #back-link não encontrado para adicionar listener.");
+             }
+             // FIM MOVIDO
+
+        });
+
+        // Limpa o intervalo de polling ao sair da página (navegação ou fechar aba)
+        window.addEventListener('beforeunload', () => {
+            if (pollingInterval) {
+                clearInterval(pollingInterval);
+            }
+        });
+
+    </script>
+
+
+    <script>
+        const chatMessagesDiv = document.getElementById("chat-messages");
+        const messageInput = document.getElementById("message-input");
+        const sendButton = document.getElementById("send-button");
+        const loadingMessagesDiv = document.getElementById("loading-messages");
+        const serviceTitleSpan = document.getElementById("service-title");
+
+        // Função para formatar a data/hora da mensagem
+        function formatMessageTime(timestamp) {
+            const date = new Date(timestamp);
+            const hours = date.getHours().toString().padStart(2, '0');
+            const minutes = date.getMinutes().toString().padStart(2, '0');
+            return `${hours}:${minutes}`;
+        }
+
+        // Função para exibir uma única mensagem
+        function displayMessage(message) {
+            const messageElement = document.createElement("div");
+            messageElement.classList.add("message");
+
+            // Determina se a mensagem foi enviada pelo usuário logado
+            // Compara o ID do remetente da mensagem com o ID do usuário logado
+            const isSent = (usuarioLogado && message.remetente_id === usuarioLogado._id);
+
+            messageElement.classList.add(isSent ? "sent" : "received");
+
+            // Nome do remetente (pode ser o nome do usuário ou prestador)
+            const senderName = message.remetente_nome_cache || 'Desconhecido'; // Usar nome cacheado
+
+            messageElement.innerHTML = `
+                <strong>${isSent ? 'Você' : senderName}</strong>
+                <p>${message.conteudo}</p>
+                <span>${formatMessageTime(message.data_envio)}</span>
+            `;
+
+            chatMessagesDiv.appendChild(messageElement);
+        }
+
+        // Função para carregar mensagens do backend
+        async function carregarMensagens() {
+            // Verifica se serviceId, token e usuarioLogado/usuarioTipo estão definidos
+            if (!serviceId || !localStorage.getItem('token') || !usuarioLogado || !usuarioTipo) {
+                console.warn("Não é possível carregar mensagens: Dependências faltando (ID do serviço, token, ou perfil).");
+                loadingMessagesDiv.textContent = "Carregando informações do chat..."; // Mantém uma mensagem de espera
+                return; // Sai da função se as dependências não estiverem prontas
+            }
+
+            loadingMessagesDiv.style.display = "block"; // Mostra loading
+
+            try {
+                // *** CHAMANDO O ENDPOINT PARA BUSCAR MENSAGENS ***
+                const response = await fetch(`http://localhost:3000/chat/${serviceId}/messages`, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}` // Incluir o token
+                    }
+                });
+
+                if (!response.ok) {
+                    if (response.status === 401 || response.status === 403) {
+                         console.error("Erro de autenticação/autorização ao carregar mensagens.");
+                         loadingMessagesDiv.textContent = "Erro: Acesso negado ao chat.";
+                         // Opcional: Redirecionar para login ou página anterior
+                         // window.location.href = "login.html";
+                         return;
+                    }
+                    throw new Error(`Erro HTTP ao buscar mensagens: ${response.status}`);
+                }
+
+                const messages = await response.json();
+                console.log("Mensagens carregadas:", messages); // Log para ver os dados
+
+                // Limpa as mensagens atuais
+                 chatMessagesDiv.innerHTML = '';
+
+                if (messages.length === 0) {
+                    loadingMessagesDiv.textContent = "Nenhuma mensagem ainda. Comece a conversa!";
+                     loadingMessagesDiv.style.display = "block"; // Mantém a mensagem visível
+                } else {
+                    loadingMessagesDiv.style.display = "none"; // Oculta loading se houver mensagens
+                    messages.forEach(displayMessage);
+                    // Rola para a última mensagem
+                    chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
+                }
+
+                // Opcional: Carregar o título do serviço (pode vir do endpoint /servico/:id)
+                // Por enquanto, apenas exibe o ID
+                 serviceTitleSpan.textContent = `(Serviço ID: ${serviceId.substring(0, 6)})`; // Exibe parte do ID
+
+
+            } catch (error) {
+                console.error("Erro ao carregar mensagens:", error);
+                loadingMessagesDiv.textContent = `Erro ao carregar mensagens: ${error.message || 'Verifique a conexão.'}`;
+                 loadingMessagesDiv.style.display = "block"; // Mantém a mensagem de erro visível
+            }
+        }
+
+        // Função para enviar uma nova mensagem
+        async function sendMessage() {
+            const content = messageInput.value.trim(); // Pega o texto do input
+            const token = localStorage.getItem('token');
+
+            if (!content || !serviceId || !token || !usuarioLogado || !usuarioTipo) {
+                alert("Não é possível enviar mensagem: Conteúdo, ID do serviço ou autenticação faltando.");
+                return;
+            }
+
+            // Desabilita input e botão durante o envio
+            messageInput.disabled = true;
+            sendButton.disabled = true;
+            sendButton.textContent = "Enviando...";
+
+            try {
+                // *** CHAMANDO O ENDPOINT PARA ENVIAR MENSAGEM ***
+                const response = await fetch(`http://localhost:3000/chat/message`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        'Authorization': `Bearer ${token}` // Incluir o token
+                    },
+                    body: JSON.stringify({
+                        serviceId: serviceId,
+                        conteudo: content,
+                        // O backend deve pegar remetente_id e remetente_tipo do token
+                        // remetente_id: usuarioLogado._id, // Não enviar do frontend, pegar do token no backend
+                        // remetente_tipo: usuarioTipo // Não enviar do frontend, pegar do token no backend
+                        // O backend também deve adicionar o nome do remetente para cache
+                    })
+                });
+
+                // Verifica se a resposta não foi OK antes de tentar parsear JSON
+                if (!response.ok) {
+                     const errorText = await response.text();
+                     console.error("Erro HTTP ao enviar mensagem:", response.status, errorText);
+                     try {
+                          const errorJson = JSON.parse(errorText);
+                          throw new Error(errorJson.message || errorText || `Erro HTTP: ${response.status}`);
+                     } catch (parseError) {
+                          throw new Error(errorText || `Erro HTTP: ${response.status}`);
+                     }
+                }
+
+                const result = await response.json(); // Leia a resposta JSON
+
+                console.log("Mensagem enviada:", result);
+
+                // Limpa o input após o envio
+                messageInput.value = "";
+
+                // Recarrega as mensagens para ver a sua mensagem e possíveis novas mensagens do outro lado
+                carregarMensagens();
+
+            } catch (error) {
+                console.error("Erro ao enviar mensagem:", error);
+                alert("Erro ao enviar mensagem: " + (error.message || "Verifique sua conexão ou tente novamente."));
+            } finally {
+                // Reabilita input e botão
+                messageInput.disabled = false;
+                sendButton.disabled = false;
+                sendButton.textContent = "Enviar";
+                 // Foca no input novamente
+                 messageInput.focus();
+            }
+        }
+
+        // Listener para o clique no botão Enviar
+        sendButton.addEventListener("click", sendMessage);
+
+        // Listener para a tecla Enter no input de mensagem
+        messageInput.addEventListener("keypress", (event) => {
+            // Verifica se a tecla pressionada foi Enter (código 13)
+            if (event.key === 'Enter' || event.keyCode === 13) {
+                event.preventDefault(); // Previne a quebra de linha padrão do Enter
+                sendMessage(); // Chama a função de enviar mensagem
+            }
+        });
+
+        // A função carregarMensagens é chamada após carregarPerfil no script de autenticação
+        // REMOVIDO: carregarMensagens(); // Não chamar aqui, pois depende do serviceId e do perfil carregado
+
+    </script>
+
+</body>
+</html>

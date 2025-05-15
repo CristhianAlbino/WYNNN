@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>WYN - Login Administrativo</title>
+
+    <link
+        rel="apple-touch-icon"
+        sizes="180x180"
+        href="/Tela Inicial copy/w.png"
+    />
+    <link
+        rel="icon"
+        type="image/png"
+        sizes="32x32"
+        href="/Tela Inicial copy/w.png"
+    />
+    <link
+        rel="icon"
+        type="image/png"
+        sizes="16x16"
+        href="/Tela Inicial copy/w.png"
+    />
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1"
+    />
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    />
+    <link rel="stylesheet" type="text/css" href="vendors/styles/core.css" />
+    <link
+        rel="stylesheet"
+        type="text/css"
+        href="vendors/styles/icon-font.min.css"
+    />
+    <link rel="stylesheet" type="text/css" href="vendors/styles/style.css" />
+
+    <script>
+        (function (w, d, s, l, i) {
+            w[l] = w[l] || [];
+            w[l].push({ "gtm.start": new Date().getTime(), event: "gtm.js" });
+            var f = d.getElementsByTagName(s)[0],
+                j = d.createElement(s),
+                dl = l != "dataLayer" ? "&l=" + l : "";
+            j.async = true;
+            j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
+            f.parentNode.insertBefore(j, f);
+        })(window, document, "script", "dataLayer", "GTM-NXZMQSS");
+    </script>
+    </head>
+<body class="login-page">
+    <div class="login-header box-shadow">
+        <div
+            class="container-fluid d-flex justify-content-between align-items-center"
+        >
+            <div class="brand-logo">
+                <a href="index.html">
+                    <img src="/Tela Inicial copy/w.png" alt="" />
+                </a>
+            </div>
+            <div class="login-menu">
+                <ul>
+                    <li><a href="register-admin.html">Cadastrar Admin</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div
+        class="login-wrap d-flex align-items-center flex-wrap justify-content-center"
+    >
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6 col-lg-7">
+                    <img src="/Tela Inicial copy/w (1).png" alt="" />
+                </div>
+                <div class="col-md-6 col-lg-5">
+                    <div class="login-box bg-white box-shadow border-radius-10">
+                        <div class="login-title">
+                            <h2 class="text-center text-primary">Login Administrativo</h2>
+                        </div>
+                        <form id="adminLoginForm">
+                            <div class="input-group custom">
+                                <input
+                                    type="text"
+                                    class="form-control form-control-lg"
+                                    placeholder="Email"
+                                    id="email"
+                                    required
+                                />
+                                <div class="input-group-append custom">
+                                    <span class="input-group-text"
+                                        ><i class="icon-copy dw dw-user1"></i
+                                    ></span>
+                                </div>
+                            </div>
+                            <div class="input-group custom">
+                                <input
+                                    type="password"
+                                    class="form-control form-control-lg"
+                                    placeholder="**********"
+                                    id="password"
+                                    required
+                                />
+                                <div class="input-group-append custom">
+                                    <span class="input-group-text"
+                                        ><i class="dw dw-padlock1"></i
+                                    ></span>
+                                </div>
+                            </div>
+                            <div class="row pb-30">
+                                <div class="col-6">
+                                    <div class="custom-control custom-checkbox">
+                                        <input
+                                            type="checkbox"
+                                            class="custom-control-input"
+                                            id="customCheck1"
+                                        />
+                                        <label class="custom-control-label" for="customCheck1"
+                                            >Lembrar-me</label
+                                        >
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="forgot-password">
+                                        <a href="#">Esqueci a Senha</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="input-group mb-0">
+                                        <input class="btn btn-primary btn-lg btn-block" type="submit" value="Entrar" />
+                                    </div>
+                                    <div id="loginErrorMessage" class="text-danger text-center mt-3" style="display: none;"></div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <noscript
+        ><iframe
+            src="https://www.googletagmanager.com/ns.html?id=GTM-NXZMQSS"
+            height="0"
+            width="0"
+            style="display: none; visibility: hidden"
+        ></iframe
+    ></noscript>
+    <script src="vendors/scripts/core.js"></script>
+    <script src="vendors/scripts/script.min.js"></script>
+    <script src="vendors/scripts/process.js"></script>
+    <script src="vendors/scripts/layout-settings.js"></script>
+
+    <script>
+        // Listener para o formulário de login
+        document.getElementById('adminLoginForm').addEventListener('submit', async (event) => {
+            event.preventDefault(); // Previne o recarregamento da página
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorMessageDiv = document.getElementById('loginErrorMessage');
+
+            // Limpa mensagens de erro anteriores
+            errorMessageDiv.textContent = '';
+            errorMessageDiv.style.display = 'none';
+
+            try {
+                // Envia os dados de login para o backend
+                const response = await fetch('http://localhost:3000/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, senha: password }), // O backend espera 'senha'
+                });
+
+                const result = await response.json(); // Parseia a resposta JSON
+
+                if (!response.ok) {
+                    // Se a resposta não for OK (ex: 401 Unauthorized, 404 Not Found)
+                    errorMessageDiv.textContent = result.message || 'Erro no login. Verifique suas credenciais.';
+                    errorMessageDiv.style.display = 'block';
+                    console.error('Erro no login:', result);
+                } else {
+                    // Se o login for bem-sucedido
+                    if (result.usuario && result.usuario.isAdmin) {
+                        // Verifica se o usuário retornado é um administrador
+                        localStorage.setItem('token', result.token); // Armazena o token
+                        // Armazena os dados do usuário admin (incluindo isAdmin)
+                        localStorage.setItem('admin', JSON.stringify(result.usuario));
+                        console.log('Login de administrador bem-sucedido. Redirecionando...');
+                        window.location.href = 'admin-dashboard.html'; // Redireciona para o dashboard
+                    } else {
+                        // Login bem-sucedido, mas o usuário não é admin
+                        errorMessageDiv.textContent = 'Acesso negado. Esta área é apenas para administradores.';
+                        errorMessageDiv.style.display = 'block';
+                        console.warn('Login bem-sucedido, mas o usuário não é admin.');
+                         // Opcional: Redirecionar para a tela de login geral ou outra página
+                         // setTimeout(() => { window.location.href = 'login.html'; }, 3000);
+                    }
+                }
+            } catch (error) {
+                // Captura erros de rede ou outros erros
+                console.error('Erro na requisição de login:', error);
+                errorMessageDiv.textContent = 'Ocorreu um erro. Verifique a conexão com o servidor.';
+                errorMessageDiv.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1560 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>WYN - Minha Disponibilidade</title>
+		<link rel="apple-touch-icon" sizes="180x180" href="/w/1.png" />
+		<link rel="icon" type="image/png" sizes="32x32" href="/w/1.png" />
+		<link rel="icon" type="image/png" sizes="16x16" href="/w/1.png" />
+
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1, maximum-scale=1"
+		/>
+
+		<link
+			href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+			rel="stylesheet"
+		/>
+		<link rel="stylesheet" type="text/css" href="vendors/styles/core.css" />
+		<link
+			rel="stylesheet"
+			type="text/css"
+			href="vendors/styles/icon-font.min.css"
+		/>
+        <link rel="stylesheet" type="text/css" href="vendors/styles/style.css" />
+
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+        <link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css' rel='stylesheet' />
+
+
+		<style>
+			/* Estilo para a foto de perfil no header */
+			.user-icon img.profile-pic-header {
+				border-radius: 50% !important;
+				object-fit: cover;
+				width: 40px;
+				height: 40px;
+			}
+
+            /* Estilo para mensagens de feedback (loading, erro, vazio) */
+			.feedback-message {
+				text-align: center;
+				padding: 10px;
+				margin: 15px 20px; /* Espaçamento alinhado com o conteúdo */
+				border-radius: 4px;
+				font-weight: 500;
+			}
+
+			.feedback-loading {
+				color: #007bff; /* Cor azul */
+				background-color: #e9f5ff; /* Fundo azul claro */
+				border: 1px solid #b8daff;
+			}
+
+			.feedback-error {
+				color: #dc3545; /* Cor vermelha */
+				background-color: #f8d7da; /* Fundo vermelho claro */
+				border: 1px solid #f5c6cb;
+			}
+
+			.feedback-empty {
+				color: #6c757d; /* Cor cinza */
+				background-color: #f8f9fa; /* Fundo branco/claro */
+				border: 1px solid #dee2e6;
+			}
+
+             /* Estilo para o indicador de notificações no sino */
+            .notification-badge {
+                position: absolute;
+                top: 5px; /* Ajuste a posição vertical */
+                right: 5px; /* Ajuste a posição horizontal */
+                padding: 3px 6px;
+                border-radius: 50%;
+                background-color: red;
+                color: white;
+                font-size: 10px;
+                font-weight: bold;
+                display: none; /* Inicialmente oculto */
+            }
+
+             /* Estilo para o dropdown de notificações */
+             .notification-dropdown {
+                 width: 300px; /* Largura fixa para o dropdown */
+                 max-height: 400px; /* Altura máxima */
+                 overflow-y: auto; /* Scroll se necessário */
+             }
+
+             .notification-item {
+                 padding: 10px;
+                 border-bottom: 1px solid #eee;
+             }
+
+             .notification-item:last-child {
+                 border-bottom: none;
+             }
+
+             .notification-item a {
+                 text-decoration: none;
+                 color: #333; /* Cor do texto */
+                 display: block; /* Ocupa toda a área do item */
+             }
+
+             .notification-item a:hover {
+                 background-color: #f8f9fa; /* Fundo suave no hover */
+             }
+
+             .notification-item .timestamp {
+                 font-size: 11px;
+                 color: #999;
+                 display: block;
+                 margin-top: 3px;
+             }
+
+             .notification-item.unread {
+                 background-color: #e9f5ff; /* Fundo azul claro para não lidas */
+                 font-weight: bold;
+             }
+
+             /* Estilo para o container de toasts */
+             #toastContainer {
+                 position: fixed;
+                 top: 20px;
+                 right: 20px;
+                 z-index: 1050; /* Acima de modais */
+             }
+
+             /* Estilo individual do toast */
+             .toast {
+                 width: 300px;
+                 max-width: 100%;
+                 font-size: .875rem;
+                 background-color: rgba(255,255,255,.85);
+                 background-clip: padding-box;
+                 border: 1px solid rgba(0,0,0,.1);
+                 box-shadow: 0 .25rem .75rem rgba(0,0,0,.1);
+                 opacity: 0;
+                 border-radius: .25rem;
+             }
+
+             .toast.showing {
+                 opacity: 1;
+             }
+
+             .toast.show {
+                 display: block;
+                 opacity: 1;
+             }
+
+             .toast.hide {
+                 display: none;
+             }
+
+             .toast-header {
+                 display: flex;
+                 align-items: center;
+                 padding: .25rem .75rem;
+                 color: #6c757d;
+                 background-color: rgba(255,255,255,.85);
+                 background-clip: padding-box;
+                 border-bottom: 1px solid rgba(0,0,0,.05);
+                 border-top-left-radius: calc(.25rem - 1px);
+                 border-top-right-radius: calc(.25rem - 1px);
+             }
+
+             .toast-body {
+                 padding: .75rem;
+             }
+
+             /* Cores para os headers dos toasts */
+             .toast-header.bg-success { background-color: #28a745 !important; color: white !important; }
+             .toast-header.bg-danger { background-color: #dc3545 !important; color: white !important; }
+             .toast-header.bg-info { background-color: #17a2b8 !important; color: white !important; }
+
+             /* Estilos específicos para a página de Disponibilidade */
+             .availability-section {
+                 padding: 20px;
+             }
+
+             .availability-form label {
+                 font-weight: 500;
+                 margin-bottom: 5px;
+                 display: block; /* Garante que o label fique em sua própria linha */
+             }
+
+             .availability-form input[type="time"],
+             .availability-form select {
+                 margin-bottom: 15px;
+                 padding: 8px 12px;
+                 border: 1px solid #ccc;
+                 border-radius: 4px;
+                 font-size: 14px;
+                 width: auto; /* Ajusta a largura automaticamente */
+                 display: inline-block; /* Permite que fiquem lado a lado com labels */
+                 margin-right: 10px; /* Espaço entre os inputs */
+             }
+
+             .availability-form .day-checkbox {
+                 margin-bottom: 10px;
+             }
+
+             .availability-form .day-checkbox label {
+                 display: inline-block;
+                 margin-left: 5px;
+                 font-weight: normal;
+             }
+
+             .availability-form button {
+                 margin-top: 20px;
+             }
+
+            /* Estilo para o FullCalendar */
+            #calendar {
+                max-width: 900px;
+                margin: 0 auto;
+                padding: 20px 0;
+            }
+
+
+		</style>
+
+
+		<script
+			async
+			src="https://www.googletagmanager.com/gtag/js?id=G-GBZ3SGGX85"
+		></script>
+		<script
+			async
+			src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2973766580778258"
+			crossorigin="anonymous"
+		></script>
+		<script>
+			window.dataLayer = window.dataLayer || [];
+			function gtag() {
+				dataLayer.push(arguments);
+			}
+			gtag("js", new Date());
+
+			gtag("config", "G-GBZ3SGGX85");
+		</script>
+		<script>
+			(function (w, d, s, l, i) {
+				w[l] = w[l] || [];
+				w[l].push({ "gtm.start": new Date().getTime(), event: "gtm.js" });
+				var f = d.getElementsByTagName(s)[0],
+					j = d.createElement(s),
+					dl = l != "dataLayer" ? "&l=" + l : "";
+				j.async = true;
+				j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
+				f.parentNode.insertBefore(j, f);
+			})(window, document, "script", "dataLayer", "GTM-NXZMQSS");
+		</script>
+	</head>
+	<body>
+		<div class="pre-loader">
+			<div class="pre-loader-box">
+				<div class="loader-logo">
+					<img src="/Tela Inicial copy/w.png" alt="" />
+				</div>
+				<div class="loader-progress" id="progress_div">
+					<div class="bar" id="bar1"></div>
+				</div>
+				<div class="percent" id="percent1">0%</div>
+				<div class="loading-text">Carregando...</div>
+			</div>
+		</div>
+
+		<div class="header">
+			<div class="header-left">
+				<div class="menu-icon bi bi-list"></div>
+				<div
+					class="search-toggle-icon bi bi-search"
+					data-toggle="header_search"
+				></div>
+				<div class="header-search">
+					<form>
+						<div class="form-group mb-0">
+							<i class="dw dw-search2 search-icon"></i>
+							<input
+								type="text"
+								class="form-control search-input"
+								placeholder="Search Here"
+							/>
+							<div class="dropdown">
+								<a
+									class="dropdown-toggle no-arrow"
+									href="#"
+									role="button"
+									data-toggle="dropdown"
+								>
+									<i class="ion-arrow-down-c"></i>
+								</a>
+								<div class="dropdown-menu dropdown-menu-right">
+									<div class="form-group row">
+										<label class="col-sm-12 col-md-2 col-form-label"
+											>De</label
+										>
+										<div class="col-sm-12 col-md-10">
+											<input
+												class="form-control form-control-sm form-control-line"
+												type="text"
+											/>
+										</div>
+									</div>
+									<div class="form-group row">
+										<label class="col-sm-12 col-md-2 col-form-label">Para</label>
+										<div class="col-sm-12 col-md-10">
+											<input
+												class="form-control form-control-sm form-control-line"
+												type="text"
+											/>
+										</div>
+									</div>
+									<div class="form-group row">
+										<label class="col-sm-12 col-md-2 col-form-label"
+											>Sujeito</label
+										>
+										<div class="col-sm-12 col-md-10">
+											<input
+												class="form-control form-control-sm form-control-line"
+												type="text"
+											/>
+										</div>
+									</div>
+									<div class="text-right">
+										<button class="btn btn-primary">Pesquisar</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+            		<div class="left-side-bar">
+			<div class="brand-logo">
+				<a href="index.html"> <img src="/Tela Inicial copy/w (1).png" alt="" class="dark-logo" />
+					<img
+						src="/Tela Inicial copy/w (1).png"
+						alt=""
+						class="light-logo"
+					/>
+				</a>
+				<div class="close-sidebar" data-toggle="left-sidebar-close">
+					<i class="ion-close-round"></i>
+				</div>
+			</div>
+			<div class="menu-block customscroll">
+				<div class="sidebar-menu">
+					<ul id="accordion-menu">
+						<li>
+							<a href="index.html" class="dropdown-toggle no-arrow active"> <span class="micon bi bi-house"></span
+								><span class="mtext">Dashboard</span>
+							</a>
+						</li>
+						<li>
+							<a href="prestador-solicitacoes.html" class="dropdown-toggle no-arrow">
+                                <span class="micon bi bi-textarea-resize"></span>
+								<span class="mtext">Solicitações Pendentes</span>
+                                <span id="new-solicitation-indicator" class="badge badge-pill badge-danger" style="display: none; margin-left: 5px;">Novo!</span>
+							</a>
+						</li>
+						<li>
+							<a href="prestador-meus-servicos.html" class="dropdown-toggle no-arrow"> <span class="micon bi bi-check-circle"></span
+								><span class="mtext">Meus Serviços Aceitos</span>
+							</a>
+						</li>
+						<li>
+							<a href="prestador-historico.html" class="dropdown-toggle no-arrow"> <span class="micon bi bi-clock-history"></span
+								><span class="mtext">Histórico de Serviços</span>
+							</a>
+						</li>
+						<li>
+							<a href="prestador-avaliacoes.html" class="dropdown-toggle no-arrow"> <span class="micon bi bi-star-fill"></span
+								><span class="mtext">Minhas Avaliações</span>
+							</a>
+						</li>
+                        <li>
+							<a href="prestador-gerenciar-servicos.html" class="dropdown-toggle no-arrow"> <span class="micon bi bi-gear"></span>
+                                <span class="mtext">Gerenciar Serviços</span>
+                            </a>
+                        </li>
+                         <li>
+							<a href="prestador-minha-disponibilidade.html" class="dropdown-toggle no-arrow"> <span class="micon bi bi-calendar-week"></span>
+                                <span class="mtext">Minha Disponibilidade</span>
+                            </a>
+                        </li>
+                         <li>
+							<a href="chat-list.html" class="dropdown-toggle no-arrow"> <span class="micon bi bi-chat-dots"></span>
+                                <span class="mtext">Chat de Serviços</span>
+                                 <span id="unread-chat-count-sidebar-prestador" class="badge badge-pill badge-danger" style="display: none; margin-left: 5px;">0</span>
+                             </a>
+                        </li>
+
+						<li class="dropdown">
+							<a href="javascript:;" class="dropdown-toggle">
+								<span class="micon bi bi-file-pdf"></span
+								><span class="mtext">Documentação</span>
+							</a>
+							<ul class="submenu">
+								<li><a href="/Tela Inicial copy/Termos e Condições.docx">Termos e Condições</a></li>
+								</ul>
+						</li>
+						</ul>
+				</div>
+			</div>
+		</div>
+			<div class="header-right">
+				<div class="user-notification">
+					<div class="dropdown">
+						<a
+							class="dropdown-toggle no-arrow"
+							href="#"
+							role="button"
+							data-toggle="dropdown"
+						>
+							<i class="icon-copy dw dw-notification"></i>
+							<span class="badge notification-badge" id="notification-count">0</span> </a>
+						<div class="dropdown-menu dropdown-menu-right dropdown-menu-lg notification-dropdown customscroll">
+							<h4 class="mb-0">Notificações</h4>
+							<div id="notification-list">
+								<a class="dropdown-item notification-item" href="#">
+									<i class="icon-copy dw dw-info"></i>
+									<p>Nenhuma notificação nova.</p>
+                                    <span class="timestamp">Agora</span>
+								</a>
+							</div>
+                             <div class="text-center">
+                                 <a href="#" class="btn btn-sm btn-link">Ver todas as notificações</a>
+                             </div>
+						</div>
+					</div>
+				</div>
+
+				<div class="dashboard-setting user-notification">
+					<div class="dropdown">
+						<a
+							class="dropdown-toggle no-arrow"
+							href="javascript:;"
+							data-toggle="right-sidebar"
+						>
+							<i class="dw dw-settings2"></i>
+						</a>
+					</div>
+				</div>
+
+				<div class="user-info-dropdown">
+					<div class="dropdown">
+						<a
+							class="dropdown-toggle"
+							href="#"
+							role="button"
+							data-toggle="dropdown"
+						>
+							<span class="user-icon">
+								<img src="vendors/images/photo4.jpg" id="prestador-profile-pic" class="profile-pic-header" alt="" />
+							</span>
+							<span class="user-name">Prestador</span>
+						</a>
+						<div
+							class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list"
+						>
+							<a class="dropdown-item" href="prestador-profile.html"
+								><i class="dw dw-user1"></i> Perfil</a
+							>
+							<a class="dropdown-item" href="prestador-profile.html"
+								><i class="dw dw-settings2"></i>Configurações</a
+							>
+							<a class="dropdown-item" href="faq.html"
+								><i class="dw dw-help"></i> Ajuda</a
+							>
+							<a class="dropdown-item" href="#" id="logout-link"
+								><i class="dw dw-logout"></i> Sair</a
+							>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+        <div class="left-side-bar">
+			<div class="brand-logo">
+				<a href="index.html"> <img src="/Tela Inicial copy/w (1).png" alt="" class="dark-logo" />
+					<img
+						src="/Tela Inicial copy/w (1).png"
+						alt=""
+						class="light-logo"
+					/>
+				</a>
+				<div class="close-sidebar" data-toggle="left-sidebar-close">
+					<i class="ion-close-round"></i>
+				</div>
+			</div>
+			<div class="menu-block customscroll">
+				<div class="sidebar-menu">
+					<ul id="accordion-menu">
+						<li>
+							<a href="index.html" class="dropdown-toggle no-arrow active"> <span class="micon bi bi-house"></span
+								><span class="mtext">Dashboard</span>
+							</a>
+						</li>
+						<li>
+							<a href="prestador-solicitacoes.html" class="dropdown-toggle no-arrow">
+                                <span class="micon bi bi-textarea-resize"></span>
+								<span class="mtext">Solicitações Pendentes</span>
+                                <span id="new-solicitation-indicator" class="badge badge-pill badge-danger" style="display: none; margin-left: 5px;">Novo!</span>
+							</a>
+						</li>
+						<li>
+							<a href="prestador-meus-servicos.html" class="dropdown-toggle no-arrow"> <span class="micon bi bi-check-circle"></span
+								><span class="mtext">Meus Serviços Aceitos</span>
+							</a>
+						</li>
+						<li>
+							<a href="prestador-historico.html" class="dropdown-toggle no-arrow"> <span class="micon bi bi-clock-history"></span
+								><span class="mtext">Histórico de Serviços</span>
+							</a>
+						</li>
+						<li>
+							<a href="prestador-avaliacoes.html" class="dropdown-toggle no-arrow"> <span class="micon bi bi-star-fill"></span
+								><span class="mtext">Minhas Avaliações</span>
+							</a>
+						</li>
+                        <li>
+							<a href="prestador-gerenciar-servicos.html" class="dropdown-toggle no-arrow"> <span class="micon bi bi-gear"></span>
+                                <span class="mtext">Gerenciar Serviços</span>
+                            </a>
+                        </li>
+                         <li>
+							<a href="prestador-minha-disponibilidade.html" class="dropdown-toggle no-arrow"> <span class="micon bi bi-calendar-week"></span>
+                                <span class="mtext">Minha Disponibilidade</span>
+                            </a>
+                        </li>
+                         <li>
+							<a href="chat-list.html" class="dropdown-toggle no-arrow"> <span class="micon bi bi-chat-dots"></span>
+                                <span class="mtext">Chat de Serviços</span>
+                                 <span id="unread-chat-count-sidebar-prestador" class="badge badge-pill badge-danger" style="display: none; margin-left: 5px;">0</span>
+                             </a>
+                        </li>
+
+						<li class="dropdown">
+							<a href="javascript:;" class="dropdown-toggle">
+								<span class="micon bi bi-file-pdf"></span
+								><span class="mtext">Documentação</span>
+							</a>
+							<ul class="submenu">
+								<li><a href="/Tela Inicial copy/Termos e Condições.docx">Termos e Condições</a></li>
+								</ul>
+						</li>
+						</ul>
+				</div>
+			</div>
+		</div>
+
+		<div class="right-sidebar">
+			<div class="sidebar-title">
+				<h3 class="weight-600 font-16 text-blue">
+					Configuração de Layout
+					<span class="btn-block font-weight-400 font-12"
+						>Personalização</span
+					>
+				</h3>
+				<div class="close-sidebar" data-toggle="right-sidebar-close">
+					<i class="icon-copy ion-close-round"></i>
+				</div>
+			</div>
+			<div class="right-sidebar-body customscroll">
+				<div class="right-sidebar-body-content">
+					<h4 class="weight-600 font-18 pb-10">Fundo</h4>
+					<div class="sidebar-btn-group pb-30 mb-10">
+						<a
+							href="javascript:void(0);"
+							class="btn btn-outline-primary header-white active"
+							>Claro</a
+						>
+						<a
+							href="javascript:void(0);"
+							class="btn btn-outline-primary header-dark"
+							>Escuro</a
+						>
+					</div>
+
+					<h4 class="weight-600 font-18 pb-10">Menu Lateral</h4>
+					<div class="sidebar-btn-group pb-30 mb-10">
+						<a
+							href="javascript:void(0);"
+							class="btn btn-outline-primary sidebar-light"
+							>Claro</a
+						>
+						<a
+							href="javascript:void(0);"
+							class="btn btn-outline-primary sidebar-dark active"
+							>Escuro</a
+						>
+					</div>
+
+					<h4 class="weight-600 font-18 pb-10">Icone Dropdown</h4>
+					<div class="sidebar-radio-group pb-10 mb-10">
+						<div class="custom-control custom-radio custom-control-inline">
+							<input
+								type="radio"
+								id="sidebaricon-1"
+								name="menu-dropdown-icon"
+								class="custom-control-input"
+								value="icon-style-1"
+								checked=""
+							/>
+							<label class="custom-control-label" for="sidebaricon-1"
+								><i class="fa fa-angle-down"></i
+							></label>
+						</div>
+						<div class="custom-control custom-radio custom-control-inline">
+							<input
+								type="radio"
+								id="sidebaricon-2"
+								name="menu-dropdown-icon"
+								class="custom-control-input"
+								value="icon-style-2"
+							/>
+							<label class="custom-control-label" for="sidebaricon-2"
+								><i class="ion-plus-round"></i
+							></label>
+						</div>
+						<div class="custom-control custom-radio custom-control-inline">
+							<input
+								type="radio"
+								id="sidebariconlist-3"
+								name="menu-list-icon"
+								class="custom-control-input"
+								value="icon-list-style-3"
+							/>
+							<label class="custom-control-label" for="sidebariconlist-3"
+								><i class="fa fa-angle-double-right"></i
+							></label>
+						</div>
+					</div>
+
+					<h4 class="weight-600 font-18 pb-10">Icones do Menu</h4>
+					<div class="sidebar-radio-group pb-30 mb-10">
+						<div class="custom-control custom-radio custom-control-inline">
+							<input
+								type="radio"
+								id="sidebariconlist-1"
+								name="menu-list-icon"
+								class="custom-control-input"
+								value="icon-list-style-1"
+								checked=""
+							/>
+							<label class="custom-control-label" for="sidebariconlist-1"
+								><i class="ion-minus-round"></i
+							></label>
+						</div>
+						<div class="custom-control custom-radio custom-control-inline">
+							<input
+								type="radio"
+								id="sidebariconlist-2"
+								name="menu-list-icon"
+								class="custom-control-input"
+								value="icon-list-style-2"
+							/>
+							<label class="custom-control-label" for="sidebariconlist-2"
+								><i class="fa fa-circle-o" aria-hidden="true"></i
+							></label>
+						</div>
+						<div class="custom-control custom-radio custom-control-inline">
+							<input
+								type="radio"
+								id="sidebariconlist-3"
+								name="menu-list-icon"
+								class="custom-control-input"
+								value="icon-list-style-3"
+							/>
+							<label class="custom-control-label" for="sidebariconlist-3"
+								><i class="dw dw-check"></i
+							></label>
+						</div>
+						<div class="custom-control custom-radio custom-control-inline">
+							<input
+								type="radio"
+								id="sidebariconlist-4"
+								name="menu-list-icon"
+								class="custom-control-input"
+								value="icon-list-style-4"
+								checked=""
+							/>
+							<label class="custom-control-label" for="sidebariconlist-4"
+								><i class="icon-copy dw dw-next-2"></i
+							></label>
+						</div>
+						<div class="custom-control custom-radio custom-control-inline">
+							<input
+								type="radio"
+								id="sidebariconlist-5"
+								name="menu-list-icon"
+								class="custom-control-input"
+								value="icon-list-style-5"
+							/>
+							<label class="custom-control-label" for="sidebariconlist-5"
+								><i class="dw dw-fast-forward-1"></i
+							></label>
+						</div>
+						<div class="custom-control custom-radio custom-control-inline">
+							<input
+								type="radio"
+								id="sidebariconlist-6"
+								name="menu-list-icon"
+								class="custom-control-input"
+								value="icon-list-style-6"
+							/>
+							<label class="custom-control-label" for="sidebariconlist-6"
+								><i class="dw dw-next"></i
+							></label>
+						</div>
+					</div>
+
+					<div class="reset-options pt-30 text-center">
+						<button class="btn btn-danger" id="reset-settings">
+							Resetar Configurações
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="mobile-menu-overlay"></div>
+
+		<div class="main-container">
+			<div class="xs-pd-20-10 pd-ltr-20">
+				 <div class="title pb-20">
+					<div>
+						<h2 class="h3 mb-0">Minha Disponibilidade</h2>
+					</div>
+				</div>
+
+                <div class="card-box pb-10 mb-20 availability-section">
+                    <div class="h5 pd-20 mb-0">Definir Horários de Trabalho e Dias de Folga</div>
+
+                    <div id="availability-loading" class="feedback-message feedback-loading" style="display: none;">Carregando sua disponibilidade...</div>
+                    <div id="availability-feedback" class="feedback-message feedback-error" style="display: none;"></div>
+                     <div id="availability-empty" class="feedback-message feedback-empty" style="display: none;">Nenhuma configuração de disponibilidade encontrada. Defina seus horários abaixo.</div>
+
+
+                    <form id="availability-form" class="availability-form pd-20">
+                        <div class="row">
+                            <div class="col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label for="start-time">Horário de Início Padrão:</label>
+                                    <input type="time" id="start-time" name="start-time" class="form-control" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label for="end-time">Horário de Fim Padrão:</label>
+                                    <input type="time" id="end-time" name="end-time" class="form-control" required>
+                                </div>
+                            </div>
+                        </div>
+
+                         <div class="form-group">
+                             <label>Dias da Semana Disponíveis:</label>
+                             <div>
+                                 <div class="custom-control custom-checkbox custom-control-inline day-checkbox">
+                                     <input type="checkbox" class="custom-control-input" id="day-monday" name="days[]" value="monday">
+                                     <label class="custom-control-label" for="day-monday">Segunda-feira</label>
+                                 </div>
+                                  <div class="custom-control custom-checkbox custom-control-inline day-checkbox">
+                                     <input type="checkbox" class="custom-control-input" id="day-tuesday" name="days[]" value="tuesday">
+                                     <label class="custom-control-label" for="day-tuesday">Terça-feira</label>
+                                 </div>
+                                  <div class="custom-control custom-checkbox custom-control-inline day-checkbox">
+                                     <input type="checkbox" class="custom-control-input" id="day-wednesday" name="days[]" value="wednesday">
+                                     <label class="custom-control-label" for="day-wednesday">Quarta-feira</label>
+                                 </div>
+                                  <div class="custom-control custom-checkbox custom-control-inline day-checkbox">
+                                     <input type="checkbox" class="custom-control-input" id="day-thursday" name="days[]" value="thursday">
+                                     <label class="custom-control-label" for="day-thursday">Quinta-feira</label>
+                                 </div>
+                                  <div class="custom-control custom-checkbox custom-control-inline day-checkbox">
+                                     <input type="checkbox" class="custom-control-input" id="day-friday" name="days[]" value="friday">
+                                     <label class="custom-control-label" for="day-friday">Sexta-feira</label>
+                                 </div>
+                                  <div class="custom-control custom-checkbox custom-control-inline day-checkbox">
+                                     <input type="checkbox" class="custom-control-input" id="day-saturday" name="days[]" value="saturday">
+                                     <label class="custom-control-label" for="day-saturday">Sábado</label>
+                                 </div>
+                                  <div class="custom-control custom-checkbox custom-control-inline day-checkbox">
+                                     <input type="checkbox" class="custom-control-input" id="day-sunday" name="days[]" value="sunday">
+                                     <label class="custom-control-label" for="day-sunday">Domingo</label>
+                                 </div>
+                             </div>
+                         </div>
+
+                         <div class="form-group">
+                             <label for="temporary-unavailability">Marcar como Temporariamente Indisponível:</label>
+                             <select id="temporary-unavailability" name="temporary-unavailability" class="form-control">
+                                 <option value="false">Não</option>
+                                 <option value="true">Sim</option>
+                             </select>
+                             <small class="form-text text-muted">Marcar como "Sim" ocultará seu perfil e serviços para novas solicitações temporariamente.</small>
+                         </div>
+
+                        <button type="submit" class="btn btn-primary">Salvar Disponibilidade</button>
+                    </form>
+
+                     <div id="specific-unavailability" class="pd-20">
+                         <h5 class="mb-3">Períodos de Indisponibilidade Específicos</h5>
+                         <div id="specific-unavailability-list">
+                             <p id="no-specific-unavailability" style="display: none;">Nenhum período de indisponibilidade específico definido.</p>
+                         </div>
+                         <button class="btn btn-secondary btn-sm mt-3" id="add-unavailability-btn">Adicionar Período Específico</button>
+                     </div>
+
+                     <div class="modal fade" id="specificUnavailabilityModal" tabindex="-1" role="dialog" aria-labelledby="specificUnavailabilityModalLabel" aria-hidden="true">
+                         <div class="modal-dialog" role="document">
+                             <div class="modal-content">
+                                 <div class="modal-header">
+                                     <h5 class="modal-title" id="specificUnavailabilityModalLabel">Adicionar Período de Indisponibilidade</h5>
+                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                         <span aria-hidden="true">&times;</span>
+                                     </button>
+                                 </div>
+                                 <form id="specific-unavailability-form">
+                                     <div class="modal-body">
+                                         <input type="hidden" id="specific-unavailability-id">
+                                         <div class="form-group">
+                                             <label for="unavailability-start-date">Data de Início:</label>
+                                             <input type="date" class="form-control" id="unavailability-start-date" required>
+                                         </div>
+                                          <div class="form-group">
+                                             <label for="unavailability-end-date">Data de Fim:</label>
+                                             <input type="date" class="form-control" id="unavailability-end-date" required>
+                                         </div>
+                                          <div class="form-group">
+                                             <label for="unavailability-reason">Motivo (Opcional):</label>
+                                             <input type="text" class="form-control" id="unavailability-reason">
+                                         </div>
+                                     </div>
+                                     <div class="modal-footer">
+                                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                                         <button type="submit" class="btn btn-primary">Salvar Período</button>
+                                     </div>
+                                 </form>
+                             </div>
+                         </div>
+                     </div>
+
+
+                     <div class="card-box pd-20 mb-20">
+                          <div class="h5 mb-3">Visualização da Agenda</div>
+                         <div id='calendar'></div>
+                     </div>
+
+                </div>
+
+
+				<div class="footer-wrap pd-20 mb-20 card-box">
+					Plataforma WYN-TECH
+				</div>
+			</div>
+		</div>
+
+         <div id="toastContainer">
+            </div>
+
+
+		<script src="vendors/scripts/core.js"></script>
+		<script src="vendors/scripts/script.min.js"></script>
+		<script src="vendors/scripts/process.js"></script>
+		<script src="vendors/scripts/layout-settings.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+        <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js'></script>
+        <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales/pt-br.js'></script> <noscript>
+			<iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NXZMQSS" height="0" width="0" style="display: none; visibility: hidden"></iframe>
+		</noscript>
+
+		<script>
+			let prestadorLogado = null; // Variável para armazenar os dados do prestador logado
+            let calendar = null; // Variável para a instância do FullCalendar
+
+            // Função para exibir toast notifications (copiada do dashboard)
+            function showToast(message, type = 'success') {
+                const toastContainer = document.getElementById('toastContainer');
+                if (!toastContainer) {
+                    console.error("Toast container não encontrado!");
+                    return;
+                }
+
+                const toastElement = document.createElement('div');
+                toastElement.classList.add('toast');
+                toastElement.setAttribute('role', 'alert');
+                toastElement.setAttribute('aria-live', 'assertive');
+                toastElement.setAttribute('aria-atomic', 'true');
+                toastElement.setAttribute('data-delay', '5000');
+
+                toastElement.innerHTML = `
+                    <div class="toast-header ${type === 'success' ? 'bg-success text-white' : type === 'danger' ? 'bg-danger text-white' : 'bg-info text-white'}">
+                        <strong class="mr-auto">${type === 'success' ? 'Sucesso' : type === 'danger' ? 'Erro' : 'Informação'}</strong>
+                        <small>Agora</small>
+                        <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="toast-body">
+                        ${message}
+                    </div>
+                `;
+
+                toastContainer.appendChild(toastElement);
+                $(toastElement).toast('show');
+                $(toastElement).on('hidden.bs.toast', function () {
+                    $(this).remove();
+                });
+            }
+
+			async function carregarPerfilPrestador() {
+				const token = localStorage.getItem('token');
+				const prestadorCache = localStorage.getItem('prestador');
+
+				if (!token || !prestadorCache) {
+					console.warn("Prestador não autenticado. Redirecionando para login.");
+					window.location.href = "login-prestador.html"; // Corrigido para login-prestador.html
+					return;
+				}
+
+				try {
+					 prestadorLogado = JSON.parse(prestadorCache);
+					 const nomeSpan = document.querySelector(".user-name");
+                     const prestadorProfilePicImg = document.getElementById("prestador-profile-pic");
+
+					 if (nomeSpan && prestadorLogado?.nome) {
+						 nomeSpan.textContent = prestadorLogado.nome;
+					 }
+                     if (prestadorProfilePicImg && prestadorLogado?.foto_perfil_url) {
+                         prestadorProfilePicImg.src = prestadorLogado.foto_perfil_url;
+                          prestadorProfilePicImg.onerror = function() {
+                             this.onerror = null;
+                             this.src = "vendors/images/photo4.jpg";
+                         };
+                     } else if (prestadorProfilePicImg) {
+                          prestadorProfilePicImg.src = "vendors/images/photo4.jpg";
+                     }
+
+					 const res = await fetch('http://localhost:3000/perfil', {
+						 headers: { 'Authorization': 'Bearer ' + token }
+					 });
+
+					 const resClone = res.clone();
+
+					 if (!res.ok) {
+						 if (res.status === 401 || res.status === 403) {
+							 console.error("Token inválido ou expirado. Redirecionando para login.");
+							 showToast("Sua sessão expirou. Por favor, faça login novamente.", 'danger');
+							 setTimeout(() => { window.location.href = "login-prestador.html"; }, 3000); // Corrigido
+							 return;
+						 }
+						 throw new Error(`Erro HTTP ao buscar perfil: ${res.status}`);
+					 }
+
+					let data = {};
+					 try {
+						 data = await res.json();
+					 } catch(jsonError) {
+						 console.error("Erro ao parsear JSON do perfil:", await resClone.text());
+						 throw new Error("Resposta de perfil inválida.");
+					 }
+
+					 if (data.tipo !== 'prestador' || !data.prestador?._id) {
+						  console.error("Token válido, mas não corresponde a um prestador.");
+						  showToast("Acesso negado para este tipo de usuário.", 'danger');
+						   setTimeout(() => { window.location.href = "login.html"; }, 3000); // Redireciona para login geral se não for prestador
+						  return;
+					 }
+
+					 prestadorLogado = data.prestador;
+
+					if (prestadorLogado?.nome && nomeSpan) {
+						nomeSpan.textContent = prestadorLogado.nome;
+					}
+                     if (prestadorProfilePicImg && prestadorLogado?.foto_perfil_url) {
+                         prestadorProfilePicImg.src = prestadorLogado.foto_perfil_url;
+                          prestadorProfilePicImg.onerror = function() {
+                             this.onerror = null;
+                             this.src = "vendors/images/photo4.jpg";
+                         };
+                     } else if (prestadorProfilePicImg) {
+                          prestadorProfilePicImg.src = "vendors/images/photo4.jpg";
+                     }
+
+					console.log("Perfil do prestador carregado:", prestadorLogado);
+
+                    // Após carregar o perfil, carregar a disponibilidade
+                    carregarDisponibilidadePrestador();
+                    carregarContadorMensagensNaoLidas(); // Carrega contador de mensagens
+                    iniciarPollingMensagensNaoLidas(); // Inicia polling para mensagens
+
+				} catch (err) {
+					console.error('Erro ao carregar perfil do prestador:', err);
+					 if (prestadorLogado) {
+						 showToast('Erro ao validar sessão do prestador. Pode haver problemas na conexão.', 'danger');
+					 } else {
+						 showToast('Ocorreu um erro ao carregar informações do prestador.', 'danger');
+					 }
+				}
+			}
+
+            // Função para carregar o contador de mensagens não lidas (copiada do dashboard)
+            async function carregarContadorMensagensNaoLidas() {
+                 const token = localStorage.getItem("token");
+                 const unreadCountElementSidebar = document.getElementById("unread-chat-count-sidebar");
+                 const notificationCountElement = document.getElementById("notification-count"); // Contador no sino
+
+                 if (!token) {
+                     if (unreadCountElementSidebar) unreadCountElementSidebar.style.display = 'none';
+                     if (notificationCountElement) notificationCountElement.style.display = 'none';
+                     return;
+                 }
+
+                 try {
+                     const response = await fetch("http://localhost:3000/api/chat/unread-count", {
+                         headers: { 'Authorization': `Bearer ${token}` }
+                     });
+
+                     if (!response.ok) {
+                         console.error("Erro ao buscar contagem de mensagens não lidas:", response.status);
+                         if (unreadCountElementSidebar) unreadCountElementSidebar.style.display = 'none';
+                         if (notificationCountElement) notificationCountElement.style.display = 'none';
+                         return;
+                     }
+
+                     const data = await response.json();
+                     const unreadCount = data.total || 0;
+
+                     if (unreadCountElementSidebar) {
+                         if (unreadCount > 0) {
+                             unreadCountElementSidebar.textContent = unreadCount;
+                             unreadCountElementSidebar.style.display = 'inline';
+                         } else {
+                             unreadCountElementSidebar.style.display = 'none';
+                         }
+                     }
+
+                      if (notificationCountElement) {
+                          if (unreadCount > 0) {
+                               notificationCountElement.textContent = unreadCount;
+                               notificationCountElement.style.display = 'inline';
+                          } else {
+                               notificationCountElement.style.display = 'none';
+                          }
+                      }
+
+                 } catch (error) {
+                     console.error("Erro ao carregar contagem de mensagens não lidas:", error);
+                      if (unreadCountElementSidebar) unreadCountElementSidebar.style.display = 'none';
+                      if (notificationCountElement) notificationCountElement.style.display = 'none';
+                 }
+            }
+
+             // Função para iniciar o polling de mensagens não lidas (copiada do dashboard)
+             let unreadChatPollingInterval = null;
+             function iniciarPollingMensagensNaoLidas() {
+                 if (unreadChatPollingInterval) {
+                     clearInterval(unreadChatPollingInterval);
+                 }
+                 unreadChatPollingInterval = setInterval(() => {
+                     console.log("Verificando mensagens não lidas...");
+                     carregarContadorMensagensNaoLidas();
+                 }, 30000);
+                 console.log("Polling de mensagens não lidas iniciado.");
+             }
+
+             // Função para parar o polling de mensagens não lidas (copiada do dashboard)
+             function pararPollingMensagensNaoLidas() {
+                 if (unreadChatPollingInterval) {
+                     clearInterval(unreadChatPollingInterval);
+                     unreadChatPollingInterval = null;
+                     console.log("Polling de mensagens não lidas parado.");
+                 }
+             }
+
+
+            // Função para carregar a disponibilidade do prestador
+            async function carregarDisponibilidadePrestador() {
+                const loading = document.getElementById("availability-loading");
+                const feedback = document.getElementById("availability-feedback");
+                const empty = document.getElementById("availability-empty");
+                const form = document.getElementById("availability-form");
+                const specificUnavailabilityList = document.getElementById("specific-unavailability-list");
+                const noSpecificUnavailability = document.getElementById("no-specific-unavailability");
+
+                loading.style.display = "block";
+                feedback.style.display = "none";
+                empty.style.display = "none";
+                form.style.display = "none"; // Esconde o formulário enquanto carrega
+                specificUnavailabilityList.innerHTML = ""; // Limpa a lista de específicos
+                noSpecificUnavailability.style.display = 'none';
+
+
+                const token = localStorage.getItem("token");
+                const prestadorId = prestadorLogado?._id;
+
+                if (!token || !prestadorId) {
+                     feedback.textContent = "Autenticação necessária para carregar disponibilidade.";
+                     feedback.style.display = "block";
+                     loading.style.display = "none";
+                     return;
+                }
+
+                try {
+                    // Endpoint para buscar a disponibilidade do prestador logado
+                    const response = await fetch(`http://localhost:3000/prestador/disponibilidade/${prestadorId}`, {
+                         headers: { 'Authorization': `Bearer ${token}` }
+                    });
+
+                    if (!response.ok) {
+                         if (response.status === 404) {
+                             // Disponibilidade não encontrada, é a primeira vez
+                             console.log("Disponibilidade não encontrada para este prestador. Exibindo formulário vazio.");
+                             empty.style.display = 'block';
+                             form.style.display = 'block'; // Exibe o formulário para configuração inicial
+                             loading.style.display = "none";
+                             // Inicializa o calendário mesmo sem dados de disponibilidade padrão
+                             renderizarCalendario({ periodos_indisponibilidade_especificos: [] });
+                             return;
+                         }
+                         if (response.status === 401 || response.status === 403) {
+                              showToast("Sua sessão expirou ou você não tem permissão. Faça login novamente.", 'danger');
+                              setTimeout(() => { window.location.href = "login-prestador.html"; }, 3000);
+                              return;
+                         }
+                         const errorText = await response.text();
+                         console.error("Erro HTTP ao buscar disponibilidade:", response.status, errorText);
+                         throw new Error(errorText || `Erro HTTP ao buscar disponibilidade: ${response.status}`);
+                    }
+
+                    const disponibilidade = await response.json();
+                    console.log("Disponibilidade carregada:", disponibilidade);
+
+                    // Preenche o formulário com os dados carregados
+                    document.getElementById("start-time").value = disponibilidade.horario_inicio_padrao || '';
+                    document.getElementById("end-time").value = disponibilidade.horario_fim_padrao || '';
+
+                    // Marca os checkboxes dos dias disponíveis
+                    const dayCheckboxes = form.querySelectorAll('input[name="days[]"]');
+                    dayCheckboxes.forEach(checkbox => {
+                        checkbox.checked = disponibilidade.dias_disponiveis?.includes(checkbox.value) || false;
+                    });
+
+                    // Define o status de indisponibilidade temporária
+                    document.getElementById("temporary-unavailability").value = disponibilidade.temporariamente_indisponivel ? 'true' : 'false';
+
+                    // Preenche a lista de períodos de indisponibilidade específicos
+                    if (disponibilidade.periodos_indisponibilidade_especificos && disponibilidade.periodos_indisponibilidade_especificos.length > 0) {
+                         disponibilidade.periodos_indisponibilidade_especificos.forEach(periodo => {
+                             adicionarPeriodoIndisponibilidadeUI(periodo);
+                         });
+                    } else {
+                         noSpecificUnavailability.style.display = 'block';
+                    }
+
+
+                    form.style.display = "block"; // Exibe o formulário preenchido
+                    empty.style.display = 'none'; // Garante que a mensagem de vazio esteja oculta
+
+                    // Inicializa ou atualiza o FullCalendar com os eventos
+                    renderizarCalendario(disponibilidade);
+
+
+                } catch (error) {
+                    console.error("Erro ao carregar disponibilidade:", error);
+                    feedback.textContent = `Erro ao carregar disponibilidade: ${error.message || 'Verifique a conexão.'}`;
+                    feedback.style.display = "block";
+                    form.style.display = "none"; // Esconde o formulário em caso de erro grave
+                    empty.style.display = 'none';
+                } finally {
+                    loading.style.display = "none";
+                }
+            }
+
+            // Função para renderizar ou atualizar o FullCalendar
+            function renderizarCalendario(disponibilidade) {
+                 const calendarEl = document.getElementById('calendar');
+
+                 // Destroi o calendário existente se houver
+                 if (calendar) {
+                     calendar.destroy();
+                 }
+
+                 // Formata os eventos para o FullCalendar
+                 const events = [];
+
+                 // Adiciona os períodos de indisponibilidade específicos como eventos
+                 if (disponibilidade.periodos_indisponibilidade_especificos) {
+                     disponibilidade.periodos_indisponibilidade_especificos.forEach(periodo => {
+                         // Ajusta a data de fim para incluir o dia final no FullCalendar
+                         const dataFimAjustada = new Date(periodo.data_fim);
+                         dataFimAjustada.setDate(dataFimAjustada.getDate() + 1);
+
+                         events.push({
+                             id: periodo._id, // Usar o ID do backend
+                             title: periodo.motivo || 'Indisponível',
+                             start: periodo.data_inicio,
+                             end: dataFimAjustada.toISOString().split('T')[0], // Formato YYYY-MM-DD
+                             allDay: true,
+                             backgroundColor: '#dc3545', // Cor vermelha para indisponibilidade
+                             borderColor: '#dc3545'
+                         });
+                     });
+                 }
+
+                 // Cria a nova instância do calendário
+                 calendar = new FullCalendar.Calendar(calendarEl, {
+                     initialView: 'dayGridMonth', // Visualização inicial (mês)
+                     locale: 'pt-br', // Define o idioma para português
+                     headerToolbar: {
+                         left: 'prev,next today',
+                         center: 'title',
+                         right: 'dayGridMonth,timeGridWeek,timeGridDay' // Visualizações disponíveis
+                     },
+                     editable: false, // Define se eventos podem ser arrastados/redimensionados
+                     selectable: true, // Permite selecionar datas/períodos
+                     events: events, // Carrega os eventos
+
+                     // Opcional: Adicionar interações (clique em evento, seleção)
+                     dateClick: function(info) {
+                          console.log('Data clicada:', info.dateStr);
+                          // Abre modal para adicionar indisponibilidade específica
+                          $('#specificUnavailabilityModal').modal('show');
+                          document.getElementById('specific-unavailability-id').value = ''; // Limpa o ID para adicionar novo
+                          document.getElementById('unavailability-start-date').value = info.dateStr;
+                          document.getElementById('unavailability-end-date').value = ''; // Limpa data fim
+                          document.getElementById('unavailability-reason').value = ''; // Limpa motivo
+                          document.getElementById('specificUnavailabilityModalLabel').textContent = 'Adicionar Período de Indisponibilidade';
+
+                          // Remove o botão de deletar se existir
+                          const deleteButton = document.getElementById('delete-unavailability-btn');
+                          if (deleteButton) {
+                               deleteButton.remove();
+                          }
+                     },
+                     eventClick: function(info) {
+                         console.log('Evento clicado:', info.event.id);
+                         // Abre modal para editar/deletar indisponibilidade específica
+                         const periodoId = info.event.id;
+                         // Buscar o período no backend ou na lista carregada para ter os dados completos
+                         // Para simplificar, vamos buscar na lista que já temos
+                         const periodo = disponibilidade.periodos_indisponibilidade_especificos.find(p => p._id === periodoId);
+
+                         if (periodo) {
+                              $('#specificUnavailabilityModal').modal('show');
+                              document.getElementById('specific-unavailability-id').value = periodo._id;
+                              // Formata as datas para YYYY-MM-DD para preencher os inputs type="date"
+                              document.getElementById('unavailability-start-date').value = new Date(periodo.data_inicio).toISOString().split('T')[0];
+                              document.getElementById('unavailability-end-date').value = periodo.data_fim ? new Date(periodo.data_fim).toISOString().split('T')[0] : '';
+                              document.getElementById('unavailability-reason').value = periodo.motivo || '';
+                              document.getElementById('specificUnavailabilityModalLabel').textContent = 'Editar Período de Indisponibilidade';
+
+                              // Adicionar botão de deletar no modal (se não existir)
+                              if (!document.getElementById('delete-unavailability-btn')) {
+                                   const deleteButton = document.createElement('button');
+                                   deleteButton.setAttribute('type', 'button');
+                                   deleteButton.classList.add('btn', 'btn-danger', 'mr-auto');
+                                   deleteButton.setAttribute('id', 'delete-unavailability-btn');
+                                   deleteButton.textContent = 'Excluir Período';
+                                   // Adiciona o listener para chamar a função de deletar
+                                   deleteButton.addEventListener('click', () => deletarPeriodoIndisponibilidade(periodo._id));
+                                   document.querySelector('#specificUnavailabilityModal .modal-footer').prepend(deleteButton); // Adiciona antes dos outros botões
+                              } else {
+                                   // Atualiza o listener do botão de deletar existente
+                                   const deleteButton = document.getElementById('delete-unavailability-btn');
+                                   const newDeleteButton = deleteButton.cloneNode(true); // Clona para remover listeners antigos
+                                   deleteButton.parentNode.replaceChild(newDeleteButton, deleteButton);
+                                   newDeleteButton.addEventListener('click', () => deletarPeriodoIndisponibilidade(periodo._id));
+                              }
+
+
+                         }
+                     }
+                 });
+
+                 // Renderiza o calendário
+                 calendar.render();
+            }
+
+
+            // Função para adicionar um período de indisponibilidade específico na UI (lista)
+            function adicionarPeriodoIndisponibilidadeUI(periodo) {
+                 const list = document.getElementById("specific-unavailability-list");
+                 const noSpecificUnavailability = document.getElementById("no-specific-unavailability");
+
+                 noSpecificUnavailability.style.display = 'none'; // Oculta a mensagem de vazio
+
+                 const item = document.createElement('div');
+                 item.classList.add('alert', 'alert-warning', 'alert-dismissible', 'fade', 'show'); // Estilo Bootstrap
+                 item.setAttribute('role', 'alert');
+                 item.setAttribute('data-id', periodo._id); // Armazena o ID do backend
+
+                 const dataInicio = new Date(periodo.data_inicio).toLocaleDateString('pt-BR');
+                 const dataFim = periodo.data_fim ? new Date(periodo.data_fim).toLocaleDateString('pt-BR') : 'Não especificada';
+                 const motivo = periodo.motivo ? ` - ${periodo.motivo}` : '';
+
+                 item.innerHTML = `
+                     De <strong>${dataInicio}</strong> até <strong>${dataFim}</strong>${motivo}
+                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                         <span aria-hidden="true">&times;</span>
+                     </button>
+                     `;
+
+                 // Adiciona listener para o evento de fechar do alert (para remover da UI)
+                 // NOTA: Fechar o alert na UI NÃO deleta no backend. A exclusão ocorre via modal.
+                 $(item).on('closed.bs.alert', function () {
+                      // console.log("Alerta de indisponibilidade fechado na UI:", $(this).data('id'));
+                 });
+
+
+                 list.appendChild(item);
+            }
+
+
+            // Listener para o formulário de disponibilidade padrão
+            document.getElementById("availability-form").addEventListener("submit", async (event) => {
+                 event.preventDefault();
+
+                 const form = event.target;
+                 const submitButton = form.querySelector('button[type="submit"]');
+                 submitButton.disabled = true;
+                 submitButton.textContent = "Salvando...";
+
+                 const token = localStorage.getItem("token");
+                 const prestadorId = prestadorLogado?._id;
+
+                 if (!token || !prestadorId) {
+                      showToast("Erro: Usuário não autenticado.", 'danger');
+                      submitButton.disabled = false;
+                      submitButton.textContent = "Salvar Disponibilidade";
+                      return;
+                 }
+
+                 const horarioInicio = document.getElementById("start-time").value;
+                 const horarioFim = document.getElementById("end-time").value;
+                 const diasDisponiveis = Array.from(form.querySelectorAll('input[name="days[]"]:checked')).map(cb => cb.value);
+                 const temporariamenteIndisponivel = document.getElementById("temporary-unavailability").value === 'true';
+
+                 // Validação básica
+                 if (!horarioInicio || !horarioFim || diasDisponiveis.length === 0) {
+                      showToast("Por favor, preencha o horário de início, fim e selecione pelo menos um dia.", 'danger');
+                      submitButton.disabled = false;
+                      submitButton.textContent = "Salvar Disponibilidade";
+                      return;
+                 }
+
+                 const disponibilidadeData = {
+                     horario_inicio_padrao: horarioInicio,
+                     horario_fim_padrao: horarioFim,
+                     dias_disponiveis: diasDisponiveis,
+                     temporariamente_indisponivel: temporariamenteIndisponivel
+                 };
+
+                 try {
+                     // Endpoint para salvar a disponibilidade padrão (usando PUT com upsert no backend)
+                     const response = await fetch(`http://localhost:3000/prestador/disponibilidade/${prestadorId}`, {
+                         method: 'PUT',
+                         headers: {
+                             'Content-Type': 'application/json',
+                             'Authorization': `Bearer ${token}`
+                         },
+                         body: JSON.stringify(disponibilidadeData)
+                     });
+
+                     const result = await response.json();
+
+                     if (!response.ok) {
+                          showToast(result.message || "Erro ao salvar disponibilidade.", 'danger');
+                          console.error("Erro ao salvar disponibilidade:", result);
+                     } else {
+                         showToast("Disponibilidade salva com sucesso!", 'success');
+                         // Recarrega a disponibilidade para garantir que a UI esteja sincronizada
+                         carregarDisponibilidadePrestador();
+                     }
+
+                 } catch (error) {
+                     console.error("Erro ao salvar disponibilidade:", error);
+                     showToast(error.message || "Erro ao salvar disponibilidade.", 'danger');
+                 } finally {
+                     submitButton.disabled = false;
+                     submitButton.textContent = "Salvar Disponibilidade";
+                 }
+            });
+
+            // Listener para o botão "Adicionar Período Específico"
+            document.getElementById("add-unavailability-btn").addEventListener("click", () => {
+                 // Limpa o modal e abre para adicionar novo período
+                 document.getElementById('specific-unavailability-id').value = '';
+                 document.getElementById('unavailability-start-date').value = '';
+                 document.getElementById('unavailability-end-date').value = '';
+                 document.getElementById('unavailability-reason').value = '';
+                 document.getElementById('specificUnavailabilityModalLabel').textContent = 'Adicionar Período de Indisponibilidade';
+
+                 // Remove o botão de deletar se existir
+                 const deleteButton = document.getElementById('delete-unavailability-btn');
+                 if (deleteButton) {
+                      deleteButton.remove();
+                 }
+
+                 $('#specificUnavailabilityModal').modal('show');
+            });
+
+
+            // Listener para o formulário do modal de indisponibilidade específica
+            document.getElementById("specific-unavailability-form").addEventListener("submit", async (event) => {
+                 event.preventDefault();
+
+                 const form = event.target;
+                 const submitButton = form.querySelector('button[type="submit"]');
+                 submitButton.disabled = true;
+                 submitButton.textContent = "Salvando...";
+
+                 const token = localStorage.getItem("token");
+                 const prestadorId = prestadorLogado?._id;
+                 const periodoId = document.getElementById('specific-unavailability-id').value;
+
+                 if (!token || !prestadorId) {
+                      showToast("Erro: Usuário não autenticado.", 'danger');
+                      submitButton.disabled = false;
+                      submitButton.textContent = "Salvar Período";
+                      return;
+                 }
+
+                 const dataInicio = document.getElementById("unavailability-start-date").value;
+                 const dataFim = document.getElementById("unavailability-end-date").value;
+                 const motivo = document.getElementById("unavailability-reason").value;
+
+                 // Validação básica no frontend (backend também valida)
+                 if (!dataInicio || !dataFim) {
+                      showToast("Por favor, preencha a data de início e fim do período.", 'danger');
+                      submitButton.disabled = false;
+                      submitButton.textContent = "Salvar Período";
+                      return;
+                 }
+
+                 // Validação de data fim ser posterior ou igual à data início
+                 if (new Date(dataFim) < new Date(dataInicio)) {
+                      showToast("A data de fim não pode ser anterior à data de início.", 'danger');
+                      submitButton.disabled = false;
+                      submitButton.textContent = "Salvar Período";
+                      return;
+                 }
+
+
+                 const periodoData = {
+                     data_inicio: dataInicio,
+                     data_fim: dataFim,
+                     motivo: motivo
+                 };
+
+                 try {
+                     let response;
+                     let method;
+                     let url;
+
+                     if (periodoId) { // Se tem ID, é uma edição (PUT)
+                         method = 'PUT';
+                         url = `http://localhost:3000/prestador/disponibilidade/${prestadorId}/periodo/${periodoId}`;
+                     } else { // Se não tem ID, é uma adição (POST)
+                         method = 'POST';
+                         url = `http://localhost:3000/prestador/disponibilidade/${prestadorId}/periodo`;
+                     }
+
+                     response = await fetch(url, {
+                         method: method,
+                         headers: {
+                             'Content-Type': 'application/json',
+                             'Authorization': `Bearer ${token}`
+                         },
+                         body: JSON.stringify(periodoData)
+                     });
+
+                     const result = await response.json();
+
+                     if (!response.ok) {
+                          showToast(result.message || `Erro ao ${periodoId ? 'atualizar' : 'adicionar'} período.`, 'danger');
+                          console.error(`Erro ao ${periodoId ? 'atualizar' : 'adicionar'} período:`, result);
+                     } else {
+                         showToast(`Período ${periodoId ? 'atualizado' : 'adicionado'} com sucesso!`, 'success');
+                         $('#specificUnavailabilityModal').modal('hide'); // Fecha o modal
+                         carregarDisponibilidadePrestador(); // Recarrega tudo para atualizar lista e calendário
+                     }
+
+                 } catch (error) {
+                     console.error(`Erro ao ${periodoId ? 'atualizar' : 'adicionar'} período:`, error);
+                     showToast(error.message || `Erro ao ${periodoId ? 'atualizar' : 'adicionar'} período.`, 'danger');
+                 } finally {
+                     submitButton.disabled = false;
+                     submitButton.textContent = "Salvar Período";
+                 }
+            });
+
+            // Função para deletar um período de indisponibilidade específico
+            async function deletarPeriodoIndisponibilidade(periodoId) {
+                 if (!confirm("Tem certeza que deseja excluir este período de indisponibilidade?")) return;
+
+                 const token = localStorage.getItem("token");
+                 const prestadorId = prestadorLogado?._id;
+
+                 if (!token || !prestadorId || !periodoId) {
+                      showToast("Erro: Dados insuficientes para excluir.", 'danger');
+                      return;
+                 }
+
+                 try {
+                     const response = await fetch(`http://localhost:3000/prestador/disponibilidade/${prestadorId}/periodo/${periodoId}`, {
+                         method: 'DELETE',
+                         headers: {
+                             'Authorization': `Bearer ${token}`
+                         }
+                     });
+
+                     const result = await response.json();
+
+                     if (!response.ok) {
+                          showToast(result.message || "Erro ao excluir período.", 'danger');
+                          console.error("Erro ao excluir período:", result);
+                     } else {
+                         showToast("Período excluído com sucesso!", 'success');
+                         $('#specificUnavailabilityModal').modal('hide'); // Fecha o modal
+                         carregarDisponibilidadePrestador(); // Recarrega tudo para atualizar lista e calendário
+                     }
+
+                 } catch (error) {
+                     console.error("Erro ao excluir período:", error);
+                     showToast(error.message || "Erro ao excluir período.", 'danger');
+                 }
+            }
+
+
+			// Chamar carregarPerfilPrestador ao carregar a página
+			document.addEventListener("DOMContentLoaded", () => {
+				 carregarPerfilPrestador();
+                 // Inicializa o calendário vazio ao carregar a página, será preenchido depois
+                 // pela função carregarDisponibilidadePrestador
+                 renderizarCalendario({ periodos_indisponibilidade_especificos: [] });
+			});
+
+            // Opcional: Parar o polling ao fechar a janela/aba
+            window.addEventListener('beforeunload', () => {
+                 pararPollingMensagensNaoLidas();
+            });
+
+            // Lógica de Logout
+            document.getElementById('logout-link').addEventListener('click', function(event) {
+                event.preventDefault();
+                localStorage.removeItem('token');
+                localStorage.removeItem('prestador'); // Remove os dados do prestador também
+                window.location.href = 'login-prestador.html'; // Redireciona para a página de login
+            });
+
+
+		</script>
+
+
+	</body>
+</html>
+

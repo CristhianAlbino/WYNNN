@@ -1,0 +1,1292 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>WYN - Catálogo de Serviços</title>
+
+		<link
+			rel="apple-touch-icon"
+			sizes="180x180"
+			href="/w/1.png"
+		/>
+		<link
+			rel="icon"
+			type="image/png"
+			sizes="32x32"
+			href="/w/1.png"
+		/>
+		<link
+			rel="icon"
+			type="image/png"
+			sizes="16x16"
+			href="/w/1.png"
+		/>
+
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1, maximum-scale=1"
+		/>
+
+		<link
+			href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+			rel="stylesheet"
+		/>
+		<link rel="stylesheet" type="text/css" href="vendors/styles/core.css" />
+		<link
+			rel="stylesheet"
+			type="text/css"
+			href="vendors/styles/icon-font.min.css"
+		/>
+		<link rel="stylesheet" type="text/css" href="vendors/styles/style.css" />
+		<link rel="stylesheet" type="text/css" href="catalogo.css" />
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+
+		<style>
+			/* Estilos customizados para a página de catálogo */
+			.service-card {
+				border: 1px solid #eee;
+				border-radius: 8px;
+				padding: 15px;
+				margin-bottom: 20px;
+				background-color: #fff;
+				box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+				transition: transform 0.2s ease-in-out;
+                cursor: pointer; /* Indica que é clicável */
+			}
+
+			.service-card:hover {
+				transform: translateY(-5px);
+				box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+			}
+
+			.service-card img {
+				max-width: 100%;
+				height: 150px; /* Altura fixa para consistência */
+				object-fit: cover; /* Garante que a imagem cubra a área sem distorcer */
+				border-radius: 4px;
+				margin-bottom: 15px;
+			}
+
+			.service-card h5 {
+				margin-bottom: 8px;
+				color: #333;
+                font-size: 18px;
+                font-weight: 600;
+			}
+
+			.service-card p {
+				font-size: 14px;
+				color: #555;
+				margin-bottom: 5px;
+			}
+
+            .service-card .price {
+                font-size: 16px;
+                font-weight: 700;
+                color: #28a745; /* Cor verde para preço */
+            }
+
+            .service-card .provider-info {
+                 font-size: 13px;
+                 color: #777;
+                 margin-top: 10px;
+                 border-top: 1px solid #eee;
+                 padding-top: 10px;
+                 display: flex; /* Para alinhar a foto e o nome */
+                 align-items: center;
+            }
+
+            .service-card .provider-info img {
+                 width: 30px; /* Tamanho da foto do prestador */
+                 height: 30px;
+                 border-radius: 50%;
+                 object-fit: cover;
+                 margin-right: 8px;
+                 margin-bottom: 0; /* Remove margin-bottom herdado */
+            }
+
+
+            /* Estilos para mensagens de feedback (loading, erro, vazio) */
+			.feedback-message {
+				text-align: center;
+				padding: 10px;
+				margin: 15px 0; /* Espaçamento */
+				border-radius: 4px;
+				font-weight: 500;
+			}
+
+			.feedback-loading {
+				color: #007bff; /* Cor azul */
+				background-color: #e9f5ff; /* Fundo azul claro */
+				border: 1px solid #b8daff;
+			}
+
+			.feedback-error {
+				color: #dc3545; /* Cor vermelha */
+				background-color: #f8d7da; /* Fundo vermelho claro */
+				border: 1px solid #f5c6cb;
+			}
+
+			.feedback-empty {
+				color: #6c757d; /* Cor cinza */
+				background-color: #f8f9fa; /* Fundo branco/claro */
+				border: 1px solid #dee2e6;
+			}
+
+             /* Estilo para o container de toasts */
+             #toastContainer {
+                 position: fixed;
+                 top: 20px;
+                 right: 20px;
+                 z-index: 1050; /* Acima de modais */
+             }
+
+             /* Estilo individual do toast */
+             .toast {
+                 width: 300px;
+                 max-width: 100%;
+                 font-size: .875rem;
+                 background-color: rgba(255,255,255,.85);
+                 background-clip: padding-box;
+                 border: 1px solid rgba(0,0,0,.1);
+                 box-shadow: 0 .25rem .75rem rgba(0,0,0,.1);
+                 opacity: 0;
+                 border-radius: .25rem;
+             }
+
+             .toast.showing {
+                 opacity: 1;
+             }
+
+             .toast.show {
+                 display: block;
+                 opacity: 1;
+             }
+
+             .toast.hide {
+                 display: none;
+             }
+
+             .toast-header {
+                 display: flex;
+                 align-items: center;
+                 padding: .25rem .75rem;
+                 color: #6c757d;
+                 background-color: rgba(255,255,255,.85);
+                 background-clip: padding-box;
+                 border-bottom: 1px solid rgba(0,0,0,.05);
+                 border-top-left-radius: calc(.25rem - 1px);
+                 border-top-right-radius: calc(.25rem - 1px);
+             }
+
+             .toast-body {
+                 padding: .75rem;
+             }
+
+             /* Cores para os headers dos toasts */
+             .toast-header.bg-success { background-color: #28a745 !important; color: white !important; }
+             .toast-header.bg-danger { background-color: #dc3545 !important; color: white !important; }
+             .toast-header.bg-info { background-color: #17a2b8 !important; color: white !important; }
+
+
+		</style>
+
+
+		<script
+			async
+			src="https://www.googletagmanager.com/gtag/js?id=G-GBZ3SGGX85"
+		></script>
+		<script
+			async
+			src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2973766580778258"
+			crossorigin="anonymous"
+		></script>
+		<script>
+			window.dataLayer = window.dataLayer || [];
+			function gtag() {
+				dataLayer.push(arguments);
+			}
+			gtag("js", new Date());
+
+			gtag("config", "G-GBZ3SGGX85");
+		</script>
+		<script>
+			(function (w, d, s, l, i) {
+				w[l] = w[l] || [];
+				w[l].push({ "gtm.start": new Date().getTime(), event: "gtm.js" });
+				var f = d.getElementsByTagName(s)[0],
+					j = d.createElement(s),
+					dl = l != "dataLayer" ? "&l=" + l : "";
+				j.async = true;
+				j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
+				f.parentNode.insertBefore(j, f);
+			})(window, document, "script", "dataLayer", "GTM-NXZMQSS");
+		</script>
+	</head>
+	<body>
+		<div class="pre-loader">
+			<div class="pre-loader-box">
+				<div class="loader-logo">
+					<img src="/Tela Inicial copy/w.png" alt="" />
+				</div>
+				<div class="loader-progress" id="progress_div">
+					<div class="bar" id="bar1"></div>
+				</div>
+				<div class="percent" id="percent1">0%</div>
+				<div class="loading-text">Carregando...</div>
+			</div>
+		</div>
+
+		<div class="header">
+			<div class="header-left">
+				<div class="menu-icon bi bi-list"></div>
+				<div
+					class="search-toggle-icon bi bi-search"
+					data-toggle="header_search"
+				></div>
+				<div class="header-search">
+					<form>
+						<div class="form-group mb-0">
+							<i class="dw dw-search2 search-icon"></i>
+							<input
+								type="text"
+								class="form-control search-input"
+								placeholder="Buscar serviços..."
+								id="service-search-input" />
+							<div class="dropdown">
+								<a
+									class="dropdown-toggle no-arrow"
+									href="#"
+									role="button"
+									data-toggle="dropdown"
+								>
+									<i class="ion-arrow-down-c"></i>
+								</a>
+								<div class="dropdown-menu dropdown-menu-right">
+									<div class="form-group row">
+										<label class="col-sm-12 col-md-2 col-form-label"
+											>Prestador</label
+										>
+										<div class="col-sm-12 col-md-10">
+											<input
+												class="form-control form-control-sm form-control-line"
+												type="text"
+												id="filter-provider" />
+										</div>
+									</div>
+									<div class="form-group row">
+										<label class="col-sm-12 col-md-2 col-form-label">Categoria</label>
+										<div class="col-sm-12 col-md-10">
+											<input
+												class="form-control form-control-sm form-control-line"
+												type="text"
+												id="filter-category" />
+										</div>
+									</div>
+									<div class="text-right">
+										<button class="btn btn-primary" id="apply-filters-btn">Aplicar Filtros</button> </div>
+								</div>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+			<div class="header-right">
+				<div class="dashboard-setting user-notification">
+					<div class="dropdown">
+						<a
+							class="dropdown-toggle no-arrow"
+							href="javascript:;"
+							data-toggle="right-sidebar"
+						>
+							<i class="dw dw-settings2"></i>
+						</a>
+					</div>
+				</div>
+
+				<div class="user-info-dropdown">
+					<div class="dropdown">
+						<a
+							class="dropdown-toggle"
+							href="#"
+							role="button"
+							data-toggle="dropdown"
+						>
+							<span class="user-icon">
+								<img src="vendors/images/photo1.jpg" id="user-profile-pic" class="profile-pic-header" alt="" /> </span>
+							<span class="user-name" id="user-name">Cliente</span> </a>
+						<div
+							class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list"
+						>
+							<a class="dropdown-item" href="profile.html"
+								><i class="dw dw-user1"></i> Perfil</a
+							>
+							<a class="dropdown-item" href="profile.html"
+								><i class="dw dw-settings2"></i> Configurações</a
+							>
+							<a class="dropdown-item" href="faq.html"
+								><i class="dw dw-help"></i> Ajuda</a
+							>
+							<a class="dropdown-item" href="#" id="logout-link"
+								><i class="dw dw-logout"></i> Sair</a
+							>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="right-sidebar">
+			<div class="sidebar-title">
+				<h3 class="weight-600 font-16 text-blue">
+					Configuração de Layout
+					<span class="btn-block font-weight-400 font-12"
+						>Personalização</span
+					>
+				</h3>
+				<div class="close-sidebar" data-toggle="right-sidebar-close">
+					<i class="icon-copy ion-close-round"></i>
+				</div>
+			</div>
+			<div class="right-sidebar-body customscroll">
+				<div class="right-sidebar-body-content">
+					<h4 class="weight-600 font-18 pb-10">Fundo</h4>
+					<div class="sidebar-btn-group pb-30 mb-10">
+						<a
+							href="javascript:void(0);"
+							class="btn btn-outline-primary header-white active"
+							>Claro</a
+						>
+						<a
+							href="javascript:void(0);"
+							class="btn btn-outline-primary header-dark"
+							>Escuro</a
+						>
+					</div>
+
+					<h4 class="weight-600 font-18 pb-10">Menu Lateral</h4>
+					<div class="sidebar-btn-group pb-30 mb-10">
+						<a
+							href="javascript:void(0);"
+							class="btn btn-outline-primary sidebar-light"
+							>Claro</a
+						>
+						<a
+							href="javascript:void(0);"
+							class="btn btn-outline-primary sidebar-dark active"
+							>Escuro</a
+						>
+					</div>
+
+					<h4 class="weight-600 font-18 pb-10">Icone Dropdown</h4>
+					<div class="sidebar-radio-group pb-10 mb-10">
+						<div class="custom-control custom-radio custom-control-inline">
+							<input
+								type="radio"
+								id="sidebaricon-1"
+								name="menu-dropdown-icon"
+								class="custom-control-input"
+								value="icon-style-1"
+								checked=""
+							/>
+							<label class="custom-control-label" for="sidebaricon-1"
+								><i class="fa fa-angle-down"></i
+							></label>
+						</div>
+						<div class="custom-control custom-radio custom-control-inline">
+							<input
+								type="radio"
+								id="sidebaricon-2"
+								name="menu-dropdown-icon"
+								class="custom-control-input"
+								value="icon-style-2"
+							/>
+							<label class="custom-control-label" for="sidebaricon-2"
+								><i class="ion-plus-round"></i
+							></label>
+						</div>
+						<div class="custom-control custom-radio custom-control-inline">
+							<input
+								type="radio"
+								id="sidebariconlist-3"
+								name="menu-list-icon"
+								class="custom-control-input"
+								value="icon-list-style-3"
+							/>
+							<label class="custom-control-label" for="sidebariconlist-3"
+								><i class="fa fa-angle-double-right"></i
+							></label>
+						</div>
+					</div>
+
+					<h4 class="weight-600 font-18 pb-10">Icones do Menu</h4>
+					<div class="sidebar-radio-group pb-30 mb-10">
+						<div class="custom-control custom-radio custom-control-inline">
+							<input
+								type="radio"
+								id="sidebariconlist-1"
+								name="menu-list-icon"
+								class="custom-control-input"
+								value="icon-list-style-1"
+								checked=""
+							/>
+							<label class="custom-control-label" for="sidebariconlist-1"
+								><i class="ion-minus-round"></i
+							></label>
+						</div>
+						<div class="custom-control custom-radio custom-control-inline">
+							<input
+								type="radio"
+								id="sidebariconlist-2"
+								name="menu-list-icon"
+								class="custom-control-input"
+								value="icon-list-style-2"
+							/>
+							<label class="custom-control-label" for="sidebariconlist-2"
+								><i class="fa fa-circle-o" aria-hidden="true"></i
+							></label>
+						</div>
+						<div class="custom-control custom-radio custom-control-inline">
+							<input
+								type="radio"
+								id="sidebariconlist-3"
+								name="menu-list-icon"
+								class="custom-control-input"
+								value="icon-list-style-3"
+							/>
+							<label class="custom-control-label" for="sidebariconlist-3"
+								><i class="dw dw-check"></i
+							></label>
+						</div>
+						<div class="custom-control custom-radio custom-control-inline">
+							<input
+								type="radio"
+								id="sidebariconlist-4"
+								name="menu-list-icon"
+								class="custom-control-input"
+								value="icon-list-style-4"
+								checked=""
+							/>
+							<label class="custom-control-label" for="sidebariconlist-4"
+								><i class="icon-copy dw dw-next-2"></i
+							></label>
+						</div>
+						<div class="custom-control custom-radio custom-control-inline">
+							<input
+								type="radio"
+								id="sidebariconlist-5"
+								name="menu-list-icon"
+								class="custom-control-input"
+								value="icon-list-style-5"
+							/>
+							<label class="custom-control-label" for="sidebariconlist-5"
+								><i class="dw dw-fast-forward-1"></i
+							></label>
+						</div>
+						<div class="custom-control custom-radio custom-control-inline">
+							<input
+								type="radio"
+								id="sidebariconlist-6"
+								name="menu-list-icon"
+								class="custom-control-input"
+								value="icon-list-style-6"
+							/>
+							<label class="custom-control-label" for="sidebariconlist-6"
+								><i class="dw dw-next"></i
+							></label>
+						</div>
+					</div>
+
+					<div class="reset-options pt-30 text-center">
+						<button class="btn btn-danger" id="reset-settings">
+							Resetar Configurações
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="left-side-bar">
+			<div class="brand-logo">
+				<a href="indexx.html"> <img src="/Tela Inicial copy/w (1).png" alt="" class="dark-logo" />
+					<img
+						src="/Tela Inicial copy/w (1).png"
+						alt=""
+						class="light-logo"
+					/>
+				</a>
+				<div class="close-sidebar" data-toggle="left-sidebar-close">
+					<i class="ion-close-round"></i>
+				</div>
+			</div>
+			<div class="menu-block customscroll">
+				<div class="sidebar-menu">
+					<ul id="accordion-menu">
+						<li>
+							<a href="indexx.html" class="dropdown-toggle no-arrow">
+                                <span class="micon bi bi-house"></span
+								><span class="mtext">Dashboard</span>
+							</a>
+						</li>
+						<li>
+							<a href="catalogo.html" class="dropdown-toggle no-arrow active"> <span class="micon bi bi-grid"></span
+								><span class="mtext">Catálogo de Serviços</span>
+							</a>
+						</li>
+						<li>
+							<a href="contratos.html" class="dropdown-toggle no-arrow">
+                                <span class="micon bi bi-journal-check"></span
+								><span class="mtext">Meus Pedidos</span>
+							</a>
+						</li>
+                        <li>
+							<a href="chat-cliente.html" class="dropdown-toggle no-arrow">
+                                <span class="micon bi bi-chat-dots"></span>
+                                <span class="mtext">Chat de Pedidos</span>
+                                <span id="unread-chat-count-sidebar" class="badge badge-pill badge-danger" style="display: none; margin-left: 5px;">0</span> </a>
+                        </li>
+                         <li>
+							<a href="avaliar-prestador.html" class="dropdown-toggle no-arrow">
+                                <span class="micon bi bi-star-fill"></span>
+                                <span class="mtext">Avaliar Prestadores</span>
+                            </a>
+                        </li>
+                         <li>
+							<a href="profile.html" class="dropdown-toggle no-arrow">
+                                <span class="micon bi bi-person"></span>
+                                <span class="mtext">Meu Perfil</span>
+                            </a>
+                        </li>
+
+						<li class="dropdown">
+							<a href="javascript:;" class="dropdown-toggle">
+								<span class="micon bi bi-file-pdf"></span
+								><span class="mtext">Documentação</span>
+							</a>
+							<ul class="submenu">
+								<li><a href="/Tela Inicial copy/Termos e Condições.docx">Termos e Condições</a></li>
+								</ul>
+						</li>
+						</ul>
+				</div>
+			</div>
+		</div>
+		<div class="mobile-menu-overlay"></div>
+
+		<div class="main-container">
+			<div class="xs-pd-20-10 pd-ltr-20">
+				 <div class="title pb-20">
+					<div>
+						<h2 class="h3 mb-0">Catálogo de Serviços</h2>
+                        <p class="font-14 text-secondary weight-500">Encontre o serviço ideal para suas necessidades.</p>
+					</div>
+				</div>
+
+                <div class="card-box pb-10">
+					<div class="h5 pd-20 mb-0">Serviços Disponíveis</div>
+
+                    <div id="services-loading" class="feedback-message feedback-loading" style="display: none;">Carregando serviços...</div>
+					<div id="services-feedback" class="feedback-message feedback-error" style="display: none;"></div>
+                    <div id="services-empty" class="feedback-message feedback-empty" style="display: none;">Nenhum serviço disponível no momento.</div>
+
+
+					<div class="row pd-20" id="service-list">
+						</div>
+				</div>
+
+
+				<div class="footer-wrap pd-20 mb-20 card-box">
+					Plataforma WYN-TECH
+				</div>
+			</div>
+		</div>
+
+        <div class="modal fade" id="solicitationModal" tabindex="-1" role="dialog" aria-labelledby="solicitationModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="solicitationModalLabel">Solicitar Serviço: <span id="modal-service-name"></span></h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                     <div class="modal-body">
+                         <div id="modal-service-details">
+                             <p><strong>Prestador:</strong> <span id="modal-provider-name"></span></p>
+                              <p><strong>Descrição:</strong> <span id="modal-service-description"></span></p>
+                              <p><strong>Faixa de Preço:</strong> <span id="modal-service-price"></span></p>
+                              </div>
+
+                         <hr>
+
+                         <form id="solicitation-form">
+                             <input type="hidden" id="solicitacao-servico-oferecido-id">
+                             <input type="hidden" id="solicitacao-prestador-id">
+
+                             <div class="form-group">
+                                 <label for="data-preferencial">Data Preferencial para o Serviço:</label>
+                                 <input type="date" class="form-control" id="data-preferencial" required>
+                             </div>
+
+                              <div class="form-group">
+                                 <label for="hora-preferencial">Hora Preferencial para o Serviço:</label>
+                                 <input type="time" class="form-control" id="hora-preferencial">
+                             </div>
+
+                             <div class="form-group">
+                                 <label for="endereco-servico">Endereço do Serviço:</label>
+                                 <input type="text" class="form-control" id="endereco-servico" placeholder="Ex: Rua Exemplo, 123, Bairro" required>
+                             </div>
+
+                              <div class="form-group">
+                                 <label for="notas-adicionais">Notas Adicionais (Opcional):</label>
+                                 <textarea class="form-control" id="notas-adicionais" rows="3" placeholder="Detalhes sobre o serviço, acesso, etc."></textarea>
+                             </div>
+
+                             <div class="form-group form-check">
+                                 <input type="checkbox" class="form-check-input" id="servico-urgente">
+                                 <label class="form-check-label" for="servico-urgente">Marcar como Urgente</label>
+                             </div>
+                              <div class="text-right mt-4">
+                                 <button type="submit" class="btn btn-success" id="submit-btn">
+                                      Enviar Solicitação
+                                 </button>
+                             </div>
+                         </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+         <div id="toastContainer">
+            </div>
+
+
+		<script src="vendors/scripts/core.js"></script>
+		<script src="vendors/scripts/script.min.js"></script>
+		<script src="vendors/scripts/process.js"></script>
+		<script src="vendors/scripts/layout-settings.js"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+
+		<noscript>
+			<iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NXZMQSS" height="0" width="0" style="display: none; visibility: hidden"></iframe>
+		</noscript>
+
+		<script>
+			// Variável para armazenar os dados do usuário logado (cliente)
+			let usuarioLogado = null;
+			// Variável para armazenar a lista completa de serviços (carregada do backend)
+			let allServices = [];
+             // Intervalo para o polling de serviços
+             let servicesPollingInterval = null;
+              // Intervalo para o polling de mensagens de chat não lidas
+             let unreadChatPollingInterval = null; // DECLARADA AQUI APENAS UMA VEZ
+
+
+            // Função para exibir toast notifications (copiada de outras telas)
+            function showToast(message, type = 'success') {
+                const toastContainer = document.getElementById('toastContainer');
+                if (!toastContainer) {
+                    console.error("[CATALOGO] Toast container não encontrado!");
+                    return;
+                }
+
+                const toastElement = document.createElement('div');
+                toastElement.classList.add('toast');
+                toastElement.setAttribute('role', 'alert');
+                toastElement.setAttribute('aria-live', 'assertive');
+                toastElement.setAttribute('aria-atomic', 'true');
+                toastElement.setAttribute('data-delay', '5000');
+
+                toastElement.innerHTML = `
+                    <div class="toast-header ${type === 'success' ? 'bg-success text-white' : type === 'danger' ? 'bg-danger text-white' : 'bg-info text-white'}">
+                        <strong class="mr-auto">${type === 'success' ? 'Sucesso' : type === 'danger' ? 'Erro' : 'Informação'}</strong>
+                        <small>Agora</small>
+                        <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="toast-body">
+                        ${message}
+                    </div>
+                `;
+
+                toastContainer.appendChild(toastElement);
+                $(toastElement).toast('show');
+                $(toastElement).on('hidden.bs.toast', function () {
+                    $(this).remove();
+                });
+            }
+
+
+			// Função para carregar o perfil do usuário logado
+			async function carregarPerfilUsuario() {
+				const token = localStorage.getItem('token');
+				const usuarioCache = localStorage.getItem('usuario'); // Chave correta para usuário cliente
+
+				// Se não houver token ou cache, redireciona imediatamente
+				if (!token || !usuarioCache) {
+					console.warn("[CATALOGO] Usuário não autenticado ou cache vazio. Redirecionando para login do cliente.");
+					window.location.href = "login.html"; // Redireciona para a página de login do cliente
+					return; // Interrompe a execução da função
+				}
+
+				try {
+					 // Tenta usar o cache primeiro para preencher nome e foto rapidamente
+					 usuarioLogado = JSON.parse(usuarioCache);
+					 const nomeSpan = document.getElementById("user-name");
+                     const userProfilePicImg = document.getElementById("user-profile-pic");
+
+					 if (nomeSpan && usuarioLogado?.nome) {
+						 nomeSpan.textContent = usuarioLogado.nome;
+					 }
+                      if (userProfilePicImg && usuarioLogado?.foto_perfil_url) {
+                         userProfilePicImg.src = usuarioLogado.foto_perfil_url;
+                          userProfilePicImg.onerror = function() {
+                             // Fallback para imagem padrão se a URL da foto falhar
+                             this.onerror = null; // Evita loop infinito de erro
+                             this.src = "vendors/images/photo1.jpg"; // Imagem padrão para cliente
+                         };
+                     } else if (userProfilePicImg) {
+                          // Se não houver foto no cache, usa a imagem padrão
+                          userProfilePicImg.src = "vendors/images/photo1.jpg"; // Imagem padrão para cliente
+                     }
+
+
+					// Chamada ao backend para validar o token e obter dados completos e atualizados
+					 console.log("[CATALOGO] Verificando token e buscando perfil no backend...");
+					 const res = await fetch('http://localhost:3000/perfil', {
+						 headers: { 'Authorization': 'Bearer ' + token }
+					 });
+
+					 const resClone = res.clone(); // Clonar para ler o body se der erro de JSON
+
+					 if (!res.ok) {
+						 // Se o backend retornar 401 ou 403, o token é inválido ou expirado
+						 if (res.status === 401 || res.status === 403) {
+							 console.error("[CATALOGO] Token inválido ou expirado. Redirecionando para login do cliente.");
+							 showToast("Sua sessão expirou. Por favor, faça login novamente.", 'danger');
+							 localStorage.removeItem('token'); // Limpa token inválido
+							 localStorage.removeItem('usuario'); // Limpa cache
+							 setTimeout(() => { window.location.href = "login.html"; }, 3000); // Redireciona
+							 return; // Interrompe a execução
+						 }
+						  // Para outros erros HTTP, loga e lança exceção
+						  const errorText = await resClone.text();
+						  console.error("[CATALOGO] Erro HTTP ao buscar perfil:", res.status, errorText);
+						  throw new Error(errorText || `Erro HTTP ao buscar perfil: ${res.status}`);
+					 }
+
+					let data = {};
+					 try {
+						 data = await res.json();
+                         console.log("[CATALOGO] Dados de perfil recebidos do backend:", data); // LOG ADICIONADO
+					 } catch(jsonError) {
+						 console.error("[CATALOGO] Erro ao parsear JSON do perfil:", await resClone.text());
+						 throw new Error("Resposta de perfil inválida.");
+					 }
+
+
+					// Verifique se o perfil retornado é de um usuário cliente ('usuario') E se o ID corresponde
+					 if (data.tipo !== 'usuario' || !data.usuario?._id || data.usuario._id !== usuarioLogado._id) {
+						  console.error("[CATALOGO] Token válido, mas não corresponde a um usuário cliente ou ID não coincide.");
+						  showToast("Acesso negado. Esta página é para clientes. Faça login com uma conta de cliente.", 'danger');
+                          // Redireciona para a página de login geral, pois o token não é de cliente válido
+						   localStorage.removeItem('token'); // Limpa token incorreto
+						   localStorage.removeItem('usuario'); // Limpa cache
+						   setTimeout(() => { window.location.href = "login.html"; }, 3000);
+						  return; // Interrompe a execução
+					 }
+
+					 // Atualiza a variável global com os dados completos e validados do usuário
+					 usuarioLogado = data.usuario;
+                     console.log("[CATALOGO] Variável usuarioLogado atualizada:", usuarioLogado); // LOG ADICIONADO
+
+
+					// Atualiza o nome e foto na interface com os dados validados do backend
+					if (usuarioLogado?.nome && nomeSpan) {
+						nomeSpan.textContent = usuarioLogado.nome;
+                         console.log("[CATALOGO] Nome do usuário atualizado na UI:", usuarioLogado.nome); // LOG ADICIONADO
+					}
+                     if (userProfilePicImg && usuarioLogado?.foto_perfil_url) {
+                         userProfilePicImg.src = usuarioLogado.foto_perfil_url;
+                          userProfilePicImg.onerror = function() {
+                             this.onerror = null;
+                             this.src = "vendors/images/photo1.jpg";
+                             console.warn("[CATALOGO] Erro ao carregar foto de perfil, usando padrão."); // LOG ADICIONADO
+                         };
+                          console.log("[CATALOGO] Foto de perfil do usuário atualizada na UI:", usuarioLogado.foto_perfil_url); // LOG ADICIONADO
+                     } else if (userProfilePicImg) {
+                          userProfilePicImg.src = "vendors/images/photo1.jpg";
+                           console.log("[CATALOGO] Sem foto de perfil no backend, usando padrão."); // LOG ADICIONADO
+                     }
+
+
+					console.log("[CATALOGO] Perfil do usuário (cliente) carregado e validado com sucesso.");
+
+                    // --- CHAMA A FUNÇÃO PARA CARREGAR O CATÁLOGO SOMENTE AQUI ---
+                    carregarServicosCatalogo();
+                    iniciarPollingServicos(); // Inicia o polling para atualizações
+                    carregarContadorMensagensNaoLidas(); // Carrega contador de mensagens
+                    iniciarPollingMensagensNaoLidas(); // Inicia polling para mensagens
+
+
+				} catch (err) {
+					console.error('[CATALOGO] Erro ao carregar perfil do usuário ou validar sessão:', err);
+					 // Se ocorreu um erro na chamada fetch ou no processamento da resposta
+					 showToast('Erro ao carregar informações do usuário. Por favor, faça login novamente.', 'danger');
+                     localStorage.removeItem('token'); // Limpa token em caso de erro
+					 localStorage.removeItem('usuario'); // Limpa cache em caso de erro
+                     setTimeout(() => { window.location.href = "login.html"; }, 3000); // Redireciona para login do cliente
+				}
+			}
+
+			// Função de Logout
+			document.getElementById('logout-link').addEventListener('click', (e) => {
+				 e.preventDefault();
+				 localStorage.removeItem('token');
+				 localStorage.removeItem('usuario'); // Limpa também o cache do usuário
+                 localStorage.removeItem('userId'); // Remover também o userId (se estiver usando em algum lugar)
+                 pararPollingServicos(); // Para o polling de serviços
+                 pararPollingMensagensNaoLidas(); // Para o polling de mensagens
+				 window.location.href = 'login.html'; // Redireciona para a página de login do cliente
+			});
+
+
+            // Função para carregar o contador de mensagens não lidas (copiada do dashboard do prestador e adaptada)
+            async function carregarContadorMensagensNaoLidas() {
+                 const token = localStorage.getItem("token");
+                 const unreadCountElementSidebar = document.getElementById("unread-chat-count-sidebar");
+                 // const notificationCountElement = document.getElementById("notification-count"); // Contador no sino - não existe nesta página
+
+                 if (!token) {
+                     if (unreadCountElementSidebar) unreadCountElementSidebar.style.display = 'none';
+                     // if (notificationCountElement) notificationCountElement.style.display = 'none';
+                     return;
+                 }
+
+                 try {
+                     // Assumindo um endpoint no backend para contar mensagens não lidas para o usuário logado
+                     const response = await fetch("http://localhost:3000/api/chat/unread-count", { // Endpoint genérico para contar mensagens não lidas do usuário logado
+                         headers: { 'Authorization': `Bearer ${token}` }
+                     });
+
+                     if (!response.ok) {
+                          // Em caso de erro (ex: 401, 403), o middleware de perfil já trata o redirect/toast
+                         console.error("[CATALOGO] Erro ao buscar contagem de mensagens não lidas (cliente):", response.status);
+                         if (unreadCountElementSidebar) unreadCountElementSidebar.style.display = 'none';
+                         // if (notificationCountElement) notificationCountElement.style.display = 'none';
+                         return;
+                     }
+
+                     const data = await response.json();
+                     const unreadCount = data.total || 0;
+
+                     // Atualiza o contador na sidebar (se o elemento existir)
+                     if (unreadCountElementSidebar) {
+                         if (unreadCount > 0) {
+                             unreadCountElementSidebar.textContent = unreadCount;
+                             unreadCountElementSidebar.style.display = 'inline';
+                         } else {
+                             unreadCountElementSidebar.style.display = 'none';
+                         }
+                     }
+
+                     // Atualiza o contador no sino (se o elemento existir) - não existe nesta página
+                      // if (notificationCountElement) {
+                      //     if (unreadCount > 0) {
+                      //          notificationCountElement.textContent = unreadCount; // Ou some com outras contagens de notificações futuras
+                      //          notificationCountElement.style.display = 'inline';
+                      //     } else {
+                      //          notificationCountElement.style.display = 'none';
+                      //     }
+                      // }
+
+
+                 } catch (error) {
+                     console.error("[CATALOGO] Erro ao carregar contagem de mensagens não lidas (cliente):", error);
+                     if (unreadCountElementSidebar) unreadCountElementSidebar.style.display = 'none';
+                     // if (notificationCountElement) notificationCountElement.style.display = 'none';
+                 }
+            }
+
+             // Função para iniciar o polling de mensagens não lidas (a cada 30 segundos) - copiada e adaptada
+             // let unreadChatPollingInterval = null; // REMOVIDA A DECLARAÇÃO DUPLICADA AQUI
+             function iniciarPollingMensagensNaoLidas() {
+                 // Limpa qualquer intervalo existente para evitar duplicação
+                 if (unreadChatPollingInterval) {
+                     clearInterval(unreadChatPollingInterval);
+                 }
+
+                 // Inicia o polling
+                 unreadChatPollingInterval = setInterval(() => {
+                     console.log("[CATALOGO] Verificando mensagens não lidas (cliente)...");
+                     carregarContadorMensagensNaoLidas(); // Chama a função para atualizar a contagem
+                 }, 30000); // A cada 30 segundos
+
+                 console.log("[CATALOGO] Polling de mensagens não lidas (cliente) iniciado.");
+
+                 // Opcional: Parar o polling quando o usuário sair da página ou fizer logout (já adicionado no logout e beforeunload)
+             }
+
+             // Função para parar o polling de mensagens não lidas (copiada e adaptada)
+             function pararPollingMensagensNaoLidas() {
+                 if (unreadChatPollingInterval) {
+                     clearInterval(unreadChatPollingInterval);
+                     unreadChatPollingInterval = null;
+                     console.log("[CATALOGO] Polling de mensagens não lidas parado.");
+                 }
+             }
+
+
+            // Função para carregar os serviços do catálogo do backend
+            async function carregarServicosCatalogo() {
+                const loading = document.getElementById("services-loading");
+                const feedback = document.getElementById("services-feedback");
+                const empty = document.getElementById("services-empty");
+                const serviceListDiv = document.getElementById("service-list");
+                const token = localStorage.getItem("token");
+
+
+                loading.style.display = "block";
+                feedback.style.display = "none";
+                empty.style.display = "none";
+                serviceListDiv.innerHTML = ""; // Limpa a lista atual
+
+                 // A verificação de token já é feita em carregarPerfilUsuario,
+                 // mas é bom ter uma redundância aqui caso esta função seja chamada diretamente.
+                 if (!token) {
+                      feedback.textContent = "Autenticação necessária para carregar o catálogo.";
+                      feedback.style.display = "block";
+                      loading.style.display = "none";
+                      console.warn("[CATALOGO] carregarServicosCatalogo: Token não encontrado.");
+                      return;
+                 }
+
+                console.log("[CATALOGO] Buscando serviços do catálogo no backend...");
+                try {
+                    // --- CHAMA A ROTA PARA O CATÁLOGO ---
+                    const response = await fetch("http://localhost:3000/servicos-catalogo", { // <-- Rota para o catálogo
+                         headers: { 'Authorization': `Bearer ${token}` }
+                    });
+
+                    console.log("[CATALOGO] Resposta do backend recebida:", response.status);
+
+                    if (!response.ok) {
+                         // Se o backend retornar 401 ou 403, o middleware de perfil já trata o redirect/toast
+                         // Para outros erros, exibe uma mensagem genérica
+                         const errorText = await response.text();
+                         console.error("[CATALOGO] Erro HTTP ao buscar serviços do catálogo:", response.status, errorText);
+                         throw new Error(errorText || `Erro HTTP ao buscar serviços do catálogo: ${response.status}`);
+                    }
+
+                    const servicos = await response.json();
+                    console.log("[CATALOGO] Serviços do catálogo carregados:", servicos);
+
+                    allServices = servicos; // Armazena a lista completa
+
+                    // Popula o catálogo com os serviços carregados
+                    populateCatalog(allServices);
+
+
+                } catch (error) {
+                    console.error("[CATALOGO] Erro ao carregar serviços do catálogo:", error);
+                    feedback.textContent = `Erro ao carregar serviços: ${error.message || 'Verifique a conexão com o servidor.'}`;
+                    feedback.style.display = "block";
+                    empty.style.display = "none";
+                } finally {
+                    loading.style.display = "none";
+                }
+            }
+
+            // Função para popular a lista de serviços na UI
+            function populateCatalog(servicesToDisplay) {
+                const serviceListDiv = document.getElementById("service-list");
+                const empty = document.getElementById("services-empty");
+
+                serviceListDiv.innerHTML = ""; // Limpa a lista atual
+
+                if (!servicesToDisplay || servicesToDisplay.length === 0) {
+                    console.log("[CATALOGO] Nenhum serviço para exibir. Mostrando mensagem de vazio.");
+                    empty.style.display = "block";
+                } else {
+                    console.log(`[CATALOGO] Exibindo ${servicesToDisplay.length} serviços.`);
+                    empty.style.display = "none";
+                    servicesToDisplay.forEach(servico => {
+                        const serviceCard = document.createElement('div');
+                        serviceCard.classList.add('col-lg-4', 'col-md-6', 'col-sm-12', 'mb-20');
+                        // Adiciona data attributes para o ID do serviço oferecido e o ID do prestador
+                        serviceCard.setAttribute('data-servico-oferecido-id', servico._id);
+                        // Garante que prestador_id existe antes de tentar acessar _id
+                        serviceCard.setAttribute('data-prestador-id', servico.prestador_id?._id || '');
+
+                        const precoTexto = (servico.faixa_preco_min !== undefined && servico.faixa_preco_max !== undefined)
+                                    ? `R$ ${servico.faixa_preco_min.toFixed(2).replace('.', ',')} - R$ ${servico.faixa_preco_max.toFixed(2).replace('.', ',')}`
+                                    : (servico.faixa_preco_min !== undefined ? `A partir de R$ ${servico.faixa_preco_min.toFixed(2).replace('.', ',')}` : 'Preço a combinar');
+
+                        serviceCard.innerHTML = `
+                            <div class="service-card">
+                                <img src="${servico.foto_perfil_prestador_url || 'https://placehold.co/600x400/1b00ff/ffffff?text=Servi%C3%A7o'}" alt="${servico.nome || 'Serviço sem Nome'}" onerror="this.onerror=null;this.src='https://placehold.co/600x400/1b00ff/ffffff?text=Servi%C3%A7o';"/>
+                                <h5>${servico.nome || 'Serviço sem Nome'}</h5>
+                                <p>${servico.descricao || 'Sem descrição.'}</p>
+                                <p class="price">Faixa de Preço: ${precoTexto}</p>
+                                <div class="provider-info">
+                                     ${servico.foto_perfil_prestador_url ? `<img src="${servico.foto_perfil_prestador_url}" alt="Foto de Perfil do Prestador" onerror="this.onerror=null;this.src='vendors/images/photo4.jpg';"/>` : `<img src="vendors/images/photo4.jpg" alt="Foto de Perfil Padrão"/>`}
+                                     <span>Prestador: ${servico.nome_prestador || 'Desconhecido'}</span>
+                                </div>
+                            </div>
+                        `;
+                        serviceListDiv.appendChild(serviceCard);
+                    });
+
+                     // Adiciona listener de clique aos novos cards
+                     addServiceCardListeners();
+                }
+            }
+
+             // Função para adicionar listeners de clique aos cards de serviço
+             function addServiceCardListeners() {
+                 document.querySelectorAll('.service-card').forEach(card => {
+                     card.addEventListener('click', function() {
+                         // Pega os IDs dos data attributes
+                         const servicoOferecidoId = this.closest('.col-lg-4, .col-md-6, .col-sm-12').dataset.servicoOferecidoId;
+                         const prestadorId = this.closest('.col-lg-4, .col-md-6, .col-sm-12').dataset.prestadorId;
+
+                         if (servicoOferecidoId && prestadorId) {
+                             // Encontra o objeto de serviço completo na lista allServices
+                             const selectedService = allServices.find(s => s._id === servicoOferecidoId);
+                             if (selectedService) {
+                                  openSolicitationModal(selectedService); // Passa o objeto de serviço completo
+                             } else {
+                                  console.error("[CATALOGO] Serviço selecionado não encontrado na lista carregada:", servicoOferecidoId);
+                                   showToast("Não foi possível carregar detalhes do serviço.", 'danger');
+                             }
+                         } else {
+                             console.error("[CATALOGO] ID do serviço oferecido ou do prestador faltando no card:", this);
+                             showToast("Não foi possível solicitar este serviço. Informações incompletas.", 'danger');
+                         }
+                     });
+                 });
+             }
+
+
+            // Função para filtrar os serviços exibidos
+            function filterServices() {
+                const searchTerm = document.getElementById("service-search-input").value.toLowerCase();
+                 const filterProvider = document.getElementById("filter-provider").value.toLowerCase();
+                 const filterCategory = document.getElementById("filter-category").value.toLowerCase();
+
+                console.log(`[CATALOGO] Aplicando filtros: Busca="${searchTerm}", Prestador="${filterProvider}", Categoria="${filterCategory}"`);
+
+                const filteredServices = allServices.filter(service => {
+                    const serviceName = (service.nome || '').toLowerCase();
+                    const serviceDescription = (service.descricao || '').toLowerCase(); // Usa descrição do ServicoOferecido
+                     const providerName = (service.nome_prestador || '').toLowerCase(); // Usa nome_prestador populado
+                     const categories = (service.categorias?.join(', ') || '').toLowerCase();
+
+
+                    const searchMatch = serviceName.includes(searchTerm) || serviceDescription.includes(searchTerm);
+                     const providerMatch = providerName.includes(filterProvider);
+                     const categoryMatch = categories.includes(filterCategory);
+
+                    return searchMatch && providerMatch && categoryMatch;
+                });
+                populateCatalog(filteredServices); // Popula o catálogo com os serviços filtrados
+            }
+
+            // Adiciona listeners para os campos de busca e filtros
+            document.getElementById('service-search-input').addEventListener('input', filterServices);
+            document.getElementById('filter-provider').addEventListener('input', filterServices);
+            document.getElementById('filter-category').addEventListener('input', filterServices);
+            // O botão "Aplicar Filtros" (apply-filters-btn) no dropdown de busca também pode chamar filterServices se quiser um botão explícito.
+            // Para simplificar, estou usando 'input' nos campos do dropdown por enquanto.
+
+
+            // Função para abrir o modal de solicitação e preencher com os dados do serviço (MODIFICADA)
+            function openSolicitationModal(servicoOferecido) { // Recebe o objeto ServicoOferecido
+                 const modalLabel = document.getElementById('solicitationModalLabel');
+                 const modalServiceName = document.getElementById('modal-service-name');
+                 const modalServiceDetails = document.getElementById('modal-service-details');
+                 const solicitacaoServicoOferecidoIdInput = document.getElementById('solicitacao-servico-oferecido-id');
+                 const solicitacaoPrestadorIdInput = document.getElementById('solicitacao-prestador-id');
+
+
+                 // Limpa campos e preenche com dados do serviço oferecido
+                 modalServiceName.textContent = servicoOferecido.nome || 'Serviço sem Nome';
+                 document.getElementById('modal-provider-name').textContent = servicoOferecido.nome_prestador || 'Desconhecido';
+                 document.getElementById('modal-service-description').textContent = servicoOferecido.descricao || 'Sem descrição detalhada.';
+                  const precoDetalhes = (servicoOferecido.faixa_preco_min !== undefined && servicoOferecido.faixa_preco_max !== undefined)
+                                        ? `R$ ${servicoOferecido.faixa_preco_min.toFixed(2).replace('.', ',')} - R$ ${servicoOferecido.faixa_preco_max.toFixed(2).replace('.', ',')}`
+                                        : (servicoOferecido.faixa_preco_min !== undefined ? `A partir de R$ ${servicoOferecido.faixa_preco_min.toFixed(2).replace('.', ',')}` : 'Preço a combinar');
+                 document.getElementById('modal-service-price').textContent = precoDetalhes;
+
+                 // Armazena os IDs no formulário oculto
+                 solicitacaoServicoOferecidoIdInput.value = servicoOferecido._id;
+                 solicitacaoPrestadorIdInput.value = servicoOferecido.prestador_id?._id || ''; // Garante que pega o ID do prestador
+
+                 // Limpa campos de input do cliente
+                 document.getElementById('data-preferencial').value = '';
+                 document.getElementById('hora-preferencial').value = '';
+                 document.getElementById('endereco-servico').value = ''; // Pode pré-preencher com endereço do usuário logado se tiver
+                 document.getElementById('notas-adicionais').value = '';
+                 document.getElementById('servico-urgente').checked = false;
+
+
+                 $('#solicitationModal').modal('show'); // Usa jQuery do Bootstrap para mostrar o modal
+
+                 // Opcional: Preencher endereço padrão do usuário se disponível no perfil
+                 if (usuarioLogado?.endereco) { // Assumindo que o perfil do usuário logado tem um campo 'endereco'
+                     document.getElementById('endereco-servico').value = usuarioLogado.endereco;
+                 }
+            }
+
+            // Função para fechar o modal de solicitação
+             function closeSolicitationModal() {
+                  $('#solicitationModal').modal('hide'); // Usa jQuery do Bootstrap para fechar o modal
+             }
+
+
+            // Listener para o formulário de solicitação de serviço dentro do modal (MODIFICADA)
+            document.getElementById("solicitation-form").addEventListener("submit", async (event) => {
+                 event.preventDefault();
+
+                 const form = event.target;
+                 const submitButton = document.getElementById("submit-btn");
+                 submitButton.disabled = true;
+                 submitButton.textContent = "Enviando..."; // Mudar texto do botão
+
+                 const token = localStorage.getItem("token");
+                 const userId = usuarioLogado?._id; // Pega o ID do usuário logado
+
+                 if (!token || !userId) {
+                      showToast("Erro: Usuário não autenticado.", 'danger');
+                      submitButton.disabled = false;
+                      submitButton.textContent = "Enviar Solicitação";
+                      console.error("[CATALOGO] Tentativa de enviar solicitação sem token ou userId.");
+                      return;
+                 }
+
+                 // Pega os IDs dos campos ocultos
+                 const servicoOferecidoId = document.getElementById("solicitacao-servico-oferecido-id").value;
+                 const prestadorId = document.getElementById("solicitacao-prestador-id").value;
+
+                 const dataPreferencial = document.getElementById("data-preferencial").value;
+                 const horaPreferencial = document.getElementById("hora-preferencial").value;
+                 const enderecoServico = document.getElementById("endereco-servico").value;
+                 const notasAdicionais = document.getElementById("notas-adicionais").value;
+                 const urgente = document.getElementById("servico-urgente").checked;
+
+                  // Validação básica
+                 if (!servicoOferecidoId || !prestadorId || !dataPreferencial || !enderecoServico) {
+                      showToast("Por favor, preencha todos os campos obrigatórios do formulário.", 'danger');
+                      submitButton.disabled = false;
+                      submitButton.textContent = "Enviar Solicitação";
+                       console.warn("[CATALOGO] Campos obrigatórios da solicitação não preenchidos.");
+                      return;
+                 }
+
+
+                 const solicitationData = {
+                     servico_oferecido_id: servicoOferecidoId, // Envia o ID do serviço oferecido
+                     prestador_id: prestadorId, // Envia o ID do prestador
+                     data_servico_preferencial: dataPreferencial,
+                     hora_servico_preferencial: horaPreferencial || undefined,
+                     endereco_servico: enderecoServico,
+                     notas_adicionais: notasAdicionais,
+                     urgente: urgente
+                     // cliente_id, nome_cliente, email_cliente, telefone_cliente, tipo_servico, descricao_servico, etc.
+                     // serão preenchidos no backend usando o token e o servico_oferecido_id
+                 };
+
+                 console.log("[CATALOGO] Enviando solicitação:", solicitationData);
+
+                 try {
+                     const response = await fetch("http://localhost:3000/solicitar-servico", {
+                         method: "POST",
+                         headers: {
+                             "Content-Type": "application/json",
+                             'Authorization': `Bearer ${token}`
+                         },
+                         body: JSON.stringify(solicitationData),
+                     });
+
+                    console.log("[CATALOGO] Resposta do backend para solicitação:", response.status);
+
+                        let result;
+                        try {
+                            result = await response.json();
+                        } catch (jsonError) {
+                            const errorText = await response.text();
+                            console.error("[CATALOGO] Erro ao parsear JSON da resposta de solicitação:", jsonError, "Resposta do servidor:", errorText);
+                             if (!response.ok) {
+                                 throw new Error(errorText || `Erro HTTP: ${response.status}`);
+                             }
+                            throw new Error("Resposta do servidor inválida.");
+                        }
+
+
+                     if (!response.ok) {
+                          showToast(result.message || `Erro ao enviar solicitação.`, 'danger');
+                          console.error("[CATALOGO] Erro ao enviar solicitação:", result);
+                     } else {
+                         showToast(result.message || "Solicitação enviada com sucesso! Aguarde o aceite do prestador.", 'success');
+                         closeSolicitationModal();
+
+                         // Opcional: Redirecionar para a página "Meus Pedidos" após a solicitação
+                          // setTimeout(() => { window.location.href = "contratos.html"; }, 2000); // Redireciona após 2 segundos
+                     }
+
+                 } catch (error) {
+                      console.error('[CATALOGO] Erro ao enviar solicitação:', error);
+                      showToast("Erro ao enviar solicitação: " + (error.message || "Verifique sua conexão ou tente novamente."), 'danger');
+                 } finally {
+                      submitButton.disabled = false;
+                      submitButton.textContent = "Enviar Solicitação";
+                 }
+            });
+
+
+            // Função para iniciar o polling de serviços (a cada 60 segundos)
+            function iniciarPollingServicos() {
+                 if (servicesPollingInterval) {
+                     clearInterval(servicesPollingInterval);
+                 }
+
+                 servicesPollingInterval = setInterval(() => {
+                     console.log("[CATALOGO] Verificando atualizações no catálogo...");
+                     carregarServicosCatalogo();
+                 }, 60000); // A cada 60 segundos (1 minuto)
+
+                 console.log("[CATALOGO] Polling de serviços do catálogo iniciado.");
+
+                 window.addEventListener('beforeunload', pararPollingServicos);
+            }
+
+            // Função para parar o polling de serviços
+            function pararPollingServicos() {
+                 if (servicesPollingInterval) {
+                     clearInterval(servicesPollingInterval);
+                     servicesPollingInterval = null;
+                     console.log("[CATALOGO] Polling de serviços do catálogo parado.");
+                 }
+            }
+
+
+            // Chamar carregarPerfilUsuario ao carregar a página
+            document.addEventListener("DOMContentLoaded", carregarPerfilUsuario);
+
+            // Opcional: Parar polling ao fechar a janela/aba
+             window.addEventListener('beforeunload', () => {
+                 pararPollingServicos();
+                 pararPollingMensagensNaoLidas();
+             });
+
+
+		</script>
+
+
+	</body>
+</html>

@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>WYN - Pagamento Pendente</title>
+
+    <link
+        rel="apple-touch-icon"
+        sizes="180x180"
+        href="/w/1.png"
+    />
+    <link
+        rel="icon"
+        type="image/png"
+        sizes="32x32"
+        href="/w/1.png"
+    />
+    <link
+        rel="icon"
+        type="image/png"
+        sizes="16x16"
+        href="/w/1.png"
+    />
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1"
+    />
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    />
+    <link rel="stylesheet" type="text/css" href="vendors/styles/core.css" />
+    <link
+        rel="stylesheet"
+        type="text/css"
+        href="vendors/styles/icon-font.min.css"
+    />
+    <link rel="stylesheet" type="text/css" href="vendors/styles/style.css" />
+
+    <style>
+        .payment-container {
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 30px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background-color: #ffffff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .payment-container h2 {
+            text-align: center;
+            color: #007bff;
+            margin-bottom: 20px;
+        }
+
+        .payment-details p {
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .payment-details strong {
+            display: inline-block;
+            width: 150px; /* Ajuste conforme necessário para alinhar */
+        }
+
+        .payment-options {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .payment-options button,
+        .payment-options a.btn { /* Estilo para links que parecem botões */
+            padding: 12px 25px;
+            font-size: 1.2em;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            margin: 10px;
+            transition: background-color 0.3s ease;
+            text-decoration: none; /* Remover sublinhado de links */
+            display: inline-block; /* Garantir que o link se comporte como um botão */
+        }
+
+
+        .payment-options .btn-mercado-pago {
+            background-color: #009ee3; /* Cor do Mercado Pago */
+            color: white;
+        }
+
+        .payment-options .btn-mercado-pago:hover {
+            background-color: #007bb5;
+        }
+
+         .payment-options .btn-success-redirect {
+             background-color: #28a745; /* Cor verde para sucesso */
+             color: white;
+         }
+
+         .payment-options .btn-success-redirect:hover {
+              background-color: #218838;
+         }
+
+
+        #loading-payment {
+            text-align: center;
+            padding: 20px;
+            font-size: 1.1em;
+        }
+
+        #error-message {
+            text-align: center;
+            color: red;
+            padding: 20px;
+            font-size: 1.1em;
+        }
+
+         #status-message {
+             text-align: center;
+             padding: 10px;
+             margin-top: 20px;
+             border-top: 1px solid #eee;
+             font-size: 1.1em;
+             color: #555;
+         }
+    </style>
+
+    <script>
+        (function (w, d, s, l, i) {
+            w[l] = w[l] || [];
+            w[l].push({ "gtm.start": new Date().getTime(), event: "gtm.js" });
+            var f = d.getElementsByTagName(s)[0],
+                j = d.createElement(s),
+                dl = l != "dataLayer" ? "&l=" + l : "";
+            j.async = true;
+            j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
+            f.parentNode.insertBefore(j, f);
+        })(window, document, 'script', 'dataLayer', 'GTM-NXZMQSS');
+    </script>
+</head>
+<body>
+    <div class="pre-loader">
+        <div class="pre-loader-box">
+            <div class="loader-logo">
+                <img src="/Tela Inicial copy/w.png" alt="" />
+            </div>
+            <div class="loader-progress" id="progress_div">
+                <div class="bar" id="bar1"></div>
+            </div>
+            <div class="percent" id="percent1">0%</div>
+            <div class="loading-text">Carregando...</div>
+        </div>
+    </div>
+
+    <div class="header">
+        <div class="header-left">
+            <div class="menu-icon bi bi-list"></div>
+            <div
+                class="search-toggle-icon bi bi-search"
+                data-toggle="header_search"
+            ></div>
+            <div class="header-search">
+                <form>
+                    <div class="form-group mb-0">
+                        <i class="dw dw-search2 search-icon"></i>
+                        <input
+                            type="text"
+                            class="form-control search-input"
+                            placeholder="Search Here"
+                        />
+                        <div class="dropdown">
+                            <a
+                                class="dropdown-toggle no-arrow"
+                                href="#"
+                                role="button"
+                                data-toggle="dropdown"
+                            >
+                                <i class="ion-arrow-down-c"></i>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <div class="form-group row">
+                                    <label class="col-sm-12 col-md-2 col-form-label"
+                                        >De</label
+                                    >
+                                    <div class="col-sm-12 col-md-10">
+                                        <input
+                                            class="form-control form-control-sm form-control-line"
+                                            type="text"
+                                        />
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-12 col-md-2 col-form-label">Para</label>
+                                    <div class="col-sm-12 col-md-10">
+                                        <input
+                                            class="form-control form-control-sm form-control-line"
+                                            type="text"
+                                        />
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-12 col-md-2 col-form-label"
+                                        >Sujeito</label
+                                    >
+                                    <div class="col-sm-12 col-md-10">
+                                        <input
+                                            class="form-control form-control-sm form-control-line"
+                                            type="text"
+                                        />
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <button class="btn btn-primary">Pesquisar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="dashboard-setting user-notification">
+                <div class="dropdown">
+                    <a
+                        class="dropdown-toggle no-arrow"
+                        href="javascript:;"
+                        data-toggle="right-sidebar"
+                    >
+                        <i class="dw dw-settings2"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="user-info-dropdown">
+                <div class="dropdown">
+                    <a
+                        class="dropdown-toggle"
+                        href="#"
+                        role="button"
+                        data-toggle="dropdown"
+                    >
+                        <span class="user-icon">
+                            <img src="/w/1.png" alt="" />
+                        </span>
+                        <span class="user-name">Usuário</span>
+                    </a>
+                    <div
+                        class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list"
+                    >
+                        <a class="dropdown-item" href="profile.html"
+                            ><i class="dw dw-user1"></i> Perfil</a
+                        >
+                        <a class="dropdown-item" href="profile.html"
+                            ><i class="dw dw-settings2"></i>Configurações</a
+                        >
+                        <a class="dropdown-item" href="faq.html"
+                            ><i class="dw dw-help"></i> Ajuda</a
+                        >
+                        <a class="dropdown-item" href="#" id="logout-link"
+                            ><i class="dw dw-logout"></i> Sair</a
+                        >
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="right-sidebar">
+        <div class="sidebar-title">
+            <h3 class="weight-600 font-16 text-blue">
+                Configuração de Layout
+                <span class="btn-block font-weight-400 font-12"
+                    >Personalização</span
+                >
+            </h3>
+            <div class="close-sidebar" data-toggle="right-sidebar-close">
+                <i class="icon-copy ion-close-round"></i>
+            </div>
+        </div>
+        <div class="right-sidebar-body customscroll">
+            <div class="right-sidebar-body-content">
+                <h4 class="weight-600 font-18 pb-10">Fundo</h4>
+                <div class="sidebar-btn-group pb-30 mb-10">
+                    <a
+                        href="javascript:void(0);"
+                        class="btn btn-outline-primary header-white active"
+                        >Claro</a
+                    >
+                    <a
+                        href="javascript:void(0);"
+                        class="btn btn-outline-primary header-dark"
+                        >Escuro</a
+                    >
+                </div>
+
+                <h4 class="weight-600 font-18 pb-10">Menu Lateral</h4> <div class="sidebar-btn-group pb-30 mb-10">
+                    <a
+                        href="javascript:void(0);"
+                        class="btn btn-outline-primary sidebar-light"
+                        >Claro</a
+                    >
+                    <a
+                        href="javascript:void(0);"
+                        class="btn btn-outline-primary sidebar-dark active"
+                        >Escuro</a
+                    >
+                </div>
+
+                <h4 class="weight-600 font-18 pb-10">Icone Dropdown</h4> <div class="sidebar-radio-group pb-10 mb-10">
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input
+                            type="radio"
+                            id="sidebaricon-1"
+                            name="menu-dropdown-icon"
+                            class="custom-control-input"
+                            value="icon-style-1"
+                            checked=""
+                        />
+                        <label class="custom-control-label" for="sidebaricon-1"
+                            ><i class="fa fa-angle-down"></i
+                        ></label>
+                    </div>
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input
+                            type="radio"
+                            id="sidebaricon-2"
+                            name="menu-dropdown-icon"
+                            class="custom-control-input"
+                            value="icon-style-2"
+                        />
+                        <label class="custom-control-label" for="sidebaricon-2"
+                            ><i class="ion-plus-round"></i
+                        ></label>
+                    </div>
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input
+                            type="radio"
+                            id="sidebaricon-3"
+                            name="menu-dropdown-icon"
+
+                            class="custom-control-input"
+                            value="icon-style-3"
+                        />
+                        <label class="custom-control-label" for="sidebaricon-3"
+                            ><i class="fa fa-angle-double-right"></i
+                        ></label>
+                    </div>
+                </div>
+
+                <h4 class="weight-600 font-18 pb-10">Icones do Menu</h4>
+                <div class="sidebar-radio-group pb-30 mb-10">
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input
+                            type="radio"
+                            id="sidebariconlist-1"
+                            name="menu-list-icon"
+                            class="custom-control-input"
+                            value="icon-list-style-1"
+                            checked=""
+                        />
+                        <label class="custom-control-label" for="sidebariconlist-1"
+                            ><i class="ion-minus-round"></i
+                        ></label>
+                    </div>
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input
+                            type="radio"
+                            id="sidebariconlist-2"
+                            name="menu-list-icon"
+                            class="custom-control-input"
+                            value="icon-list-style-2"
+                        />
+                        <label class="custom-control-label" for="sidebariconlist-2"
+                            ><i class="fa fa-circle-o" aria-hidden="true"></i
+                        ></label>
+                    </div>
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input
+                            type="radio"
+                            id="sidebariconlist-3"
+                            name="menu-list-icon"
+                            class="custom-control-input"
+                            value="icon-list-style-3"
+                        />
+                        <label class="custom-control-label" for="sidebariconlist-3"
+                            ><i class="dw dw-check"></i
+                        ></label>
+                    </div>
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input
+                            type="radio"
+                            id="sidebariconlist-4"
+                            name="menu-list-icon"
+                            class="custom-control-input"
+                            value="icon-list-style-4"
+                            checked=""
+                        />
+                        <label class="custom-control-label" for="sidebariconlist-4"
+                            ><i class="icon-copy dw dw-next-2"></i
+                        ></label>
+                    </div>
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input
+                            type="radio"
+                            id="sidebariconlist-5"
+                            name="menu-list-icon"
+                            class="custom-control-input"
+                            value="icon-list-style-5"
+                        />
+                        <label class="custom-control-label" for="sidebariconlist-5"
+                            ><i class="dw dw-fast-forward-1"></i
+                        ></label>
+                    </div>
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input
+                            type="radio"
+                            id="sidebariconlist-6"
+                            name="menu-list-icon"
+                            class="custom-control-input"
+                            value="icon-list-style-6"
+                        />
+                        <label class="custom-control-label" for="sidebariconlist-6"
+                            ><i class="dw dw-next"></i
+                        ></label>
+                    </div>
+                </div>
+
+                <div class="reset-options pt-30 text-center">
+                    <button class="btn btn-danger" id="reset-settings">
+                        Resetar Configurações
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="left-side-bar">
+        <div class="brand-logo">
+            <a href="indexx.html"> <img src="/Tela Inicial copy/w (1).png" alt="" class="dark-logo" />
+                <img
+                    src="/Tela Inicial copy/w (1).png"
+                    alt=""
+                    class="light-logo"
+                />
+            </a>
+            <div class="close-sidebar" data-toggle="left-sidebar-close">
+                <i class="ion-close-round"></i>
+            </div>
+        </div>
+        <div class="menu-block customscroll">
+            <div class="sidebar-menu">
+                <ul id="accordion-menu">
+                    <li>
+                        <a href="indexx.html" class="dropdown-toggle no-arrow"> <span class="micon bi bi-house"></span
+                            ><span class="mtext">Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="dropdown">
+                        <a href="javascript:;" class="dropdown-toggle">
+                            <span class="micon bi bi-textarea-resize"></span
+                            ><span class="mtext">Funcionalidades</span>
+                        </a>
+                        <ul class="submenu">
+                            <li><a href="/em breve/index.html">Histórico</a></li>
+                            <li><a href="/LANDING PAGE WYN/LANDING PAGE WYN/catalogo.html">Fazer Pedido</a></li>
+                            <li><a href="/LANDING PAGE WYN/LANDING PAGE WYN/contratos.html">Meus Pedidos</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="/Tela Cliente/serviços/dist/index.html" class="dropdown-toggle no-arrow"> <span class="micon bi-chat-right-dots"></span
+                            ><span class="mtext">Serviços</span> </a>
+                    </li>
+                    <li>
+                        <a href="javascript:;" class="dropdown-toggle">
+                            <span class="micon bi bi-file-pdf"></span
+                            ><span class="mtext">Documentação</span>
+                        </a>
+                        <ul class="submenu">
+                            <li><a href="/Tela Inicial copy/Termos e Condições.docx">Termos e Condições</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="mobile-menu-overlay"></div>
+
+    <div class="main-container">
+        <div class="xs-pd-20-10 pd-ltr-20">
+            <div class="card-box pd-20 mb-30 payment-container">
+                <h2 class="h4 text-blue">Status do Pedido</h2>
+
+                <div id="loading-payment">Carregando detalhes do pedido...</div>
+                <div id="error-message" style="display: none;"></div>
+
+                <div id="payment-details" class="payment-details" style="display: none;">
+                    <p><strong>ID do Pedido:</strong> <span id="pedido-id"></span></p>
+                    <p><strong>Tipo de Serviço:</strong> <span id="tipo-servico"></span></p>
+                    <p><strong>Descrição:</strong> <span id="descricao-servico"></span></p>
+                    <p><strong>Valor:</strong> R$ <span id="valor-servico"></span></p>
+                    <p><strong>Endereço:</strong> <span id="endereco-servico"></span></p>
+                    <p><strong>Urgente:</strong> <span id="urgente-servico"></span></p>
+                    <p><strong>Status:</strong> <span id="status-servico"></span></p>
+                    <p><strong>Notas Adicionais:</strong> <span id="notas-adicionais-servico"></span></p>
+                </div>
+
+                <div id="payment-options" class="payment-options" style="display: none;">
+                    </div>
+
+                 <div id="status-message" style="display: none;">
+                     </div>
+
+
+                <div class="text-center mt-4">
+                    <a href="contratos.html" class="btn btn-secondary">Voltar para Meus Pedidos</a>
+                </div>
+            </div>
+
+            <div class="footer-wrap pd-20 mb-20 card-box">
+                Plataforma WYN-TECH
+            </div>
+        </div>
+    </div>
+
+    <script src="vendors/scripts/core.js"></script>
+    <script src="vendors/scripts/script.min.js"></script>
+    <script src="vendors/scripts/process.js"></script>
+    <script src="vendors/scripts/layout-settings.js"></script>
+
+    <noscript>
+        <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NXZMQSS" height="0" width="0" style="display: none; visibility: hidden"></iframe>
+    </noscript>
+
+    <script>
+        let usuarioLogado = null; // Variável para armazenar os dados do usuário logado
+        let serviceId = null; // ID do serviço
+        let statusPollingInterval = null; // Variável para o intervalo de polling
+
+        async function carregarPerfilUsuario() {
+            const token = localStorage.getItem('token');
+            const usuarioCache = localStorage.getItem('usuario');
+
+            if (!token || !usuarioCache) {
+                console.warn("Usuário não autenticado. Redirecionando para login.");
+                window.location.href = "login.html";
+                return;
+            }
+
+            try {
+                usuarioLogado = JSON.parse(usuarioCache);
+                const nomeSpan = document.querySelector(".user-name");
+                if (nomeSpan && usuarioLogado?.nome) {
+                    nomeSpan.textContent = usuarioLogado.nome;
+                }
+
+                const res = await fetch('http://localhost:3000/perfil', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+
+                const resClone = res.clone();
+
+                if (!res.ok) {
+                    if (res.status === 401 || res.status === 403) {
+                        console.error("Token inválido ou expirado. Redirecionando para login.");
+                        alert("Sua sessão expirou. Por favor, faça login novamente.");
+                        window.location.href = "login.html";
+                        return;
+                    }
+                    throw new Error(`Erro HTTP ao buscar perfil: ${res.status}`);
+                }
+
+                let data = {};
+                try {
+                    data = await res.json();
+                } catch(jsonError) {
+                    console.error("Erro ao parsear JSON do perfil:", await resClone.text());
+                    throw new Error("Resposta de perfil inválida.");
+                }
+
+                if (data.tipo !== 'usuario' || !data.usuario?._id) {
+                    console.error("Token válido, mas não corresponde a um usuário cliente.");
+                    alert("Acesso negado para este tipo de usuário.");
+                    window.location.href = "login-prestador.html";
+                    return;
+                }
+
+                usuarioLogado = data.usuario;
+                if (usuarioLogado?.nome && nomeSpan) {
+                    nomeSpan.textContent = usuarioLogado.nome;
+                }
+                console.log("Perfil do usuário carregado:", usuarioLogado);
+
+                // Chamar a função para carregar os detalhes do pedido pendente
+                carregarDetalhesPedido();
+                // Iniciar o polling para verificar o status
+                iniciarPollingStatus();
+
+
+            } catch (err) {
+                console.error('Erro ao carregar perfil do usuário:', err);
+                alert('Ocorreu um erro ao carregar informações do usuário.');
+            }
+        }
+
+        // Função de Logout
+        document.getElementById('logout-link').addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.removeItem('token');
+            localStorage.removeItem('usuario');
+             // Limpa o intervalo de polling ao sair
+            if (statusPollingInterval) {
+                clearInterval(statusPollingInterval);
+            }
+            window.location.href = 'login.html';
+        });
+
+        // Função auxiliar para formatar o status
+        function formatStatus(status) {
+             const statusMap = {
+                 'aguardando_aceite_prestador': 'Aguardando Aceite do Prestador',
+                 'aguardando_pagamento_cliente': 'Aguardando Pagamento',
+                 'aguardando_confirmacao_pagamento': 'Pagamento em Processamento',
+                 'aceito_pelo_prestador': 'Serviço em Andamento', // Pagamento confirmado
+                 'recusado_pelo_prestador': 'Recusado pelo Prestador',
+                 'concluido_pelo_prestador': 'Concluído pelo Prestador',
+                 'avaliado_pelo_cliente': 'Avaliado',
+                 'cancelado': 'Cancelado'
+             };
+             return statusMap[status] || status; // Retorna o texto formatado ou o status original se não mapeado
+        }
+
+
+        // Função para carregar os detalhes do pedido
+        async function carregarDetalhesPedido() {
+            const loadingDiv = document.getElementById('loading-payment');
+            const errorDiv = document.getElementById('error-message');
+            const detailsDiv = document.getElementById('payment-details');
+            const optionsDiv = document.getElementById('payment-options');
+            const statusMessageDiv = document.getElementById('status-message'); // Novo elemento para mensagens de status
+
+            const pedidoIdSpan = document.getElementById('pedido-id');
+            const tipoServicoSpan = document.getElementById('tipo-servico');
+            const descricaoServicoSpan = document.getElementById('descricao-servico');
+            const valorServicoSpan = document.getElementById('valor-servico');
+            const enderecoServicoSpan = document.getElementById('endereco-servico');
+            const urgenteServicoSpan = document.getElementById('urgente-servico');
+            const statusServicoSpan = document.getElementById('status-servico');
+            const notasAdicionaisServicoSpan = document.getElementById('notas-adicionais-servico');
+
+
+            loadingDiv.style.display = 'block';
+            errorDiv.style.display = 'none';
+            detailsDiv.style.display = 'none';
+            optionsDiv.style.display = 'none';
+            statusMessageDiv.style.display = 'none'; // Oculta a mensagem de status inicialmente
+
+
+            const token = localStorage.getItem('token');
+
+            if (!serviceId || !token) {
+                loadingDiv.style.display = 'none';
+                errorDiv.textContent = 'ID do pedido ou token de autenticação faltando.';
+                errorDiv.style.display = 'block';
+                console.error("ID do serviço ou token faltando.");
+                return;
+            }
+
+            try {
+                // *** CHAMANDO O ENDPOINT PARA BUSCAR DETALHES DO SERVIÇO ***
+                const response = await fetch(`http://localhost:3000/servico/${serviceId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (!response.ok) {
+                     const errorData = await response.json();
+                     throw new Error(errorData.message || `Erro HTTP: ${response.status}`);
+                }
+
+                const servico = await response.json();
+                console.log("Detalhes do serviço carregados:", servico);
+
+                // Preenche os detalhes do pedido na tela
+                pedidoIdSpan.textContent = servico._id;
+                tipoServicoSpan.textContent = servico.tipo_servico;
+                descricaoServicoSpan.textContent = servico.descricao_servico || 'N/A';
+                valorServicoSpan.textContent = servico.valor_servico ? servico.valor_servico.toFixed(2) : 'N/A';
+                enderecoServicoSpan.textContent = servico.endereco_servico || 'N/A';
+                urgenteServicoSpan.textContent = servico.urgente ? 'Sim' : 'Não';
+                // statusServicoSpan.textContent = formatStatus(servico.status); // Atualizado abaixo com base na lógica
+                notasAdicionaisServicoSpan.textContent = servico.notas_adicionais || 'N/A';
+
+                detailsDiv.style.display = 'block'; // Mostra os detalhes
+
+                // --- Lógica para exibir opções de pagamento ou status ---
+                optionsDiv.innerHTML = ''; // Limpa opções anteriores
+                statusMessageDiv.innerHTML = ''; // Limpa mensagens anteriores
+
+
+                if (servico.status === 'aguardando_pagamento_cliente' && servico.payment_link) {
+                    // Se o prestador aceitou e gerou o link
+                    statusServicoSpan.textContent = formatStatus(servico.status);
+                    const paymentButtonHtml = `
+                        <p>Seu pedido foi aceito pelo prestador. Por favor, complete o pagamento para iniciar o serviço.</p>
+                        <a href="${servico.payment_link}" target="_blank" class="btn btn-mercado-pago">
+                            Pagar com Mercado Pago
+                        </a>
+                        `;
+                    optionsDiv.innerHTML = paymentButtonHtml;
+                    optionsDiv.style.display = 'block'; // Mostra as opções de pagamento
+
+                } else if (servico.status === 'aguardando_aceite_prestador') {
+                     // Se ainda não foi aceito pelo prestador
+                     statusServicoSpan.textContent = formatStatus(servico.status);
+                     statusMessageDiv.innerHTML = `<p>Aguardando um prestador aceitar seu pedido.</p>`;
+                     statusMessageDiv.style.display = 'block';
+
+                } else if (servico.status === 'aguardando_confirmacao_pagamento') {
+                     // Se o cliente já clicou no link de pagamento e o MP está processando
+                     statusServicoSpan.textContent = formatStatus(servico.status);
+                     statusMessageDiv.innerHTML = `<p>Seu pagamento está em processamento. O status será atualizado automaticamente após a confirmação.</p>`;
+                     statusMessageDiv.style.display = 'block';
+
+                } else if (servico.status === 'aceito_pelo_prestador') {
+                     // Se o pagamento foi confirmado e o serviço está em andamento
+                     statusServicoSpan.textContent = formatStatus(servico.status);
+                     statusMessageDiv.innerHTML = `<p>Pagamento confirmado! O serviço está em andamento.</p>
+                                                   <a href="contratos.html" class="btn btn-success-redirect">Ver Meus Pedidos</a>`; // Link para voltar para a lista
+                     statusMessageDiv.style.display = 'block';
+                     // Para de fazer polling quando o status chega aqui
+                     if (statusPollingInterval) {
+                         clearInterval(statusPollingInterval);
+                         console.log("Polling de status parado: Pagamento confirmado.");
+                     }
+
+
+                } else {
+                    // Para todos os outros status (concluído, avaliado, recusado, cancelado)
+                    statusServicoSpan.textContent = formatStatus(servico.status);
+                    statusMessageDiv.innerHTML = `<p>Status atual do pedido: <strong>${formatStatus(servico.status)}</strong></p>`;
+                    statusMessageDiv.style.display = 'block';
+                    // Para de fazer polling para status finais
+                    if (statusPollingInterval) {
+                         clearInterval(statusPollingInterval);
+                         console.log("Polling de status parado: Status final alcançado.");
+                    }
+                }
+
+
+            } catch (error) {
+                console.error("Erro ao carregar detalhes do pedido:", error);
+                loadingDiv.style.display = 'none';
+                errorDiv.textContent = `Erro ao carregar detalhes do pedido: ${error.message || 'Verifique a conexão.'}`;
+                errorDiv.style.display = 'block';
+                 // Para o polling em caso de erro persistente na busca de detalhes
+                 if (statusPollingInterval) {
+                     clearInterval(statusPollingInterval);
+                     console.log("Polling de status parado: Erro ao carregar detalhes.");
+                 }
+
+            } finally {
+                loadingDiv.style.display = 'none';
+            }
+        }
+
+         // --- NOVA FUNÇÃO PARA INICIAR O POLLING ---
+         function iniciarPollingStatus() {
+             // Limpa qualquer intervalo existente para evitar duplicação
+             if (statusPollingInterval) {
+                 clearInterval(statusPollingInterval);
+             }
+             // Define o intervalo de polling (ex: a cada 5 segundos = 5000 ms)
+             // A função carregarDetalhesPedido já lida com a exibição e parada do polling
+             statusPollingInterval = setInterval(carregarDetalhesPedido, 5000); // Ajuste o intervalo conforme necessário
+             console.log("Polling de status iniciado.");
+         }
+
+         // Limpa o intervalo de polling ao sair da página (navegação ou fechar aba)
+         window.addEventListener('beforeunload', () => {
+             if (statusPollingInterval) {
+                 clearInterval(statusPollingInterval);
+                 console.log("Polling de status parado.");
+             }
+         });
+
+
+        // Chamar carregarPerfilUsuario ao carregar a página
+        document.addEventListener("DOMContentLoaded", () => {
+             // Obtém o ID do serviço da URL
+             const urlParams = new URLSearchParams(window.location.search);
+             serviceId = urlParams.get('serviceId'); // O nome do parâmetro deve ser 'serviceId'
+
+             if (!serviceId) {
+                 alert("ID do serviço não fornecido na URL.");
+                 // Redireciona de volta ou mostra uma mensagem de erro
+                 window.history.back(); // Tenta voltar para a página anterior
+                 return;
+             }
+
+             console.log("Página de pagamento pendente carregada para o serviço ID:", serviceId);
+
+             // Carrega o perfil do usuário
+             carregarPerfilUsuario();
+             // A função carregarDetalhesPedido e o polling são chamados dentro de carregarPerfilUsuario
+        });
+
+
+    </script>
+
+</body>
+</html>

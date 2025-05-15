@@ -1,0 +1,155 @@
+/* Importa estilos gerais do styles.css, incluindo variáveis de tema */
+@import url("styles.css");
+
+/* Estilos específicos para a página do Blog */
+
+/* Nova Seção de Banner para o Blog */
+.blog-banner-section {
+    padding: 80px 0; /* Espaço acima e abaixo */
+    background-color: var(--section-background-alt); /* Fundo alternativo, similar a outras seções da home */
+    text-align: center;
+    transition: background-color 0.3s ease;
+}
+body.dark-mode .blog-banner-section {
+    background-color: var(--dark-section-background-alt);
+}
+
+.blog-banner-section .page-title {
+    font-size: 3em;
+    text-align: center;
+    margin-bottom: 10px;
+    color: var(--section-title-color); /* Usa a cor do título de seção */
+    transition: color 0.3s ease;
+}
+body.dark-mode .blog-banner-section .page-title {
+    color: var(--dark-section-title-color);
+}
+
+.blog-banner-section .page-subtitle {
+    font-size: 1.2em;
+    text-align: center;
+    margin-bottom: 0; /* Remove margem inferior para não ter espaço extra */
+    color: var(--text-color);
+    transition: color 0.3s ease;
+}
+body.dark-mode .blog-banner-section .page-subtitle {
+    color: var(--dark-text-color);
+}
+
+
+/* Estilos para o Conteúdo Principal do Blog (Posts) - Ajusta o padding superior */
+.blog-main-content {
+    padding: 40px 0 80px 0; /* Reduz o padding superior, mantém o inferior */
+    background-color: var(--background-color); /* Fundo baseado no tema */
+    transition: background-color 0.3s ease;
+}
+body.dark-mode .blog-main-content {
+    background-color: var(--dark-background-color);
+}
+
+
+.blog-posts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Grid responsivo de cards */
+    gap: 30px; /* Espaço entre os cards */
+}
+
+.blog-post-card {
+    background-color: var(--card-background);
+    border-radius: 8px; /* Cantos arredondados como os cards da home */
+    box-shadow: 0 4px 8px var(--shadow-color); /* Sombra similar aos cards da home */
+    overflow: hidden; /* Garante que a imagem não vaze */
+    display: flex;
+    flex-direction: column; /* Conteúdo empilhado */
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+body.dark-mode .blog-post-card {
+    background-color: var(--dark-card-background);
+    box-shadow: 0 4px 8px var(--dark-shadow-color);
+}
+
+.blog-post-card img {
+    width: 100%;
+    height: 220px; /* Altura fixa para as imagens dos posts */
+    object-fit: cover; /* Garante que a imagem cubra a área sem distorcer */
+}
+
+.blog-post-card .card-content {
+    padding: 20px;
+    flex-grow: 1; /* Permite que o conteúdo cresça para preencher o espaço */
+    display: flex;
+    flex-direction: column;
+}
+
+.blog-post-card h2 {
+    font-size: 1.5em;
+    margin-top: 0; /* Remove margem superior padrão */
+    margin-bottom: 10px;
+    color: var(--card-text-color);
+    transition: color 0.3s ease;
+}
+body.dark-mode .blog-post-card h2 {
+    color: var(--dark-card-text-color);
+}
+
+.blog-post-card .post-meta {
+    font-size: 0.9em;
+    color: #666; /* Cor para metadados (data, autor) */
+    margin-bottom: 15px;
+    transition: color 0.3s ease;
+}
+body.dark-mode .blog-post-card .post-meta {
+    color: #aaaaaa; /* Cor para metadados no modo escuro */
+}
+
+
+.blog-post-card p {
+    font-size: 1em;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    color: var(--card-text-color);
+    transition: color 0.3s ease;
+}
+body.dark-mode .blog-post-card p {
+    color: var(--dark-card-text-color);
+}
+
+
+.blog-post-card .read-more {
+    display: inline-block;
+    margin-top: auto; /* Empurra o botão para o final do card */
+    color: var(--primary-color);
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+body.dark-mode .blog-post-card .read-more {
+    color: var(--dark-primary-color);
+}
+
+/* Responsividade para o grid de posts */
+@media (max-width: 600px) {
+    .blog-posts-grid {
+        grid-template-columns: 1fr; /* Uma coluna em telas muito pequenas */
+    }
+    .blog-banner-section {
+        padding: 60px 15px; /* Ajusta padding do banner em telas menores */
+    }
+    .blog-banner-section .page-title {
+        font-size: 2.5em;
+    }
+    .blog-banner-section .page-subtitle {
+        font-size: 1em;
+    }
+    .blog-main-content {
+         padding: 30px 0 60px 0; /* Ajusta padding do conteúdo principal */
+    }
+     .blog-post-card img {
+         height: 180px; /* Ajusta altura da imagem em telas menores */
+     }
+     .blog-post-card h2 {
+         font-size: 1.3em;
+     }
+     .blog-post-card p {
+         font-size: 0.9em;
+     }
+}

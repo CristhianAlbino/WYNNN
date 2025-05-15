@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>WYN - Catálogo de Serviços</title>
+
+		<link
+			rel="apple-touch-icon"
+			sizes="180x180"
+			href="/w/1.png"
+		/>
+		<link
+			rel="icon"
+			type="image/png"
+			sizes="32x32"
+			href="/w/1.png"
+		/>
+		<link
+			rel="icon"
+			type="image/png"
+			sizes="16x16"
+			href="/w/1.png"
+		/>
+
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1, maximum-scale=1"
+		/>
+
+		<link
+			href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+			rel="stylesheet"
+		/>
+		<link rel="stylesheet" type="text/css" href="vendors/styles/core.css" />
+		<link
+			rel="stylesheet"
+			type="text/css"
+			href="vendors/styles/icon-font.min.css"
+		/>
+		<link
+			rel="stylesheet"
+			type="text/css"
+			href="src/plugins/datatables/css/dataTables.bootstrap4.min.css"
+		/>
+		<link
+			rel="stylesheet"
+			type="text/css"
+			href="src/plugins/datatables/css/responsive.bootstrap4.min.css"
+		/>
+		<link rel="stylesheet" type="text/css" href="vendors/styles/style.css" />
+
+		<script
+			async
+			src="https://www.googletagmanager.com/gtag/js?id=G-GBZ3SGGX85"
+		></script>
+		<script
+			async
+			src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2973766580778258"
+			crossorigin="anonymous"
+		></script>
+		<script>
+			window.dataLayer = window.dataLayer || [];
+			function gtag() {
+				dataLayer.push(arguments);
+			}
+			gtag("js", new Date());
+
+			gtag("config", "G-GBZ3SGGX85");
+		</script>
+		<script>
+			(function (w, d, s, l, i) {
+				w[l] = w[l] || [];
+				w[l].push({ "gtm.start": new Date().getTime(), event: "gtm.js" });
+				var f = d.getElementsByTagName(s)[0],
+					j = d.createElement(s),
+					dl = l != "dataLayer" ? "&l=" + l : "";
+				j.async = true;
+				j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
+				f.parentNode.insertBefore(j, f);
+			})(window, document, 'script', 'dataLayer', 'GTM-NXZMQSS');
+		</script>
+		<style>
+            /* Estilos para a seção de solicitação */
+            .solicitation-section {
+                display: none; /* Inicialmente escondido */
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.7); /* Fundo semi-transparente */
+                z-index: 1000; /* Acima de outros conteúdos */
+                justify-content: center;
+                align-items: center;
+                overflow-y: auto; /* Adiciona scroll se o conteúdo for muito grande */
+            }
+
+            .solicitation-form-container {
+                background-color: #fff;
+                padding: 30px;
+                border-radius: 8px;
+                max-width: 600px;
+                width: 90%; /* Largura responsiva */
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                position: relative; /* Para posicionar o botão de fechar */
+            }
+
+             body.dark-mode .solicitation-form-container {
+                 background-color: #333; /* Fundo escuro no modo noturno */
+                 color: #fff; /* Texto claro no modo noturno */
+             }
+
+             body.dark-mode .solicitation-form-container label {
+                 color: #ccc; /* Cor dos labels no modo noturno */
+             }
+
+             body.dark-mode .solicitation-form-container .form-control {
+                 background-color: #444; /* Fundo dos inputs no modo noturno */
+                 color: #fff; /* Texto dos inputs no modo noturno */
+                 border-color: #555; /* Cor da borda dos inputs no modo noturno */
+             }
+
+             body.dark-mode .solicitation-form-container .form-control:focus {
+                  border-color: #ff6c0f; /* Cor da borda focada no modo noturno */
+                  box-shadow: 0 0 0 0.2rem rgba(255, 108, 15, 0.25); /* Sombra focada no modo noturno */
+             }
+
+
+            .close-solicitation {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                font-size: 1.5em;
+                cursor: pointer;
+                color: #888;
+            }
+
+            .solicitation-details h4 {
+                margin-top: 0;
+                margin-bottom: 20px;
+                 color: var(--text-color); /* Usa a cor do texto principal */
+                 transition: color 0.3s ease;
+            }
+             body.dark-mode .solicitation-details h4 {
+                 color: var(--dark-text-color);
+             }
+
+            .solicitation-details p {
+                margin-bottom: 10px;
+                 color: var(--text-color); /* Usa a cor do texto principal */
+                 transition: color 0.3s ease;
+            }
+            body.dark-mode .solicitation-details p {
+                 color: var(--dark-text-color);
+            }
+
+            .solicitation-details strong {
+                 color: var(--text-color); /* Usa a cor do texto principal */
+                 transition: color 0.3s ease;
+            }
+             body.dark-mode .solicitation-details strong {
+                 color: var(--dark-text-color);
+             }
+
+
+            /* Estilos para os cards de serviço (mantidos do original) */
+            .card-box {
+                /* ... seus estilos existentes para card-box ... */
+                 background-color: var(--card-background);
+                 color: var(--text-color);
+                 transition: background-color 0.3s ease, color 0.3s ease;
+            }
+
+             body.dark-mode .card-box {
+                 background-color: var(--dark-card-background);
+                 color: var(--dark-text-color);
+             }
+
+             .card-box h5 {
+                  color: var(--section-title-color);
+                  transition: color 0.3s ease;
+             }
+
+              body.dark-mode .card-box h5 {
+                  color: var(--dark-section-title-color);
+              }
+
+             .card-box p {
+                 color: var(--text-color);
+                 transition: color 0.3s ease;
+             }
+             body.dark-mode .card-box p {
+                 color: var(--dark-text-color);
+             }
+
+             /* Estilos para os botões "Selecionar" dentro dos cards */
+             .card-box .btn-primary {
+                 background-color: var(--primary-color);
+                 border-color: var(--primary-color);
+                 color: var(--button-text-color);
+                 transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+             }
+
+             .card-box .btn-primary:hover {
+                 background-color: var(--primary-color-dark);
+                 border-color: var(--primary-color-dark);
+             }
+
+             body.dark-mode .card-box .btn-primary {
+                 background-color: var(--dark-primary-color);
+                 border-color: var(--dark-primary-color);
+                 color: var(--dark-button-text-color);
+             }
+
+             body.dark-mode .card-box .btn-primary:hover {
+                 background-color: var(--dark-primary-color-light);
+                 border-color: var(--dark-primary-color-light);
+             }
+
+
+        </style>
+
+	</head>
+	<body>
+		<div class="pre-loader">
+			<div class="pre-loader-box">
+				<div class="loader-logo">
+					<img src="/Tela Inicial copy/w.png" alt="" />
+				</div>
+				<div class="loader-progress" id="progress_div">
+					<div class="bar" id="bar1"></div>
+				</div>
+				<div class="percent" id="percent1">0%</div>
+				<div class="loading-text">Carregando...</div>
+			</div>
+		</div>
+
+		<div class="header">
+			<div class="header-left">
+				<div class="menu-icon bi bi-list"></div>
+				<div
+					class="search-toggle-icon bi bi-search"
+					data-toggle="header_search"
+				></div>
+				<div class="header-search">
+					<form>
+						<div class="form-group mb-0">
+							<i class="dw dw-search2 search-icon"></i>
+							<input
+								type="text"
+								class="form-control search-input"
+								placeholder="Search Here"
+							/>
+							<div class="dropdown">
+								<a
+									class="dropdown-toggle no-arrow"
+									href="#"
+									role="button"
+									data-toggle="dropdown"
+								>
+									<i class="ion-arrow-down-c"></i>
+								</a>
+								<div class="dropdown-menu dropdown-menu-right">
+									<div class="form-group row">
+										<label class="col-sm-12 col-md-2 col-form-label"
+											>De</label
+										>
+										<div class="col-sm-12 col-md-10">
+											<input
+												class="form-control form-control-sm form-control-line"
+												type="text"
+											/>
+										</div>
+									</div>
+									<div class="form-group row">
+										<label class="col-sm-12 col-md-2 col-form-label">Para</label>
+										<div class="col-sm-12 col-md-10">
+											<input
+												class="form-control form-control-sm form-control-line"
+												type="text"
+											/>
+										</div>
+									</div>
+									<div class="form-group row">
+										<label class="col-sm-12 col-md-2 col-form-label"
+											>Sujeito</label
+										>
+										<div class="col-sm-12 col-md-10">
+											<input
+												class="form-control form-control-sm form-control-line"
+												type="text"
+											/>
+										</div>
+									</div>
+									<div class="text-right">
+										<button class="btn btn-primary">Pesquisar</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+			<div class="header-right">
+				<div class="dashboard-setting user-notification">
+					<div class="dropdown">
+						<a
+							class="dropdown-toggle no-arrow"
+							href="javascript:;"
+							data-toggle="right-sidebar"
+						>
+							<i class="dw dw-settings2"></i>
+						</a>
+					</div>
+				</div>
+
+				<div class="user-info-dropdown">
+					<div class="dropdown">
+						<a
+							class="dropdown-toggle"
+							href="#"
+							role="button"
+							data-toggle="dropdown"
+						>
+							<span class="user-icon">
+								<img src="/w/1.png" alt="" />
+							</span>
+							<span class="user-name">Cliente</span>
+						</a>
+						<div
+							class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list"
+						>
+							<a class="dropdown-item" href="profile.html"
+								><i class="dw dw-user1"></i> Perfil</a
+							>
+							<a class="dropdown-item" href="profile.html"
+								><i class="dw dw-settings2"></i>Configurações</a
+							>
+							<a class="dropdown-item" href="login.html"
+								><i class="dw dw-logout"></i> Sair</a
+							>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="right-sidebar">
+			<div class="sidebar-title">
+				<h3 class="weight-600 font-16 text-blue">
+					Configuração de Layout
+					<span class="btn-block font-weight-400 font-12"
+						>Personalização</span
+					>
+				</h3>
+				<div class="close-sidebar" data-toggle="right-sidebar-close">
+					<i class="icon-copy ion-close-round"></i>
+				</div>
+			</div>
+			<div class="right-sidebar-body customscroll">
+				<div class="right-sidebar-body-content">
+					<h4 class="weight-600 font-18 pb-10">Fundo</h4>
+					<div class="sidebar-btn-group pb-30 mb-10">
+						<a
+							href="javascript:void(0);"
+							class="btn btn-outline-primary header-white active"
+							>Claro</a
+						>
+						<a
+							href="javascript:void(0);"
+							class="btn btn-outline-primary header-dark"
+							>Escuro</a
+						>
+					</div>
+
+					<h4 class="weight-600 font-18 pb-10">Fundo</h4>
+					<div class="sidebar-btn-group pb-30 mb-10">
+						<a
+							href="javascript:void(0);"
+							class="btn btn-outline-primary sidebar-light"
+							>Claro</a
+						>
+						<a
+							href="javascript:void(0);"
+							class="btn btn-outline-primary sidebar-dark active"
+							>Escuro</a
+						>
+					</div>
+
+					<h4 class="weight-600 font-18 pb-10">Icone</h4>
+					<div class="sidebar-radio-group pb-10 mb-10">
+						<div class="custom-control custom-radio custom-control-inline">
+							<input
+								type="radio"
+								id="sidebaricon-1"
+								name="menu-dropdown-icon"
+								class="custom-control-input"
+								value="icon-style-1"
+								checked=""
+							/>
+							<label class="custom-control-label" for="sidebaricon-1"
+								><i class="fa fa-angle-down"></i
+							></label>
+						</div>
+						<div class="custom-control custom-radio custom-control-inline">
+							<input
+								type="radio"
+								id="sidebaricon-2"
+								name="menu-dropdown-icon"
+								class="custom-control-input"
+								value="icon-style-2"
+							/>
+							<label class="custom-control-label" for="sidebaricon-2"
+								><i class="ion-plus-round"></i
+							></label>
+						</div>
+						<div class="custom-control custom-radio custom-control-inline">
+							<input
+								type="radio"
+								id="sidebaricon-3"
+								name="menu-dropdown-icon"
+								class="custom-control-input"
+								value="icon-style-3"
+							/>
+							<label class="custom-control-label" for="sidebaricon-3"
+								><i class="fa fa-angle-double-right"></i
+							></label>
+						</div>
+					</div>
+
+					<h4 class="weight-600 font-18 pb-10">Icones do Menu</h4>
+					<div class="sidebar-radio-group pb-30 mb-10">
+						<div class="custom-control custom-radio custom-control-inline">
+							<input
+								type="radio"
+								id="sidebariconlist-1"
+								name="menu-list-icon"
+								class="custom-control-input"
+								value="icon-list-style-1"
+								checked=""
+							/>
+							<label class="custom-control-label" for="sidebariconlist-1"
+								><i class="ion-minus-round"></i
+							></label>
+						</div>
+						<div class="custom-control custom-radio custom-control-inline">
+							<input
+								type="radio"
+								id="sidebariconlist-2"
+								name="menu-list-icon"
+								class="custom-control-input"
+								value="icon-list-style-2"
+							/>
+							<label class="custom-control-label" for="sidebariconlist-2"
+								><i class="fa fa-circle-o" aria-hidden="true"></i
+							></label>
+						</div>
+						<div class="custom-control custom-radio custom-control-inline">
+							<input
+								type="radio"
+								id="sidebariconlist-3"
+								name="menu-list-icon"
+								class="custom-control-input"
+								value="icon-list-style-3"
+							/>
+							<label class="custom-control-label" for="sidebariconlist-3"
+								><i class="dw dw-check"></i
+							></label>
+						</div>
+						<div class="custom-control custom-radio custom-control-inline">
+							<input
+								type="radio"
+								id="sidebariconlist-4"
+								name="menu-list-icon"
+								class="custom-control-input"
+								value="icon-list-style-4"
+								checked=""
+							/>
+							<label class="custom-control-label" for="sidebariconlist-4"
+								><i class="icon-copy dw dw-next-2"></i
+							></label>
+						</div>
+						<div class="custom-control custom-radio custom-control-inline">
+							<input
+								type="radio"
+								id="sidebariconlist-5"
+								name="menu-list-icon"
+								class="custom-control-input"
+								value="icon-list-style-5"
+							/>
+							<label class="custom-control-label" for="sidebariconlist-5"
+								><i class="dw dw-fast-forward-1"></i
+							></label>
+						</div>
+						<div class="custom-control custom-radio custom-control-inline">
+							<input
+								type="radio"
+								id="sidebariconlist-6"
+								name="menu-list-icon"
+								class="custom-control-input"
+								value="icon-list-style-6"
+							/>
+							<label class="custom-control-label" for="sidebariconlist-6"
+								><i class="dw dw-next"></i
+							></label>
+						</div>
+					</div>
+
+					<div class="reset-options pt-30 text-center">
+						<button class="btn btn-danger" id="reset-settings">
+							Resetar Configurações
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="mobile-menu-overlay"></div>
+
+		<div class="main-container">
+			<div class="pd-ltr-20">
+				<div class="card-box pd-20 height-100-p mb-30">
+					<div class="row align-items-center">
+						<div class="col-md-4">
+							[Image of Man with laptop]
+						</div>
+						<div class="col-md-8">
+							<h4 class="font-20 weight-500 mb-10 text-capitalize">
+								Bem-vindo de volta
+								<div class="weight-600 font-30 text-blue" id="userNamePlaceholder">Carregando...</div>
+							</h4>
+							<p class="font-18 max-width-600" id="userInfoPlaceholder">
+								Carregando informações do usuário...
+							</p>
+						</div>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-xl-3 col-lg-3 col-md-6 mb-20">
+						<div class="card-box height-100-p widget-style1">
+							<div class="d-flex flex-wrap align-items-center">
+								<div class="progress-data">
+									<div
+										id="chart"
+										data-percent="70"
+									>
+										<span>70%</span>
+									</div>
+								</div>
+								<div class="widget-data">
+									<div class="h4 mb-0" id="totalPedidosCount">0</div>
+									<div class="weight-600 font-14">Total de Pedidos</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-xl-3 col-lg-3 col-md-6 mb-20">
+						<div class="card-box height-100-p widget-style1">
+							<div class="d-flex flex-wrap align-items-center">
+								<div class="progress-data">
+									<div
+										id="chart2"
+										data-percent="30"
+									>
+										<span>30%</span>
+									</div>
+								</div>
+								<div class="widget-data">
+									<div class="h4 mb-0" id="pedidosPendentesCount">0</div>
+									<div class="weight-600 font-14">Pedidos Pendentes</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-xl-3 col-lg-3 col-md-6 mb-20">
+						<div class="card-box height-100-p widget-style1">
+							<div class="d-flex flex-wrap align-items-center">
+								<div class="progress-data">
+									<div
+										id="chart3"
+										data-percent="90"
+									>
+										<span>90%</span>
+									</div>
+								</div>
+								<div class="widget-data">
+									<div class="h4 mb-0" id="pedidosConcluidosCount">0</div>
+									<div class="weight-600 font-14">Pedidos Concluídos</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-xl-3 col-lg-3 col-md-6 mb-20">
+						<div class="card-box height-100-p widget-style1">
+							<div class="d-flex flex-wrap align-items-center">
+								<div class="progress-data">
+									<div
+										id="chart4"
+										data-percent="50"
+									>
+										<span>50%</span>
+									</div>
+								</div>
+								<div class="widget-data">
+									<div class="h4 mb-0" id="mensagensNaoLidasCount">0</div>
+									<div class="weight-600 font-14">Mensagens Não Lidas</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-lg-12 col-md-12 mb-20">
+						<div class="card-box pd-20 mb-30">
+							<h4 class="h4 text-blue mb-10">Catálogo de Serviços Elétricos</h4>
+							<p class="font-14 mb-20">Selecione o serviço desejado abaixo para solicitar um orçamento ou agendar.</p>
+
+							<div class="row">
+								<div class="col-md-4 mb-20">
+									<div class="card-box text-center pd-20"
+                                         data-service-id="troca-lampadas"
+                                         data-service-name="Troca de Lâmpadas"
+                                         data-service-description="Substituição de lâmpadas queimadas ou troca por LED. Inclui verificação de soquete, tensão e instalação segura."
+                                         data-service-price="70">
+										<img src="vendors/images/photo1.jpg" alt="Troca de Lâmpadas" class="img-fluid mb-10">
+										<h5 class="h5 mb-10">Troca de Lâmpadas</h5>
+										<p class="font-14 mb-20">Substituição rápida e segura de lâmpadas.</p>
+										<button class="btn btn-primary select-service-btn">Selecionar</button>
+									</div>
+								</div>
+								<div class="col-md-4 mb-20">
+									<div class="card-box text-center pd-20"
+                                         data-service-id="instalacao-tomadas"
+                                         data-service-name="Instalação de Tomadas"
+                                         data-service-description="Instalação de tomadas padrão ABNT com verificação de tensão e aterramento adequado. Pode incluir mudança de local."
+                                         data-service-price="90">
+										<img src="vendors/images/photo2.jpg" alt="Instalação de Tomadas" class="img-fluid mb-10">
+										<h5 class="h5 mb-10">Instalação de Tomadas</h5>
+										<p class="font-14 mb-20">Instalamos novas tomadas com segurança e conforme as normas.</p>
+										<button class="btn btn-primary select-service-btn">Selecionar</button>
+									</div>
+								</div>
+                                <div class="col-md-4 mb-20">
+									<div class="card-box text-center pd-20"
+                                         data-service-id="curto-circuito"
+                                         data-service-name="Verificação de Curto-Circuito"
+                                         data-service-description="Verificação e correção de curto-circuito em instalações elétricas, com emissão de laudo técnico. Diagnóstico com ferramentas e reparo."
+                                         data-service-price="120">
+										<img src="vendors/images/photo3.jpg" alt="Verificação de Curto-Circuito" class="img-fluid mb-10">
+										<h5 class="h5 mb-10">Verificação de Curto-Circuito</h5>
+										<p class="font-14 mb-20">Diagnóstico e solução rápida para problemas de curto-circuito.</p>
+										<button class="btn btn-primary select-service-btn">Selecionar</button>
+									</div>
+								</div>
+                                <div class="col-md-4 mb-20">
+									<div class="card-box text-center pd-20"
+                                         data-service-id="disjuntores"
+                                         data-service-name="Instalação de Disjuntores"
+                                         data-service-description="Instalação e substituição de disjuntores residenciais ou comerciais. Inclui verificação do quadro e dimensionamento correto."
+                                         data-service-price="180">
+										<img src="vendors/images/photo4.jpg" alt="Instalação de Disjuntores" class="img-fluid mb-10">
+										<h5 class="h5 mb-10">Instalação de Disjuntores</h5>
+										<p class="font-14 mb-20">Instalação e troca de disjuntores para proteger sua instalação.</p>
+										<button class="btn btn-primary select-service-btn">Selecionar</button>
+									</div>
+								</div>
+                                 <div class="col-md-4 mb-20">
+									<div class="card-box text-center pd-20"
+                                         data-service-id="fiação"
+                                         data-service-name="Troca de Fiação"
+                                         data-service-description="Substituição de fiação elétrica antiga ou danificada. Atualização da rede elétrica para maior segurança e eficiência."
+                                         data-service-price="280">
+										<img src="vendors/images/photo5.jpg" alt="Troca de Fiação" class="img-fluid mb-10">
+										<h5 class="h5 mb-10">Troca de Fiação</h5>
+										<p class="font-14 mb-20">Renovação completa ou parcial da fiação elétrica.</p>
+										<button class="btn btn-primary select-service-btn">Selecionar</button>
+									</div>
+								</div>
+								</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="footer-wrap pd-20 mb-20 card-box">
+					Plataforma WYN-TECH
+				</div>
+			</div>
+		</div>
+
+        <div class="solicitation-section" id="solicitation-section">
+            <div class="solicitation-form-container">
+                <span class="close-solicitation" id="close-solicitation">&times;</span>
+                <div class="solicitation-details">
+                    <h4>Detalhes do Serviço Selecionado</h4>
+                    <p><strong>Serviço:</strong> <span id="selected-service-name"></span></p>
+                    <p><strong>Descrição:</strong> <span id="selected-service-description"></span></p>
+                    <p><strong>Valor Estimado:</strong> R$ <span id="selected-service-price"></span></p>
+                    <input type="hidden" id="selected-service-id">
+                    <input type="hidden" id="selected-service-full-description">
+                    <input type="hidden" id="selected-service-full-price">
+                </div>
+
+                <form id="solicitar-servico-form">
+                    <h5>Informações do Pedido</h5>
+                     <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="endereco-servico">Endereço do Serviço:</label>
+                                <input type="text" class="form-control" id="endereco-servico" required />
+                            </div>
+                        </div>
+                    </div>
+                     <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="data-servico">Data Preferencial:</label>
+                                <input type="date" class="form-control" id="data-servico" required />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="hora-servico">Hora Preferencial:</label>
+                                <input type="time" class="form-control" id="hora-servico" required />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="notas-adicionais">Notas Adicionais:</label>
+                                <textarea class="form-control" id="notas-adicionais"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="urgente">Urgente:</label>
+                                <select class="form-control" id="urgente" required>
+                                    <option value="false">Não</option>
+                                    <option value="true">Sim</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12 text-right">
+                            <button type="submit" class="btn btn-success" id="submit-btn">
+                                Enviar Solicitação
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+
+		<script src="vendors/scripts/core.js"></script>
+		<script src="vendors/scripts/script.min.js"></script>
+		<script src="vendors/scripts/process.js"></script>
+		<script src="vendors/scripts/layout-settings.js"></script>
+		<script src="src/plugins/apexcharts/apexcharts.min.js"></script>
+		<script src="src/plugins/datatables/js/jquery.dataTables.min.js"></script>
+		<script src="src/plugins/datatables/js/dataTables.bootstrap4.min.js"></script>
+		<script src="src/plugins/datatables/js/dataTables.responsive.min.js"></script>
+		<script src="src/plugins/datatables/js/responsive.bootstrap4.min.js"></script>
+		<script src="vendors/scripts/dashboard3.js"></script>
+
+		<noscript>
+			<iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NXZMQSS" height="0" width="0" style="display: none; visibility: hidden"></iframe>
+		</noscript>
+
+        <script>
+            // Dados dos serviços (mantidos para preencher descrição e valor no modal)
+            const servicosEletricos = {
+                "troca-lampadas": {
+                    descricao: "Substituição de lâmpadas queimadas ou troca por LED. Inclui verificação de soquete, tensão e instalação segura.",
+                    valor: 70
+                },
+                "instalacao-tomadas": {
+                    descricao: "Instalação de tomadas padrão ABNT com verificação de tensão e aterramento adequado. Pode incluir mudança de local.",
+                    valor: 90
+                },
+                "curto-circuito": {
+                    descricao: "Verificação e correção de curto-circuito em instalações elétricas, com emissão de laudo técnico. Diagnóstico com ferramentas e reparo.",
+                    valor: 120
+                },
+                "disjuntores": {
+                    descricao: "Instalação e substituição de disjuntores residenciais ou comerciais. Inclui verificação do quadro e dimensionamento correto.",
+                    valor: 180
+                },
+                "fiação": {
+                    descricao: "Substituição de fiação elétrica antiga ou danificada. Atualização da rede elétrica para maior segurança e eficiência.",
+                    valor: 280
+                },
+            };
+
+            // Elementos da seção de solicitação
+            const solicitationSection = document.getElementById('solicitation-section');
+            const closeSolicitationBtn = document.getElementById('close-solicitation');
+            const solicitationForm = document.getElementById('solicitar-servico-form');
+            const selectedServiceNameSpan = document.getElementById('selected-service-name');
+            const selectedServiceDescriptionSpan = document.getElementById('selected-service-description');
+            const selectedServicePriceSpan = document.getElementById('selected-service-price');
+            const selectedServiceIdInput = document.getElementById('selected-service-id');
+            const selectedServiceFullDescriptionInput = document.getElementById('selected-service-full-description');
+            const selectedServiceFullPriceInput = document.getElementById('selected-service-full-price');
+
+            // Adiciona listeners aos botões "Selecionar"
+            document.querySelectorAll('.select-service-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const card = this.closest('.card-box');
+                    const serviceId = card.getAttribute('data-service-id');
+                    const serviceName = card.getAttribute('data-service-name');
+                    const serviceDescription = card.getAttribute('data-service-description');
+                    const servicePrice = card.getAttribute('data-service-price');
+
+                    // Preenche os detalhes na seção de solicitação
+                    selectedServiceNameSpan.textContent = serviceName;
+                    selectedServiceDescriptionSpan.textContent = serviceDescription;
+                    selectedServicePriceSpan.textContent = parseFloat(servicePrice).toFixed(2); // Formata o preço
+                    selectedServiceIdInput.value = serviceId;
+                    selectedServiceFullDescriptionInput.value = serviceDescription; // Salva a descrição completa
+                    selectedServiceFullPriceInput.value = parseFloat(servicePrice); // Salva o valor como número
+
+                    // Exibe a seção de solicitação
+                    solicitationSection.style.display = 'flex'; // Usa flex para centralizar
+                });
+            });
+
+            // Adiciona listener ao botão de fechar a seção de solicitação
+            closeSolicitationBtn.addEventListener('click', function() {
+                solicitationSection.style.display = 'none'; // Esconde a seção
+                solicitationForm.reset(); // Opcional: reseta o formulário ao fechar
+            });
+
+             // Fecha a seção se clicar fora do formulário
+            solicitationSection.addEventListener('click', function(event) {
+                // Se o clique foi diretamente na seção (não dentro do container do formulário)
+                if (event.target === solicitationSection) {
+                    solicitationSection.style.display = 'none';
+                    solicitationForm.reset();
+                }
+            });
+
+
+            // Envio do formulário de solicitação
+            solicitationForm.addEventListener('submit', async function(e) {
+                e.preventDefault(); // Previne o envio padrão do formulário
+                const submitBtn = document.getElementById('submit-btn');
+
+                try {
+                    submitBtn.disabled = true; // Desabilita o botão
+                    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Enviando...'; // Feedback
+
+                    // Obter valores dos campos do formulário
+                    const tipoServico = document.getElementById('selected-service-id').value; // Pega o ID do serviço do campo hidden
+                    const descricaoServico = document.getElementById('selected-service-full-description').value; // Pega a descrição completa
+                    const valorServico = parseFloat(document.getElementById('selected-service-full-price').value); // Pega o valor como número
+                    const enderecoServico = document.getElementById('endereco-servico').value.trim();
+                    const dataServico = document.getElementById('data-servico').value; // Pega a data
+                    const horaServico = document.getElementById('hora-servico').value; // Pega a hora
+                    const notasAdicionais = document.getElementById('notas-adicionais').value.trim();
+                    const urgente = document.getElementById('urgente').value === 'true';
+
+                    // Obter informações do usuário logado (já carregadas por carregarPerfilUsuario)
+                    const usuarioCache = localStorage.getItem('usuario');
+                    if (!usuarioCache) {
+                         throw new Error("Informações do usuário não encontradas. Por favor, faça login novamente.");
+                    }
+                    const usuario = JSON.parse(usuarioCache);
+
+                    const payload = {
+                        // Informações do cliente virão do token no backend, não do formulário
+                        // nome_cliente: usuario.nome, // Removido
+                        // email_cliente: usuario.email, // Removido
+                        // telefone_cliente: usuario.telefone, // Removido (se existir no perfil)
+
+                        tipo_servico: tipoServico,
+                        descricao_servico: descricaoServico, // Envia a descrição completa
+                        valor_servico: valorServico, // Envia o valor como número
+                        endereco_servico: enderecoServico,
+                        notas_adicionais: notasAdicionais,
+                        urgente: urgente,
+                        // NOVOS CAMPOS DE DATA E HORA
+                        data_servico_preferencial: dataServico,
+                        hora_servico_preferencial: horaServico
+                    };
+
+                    // Validação básica no frontend
+                    if (!payload.endereco_servico || !payload.data_servico_preferencial || !payload.hora_servico_preferencial) {
+                         throw new Error('Por favor, preencha o endereço, data e hora preferenciais.');
+                    }
+
+
+                    const response = await fetch('http://localhost:3000/solicitar-servico', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        let errorMessage = 'Erro ao enviar solicitação.';
+                        try {
+                            const errorData = await response.json();
+                            errorMessage = errorData.message || errorMessage;
+                        } catch (jsonError) {
+                            console.error('Erro ao parsear resposta de erro:', jsonError);
+                            errorMessage = `Erro do servidor (${response.status}). Resposta inválida ou não JSON.`;
+                        }
+                        throw new Error(errorMessage);
+                    }
+
+                    const data = await response.json(); // Espera que o backend retorne { id: '...' }
+
+                    alert('Solicitação criada com sucesso! Redirecionando para a página de pagamento...');
+
+                    // Redireciona para a página de pagamento pendente com o ID do serviço
+                    if (data.id) {
+                      window.location.href = `pagamento-pendente.html?serviceId=${data.id}`;
+                    } else {
+                      alert("Erro: ID do serviço não retornado pelo servidor.");
+                    }
+
+
+                } catch (error) {
+                    console.error('Erro na solicitação:', error);
+                    let displayMessage = 'Ocorreu um erro ao processar sua solicitação.';
+
+                    if (error.message) {
+                        displayMessage = 'Erro: ' + error.message;
+                    } else if (typeof error === 'string') {
+                        displayMessage = 'Erro: ' + error;
+                    } else {
+                        try {
+                            displayMessage = 'Erro inesperado: ' + JSON.stringify(error);
+                        } catch (stringifyError) {
+                            displayMessage = 'Erro inesperado (detalhes não disponíveis).';
+                        }
+                    }
+
+                    alert(displayMessage);
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Enviar Solicitação';
+                }
+            });
+
+
+            // --- Funções para carregar dados do dashboard (mantidas) ---
+
+            async function carregarPerfilUsuario() {
+              const token = localStorage.getItem('token');
+              const usuarioCache = localStorage.getItem('usuario');
+
+              if (!token || !usuarioCache) {
+                window.location.href = "login.html";
+                return;
+              }
+
+              const usuario = JSON.parse(usuarioCache);
+              const userNamePlaceholder = document.getElementById('userNamePlaceholder');
+              const userInfoPlaceholder = document.getElementById('userInfoPlaceholder');
+              const nomeSpanHeader = document.querySelector(".user-name");
+
+              if (nomeSpanHeader) nomeSpanHeader.textContent = usuario.nome;
+
+
+              try {
+                const res = await fetch('http://127.0.0.1:3000/perfil', {
+                  headers: { 'Authorization': 'Bearer ' + token }
+                });
+
+                const resClone = res.clone(); // Clonar para ler o body se der erro de JSON
+
+                if (!res.ok) {
+                    if (res.status === 401 || res.status === 403) {
+                        console.error("Token inválido ou expirado. Redirecionando para login.");
+                        alert("Sua sessão expirou. Por favor, faça login novamente.");
+                        window.location.href = "login.html";
+                        return;
+                    }
+                    throw new Error(`Erro HTTP ao buscar perfil: ${res.status}`);
+                }
+
+                let data = {};
+                try {
+                    data = await res.json();
+                } catch(jsonError) {
+                    console.error("Erro ao parsear JSON do perfil:", await resClone.text());
+                    throw new Error("Resposta de perfil inválida.");
+                }
+
+
+                if (data.usuario?.nome) {
+                  if (userNamePlaceholder) userNamePlaceholder.textContent = data.usuario.nome;
+                   if (nomeSpanHeader) nomeSpanHeader.textContent = data.usuario.nome;
+                }
+                 if (data.usuario?.email) {
+                     if (userInfoPlaceholder) userInfoPlaceholder.textContent = `ID: ${data.usuario._id} | Email: ${data.usuario.email}`;
+                 }
+
+
+                // Após carregar o perfil, carrega os dados do dashboard
+                carregarDadosDashboardCliente();
+                iniciarPollingMensagensNaoLidas(); // Inicia o polling após carregar o perfil
+
+              } catch (err) {
+                console.error('Erro ao carregar perfil:', err);
+                if (userNamePlaceholder) userNamePlaceholder.textContent = 'Erro';
+                if (userInfoPlaceholder) userInfoPlaceholder.textContent = 'Não foi possível carregar as informações do perfil.';
+                // alert('Erro ao carregar perfil: ' + (err.message || 'Verifique a conexão.')); // Evita múltiplos alerts se o redirect já ocorrer
+              }
+            }
+
+
+            async function carregarDadosDashboardCliente() {
+                const token = localStorage.getItem('token');
+                 if (!token) return; // Não tenta carregar se não tiver token
+
+                try {
+                    // Carregar Total de Pedidos
+                    const resPedidos = await fetch('http://127.0.0.1:3000/api/pedidos/quantidade', {
+                        headers: { 'Authorization': 'Bearer ' + token }
+                    });
+                    if (resPedidos.ok) {
+                        const dataPedidos = await resPedidos.json();
+                        document.getElementById('totalPedidosCount').textContent = dataPedidos.total;
+                         // Atualizar chart 1 (Total de Pedidos) - ApexCharts precisa ser re-renderizado ou atualizado
+                         // Como dashboard3.js já inicializa os charts, talvez precise de uma forma de atualizar
+                         // Ou podemos simplesmente atualizar o texto e ignorar a animação do chart por enquanto.
+                         // Para uma atualização real, seria necessário re-inicializar ou usar métodos da API do ApexCharts.
+                         // Exemplo (simplificado, pode não funcionar dependendo da inicialização em dashboard3.js):
+                         // chart.updateOptions({ series: [dataPedidos.total] });
+                    } else {
+                         console.error('Erro ao carregar total de pedidos:', resPedidos.status);
+                         document.getElementById('totalPedidosCount').textContent = 'Erro';
+                    }
+
+                    // Carregar Pedidos Pendentes (precisaríamos de um endpoint específico para isso)
+                    // Por enquanto, vamos simular ou contar do total (menos concluídos/cancelados)
+                     // O ideal seria um endpoint no backend que conte por status para o usuário logado
+                     // Ex: GET /api/pedidos/contagem-por-status
+                     // Como não temos, vamos deixar como 0 ou um valor fixo por enquanto.
+                     document.getElementById('pedidosPendentesCount').textContent = 'N/A'; // Ou 0
+
+                    // Carregar Pedidos Concluídos (precisaríamos de um endpoint específico para isso)
+                    // O ideal seria um endpoint no backend que conte por status para o usuário logado
+                     document.getElementById('pedidosConcluidosCount').textContent = 'N/A'; // Ou 0
+
+
+                    // Carregar Mensagens Não Lidas
+                    const resMensagens = await fetch('http://127.0.0.1:3000/api/chat/unread-count', {
+                         headers: { 'Authorization': 'Bearer ' + token }
+                    });
+                    if (resMensagens.ok) {
+                         const dataMensagens = await resMensagens.json();
+                         document.getElementById('mensagensNaoLidasCount').textContent = dataMensagens.total;
+                    } else {
+                         console.error('Erro ao carregar mensagens não lidas:', resMensagens.status);
+                         document.getElementById('mensagensNaoLidasCount').textContent = 'Erro';
+                    }
+
+
+                } catch (error) {
+                    console.error('Erro geral ao carregar dados do dashboard:', error);
+                     document.getElementById('totalPedidosCount').textContent = 'Erro';
+                     document.getElementById('pedidosPendentesCount').textContent = 'Erro';
+                     document.getElementById('pedidosConcluidosCount').textContent = 'Erro';
+                     document.getElementById('mensagensNaoLidasCount').textContent = 'Erro';
+                }
+            }
+
+             // Função para iniciar o polling de mensagens não lidas (a cada 30 segundos)
+             let unreadMessagesPollingInterval;
+             function iniciarPollingMensagensNaoLidas() {
+                 // Limpa qualquer intervalo existente para evitar duplicação
+                 if (unreadMessagesPollingInterval) {
+                     clearInterval(unreadMessagesPollingInterval);
+                 }
+
+                 // Inicia o polling
+                 unreadMessagesPollingInterval = setInterval(() => {
+                     carregarDadosDashboardCliente(); // Reusa a função para atualizar a contagem
+                 }, 30000); // A cada 30 segundos
+
+                 console.log("Polling de mensagens não lidas iniciado.");
+
+                 // Opcional: Parar o polling quando o usuário sair da página ou fizer logout
+                 window.addEventListener('beforeunload', () => {
+                     clearInterval(unreadMessagesPollingInterval);
+                     console.log("Polling de mensagens não lidas parado.");
+                 });
+             }
+
+
+            // Chamar carregarPerfilUsuario ao carregar a página
+            document.addEventListener("DOMContentLoaded", carregarPerfilUsuario);
+            // carregarDadosDashboardCliente e iniciarPollingMensagensNaoLidas são chamados dentro de carregarPerfilUsuario
+
+        </script>
+
+	</body>
+</html>

@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title>WYN - Meu Perfil</title>
+	<link
+		rel="apple-touch-icon"
+		sizes="180x180"
+		href="/w/1.png"
+	/>
+	<link
+		rel="icon"
+		type="image/png"
+		sizes="32x32"
+		href="/w/1.png"
+	/>
+	<link
+		rel="icon"
+		type="image/png"
+		sizes="16x16"
+		href="/w/1.png"
+	/>
+
+	<meta
+		name="viewport"
+		content="width=device-width, initial-scale=1, maximum-scale=1"
+	/>
+
+	<link
+		href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+		rel="stylesheet"
+	/>
+	<link rel="stylesheet" type="text/css" href="vendors/styles/core.css" />
+	<link
+		rel="stylesheet"
+		type="text/css"
+		href="vendors/styles/icon-font.min.css"
+	/>
+	<link
+		rel="stylesheet"
+		type="text/css"
+		href="src/plugins/datatables/css/dataTables.bootstrap4.min.css"
+	/>
+	<link
+		rel="stylesheet"
+		type="text/css"
+		href="src/plugins/datatables/css/responsive.bootstrap4.min.css"
+	/>
+	<link rel="stylesheet" type="text/css" href="vendors/styles/style.css" />
+
+    <style>
+        /* Estilos básicos para a foto de perfil */
+        .profile-picture {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%; /* Torna a imagem circular */
+            object-fit: cover; /* Garante que a imagem cubra o espaço sem distorcer */
+            margin-bottom: 20px;
+            border: 3px solid #007bff; /* Adiciona uma borda */
+        }
+        .profile-info p {
+            margin-bottom: 10px;
+        }
+    </style>
+
+	<script
+		async
+		src="https://www.googletagmanager.com/gtag/js?id=G-GBZ3SGGX85"
+	></script>
+	<script
+		async
+		src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2973766580778258"
+		crossorigin="anonymous"
+	></script>
+	<script>
+		window.dataLayer = window.dataLayer || [];
+		function gtag() {
+			dataLayer.push(arguments);
+		}
+		gtag("js", new Date());
+
+		gtag("config", "G-GBZ3SGGX85");
+	</script>
+	<script>
+		(function (w, d, s, l, i) {
+			w[l] = w[l] || [];
+			w[l].push({ "gtm.start": new Date().getTime(), event: "gtm.js" });
+			var f = d.getElementsByTagName(s)[0],
+				j = d.createElement(s),
+				dl = l != "dataLayer" ? "&l=" + l : "";
+			j.async = true;
+			j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
+			f.parentNode.insertBefore(j, f);
+		})(window, document, "script", "dataLayer", "GTM-NXZMQSS");
+	</script>
+</head>
+<body>
+	<div class="pre-loader">
+		<div class="pre-loader-box">
+			<div class="loader-logo">
+				<img src="/Tela Inicial copy/w.png" alt="" />
+			</div>
+			<div class="loader-progress" id="progress_div">
+				<div class="bar" id="bar1"></div>
+			</div>
+			<div class="percent" id="percent1">0%</div>
+			<div class="loading-text">Carregando...</div>
+		</div>
+	</div>
+
+	<div class="header">
+		<div class="header-left">
+			<div class="menu-icon bi bi-list"></div>
+			<div
+				class="search-toggle-icon bi bi-search"
+				data-toggle="header_search"
+			></div>
+			<div class="header-search">
+				<form>
+					<div class="form-group mb-0">
+						<i class="dw dw-search2 search-icon"></i>
+						<input
+							type="text"
+							class="form-control search-input"
+							placeholder="Search Here"
+						/>
+						<div class="dropdown">
+							<a
+								class="dropdown-toggle no-arrow"
+								href="#"
+								role="button"
+								data-toggle="dropdown"
+							>
+								<i class="ion-arrow-down-c"></i>
+							</a>
+							<div class="dropdown-menu dropdown-menu-right">
+								<div class="form-group row">
+									<label class="col-sm-12 col-md-2 col-form-label"
+										>De</label
+									>
+									<div class="col-sm-12 col-md-10">
+										<input
+											class="form-control form-control-sm form-control-line"
+											type="text"
+										/>
+									</div>
+								</div>
+								<div class="form-group row">
+									<label class="col-sm-12 col-md-2 col-form-label">Para</label>
+									<div class="col-sm-12 col-md-10">
+										<input
+											class="form-control form-control-sm form-control-line"
+											type="text"
+										/>
+									</div>
+								</div>
+								<div class="form-group row">
+									<label class="col-sm-12 col-md-2 col-form-label"
+										>Sujeito</label
+									>
+									<div class="col-sm-12 col-md-10">
+										<input
+											class="form-control form-control-sm form-control-line"
+											type="text"
+										/>
+									</div>
+								</div>
+								<div class="text-right">
+									<button class="btn btn-primary">Pesquisar</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+		<div class="header-right">
+			<div class="dashboard-setting user-notification">
+				<div class="dropdown">
+					<a
+						class="dropdown-toggle no-arrow"
+						href="javascript:;"
+						data-toggle="right-sidebar"
+					>
+						<i class="dw dw-settings2"></i>
+					</a>
+				</div>
+			</div>
+
+			<div class="user-info-dropdown">
+				<div class="dropdown">
+					<a
+						class="dropdown-toggle"
+						href="#"
+						role="button"
+						data-toggle="dropdown"
+					>
+						<span class="user-icon">
+							<img src="vendors/images/photo1.jpg" id="user-profile-pic-header" alt="" />
+						</span>
+						<span class="user-name" id="user-name-header">Carregando...</span>
+					</a>
+					<div
+						class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list"
+					>
+						<a class="dropdown-item" href="profile.html"
+							><i class="dw dw-user1"></i> Perfil</a
+						>
+						<a class="dropdown-item" href="profile.html"
+							><i class="dw dw-settings2"></i>Configurações</a
+						>
+						<a class="dropdown-item" href="faq.html"
+							><i class="dw dw-help"></i> Ajuda</a
+						>
+						<a class="dropdown-item" href="#" id="logout-link"
+							><i class="dw dw-logout"></i> Sair</a
+						>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="right-sidebar">
+		<div class="sidebar-title">
+			<h3 class="weight-600 font-16 text-blue">
+				Configuração de Layout
+				<span class="btn-block font-weight-400 font-12"
+					>Personalização</span
+				>
+			</h3>
+			<div class="close-sidebar" data-toggle="right-sidebar-close">
+				<i class="icon-copy ion-close-round"></i>
+			</div>
+		</div>
+		<div class="right-sidebar-body customscroll">
+			<div class="right-sidebar-body-content">
+				<h4 class="weight-600 font-18 pb-10">Fundo</h4>
+				<div class="sidebar-btn-group pb-30 mb-10">
+					<a
+						href="javascript:void(0);"
+						class="btn btn-outline-primary header-white active"
+						>Claro</a
+					>
+					<a
+						href="javascript:void(0);"
+						class="btn btn-outline-primary header-dark"
+						>Escuro</a
+					>
+				</div>
+
+				<h4 class="weight-600 font-18 pb-10">Menu Lateral</h4>
+				<div class="sidebar-btn-group pb-30 mb-10">
+					<a
+						href="javascript:void(0);"
+						class="btn btn-outline-primary sidebar-light"
+						>Claro</a
+					>
+					<a
+						href="javascript:void(0);"
+						class="btn btn-outline-primary sidebar-dark active"
+						>Escuro</a
+					>
+				</div>
+
+				<h4 class="weight-600 font-18 pb-10">Icone Dropdown</h4>
+				<div class="sidebar-radio-group pb-10 mb-10">
+					<div class="custom-control custom-radio custom-control-inline">
+						<input
+							type="radio"
+							id="sidebaricon-1"
+							name="menu-dropdown-icon"
+							class="custom-control-input"
+							value="icon-style-1"
+							checked=""
+						/>
+						<label class="custom-control-label" for="sidebaricon-1"
+							><i class="fa fa-angle-down"></i
+						></label>
+					</div>
+					<div class="custom-control custom-radio custom-control-inline">
+						<input
+							type="radio"
+							id="sidebaricon-2"
+							name="menu-dropdown-icon"
+							class="custom-control-input"
+							value="icon-style-2"
+						/>
+						<label class="custom-control-label" for="sidebaricon-2"
+							><i class="ion-plus-round"></i
+						></label>
+					</div>
+					<div class="custom-control custom-radio custom-control-inline">
+						<input
+							type="radio"
+							id="sidebariconlist-3"
+							name="menu-list-icon"
+							class="custom-control-input"
+							value="icon-list-style-3"
+						/>
+						<label class="custom-control-label" for="sidebariconlist-3"
+							><i class="fa fa-angle-double-right"></i
+						></label>
+					</div>
+				</div>
+
+				<h4 class="weight-600 font-18 pb-10">Icones do Menu</h4>
+				<div class="sidebar-radio-group pb-30 mb-10">
+					<div class="custom-control custom-radio custom-control-inline">
+						<input
+							type="radio"
+							id="sidebariconlist-1"
+							name="menu-list-icon"
+							class="custom-control-input"
+							value="icon-list-style-1"
+							checked=""
+						/>
+						<label class="custom-control-label" for="sidebariconlist-1"
+							><i class="ion-minus-round"></i
+						></label>
+					</div>
+					<div class="custom-control custom-radio custom-control-inline">
+						<input
+							type="radio"
+							id="sidebariconlist-2"
+							name="menu-list-icon"
+							class="custom-control-input"
+							value="icon-list-style-2"
+						/>
+						<label class="custom-control-label" for="sidebariconlist-2"
+							><i class="fa fa-circle-o" aria-hidden="true"></i
+						></label>
+					</div>
+					<div class="custom-control custom-radio custom-control-inline">
+						<input
+							type="radio"
+							id="sidebariconlist-3"
+							name="menu-list-icon"
+							class="custom-control-input"
+							value="icon-list-style-3"
+						/>
+						<label class="custom-control-label" for="sidebariconlist-3"
+							><i class="dw dw-check"></i
+						></label>
+					</div>
+					<div class="custom-control custom-radio custom-control-inline">
+						<input
+							type="radio"
+							id="sidebariconlist-4"
+							name="menu-list-icon"
+							class="custom-control-input"
+							value="icon-list-style-4"
+							checked=""
+						/>
+						<label class="custom-control-label" for="sidebariconlist-4"
+							><i class="icon-copy dw dw-next-2"></i
+						></label>
+					</div>
+					<div class="custom-control custom-radio custom-control-inline">
+						<input
+							type="radio"
+							id="sidebariconlist-5"
+							name="menu-list-icon"
+							class="custom-control-input"
+							value="icon-list-style-5"
+						/>
+						<label class="custom-control-label" for="sidebariconlist-5"
+							><i class="dw dw-fast-forward-1"></i
+						></label>
+					</div>
+					<div class="custom-control custom-radio custom-control-inline">
+						<input
+							type="radio"
+							id="sidebariconlist-6"
+							name="menu-list-icon"
+							class="custom-control-input"
+							value="icon-list-style-6"
+						/>
+						<label class="custom-control-label" for="sidebariconlist-6"
+							><i class="dw dw-next"></i
+						></label>
+					</div>
+				</div>
+
+				<div class="reset-options pt-30 text-center">
+					<button class="btn btn-danger" id="reset-settings">
+						Resetar Configurações
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+    <div class="left-side-bar" id="sidebar-cliente">
+		<div class="brand-logo">
+			<a href="indexx.html"> <img src="/Tela Inicial copy/w (1).png" alt="" class="dark-logo" />
+				<img
+					src="/Tela Inicial copy/w (1).png"
+					alt=""
+					class="light-logo"
+				/>
+			</a>
+			<div class="close-sidebar" data-toggle="left-sidebar-close">
+				<i class="ion-close-round"></i>
+			</div>
+		</div>
+		<div class="menu-block customscroll">
+			<div class="sidebar-menu">
+				<ul id="accordion-menu">
+					<li>
+						<a href="indexx.html" class="dropdown-toggle no-arrow"> <span class="micon bi bi-house"></span
+							><span class="mtext">Dashboard</span>
+						</a>
+					</li>
+					<li class="dropdown">
+						<a href="javascript:;" class="dropdown-toggle">
+							<span class="micon bi bi-textarea-resize"></span
+							><span class="mtext">Funcionalidades</span>
+						</a>
+						<ul class="submenu">
+							<li><a href="/em breve/index.html">Histórico</a></li>
+                            <li><a href="/LANDING PAGE WYN/LANDING PAGE WYN/catalogo.html">Fazer Pedido</a></li>
+                            <li><a href="/LANDING PAGE WYN/LANDING PAGE WYN/contratos.html">Meus Pedidos</a></li>
+                        </ul>
+					</li>
+					<li>
+						<a href="/Tela Cliente/serviços/dist/index.html" class="dropdown-toggle no-arrow"> <span class="micon bi-chat-right-dots"></span
+							><span class="mtext">Serviços</span>
+                        </a>
+					</li>
+                    <li>
+                        <a href="chat.html" class="dropdown-toggle no-arrow">
+                            <span class="micon bi bi-chat-dots"></span
+                            ><span class="mtext">Chat</span>
+                        </a>
+                    </li>
+					<li>
+						<a href="javascript:;" class="dropdown-toggle">
+							<span class="micon bi bi-file-pdf"></span
+							><span class="mtext">Documentação</span>
+						</a>
+						<ul class="submenu">
+							<li><a href="/Tela Inicial copy/Termos e Condições.docx">Termos e Condições</a></li>
+						</ul>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+
+    <div class="left-side-bar" id="sidebar-prestador" style="display: none;">
+		<div class="brand-logo">
+			<a href="index.html"> <img src="/Tela Inicial copy/w (1).png" alt="" class="dark-logo" />
+				<img
+					src="/Tela Inicial copy/w (1).png"
+					alt=""
+					class="light-logo"
+				/>
+			</a>
+			<div class="close-sidebar" data-toggle="left-sidebar-close">
+				<i class="ion-close-round"></i>
+			</div>
+		</div>
+		<div class="menu-block customscroll">
+			<div class="sidebar-menu">
+				<ul id="accordion-menu">
+					<li>
+						<a href="index.html" class="dropdown-toggle no-arrow"> <span class="micon bi bi-house"></span
+							><span class="mtext">Dashboard</span>
+						</a>
+					</li>
+					<li>
+						<a href="prestador-solicitacoes.html" class="dropdown-toggle no-arrow"> <span class="micon bi bi-textarea-resize"></span
+							><span class="mtext">Solicitações Pendentes</span>
+						</a>
+					</li>
+					<li>
+						<a href="prestador-meus-servicos.html" class="dropdown-toggle no-arrow"> <span class="micon bi bi-check-circle"></span
+							><span class="mtext">Meus Serviços Aceitos</span>
+						</a>
+					</li>
+					<li>
+						<a href="prestador-historico.html" class="dropdown-toggle no-arrow"> <span class="micon bi bi-clock-history"></span
+							><span class="mtext">Histórico de Serviços</span>
+						</a>
+					</li>
+					<li>
+						<a href="prestador-avaliacoes.html" class="dropdown-toggle no-arrow"> <span class="micon bi bi-star-fill"></span
+							><span class="mtext">Minhas Avaliações</span>
+						</a>
+					</li>
+                     <li>
+                        <a href="chat.html" class="dropdown-toggle no-arrow">
+                            <span class="micon bi bi-chat-dots"></span
+                            ><span class="mtext">Chat</span>
+                        </a>
+                    </li>
+					<li>
+						<a href="javascript:;" class="dropdown-toggle">
+							<span class="micon bi bi-file-pdf"></span
+							><span class="mtext">Documentação</span>
+						</a>
+						<ul class="submenu">
+							<li><a href="/Tela Inicial copy/Termos e Condições.docx">Termos e Condições</a></li>
+						</ul>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+
+	<div class="mobile-menu-overlay"></div>
+
+	<div class="main-container">
+		<div class="xs-pd-20-10 pd-ltr-20">
+			<div class="page-header">
+				<div class="row">
+					<div class="col-md-12 col-sm-12">
+						<div class="title">
+							<h4 id="profile-title">Meu Perfil</h4>
+						</div>
+						<nav aria-label="breadcrumb" role="navigation">
+							<ol class="breadcrumb">
+								<li class="breadcrumb-item">
+									<a href="#" id="dashboard-link">Dashboard</a>
+								</li>
+								<li class="breadcrumb-item active" aria-current="page">
+									Perfil
+								</li>
+							</ol>
+						</nav>
+					</div>
+				</div>
+			</div>
+
+			<div class="pd-20 card-box mb-30">
+				<div class="row">
+					<div class="col-md-4 col-sm-12 text-center">
+						<img src="vendors/images/photo1.jpg" id="profile-picture" class="profile-picture" alt="Foto de Perfil" />
+					</div>
+					<div class="col-md-8 col-sm-12 profile-info">
+						<h5 class="mb-20" id="profile-name">Carregando Nome...</h5>
+						<p><strong>Tipo de Perfil:</strong> <span id="profile-type">Carregando...</span></p>
+						<p><strong>Email:</strong> <span id="profile-email">Carregando...</span></p>
+						<p><strong>Telefone:</strong> <span id="profile-phone">Carregando...</span></p>
+						</div>
+				</div>
+				<div class="mt-30 text-right">
+					</div>
+			</div>
+
+			<div class="footer-wrap pd-20 mb-20 card-box">
+				Plataforma WYN-TECH
+			</div>
+		</div>
+	</div>
+
+	<script src="vendors/scripts/core.js"></script>
+	<script src="vendors/scripts/script.min.js"></script>
+	<script src="vendors/scripts/process.js"></script>
+	<script src="vendors/scripts/layout-settings.js"></script>
+	<script src="src/plugins/datatables/js/jquery.dataTables.min.js"></script>
+	<script src="src/plugins/datatables/js/dataTables.bootstrap4.min.js"></script>
+	<script src="src/plugins/datatables/js/responsive.bootstrap4.min.js"></script>
+
+	<noscript>
+		<iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NXZMQSS" height="0" width="0" style="display: none; visibility: hidden"></iframe>
+	</noscript>
+
+	<script>
+		let loggedInUser = null; // Variável para armazenar os dados do usuário/prestador logado
+
+		async function loadProfile() {
+			const token = localStorage.getItem('token');
+			const userCache = localStorage.getItem('usuario'); // Tenta pegar do cache de usuário
+            const prestadorCache = localStorage.getItem('prestador'); // Tenta pegar do cache de prestador
+
+			const userNameHeaderSpan = document.getElementById("user-name-header");
+            const userProfilePicHeaderImg = document.getElementById("user-profile-pic-header");
+            const profilePictureImg = document.getElementById("profile-picture");
+            const profileTitle = document.getElementById("profile-title");
+            const profileNameEl = document.getElementById("profile-name");
+            const profileTypeEl = document.getElementById("profile-type");
+            const profileEmailEl = document.getElementById("profile-email");
+            const profilePhoneEl = document.getElementById("profile-phone");
+            const sidebarCliente = document.getElementById("sidebar-cliente");
+            const sidebarPrestador = document.getElementById("sidebar-prestador");
+            const dashboardLink = document.getElementById("dashboard-link");
+
+
+			if (!token || (!userCache && !prestadorCache)) {
+				console.warn("Usuário/Prestador não autenticado. Redirecionando para login.");
+				// Redireciona para a página de login principal (onde o usuário pode escolher)
+				window.location.href = "login.html";
+				return;
+			}
+
+            // Tenta usar os dados do cache primeiro para exibição rápida
+            if (userCache) {
+                 loggedInUser = JSON.parse(userCache);
+                 if (userNameHeaderSpan) userNameHeaderSpan.textContent = loggedInUser.nome || 'Usuário';
+                 if (userProfilePicHeaderImg && loggedInUser.foto_perfil_url) {
+                     userProfilePicHeaderImg.src = loggedInUser.foto_perfil_url;
+                     userProfilePicHeaderImg.onerror = function() { this.onerror = null; this.src = "vendors/images/photo1.jpg"; };
+                 } else if (userProfilePicHeaderImg) {
+                      userProfilePicHeaderImg.src = "vendors/images/photo1.jpg"; // Imagem padrão cliente
+                 }
+                 if (profilePictureImg && loggedInUser.foto_perfil_url) {
+                      profilePictureImg.src = loggedInUser.foto_perfil_url;
+                      profilePictureImg.onerror = function() { this.onerror = null; this.src = "vendors/images/photo1.jpg"; };
+                 } else if (profilePictureImg) {
+                      profilePictureImg.src = "vendors/images/photo1.jpg"; // Imagem padrão cliente
+                 }
+                 if (profileTitle) profileTitle.textContent = 'Meu Perfil (Cliente)';
+                 if (profileTypeEl) profileTypeEl.textContent = 'Cliente';
+                 if (dashboardLink) dashboardLink.href = 'indexx.html'; // Link para dashboard cliente
+                 if (sidebarCliente) sidebarCliente.style.display = 'block';
+                 if (sidebarPrestador) sidebarPrestador.style.display = 'none';
+
+
+            } else if (prestadorCache) {
+                 loggedInUser = JSON.parse(prestadorCache);
+                 if (userNameHeaderSpan) userNameHeaderSpan.textContent = loggedInUser.nome || 'Prestador';
+                 if (userProfilePicHeaderImg && loggedInUser.foto_perfil_url) {
+                     userProfilePicHeaderImg.src = loggedInUser.foto_perfil_url;
+                      userProfilePicHeaderImg.onerror = function() { this.onerror = null; this.src = "vendors/images/photo4.jpg"; };
+                 } else if (userProfilePicHeaderImg) {
+                      userProfilePicHeaderImg.src = "vendors/images/photo4.jpg"; // Imagem padrão prestador
+                 }
+                  if (profilePictureImg && loggedInUser.foto_perfil_url) {
+                       profilePictureImg.src = loggedInUser.foto_perfil_url;
+                       profilePictureImg.onerror = function() { this.onerror = null; this.src = "vendors/images/photo4.jpg"; };
+                  } else if (profilePictureImg) {
+                       profilePictureImg.src = "vendors/images/photo4.jpg"; // Imagem padrão prestador
+                  }
+                 if (profileTitle) profileTitle.textContent = 'Meu Perfil (Prestador)';
+                 if (profileTypeEl) profileTypeEl.textContent = 'Prestador';
+                 if (dashboardLink) dashboardLink.href = 'index.html'; // Link para dashboard prestador
+                 if (sidebarCliente) sidebarCliente.style.display = 'none';
+                 if (sidebarPrestador) sidebarPrestador.style.display = 'block';
+            }
+
+
+			try {
+				// Chamada ao backend para validar o token e obter dados completos e atualizados
+				const res = await fetch('http://localhost:3000/perfil', {
+					headers: { 'Authorization': 'Bearer ' + token }
+				});
+
+				const resClone = res.clone(); // Clonar para ler o body se der erro de JSON
+
+				if (!res.ok) {
+					if (res.status === 401 || res.status === 403) {
+						console.error("Token inválido ou expirado. Redirecionando para login.");
+						alert("Sua sessão expirou. Por favor, faça login novamente.");
+						window.location.href = "login.html";
+						return;
+					}
+					throw new Error(`Erro HTTP ao buscar perfil: ${res.status}`);
+				}
+
+				let data = {};
+				try {
+					data = await res.json();
+				} catch(jsonError) {
+					console.error("Erro ao parsear JSON do perfil:", await resClone.text());
+					throw new Error("Resposta de perfil inválida.");
+				}
+
+                // Atualiza a variável global com os dados completos do backend
+                loggedInUser = data.usuario || data.prestador; // Pega o objeto correto (usuario ou prestador)
+
+                if (!loggedInUser) {
+                     console.error("Dados de usuário/prestador não encontrados na resposta do perfil.");
+                     alert("Não foi possível carregar os dados do seu perfil.");
+                     // Opcional: redirecionar para login se não conseguir carregar os dados
+                     // window.location.href = "login.html";
+                     return;
+                }
+
+
+                // Atualiza a interface com os dados retornados pelo backend
+                if (data.tipo === 'usuario') {
+                    if (profileTitle) profileTitle.textContent = 'Meu Perfil (Cliente)';
+                    if (profileTypeEl) profileTypeEl.textContent = 'Cliente';
+                    if (dashboardLink) dashboardLink.href = 'indexx.html'; // Link para dashboard cliente
+                    if (sidebarCliente) sidebarCliente.style.display = 'block';
+                    if (sidebarPrestador) sidebarPrestador.style.display = 'none';
+
+                    if (userNameHeaderSpan) userNameHeaderSpan.textContent = loggedInUser.nome || 'Cliente';
+                    if (profileNameEl) profileNameEl.textContent = loggedInUser.nome || 'Nome não informado';
+                    if (profileEmailEl) profileEmailEl.textContent = loggedInUser.email || 'Email não informado';
+                    if (profilePhoneEl) profilePhoneEl.textContent = loggedInUser.telefone || 'Telefone não informado';
+
+                     // Atualiza a foto de perfil com a URL retornada pelo backend
+                    if (userProfilePicHeaderImg && loggedInUser.foto_perfil_url) {
+                        userProfilePicHeaderImg.src = loggedInUser.foto_perfil_url;
+                         userProfilePicHeaderImg.onerror = function() { this.onerror = null; this.src = "vendors/images/photo1.jpg"; };
+                    } else if (userProfilePicHeaderImg) {
+                         userProfilePicHeaderImg.src = "vendors/images/photo1.jpg"; // Imagem padrão cliente
+                    }
+                    if (profilePictureImg && loggedInUser.foto_perfil_url) {
+                         profilePictureImg.src = loggedInUser.foto_perfil_url;
+                         profilePictureImg.onerror = function() { this.onerror = null; this.src = "vendors/images/photo1.jpg"; };
+                    } else if (profilePictureImg) {
+                         profilePictureImg.src = "vendors/images/photo1.jpg"; // Imagem padrão cliente
+                    }
+
+
+                } else if (data.tipo === 'prestador') {
+                    if (profileTitle) profileTitle.textContent = 'Meu Perfil (Prestador)';
+                    if (profileTypeEl) profileTypeEl.textContent = 'Prestador';
+                    if (dashboardLink) dashboardLink.href = 'index.html'; // Link para dashboard prestador
+                    if (sidebarCliente) sidebarCliente.style.display = 'none';
+                    if (sidebarPrestador) sidebarPrestador.style.display = 'block';
+
+                    if (userNameHeaderSpan) userNameHeaderSpan.textContent = loggedInUser.nome || 'Prestador';
+                    if (profileNameEl) profileNameEl.textContent = loggedInUser.nome || 'Nome não informado';
+                    if (profileEmailEl) profileEmailEl.textContent = loggedInUser.email || 'Email não informado';
+                    if (profilePhoneEl) profilePhoneEl.textContent = loggedInUser.telefone || 'Telefone não informado';
+
+                     // Atualiza a foto de perfil com a URL retornada pelo backend
+                     if (userProfilePicHeaderImg && loggedInUser.foto_perfil_url) {
+                         userProfilePicHeaderImg.src = loggedInUser.foto_perfil_url;
+                          userProfilePicHeaderImg.onerror = function() { this.onerror = null; this.src = "vendors/images/photo4.jpg"; };
+                     } else if (userProfilePicHeaderImg) {
+                          userProfilePicHeaderImg.src = "vendors/images/photo4.jpg"; // Imagem padrão prestador
+                     }
+                     if (profilePictureImg && loggedInUser.foto_perfil_url) {
+                          profilePictureImg.src = loggedInUser.foto_perfil_url;
+                          profilePictureImg.onerror = function() { this.onerror = null; this.src = "vendors/images/photo4.jpg"; };
+                     } else if (profilePictureImg) {
+                          profilePictureImg.src = "vendors/images/photo4.jpg"; // Imagem padrão prestador
+                     }
+                } else {
+                    console.error("Tipo de usuário no token desconhecido ou não suportado nesta página.");
+                    alert("Não foi possível determinar o tipo de perfil.");
+                    // Opcional: redirecionar para login
+                    // window.location.href = "login.html";
+                }
+
+				console.log("Perfil carregado do backend:", loggedInUser);
+
+
+			} catch (err) {
+				console.error('Erro ao carregar perfil:', err);
+				 alert('Ocorreu um erro ao carregar informações do perfil.');
+				// Se a chamada falhou, manter os dados do cache (se existirem) ou exibir mensagem de erro
+                 if (!loggedInUser) { // Se nem o cache foi populado
+                      if (profileNameEl) profileNameEl.textContent = 'Erro ao carregar nome';
+                      if (profileTypeEl) profileTypeEl.textContent = 'Erro';
+                      if (profileEmailEl) profileEmailEl.textContent = 'Erro ao carregar email';
+                      if (profilePhoneEl) profilePhoneEl.textContent = 'Erro ao carregar telefone';
+                      if (profilePictureImg) profilePictureImg.src = "vendors/images/photo-error.jpg"; // Imagem de erro
+                 }
+			}
+		}
+
+		// Função de Logout (adaptada para limpar cache de usuário ou prestador)
+		document.getElementById('logout-link').addEventListener('click', (e) => {
+			e.preventDefault();
+			localStorage.removeItem('token');
+			// Remove ambos os caches, pois não sabemos qual está ativo
+			localStorage.removeItem('usuario');
+			localStorage.removeItem('prestador');
+			window.location.href = 'login.html'; // Redireciona para a página de login principal
+		});
+
+
+		// Chamar loadProfile ao carregar a página
+		document.addEventListener("DOMContentLoaded", loadProfile);
+
+	</script>
+
+</body>
+</html>

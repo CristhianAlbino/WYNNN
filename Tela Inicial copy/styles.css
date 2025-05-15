@@ -1,0 +1,1775 @@
+/* Estilos Gerais e Variáveis de Tema */
+
+/* Variáveis CSS para Cores */
+:root {
+  /* Cores do Modo Claro (Padrão) */
+  --background-color: #ffffff; /* Fundo claro */
+  --text-color: #000000; /* Texto escuro */
+  --primary-color: #ff6c0f; /* Laranja do WYN */
+  --primary-dark: #1E1E1E; /* Usado para elementos escuros mesmo no modo claro, como o logo no header */
+  --header-background: #ffffff; /* Fundo do header claro */
+  --header-text-color: #000000; /* Texto do header escuro */
+  --footer-background: #151414; /* Fundo do rodapé escuro (geralmente mantido escuro) */
+  --footer-text-color: #878787; /* Texto do rodapé */
+  --card-background: #ffffff; /* Fundo de cards/caixas claro */
+  --card-text-color: #000000; /* Texto de cards/caixas escuro */
+  --border-color: #cccccc; /* Cor de borda clara */
+  --shadow-color: rgba(0, 0, 0, 0.1); /* Cor de sombra clara */
+  --link-color: #007bff; /* Cor padrão para links */
+  --link-hover-color: #0056b3; /* Cor de hover para links */
+  --button-background: var(--primary-dark); /* Fundo de botão escuro */
+  --button-text-color: var(--primary-color); /* Texto de botão laranja */
+  --button-hover-background: rgba(30, 30, 30, 0.8); /* Fundo de botão escuro hover */
+  --button-hover-text-color: var(--text-light); /* Texto de botão branco hover */
+  --about-section-background: var(--primary-color); /* Fundo da seção Sobre Nós (laranja) */
+  --about-section-title-color: var(--primary-dark); /* Cor do título da seção Sobre Nós (escuro) */
+  --about-section-text-color: var(--primary-dark); /* Cor do texto da seção Sobre Nós (escuro) */
+  --about-box-background: rgba(255, 255, 255, 0.1); /* Fundo translúcido para caixas "Sobre Nós" */
+  --about-box-text-color: var(--text-light); /* Texto branco para caixas "Sobre Nós" */
+   --about-box-title-color: var(--primary-dark); /* Título escuro para caixas "Sobre Nós" */
+  --section-title-color: var(--primary-dark); /* Cor dos títulos de seção como "Nossos Clientes" */
+  --section-background-alt: #f8f8f8; /* Cor de fundo alternativa para seções */
+  --icon-color: var(--primary-color); /* Cor padrão para ícones */
+
+
+  /* Cores do Modo Escuro */
+  --dark-background-color: #1e1e1e; /* Fundo escuro */
+  --dark-text-color: #ffffff; /* Texto claro */
+  --dark-primary-color: #ff6c0f; /* Laranja do WYN */
+  --dark-primary-dark: #1E1E1E; /* Mantido escuro */
+  --dark-header-background: #1e1e1e; /* Fundo do header escuro */
+  --dark-header-text-color: #ffffff; /* Texto do header claro */
+  --dark-footer-background: #151414; /* Fundo do rodapé escuro */
+  --dark-footer-text-color: #878787; /* Texto do rodapé */
+  --dark-card-background: #2a2a2a; /* Fundo de cards/caixas mais escuro */
+  --dark-card-text-color: #ffffff; /* Texto de cards/caixas claro */
+  --dark-border-color: #555555; /* Cor de borda escura */
+  --dark-shadow-color: rgba(255, 255, 255, 0.1); /* Cor de sombra escura */
+  --dark-link-color: #ff9900; /* Cor para links no modo escuro */
+  --dark-link-hover-color: #ffcc00; /* Cor de hover para links no modo escuro */
+  --dark-button-background: var(--dark-primary-color); /* Fundo de botão laranja */
+  --dark-button-text-color: var(--dark-primary-dark); /* Texto de botão escuro */
+  --dark-button-hover-background: #e05e0d; /* Fundo de botão laranja hover */
+  --dark-button-hover-text-color: var(--dark-text-color); /* Texto de botão branco hover */
+   --dark-about-section-background: var(--dark-primary-color); /* Fundo da seção Sobre Nós (laranja) */
+   --dark-about-section-title-color: var(--dark-primary-dark); /* Cor do título da seção Sobre Nós (escuro) */
+   --dark-about-section-text-color: var(--dark-primary-dark); /* Cor do texto da seção Sobre Nós (escuro) */
+  --dark-about-box-background: rgba(0, 0, 0, 0.3); /* Fundo translúcido mais escuro para caixas "Sobre Nós" */
+  --dark-about-box-text-color: var(--dark-text-color); /* Texto branco para caixas "Sobre Nós" */
+  --dark-about-box-title-color: var(--dark-text-color); /* Título branco para caixas "Sobre Nós" */
+  --dark-section-title-color: var(--dark-primary-dark); /* Cor dos títulos de seção como "Nossos Clientes" */
+  --dark-section-background-alt: #2a2a2a; /* Cor de fundo alternativa escura */
+  --dark-icon-color: var(--dark-primary-color); /* Cor para ícones no modo escuro */
+
+}
+
+/* Estilos Aplicados ao Body (Base para o Tema) */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Outfit', sans-serif;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  transition: background-color 0.3s ease, color 0.3s ease; /* Transição suave */
+  scroll-behavior: smooth; /* Rolagem suave para links internos */
+}
+
+/* Estilos para o Modo Escuro */
+body.dark-mode {
+  background-color: var(--dark-background-color);
+  color: var(--dark-text-color);
+}
+
+/* Estilos Gerais para Links */
+a {
+  text-decoration: none;
+  color: var(--link-color);
+  transition: color 0.3s ease;
+}
+
+a:hover {
+  color: var(--link-hover-color);
+}
+
+body.dark-mode a {
+  color: var(--dark-link-color);
+}
+
+body.dark-mode a:hover {
+  color: var(--dark-link-hover-color);
+}
+
+
+/* Container Centralizador */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px; /* Padding nas laterais para telas menores */
+}
+
+/* Ocultar conteúdo principal inicialmente */
+.page-content.hidden {
+display: none;
+}
+
+/* --- Tela de Carregamento --- */
+#loading-screen {
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background-color: #1e1e1e; /* Cor de fundo escura do WYN */
+display: flex;
+justify-content: center;
+align-items: center;
+z-index: 9999; /* Para garantir que fique acima de tudo */
+color: #ff6c0f; /* Cor do texto do loader (laranja do WYN) */
+font-size: 3rem; /* Tamanho da fonte para o texto WYN */
+font-weight: bold;
+font-family: 'Outfit', sans-serif;
+opacity: 1; /* Começa visível */
+transition: opacity 0.5s ease-out; /* Transição para ocultar */
+}
+
+.loader-container {
+position: relative;
+}
+
+.loader-container:before {
+content: "";
+position: absolute;
+top: calc( 100% - 2px);
+width: 100%;
+height: 4px;
+background-color: #ff6c0f; /* Cor da linha (laranja do WYN) */
+transform-origin: center center;
+transform: scaleX(0);
+animation: line-animation 3s ease infinite alternate;
+}
+
+@keyframes line-animation {
+0% {
+transform: scaleX(0);
+}
+15% {
+transform: scaleX(0);
+}
+20%, 25% {
+transform: scaleX(1);
+top: calc( 100% - 2px);
+}
+50% {
+transform: scaleX(1);
+top: 0px;
+}
+70% {
+transform: scaleX(0.2);
+top: 0px;
+}
+80%, 100% {
+transform: scaleX(0.2);
+top: 0px;
+}
+}
+
+
+/* --- Header --- */
+.site-header {
+  background: var(--header-background);
+  position: sticky;
+  top: 0;
+  z-index: 100; /* Z-index alto para ficar sobre outros elementos */
+  box-shadow: 0 4px 10px var(--shadow-color);
+  padding: 1rem 0;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+body.dark-mode .site-header {
+  background: var(--dark-header-background);
+  box-shadow: 0 4px 10px var(--dark-shadow-color);
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo a {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--primary-dark); /* Logo escuro no modo claro */
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+body.dark-mode .logo a {
+  color: var(--dark-header-text-color); /* Logo claro no modo escuro */
+}
+
+/* Navegação */
+.site-nav ul {
+  display: flex;
+  gap: 1.5rem; /* Espaço entre os itens do menu */
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  align-items: center; /* Alinha verticalmente os itens */
+}
+
+.site-nav li a {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  color: var(--header-text-color); /* Cor dos links baseada no tema */
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: .7px;
+  border-radius: 20px; /* Cantos arredondados */
+  transition: color 0.3s ease, background-color 0.3s ease;
+}
+
+.site-nav li a.active,
+.site-nav li a:hover {
+  color: var(--primary-color); /* Cor laranja no hover/ativo */
+  background-color: rgba(255, 108, 15, 0.1); /* Fundo levemente laranja no hover */
+}
+
+body.dark-mode .site-nav li a {
+  color: var(--dark-header-text-color);
+}
+
+body.dark-mode .site-nav li a.active,
+body.dark-mode .site-nav li a:hover {
+  color: var(--dark-primary-color);
+  background-color: rgba(255, 108, 15, 0.2);
+}
+
+
+/* Ícone de alternar tema */
+.theme-switcher {
+  font-size: 1.4rem;
+  cursor: pointer;
+  color: var(--primary-color); /* Cor do ícone baseada no tema */
+  margin-left: 15px; /* Espaço à esquerda do ícone */
+  transition: color 0.3s ease;
+}
+body.dark-mode .theme-switcher {
+  color: var(--dark-primary-color); /* Cor do ícone no modo escuro */
+}
+
+/* Menu mobile (oculto por padrão) */
+#menu-toggle {
+  display: none;
+}
+
+.menu-icon {
+  display: none; /* Oculto por padrão em telas maiores */
+  font-size: 1.8rem;
+  color: var(--primary-color); /* Cor do ícone do menu */
+  cursor: pointer;
+}
+
+body.dark-mode .menu-icon {
+  color: var(--dark-primary-color);
+}
+
+
+/* --- Seção Principal (Hero) --- */
+.hero-section {
+  padding: 80px 0; /* Espaço acima e abaixo */
+  background-color: var(--background-color); /* Fundo baseado no tema */
+  transition: background-color 0.3s ease;
+}
+body.dark-mode .hero-section {
+  background-color: var(--dark-background-color);
+}
+
+.hero-content {
+  display: flex;
+  align-items: center;
+  gap: 40px; /* Espaço entre a imagem e o texto */
+  flex-wrap: wrap; /* Permite quebrar linha em telas menores */
+}
+
+.hero-image-container {
+  position: relative;
+  width: 400px; /* Tamanho fixo para o contêiner da imagem */
+  height: 400px;
+  margin: 0 auto; /* Centraliza em telas menores */
+}
+
+.big-circle {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  border: 3px solid var(--border-color); /* Borda do círculo */
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: Rotate 20s linear infinite; /* Animação de rotação */
+  transition: border-color 0.3s ease;
+}
+body.dark-mode .big-circle {
+  border-color: var(--dark-border-color);
+}
+
+.icon-block {
+  width: 60px;
+  height: 60px;
+  position: absolute;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--card-background); /* Fundo dos ícones */
+  box-shadow: 0 0 10px var(--shadow-color); /* Sombra dos ícones */
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+body.dark-mode .icon-block {
+  background-color: var(--dark-card-background);
+  box-shadow: 0 0 10px var(--dark-shadow-color);
+}
+
+.icon-block img {
+  width: 60%;
+  height: auto;
+  animation: Rotate-reverse 20s linear infinite; /* Animação de rotação reversa */
+}
+
+/* Posições dos ícones */
+.icon-block:first-child { top: 0; left: 50%; transform: translate(-50%, -50%); }
+.icon-block:nth-child(2) { top: 50%; right: 0; transform: translate(50%, -50%); }
+.icon-block:nth-child(3) { bottom: 0; left: 50%; transform: translate(-50%, 50%); }
+.icon-block:nth-child(4) { top: 50%; left: 0; transform: translate(-50%, -50%); }
+
+.hero-image {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 300px; /* Tamanho da imagem central */
+}
+.hero-image img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 50%;
+  box-shadow: 0 0 15px rgba(255, 108, 15, 0.5); /* Sombra laranja */
+}
+
+.hero-text {
+  flex: 1; /* Ocupa o espaço restante */
+  min-width: 300px; /* Largura mínima para o texto */
+}
+
+.hero-text h2 {
+  font-size: 2.5rem;
+  margin-bottom: 15px;
+  color: var(--text-color); /* Cor do título baseada no tema */
+  transition: color 0.3s ease;
+}
+body.dark-mode .hero-text h2 {
+  color: var(--dark-text-color);
+}
+
+.hero-text h2 .primary-color-text {
+  color: var(--primary-color); /* Cor laranja para o span */
+  transition: color 0.3s ease;
+}
+body.dark-mode .hero-text h2 .primary-color-text {
+  color: var(--dark-primary-color);
+}
+
+
+.hero-text p {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: var(--text-color); /* Cor do parágrafo baseada no tema */
+  transition: color 0.3s ease;
+}
+body.dark-mode .hero-text p {
+  color: var(--dark-text-color);
+}
+
+/* Barra de Busca */
+.search-bar-container {
+  display: flex;
+  margin-top: 20px;
+  gap: 10px; /* Espaço entre input e botão */
+  flex-wrap: wrap; /* Permite quebrar linha em telas menores */
+}
+
+.search-input {
+  flex: 1; /* Ocupa o espaço restante */
+  padding: 10px 15px;
+  border: 1px solid var(--border-color);
+  border-radius: 5px;
+  font-size: 1em;
+  background-color: var(--card-background);
+  color: var(--card-text-color);
+  transition: border-color 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+}
+body.dark-mode .search-input {
+  border-color: var(--dark-border-color);
+  background-color: var(--dark-card-background);
+  color: var(--dark-card-text-color);
+}
+
+.search-button {
+  padding: 10px 20px;
+  background-color: var(--primary-color);
+  color: var(--text-light);
+  border: none;
+  border-radius: 5px;
+  font-size: 1em;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.search-button:hover {
+  background-color: #e05412; /* Laranja um pouco mais escuro */
+}
+body.dark-mode .search-button {
+  background-color: var(--dark-primary-color);
+  color: var(--dark-text-color);
+}
+body.dark-mode .search-button:hover {
+  background-color: #e05412;
+}
+
+
+.cta-link-main {
+  display: inline-block;
+  margin-top: 20px; /* Espaço acima do botão */
+}
+
+.cta-button-main {
+  display: inline-block;
+  background-color: var(--button-background);
+  color: var(--button-text-color);
+  border: 2px solid var(--primary-color);
+  padding: 0.8rem 1.5rem;
+  font-size: 1.1rem;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+.cta-button-main:hover {
+  background-color: var(--button-hover-background);
+  color: var(--button-hover-text-color);
+  border-color: var(--button-hover-background);
+}
+
+body.dark-mode .cta-button-main {
+  background-color: var(--dark-button-background);
+  color: var(--dark-button-text-color);
+  border-color: var(--dark-primary-color);
+}
+body.dark-mode .cta-button-main:hover {
+   background-color: var(--dark-button-hover-background);
+   color: var(--dark-button-hover-text-color);
+   border-color: var(--dark-button-hover-background);
+}
+
+
+/* --- Seção Como Funciona --- */
+.how-it-works-section {
+  padding: 80px 0;
+  background-color: var(--section-background-alt); /* Fundo alternativo */
+  text-align: center;
+  transition: background-color 0.3s ease;
+}
+body.dark-mode .how-it-works-section {
+  background-color: var(--dark-section-background-alt);
+}
+
+.how-it-works-section .section-title {
+  margin-bottom: 40px;
+}
+
+.how-it-works-steps {
+  display: flex;
+  justify-content: center;
+  gap: 30px; /* Espaço entre as caixas */
+  flex-wrap: wrap;
+}
+
+.step-box {
+  flex: 1;
+  min-width: 250px;
+  padding: 30px;
+  background-color: var(--card-background);
+  border-radius: 8px;
+  box-shadow: 0 4px 8px var(--shadow-color);
+  text-align: center;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+body.dark-mode .step-box {
+  background-color: var(--dark-card-background);
+  box-shadow: 0 4px 8px var(--dark-shadow-color);
+}
+
+.step-icon {
+  font-size: 3em;
+  color: var(--primary-color); /* Cor do ícone */
+  margin-bottom: 15px;
+  transition: color 0.3s ease;
+}
+body.dark-mode .step-icon {
+  color: var(--dark-primary-color);
+}
+
+.step-box h3 {
+  font-size: 1.3em;
+  margin-bottom: 10px;
+  color: var(--card-text-color);
+  transition: color 0.3s ease;
+}
+body.dark-mode .step-box h3 {
+  color: var(--dark-card-text-color);
+}
+
+.step-box p {
+  font-size: 1em;
+  line-height: 1.5;
+  color: var(--card-text-color);
+  transition: color 0.3s ease;
+}
+body.dark-mode .step-box p {
+  color: var(--dark-card-text-color);
+}
+
+
+/* --- Seção Categorias Populares --- */
+.popular-categories-section {
+  padding: 80px 0;
+  background-color: var(--background-color); /* Fundo baseado no tema */
+  text-align: center;
+  transition: background-color 0.3s ease;
+}
+body.dark-mode .popular-categories-section {
+  background-color: var(--dark-background-color);
+}
+
+.popular-categories-section .section-title {
+  margin-bottom: 40px;
+}
+
+.category-cards {
+  display: flex;
+  justify-content: center;
+  gap: 20px; /* Espaço entre os cards */
+  flex-wrap: wrap;
+}
+
+.category-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  background-color: var(--card-background);
+  border-radius: 8px;
+  box-shadow: 0 4px 8px var(--shadow-color);
+  text-align: center;
+  width: 180px; /* Largura fixa para os cards */
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+}
+.category-card:hover {
+  transform: translateY(-5px); /* Efeito de levantar no hover */
+  box-shadow: 0 8px 16px var(--shadow-color);
+}
+body.dark-mode .category-card {
+  background-color: var(--dark-card-background);
+  box-shadow: 0 4px 8px var(--dark-shadow-color);
+}
+body.dark-mode .category-card:hover {
+  box-shadow: 0 8px 16px var(--dark-shadow-color);
+}
+
+
+.category-icon {
+  font-size: 2.5em;
+  color: var(--primary-color); /* Cor do ícone */
+  margin-bottom: 10px;
+  transition: color 0.3s ease;
+}
+body.dark-mode .category-icon {
+  color: var(--dark-primary-color);
+}
+
+.category-card h3 {
+  font-size: 1.1em;
+  color: var(--card-text-color);
+  transition: color 0.3s ease;
+}
+body.dark-mode .category-card h3 {
+  color: var(--dark-card-text-color);
+}
+
+
+/* --- Seção Nossos Serviços (Slider) --- */
+.services-section {
+  padding: 80px 0; /* Espaço acima e abaixo */
+  background-color: var(--section-background-alt); /* Fundo alternativo */
+  transition: background-color 0.3s ease;
+}
+
+body.dark-mode .services-section {
+  background-color: var(--dark-section-background-alt);
+}
+
+.services-section .button-container {
+  margin-top: 0; /* Remove margem superior duplicada */
+}
+
+.services-section .section-title {
+  margin-bottom: 40px;
+}
+
+
+/* Estilos do Slider de Serviços */
+.services-section .slider {
+  padding-top: 0; /* Remove padding superior duplicado */
+  padding-bottom: 0; /* Remove padding inferior duplicado */
+}
+
+.slider__content {
+  overflow-x: scroll;
+  scroll-snap-type: x mandatory;
+  display: flex;
+  gap: 1.5rem; /* Aumenta o espaço entre os itens */
+  padding-bottom: 1rem;
+  scrollbar-color: var(--primary-color) var(--primary-dark); /* Cor da barra de scroll */
+}
+body.dark-mode .slider__content {
+  scrollbar-color: var(--dark-primary-color) var(--dark-primary-dark);
+}
+
+.slider__content::-webkit-scrollbar {
+  height: 0.5rem;
+  width: 0.5rem;
+  border-radius: 1rem;
+  background: var(--primary-dark);
+}
+body.dark-mode .slider__content::-webkit-scrollbar {
+  background: var(--dark-primary-dark);
+}
+
+.slider__content::-webkit-scrollbar-thumb {
+  border-radius: 1rem;
+  background: var(--primary-color);
+}
+body.dark-mode .slider__content::-webkit-scrollbar-thumb {
+  background: var(--dark-primary-color);
+}
+
+.slider__item {
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-width: 100%;
+  width: 100%;
+  border-radius: 0.5rem; /* Cantos mais arredondados */
+  overflow: hidden;
+  position: relative;
+  aspect-ratio: 16/9; /* Ajusta o aspect ratio para algo mais comum em imagens */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Adiciona sombra */
+}
+/* Ajustes de responsividade para o slider */
+@media (min-width: 460px) {
+  .slider__item {
+    aspect-ratio: 4/3; /* Ajusta aspect ratio para telas maiores */
+    min-width: calc((100% / 2) - 1rem); /* 2 itens por linha com gap */
+ }
+}
+@media (min-width: 768px) { /* Ajuste o breakpoint para melhor responsividade */
+  .slider__item {
+    min-width: calc((100% / 3) - 1rem); /* 3 itens por linha com gap */
+ }
+}
+@media (min-width: 992px) { /* Ajuste o breakpoint */
+  .slider__item {
+    min-width: calc((100% / 4) - 1rem); /* 4 itens por linha com gap */
+ }
+}
+
+
+.slider__image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.slider__info {
+  position: relative;
+  padding: 1rem; /* Ajusta o padding */
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.85), rgba(30, 30, 30, 0)); /* Gradiente mais escuro */
+  color: var(--text-light); /* Texto branco */
+}
+.slider__info h2 {
+  color: var(--text-light); /* Cor do título branca */
+  font-family: 'Outfit', sans-serif; /* Usa a fonte Outfit */
+  line-height: 1.1;
+  font-weight: 600; /* Peso da fonte */
+  font-size: 1.5rem; /* Ajusta o tamanho da fonte */
+  margin: 0;
+}
+
+
+/* --- Seção Para Prestadores --- */
+.for-providers-section {
+  padding: 80px 0;
+  background-color: var(--background-color); /* Fundo baseado no tema */
+  transition: background-color 0.3s ease;
+}
+body.dark-mode .for-providers-section {
+  background-color: var(--dark-background-color);
+}
+
+.provider-content {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+
+.provider-text {
+  flex: 1;
+  min-width: 300px;
+}
+
+.provider-text h2 {
+  font-size: 2.2em;
+  margin-bottom: 15px;
+  color: var(--text-color);
+  transition: color 0.3s ease;
+}
+body.dark-mode .provider-text h2 {
+  color: var(--dark-text-color);
+}
+
+.provider-text p {
+  font-size: 1.1em;
+  line-height: 1.6;
+  margin-bottom: 20px;
+  color: var(--text-color);
+  transition: color 0.3s ease;
+}
+body.dark-mode .provider-text p {
+  color: var(--dark-text-color);
+}
+
+.cta-link-provider {
+   display: inline-block;
+}
+
+
+.provider-image {
+  flex-shrink: 0; /* Não permite que a imagem diminua */
+  width: 400px; /* Largura da imagem */
+  max-width: 100%; /* Garante que não ultrapasse o contêiner */
+  margin: 0 auto; /* Centraliza em telas menores */
+}
+.provider-image img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px var(--shadow-color);
+  transition: box-shadow 0.3s ease;
+}
+body.dark-mode .provider-image img {
+  box-shadow: 0 4px 8px var(--dark-shadow-color);
+}
+
+
+/* --- Seção Por Que Escolher a WYN (Vantagens) --- */
+.why-choose-us-section {
+  padding: 80px 0;
+  background-color: var(--section-background-alt); /* Fundo alternativo */
+  text-align: center;
+  transition: background-color 0.3s ease;
+}
+body.dark-mode .why-choose-us-section {
+  background-color: var(--dark-section-background-alt);
+}
+
+.why-choose-us-section .section-title {
+  margin-bottom: 40px;
+}
+
+.advantages-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Grid responsivo */
+  gap: 30px; /* Espaço entre os itens */
+}
+
+.advantage-item {
+  padding: 30px;
+  background-color: var(--card-background);
+  border-radius: 8px;
+  box-shadow: 0 4px 8px var(--shadow-color);
+  text-align: center;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+body.dark-mode .advantage-item {
+  background-color: var(--dark-card-background);
+  box-shadow: 0 4px 8px var(--dark-shadow-color);
+}
+
+.advantage-icon {
+  font-size: 3em;
+  color: var(--primary-color); /* Cor do ícone */
+  margin-bottom: 15px;
+  transition: color 0.3s ease;
+}
+body.dark-mode .advantage-icon {
+  color: var(--dark-primary-color);
+}
+
+.advantage-item h3 {
+  font-size: 1.3em;
+  margin-bottom: 10px;
+  color: var(--card-text-color);
+  transition: color 0.3s ease;
+}
+body.dark-mode .advantage-item h3 {
+  color: var(--dark-card-text-color);
+}
+
+.advantage-item p {
+  font-size: 1em;
+  line-height: 1.5;
+  color: var(--card-text-color);
+  transition: color 0.3s ease;
+}
+body.dark-mode .advantage-item p {
+  color: var(--dark-card-text-color);
+}
+
+
+/* --- Seção Números Chave --- */
+.key-numbers-section {
+  padding: 80px 0;
+  background-color: var(--primary-color); /* Fundo laranja */
+  color: var(--text-light); /* Texto branco */
+  text-align: center;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+body.dark-mode .key-numbers-section {
+  background-color: var(--dark-primary-color);
+  color: var(--dark-text-color);
+}
+
+.key-numbers-section .section-title {
+  color: var(--primary-dark); /* Título escuro */
+  margin-bottom: 40px;
+  transition: color 0.3s ease;
+}
+body.dark-mode .key-numbers-section .section-title {
+  color: var(--dark-primary-dark);
+}
+
+
+.numbers-grid {
+  display: flex;
+  justify-content: space-around;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+
+.number-item {
+  flex: 1;
+  min-width: 180px;
+  text-align: center;
+}
+
+.number-item h3 {
+  font-size: 2.5em;
+  margin-bottom: 5px;
+  color: var(--text-light); /* Cor do número (branco) */
+  transition: color 0.3s ease;
+}
+body.dark-mode .number-item h3 {
+  color: var(--dark-text-color);
+}
+
+.number-item p {
+  font-size: 1.1em;
+  color: var(--primary-dark); /* Cor do texto (escuro) */
+  transition: color 0.3s ease;
+}
+body.dark-mode .number-item p {
+  color: var(--dark-primary-dark);
+}
+
+
+/* --- Seção Nossos Clientes (Testemunhos) --- */
+.testimonials-section {
+   padding: 80px 0;
+   background-color: var(--background-color); /* Fundo baseado no tema */
+   transition: background-color 0.3s ease;
+}
+body.dark-mode .testimonials-section {
+   background-color: var(--dark-background-color);
+}
+
+.testimonials-section .button-container {
+   margin-top: 0;
+}
+
+.testimonials-section .section-title {
+   margin-bottom: 40px;
+}
+
+/* Estilos do Carrossel de Testemunhos (Mantidos e ajustados para variáveis) */
+.testimonial-carousel {
+  margin-top: 40px; /* Espaço acima do carrossel */
+}
+
+.testimonial-carousel .shadow-effect {
+background: var(--card-background); /* Usa variável */
+padding: 30px; /* Aumenta o padding */
+border-radius: 8px; /* Cantos mais arredondados */
+text-align: center;
+border: 1px solid var(--border-color); /* Usa variável */
+box-shadow: 0 10px 20px var(--shadow-color); /* Sombra mais proeminente */
+transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+body.dark-mode .testimonial-carousel .shadow-effect {
+  background: var(--dark-card-background); /* Usa variável do modo escuro */
+  border-color: var(--dark-border-color); /* Usa variável do modo escuro */
+  box-shadow: 0 10px 20px var(--dark-shadow-color); /* Sombra no modo escuro */
+}
+
+.testimonial-carousel .shadow-effect p {
+font-family: inherit;
+font-size: 1.1em; /* Ajusta o tamanho da fonte */
+line-height: 1.6;
+margin: 0 0 20px 0; /* Aumenta a margem inferior */
+font-weight: 300;
+color: var(--card-text-color); /* Usa variável */
+transition: color 0.3s ease;
+}
+body.dark-mode .testimonial-carousel .shadow-effect p {
+  color: var(--dark-card-text-color); /* Usa variável do modo escuro */
+}
+
+.testimonial-carousel .testimonial-name {
+margin: -20px auto 0; /* Ajusta a margem superior */
+display: table;
+background: var(--primary-color); /* Usa variável */
+padding: 10px 30px; /* Ajusta o padding */
+border-radius: 15px; /* Cantos mais arredondados */
+color: var(--text-light); /* Texto branco */
+box-shadow: 0 5px 10px rgba(0,0,0,0.2); /* Sombra */
+transition: background-color 0.3s ease, color 0.3s ease;
+}
+body.dark-mode .testimonial-carousel .testimonial-name {
+  background: var(--dark-primary-color); /* Usa variável do modo escuro */
+  color: var(--dark-text-color); /* Texto claro no modo escuro */
+}
+
+.testimonial-carousel .item {
+text-align: center;
+padding: 20px; /* Reduz o padding do item para não interferir com o shadow-effect */
+margin-bottom: 40px; /* Ajusta a margem inferior */
+opacity: .5; /* Opacidade reduzida para itens não centrais */
+transform: scale(0.9); /* Reduz o tamanho para itens não centrais */
+transition: all 0.3s ease-in-out;
+}
+
+.testimonial-carousel .owl-item.active.center .item {
+opacity: 1; /* Opacidade total para o item central */
+transform: scale(1.0); /* Tamanho normal para o item central */
+}
+
+.testimonial-carousel .owl-item img {
+max-width: 80px; /* Ajusta o tamanho da imagem de perfil */
+margin: 0 auto 15px; /* Ajusta a margem inferior */
+border-radius: 50%; /* Garante que a imagem seja redonda */
+}
+
+
+/* --- Seção Blog e Notícias --- */
+.blog-news-section {
+  padding: 80px 0;
+  background-color: var(--background-color); /* Fundo baseado no tema */
+  text-align: center;
+  transition: background-color 0.3s ease;
+}
+body.dark-mode .blog-news-section {
+  background-color: var(--dark-background-color);
+}
+
+.blog-news-section .section-title {
+  margin-bottom: 40px;
+}
+
+.blog-cards {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+
+.blog-card {
+  flex: 1;
+  min-width: 280px;
+  max-width: 350px; /* Limita a largura máxima */
+  background-color: var(--card-background);
+  border-radius: 8px;
+  box-shadow: 0 4px 8px var(--shadow-color);
+  overflow: hidden; /* Garante que a imagem não vaze */
+  text-align: left;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+body.dark-mode .blog-card {
+  background-color: var(--dark-card-background);
+  box-shadow: 0 4px 8px var(--dark-shadow-color);
+}
+
+.blog-card img {
+  width: 100%;
+  height: 200px; /* Altura fixa para as imagens do blog */
+  object-fit: cover; /* Garante que a imagem cubra a área sem distorcer */
+}
+
+.blog-card h3 {
+  font-size: 1.3em;
+  margin: 15px 15px 10px 15px; /* Margem interna */
+  color: var(--card-text-color);
+  transition: color 0.3s ease;
+}
+body.dark-mode .blog-card h3 {
+  color: var(--dark-card-text-color);
+}
+
+.blog-card p {
+  font-size: 0.9em;
+  line-height: 1.5;
+  margin: 0 15px 15px 15px; /* Margem interna */
+  color: var(--card-text-color);
+  transition: color 0.3s ease;
+}
+body.dark-mode .blog-card p {
+  color: var(--dark-card-text-color);
+}
+
+.blog-card .read-more {
+  display: inline-block;
+  margin: 0 15px 15px 15px;
+  color: var(--primary-color);
+  font-weight: bold;
+  transition: color 0.3s ease;
+}
+body.dark-mode .blog-card .read-more {
+  color: var(--dark-primary-color);
+}
+
+
+/* --- Seção Depoimentos em Vídeo --- */
+.video-testimonials-section {
+  padding: 80px 0;
+  background-color: var(--section-background-alt); /* Fundo alternativo */
+  text-align: center;
+  transition: background-color 0.3s ease;
+}
+body.dark-mode .video-testimonials-section {
+  background-color: var(--dark-section-background-alt);
+}
+
+.video-testimonials-section .section-title {
+  margin-bottom: 40px;
+}
+
+.video-container {
+  position: relative;
+  width: 100%;
+  max-width: 800px; /* Largura máxima do vídeo */
+  margin: 0 auto;
+  padding-bottom: 56.25%; /* Proporção 16:9 (altura / largura * 100) */
+  height: 0;
+  overflow: hidden;
+  background-color: #000; /* Fundo preto para o player */
+  border-radius: 8px;
+  box-shadow: 0 4px 8px var(--shadow-color);
+  transition: box-shadow 0.3s ease;
+}
+body.dark-mode .video-container {
+  box-shadow: 0 4px 8px var(--dark-shadow-color);
+}
+
+
+.video-container iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+
+/* --- Rodapé --- */
+.site-footer {
+background: var(--footer-background); /* Usa variável */
+position: relative;
+padding-top: 50px; /* Espaço no topo */
+color: var(--footer-text-color); /* Cor do texto baseada no tema */
+transition: background-color 0.3s ease, color 0.3s ease;
+}
+body.dark-mode .site-footer {
+  background: var(--dark-footer-background); /* Usa variável do modo escuro */
+  color: var(--dark-footer-text-color);
+}
+
+
+.footer-content {
+  display: flex;
+  flex-wrap: wrap; /* Permite quebrar linha */
+  gap: 30px; /* Espaço entre as colunas */
+  padding-bottom: 30px; /* Espaço abaixo do conteúdo do rodapé */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* Linha separadora */
+}
+
+.footer-col {
+  flex: 1; /* Distribui o espaço */
+  min-width: 250px; /* Largura mínima para as colunas */
+}
+
+.footer-logo {
+margin-bottom: 20px;
+}
+.footer-logo img {
+  max-width: 150px; /* Ajusta o tamanho do logo no rodapé */
+}
+.footer-text p {
+margin-bottom: 14px;
+font-size: 0.9em;
+color: var(--footer-text-color); /* Usa variável */
+line-height: 1.6;
+transition: color 0.3s ease;
+}
+body.dark-mode .footer-text p {
+  color: var(--dark-footer-text-color);
+}
+
+
+.footer-widget-heading h3 {
+color: var(--text-light); /* Usa variável */
+font-size: 1.2em;
+font-weight: 600;
+margin-bottom: 20px; /* Ajusta a margem */
+position: relative;
+transition: color 0.3s ease;
+}
+body.dark-mode .footer-widget-heading h3 {
+  color: var(--dark-text-color);
+}
+
+.footer-widget-heading h3::before {
+content: "";
+position: absolute;
+left: 0;
+bottom: -5px; /* Ajusta a posição da linha */
+height: 2px;
+width: 40px; /* Ajusta a largura da linha */
+background: var(--primary-color); /* Cor da linha laranja */
+}
+body.dark-mode .footer-widget-heading h3::before {
+  background: var(--dark-primary-color); /* Cor da linha laranja no modo escuro */
+}
+
+
+.footer-widget ul {
+  list-style: none; /* Remove marcadores de lista */
+  padding: 0;
+  margin: 0;
+}
+.footer-widget ul li {
+margin-bottom: 10px; /* Espaço entre os itens */
+}
+.footer-widget ul li a:hover{
+color: var(--primary-color); /* Usa variável */
+}
+body.dark-mode .footer-widget ul li a:hover {
+  color: var(--dark-primary-color); /* Usa variável do modo escuro */
+}
+
+.footer-widget ul li a {
+color: var(--footer-text-color); /* Usa variável */
+text-transform: capitalize;
+text-decoration: none; /* Remove sublinhado */
+transition: color 0.3s ease; /* Transição suave */
+font-size: 0.9em;
+}
+body.dark-mode .footer-widget ul li a {
+  color: var(--dark-footer-text-color); /* Usa variável do modo escuro */
+}
+
+.subscribe-form {
+position: relative;
+overflow: hidden;
+}
+.subscribe-form input {
+width: 100%;
+padding: 12px 20px; /* Ajusta o padding */
+background: #2E2E2E; /* Fundo do input escuro */
+border: 1px solid #2E2E2E;
+color: #fff; /* Texto do input branco */
+border-radius: 5px; /* Cantos arredondados */
+font-size: 1em;
+}
+body.dark-mode .subscribe-form input {
+  background: #3a3a3a; /* Fundo do input mais claro no modo escuro */
+  border-color: #3a3a3a;
+  color: #fff;
+}
+
+.subscribe-form button {
+  position: absolute;
+  right: 0;
+  background: var(--primary-color); /* Fundo do botão laranja */
+  padding: 12px 15px; /* Ajusta o padding */
+  border: 1px solid var(--primary-color);
+  top: 0;
+  bottom: 0; /* Estica o botão para a altura do input */
+  border-radius: 0 5px 5px 0; /* Cantos arredondados apenas na direita */
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+body.dark-mode .subscribe-form button {
+  background: var(--dark-primary-color); /* Fundo do botão laranja no modo escuro */
+  border-color: var(--dark-primary-color);
+}
+
+.subscribe-form button:hover {
+  background-color: #e05412; /* Laranja um pouco mais escuro no hover */
+}
+body.dark-mode .subscribe-form button:hover {
+  background-color: #e05412; /* Mantém o mesmo hover */
+}
+
+
+.subscribe-form button i {
+color: #fff; /* Cor do ícone branca */
+font-size: 1.2em;
+transform: rotate(-6deg);
+}
+body.dark-mode .subscribe-form button i {
+  color: #fff; /* Mantém o ícone branco */
+}
+
+.copyright-area{
+background: #202020; /* Fundo da área de copyright */
+padding: 20px 0; /* Ajusta o padding */
+font-size: 0.9em;
+transition: background-color 0.3s ease;
+}
+body.dark-mode .copyright-area {
+  background: #1a1a1a; /* Fundo da área de copyright mais escuro no modo escuro */
+}
+
+.copyright-content {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap; /* Permite quebrar linha */
+  gap: 10px; /* Espaço entre os elementos */
+}
+
+.copyright-text p {
+margin: 0;
+font-size: 1em;
+color: #878787; /* Cor do texto de copyright */
+transition: color 0.3s ease;
+}
+body.dark-mode .copyright-text p {
+  color: #999999; /* Cor do texto de copyright mais clara no modo escuro */
+}
+
+.copyright-text p a{
+color: var(--primary-color); /* Cor do link laranja */
+text-decoration: none;
+}
+body.dark-mode .copyright-text p a {
+  color: var(--dark-primary-color); /* Cor do link laranja no modo escuro */
+}
+
+.footer-menu ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap; /* Permite quebrar linha */
+  gap: 15px; /* Espaço entre os links */
+}
+
+.footer-menu li {
+display: inline-block;
+}
+
+.footer-menu li:hover a{
+color: var(--primary-color); /* Cor do link laranja */
+}
+body.dark-mode .footer-menu li:hover a {
+  color: var(--dark-primary-color); /* Usa variável do modo escuro */
+}
+
+.footer-menu li a {
+font-size: 1em;
+color: #878787; /* Cor do link */
+text-decoration: none;
+transition: color 0.3s ease;
+}
+body.dark-mode .footer-menu li a {
+  color: #999999; /* Cor do link mais clara no modo escuro */
+}
+
+
+/* --- Animações --- */
+@keyframes Rotate {
+from { transform: rotate(0deg); }
+to { transform: rotate(360deg); }
+}
+
+@keyframes Rotate-reverse {
+from { transform: rotate(360deg); }
+to { transform: rotate(0deg); }
+}
+
+/* Animações de entrada (ajustadas para a nova estrutura) */
+.site-header .logo,
+.hero-section .hero-text h2,
+.hero-section .hero-text p,
+.search-bar-container,
+.cta-link-main,
+.site-nav li a,
+.theme-switcher {
+  opacity: 0; /* Começa invisível */
+}
+
+/* Aplica as animações após a tela de carregamento */
+.page-content {
+  animation: fadeInContent 0.8s ease-out forwards; /* Animação para o conteúdo principal */
+}
+
+@keyframes fadeInContent {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Animações de entrada específicas (ajustar delays conforme necessário) */
+/* Exemplo: animação para o logo */
+.page-content .site-header .logo {
+  animation: leftSideAni 1s ease forwards;
+}
+
+/* Exemplo: animação para os itens do menu */
+.page-content .site-nav li a {
+  animation: navani 0.5s ease forwards;
+  animation-delay: calc(0.1s * var(--navAni)); /* Usa a variável --navAni do HTML */
+}
+
+/* Exemplo: animação para o título principal */
+.page-content .hero-section .hero-text h2 {
+  animation: topSideAni 1s ease forwards;
+  animation-delay: 0.5s;
+}
+/* Exemplo: animação para o parágrafo principal */
+.page-content .hero-section .hero-text p {
+   animation: leftSideAni 1s ease forwards;
+   animation-delay: 0.8s;
+}
+/* Exemplo: animação para a barra de busca */
+.page-content .search-bar-container {
+   animation: topSideAni 1s ease forwards;
+   animation-delay: 1s;
+}
+/* Exemplo: animação para o botão principal */
+.page-content .cta-link-main {
+   animation: topSideAni 1s ease forwards;
+   animation-delay: 1.2s;
+}
+/* Exemplo: animação para o ícone do tema */
+.page-content .theme-switcher {
+   animation: rightSideAni 1.5s ease forwards;
+   animation-delay: 1.4s;
+}
+
+
+@keyframes leftSideAni {
+  from { transform: translateX(-50px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes navani {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes topSideAni {
+  from { transform: translateY(-50px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes rightSideAni {
+  from { transform: translateX(50px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+
+/* --- Responsividade --- */
+
+/* Menu Mobile */
+@media (max-width: 768px) {
+  .site-header .container {
+      padding: 0 15px; /* Ajusta padding do header */
+  }
+
+  .menu-icon {
+      display: block; /* Exibe o ícone do menu */
+  }
+
+  .site-nav {
+      position: absolute;
+      top: 100%; /* Abaixo do header */
+      left: 0;
+      width: 100%;
+      background-color: var(--header-background); /* Fundo do menu mobile */
+      box-shadow: 0 4px 10px var(--shadow-color);
+      overflow: hidden;
+      max-height: 0; /* Oculta o menu por padrão */
+      transition: max-height 0.3s ease-out; /* Transição suave */
+      z-index: 99; /* Abaixo do loader, mas acima do conteúdo */
+  }
+   body.dark-mode .site-nav {
+       background-color: var(--dark-header-background);
+       box-shadow: 0 4px 10px var(--dark-shadow-color);
+   }
+
+
+  .site-nav ul {
+      flex-direction: column;
+      align-items: center;
+      padding: 20px 0; /* Padding interno do menu */
+  }
+
+  .site-nav li {
+      width: 100%;
+      text-align: center;
+      margin-bottom: 10px; /* Espaço entre os itens */
+  }
+
+  .site-nav li a {
+      padding: 10px; /* Aumenta área clicável */
+      width: 90%; /* Ocupa quase toda a largura */
+      display: block;
+  }
+
+  /* Exibe o menu quando o checkbox está marcado */
+  #menu-toggle:checked ~ .menu-icon .menu i {
+       /* Pode adicionar estilos para o ícone quando o menu está aberto */
+  }
+
+   #menu-toggle:checked ~ .site-nav {
+       max-height: 500px; /* Altura suficiente para exibir o menu */
+   }
+
+  /* Seção Hero */
+  .hero-section {
+      padding: 60px 0; /* Reduz padding */
+  }
+
+  .hero-content {
+      flex-direction: column; /* Empilha a imagem e o texto */
+      text-align: center; /* Centraliza o texto */
+  }
+
+  .hero-image-container {
+      width: 280px; /* Reduz o tamanho do contêiner da imagem */
+      height: 280px;
+  }
+   .big-circle {
+       width: 100%;
+       height: 100%;
+   }
+  .hero-image {
+      width: 180px; /* Reduz o tamanho da imagem central */
+  }
+
+  .hero-text h2 {
+      font-size: 2rem; /* Reduz o tamanho do título */
+  }
+  .hero-text p {
+      font-size: 1em; /* Reduz o tamanho do parágrafo */
+  }
+  .search-bar-container {
+       flex-direction: column; /* Empilha input e botão */
+       gap: 5px;
+  }
+  .search-input, .search-button {
+       width: 100%; /* Ocupam a largura total */
+  }
+
+  .cta-button-main {
+      font-size: 1em;
+      padding: 0.7rem 1.2rem;
+  }
+
+
+  /* Seção Como Funciona */
+  .how-it-works-section {
+      padding: 60px 15px; /* Ajusta padding */
+  }
+  .how-it-works-section .section-title {
+       margin-bottom: 30px;
+  }
+  .how-it-works-steps {
+       gap: 20px;
+  }
+  .step-box {
+       min-width: 100%; /* Ocupa a largura total */
+       padding: 20px;
+  }
+  .step-icon {
+       font-size: 2.5em;
+  }
+  .step-box h3 {
+       font-size: 1.2em;
+  }
+  .step-box p {
+       font-size: 0.9em;
+  }
+
+
+  /* Seção Categorias Populares */
+  .popular-categories-section {
+      padding: 60px 15px;
+  }
+  .popular-categories-section .section-title {
+       margin-bottom: 30px;
+  }
+  .category-cards {
+       gap: 15px;
+  }
+  .category-card {
+       width: 150px; /* Reduz a largura do card */
+       padding: 15px;
+  }
+  .category-icon {
+       font-size: 2em;
+  }
+  .category-card h3 {
+       font-size: 1em;
+  }
+
+
+  /* Seções de Testemunhos e Serviços */
+  .testimonials-section, .services-section {
+      padding: 60px 0;
+  }
+
+  .testimonials-section .section-title, .services-section .section-title {
+       margin-bottom: 30px;
+  }
+
+  .testimonial-carousel .shadow-effect {
+      padding: 20px;
+  }
+  .testimonial-carousel .shadow-effect p {
+      font-size: 1em;
+  }
+  .testimonial-carousel .testimonial-name {
+      padding: 8px 20px;
+      font-size: 0.9em;
+  }
+   .testimonial-carousel .owl-item img {
+       max-width: 60px;
+   }
+
+  .services-section .slider {
+      padding-top: 0;
+      padding-bottom: 0;
+  }
+
+  .slider__content {
+      gap: 1rem; /* Reduz o espaço entre os itens do slider */
+  }
+  .slider__item {
+       min-width: calc((100% / 1) - 1rem); /* 1 item por linha em telas muito pequenas */
+  }
+   @media (min-width: 460px) {
+       .slider__item {
+           min-width: calc((100% / 2) - 1rem); /* 2 itens por linha em telas um pouco maiores */
+       }
+   }
+
+
+  /* Seção Para Prestadores */
+  .for-providers-section {
+      padding: 60px 15px;
+  }
+  .provider-content {
+       flex-direction: column;
+       gap: 30px;
+       text-align: center;
+  }
+  .provider-text h2 {
+       font-size: 2em;
+  }
+  .provider-text p {
+       font-size: 1em;
+  }
+  .provider-image {
+       width: 300px;
+  }
+
+
+  /* Seção Por Que Escolher a WYN */
+  .why-choose-us-section {
+      padding: 60px 15px;
+  }
+  .why-choose-us-section .section-title {
+       margin-bottom: 30px;
+  }
+  .advantages-grid {
+       gap: 20px;
+  }
+  .advantage-item {
+       padding: 20px;
+       min-width: 100%;
+  }
+  .advantage-icon {
+       font-size: 2.5em;
+  }
+  .advantage-item h3 {
+       font-size: 1.2em;
+  }
+  .advantage-item p {
+       font-size: 0.9em;
+  }
+
+
+  /* Seção Números Chave */
+  .key-numbers-section {
+      padding: 60px 15px;
+  }
+  .key-numbers-section .section-title {
+       margin-bottom: 30px;
+  }
+  .numbers-grid {
+       gap: 20px;
+  }
+  .number-item h3 {
+       font-size: 2em;
+  }
+  .number-item p {
+       font-size: 1em;
+  }
+
+
+  /* Seção Blog e Notícias */
+  .blog-news-section {
+      padding: 60px 15px;
+  }
+  .blog-news-section .section-title {
+       margin-bottom: 30px;
+  }
+  .blog-cards {
+       gap: 20px;
+  }
+  .blog-card {
+       min-width: 100%;
+       max-width: 100%;
+  }
+  .blog-card img {
+       height: 180px; /* Ajusta altura da imagem */
+  }
+  .blog-card h3 {
+       font-size: 1.2em;
+  }
+  .blog-card p {
+       font-size: 0.9em;
+  }
+
+
+  /* Seção Depoimentos em Vídeo */
+  .video-testimonials-section {
+      padding: 60px 15px;
+  }
+  .video-testimonials-section .section-title {
+       margin-bottom: 30px;
+  }
+  .video-container {
+       padding-bottom: 56.25%; /* Mantém a proporção */
+  }
+
+
+  /* Rodapé */
+  .site-footer .container {
+      padding: 0 15px;
+  }
+  .footer-content {
+      flex-direction: column;
+      gap: 20px;
+      padding-bottom: 20px;
+  }
+  .footer-col {
+      min-width: 100%; /* Colunas ocupam a largura total */
+  }
+  .footer-logo img {
+      max-width: 120px;
+  }
+  .footer-text p {
+      font-size: 0.9em;
+  }
+  .footer-widget-heading h3 {
+      font-size: 1.1em;
+      margin-bottom: 15px;
+  }
+  .footer-widget-heading h3::before {
+      width: 30px;
+  }
+  .footer-widget ul li a {
+      font-size: 0.8em;
+  }
+  .subscribe-form input {
+      padding: 10px 15px;
+      font-size: 0.9em;
+  }
+  .subscribe-form button {
+      padding: 10px 10px;
+      font-size: 1em;
+  }
+  .copyright-area {
+      padding: 15px 0;
+      font-size: 0.8em;
+  }
+  .copyright-content {
+      flex-direction: column;
+      text-align: center;
+      gap: 10px;
+  }
+  .footer-menu ul {
+      justify-content: center;
+      gap: 10px;
+  }
+  .footer-menu li {
+      margin-left: 0;
+  }
+  .footer-menu li a {
+      font-size: 0.9em;
+  }
+}
+
+/* Animações para telas menores (opcional, pode ajustar ou remover) */
+@media (max-width: 600px) {
+  /* Pode desabilitar ou simplificar algumas animações em dispositivos móveis para performance */
+}

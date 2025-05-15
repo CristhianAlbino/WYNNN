@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>WYN - Histórico de Serviços</title>
+
+		<link
+			rel="apple-touch-icon"
+			sizes="180x180"
+			href="/w/1.png"
+		/>
+		<link
+			rel="icon"
+			type="image/png"
+			sizes="32x32"
+			href="/w/1.png"
+		/>
+		<link
+			rel="icon"
+			type="image/png"
+			sizes="16x16"
+			href="/w/1.png"
+		/>
+
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1, maximum-scale=1"
+		/>
+
+		<link
+			href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+			rel="stylesheet"
+		/>
+		<link rel="stylesheet" type="text/css" href="vendors/styles/core.css" />
+		<link
+			rel="stylesheet"
+			type="text/css"
+			href="vendors/styles/icon-font.min.css"
+		/>
+		<link
+			rel="stylesheet"
+			type="text/css"
+			href="src/plugins/datatables/css/dataTables.bootstrap4.min.css"
+		/>
+		<link
+			rel="stylesheet"
+			type="text/css"
+			href="src/plugins/datatables/css/responsive.bootstrap4.min.css"
+		/>
+		<link rel="stylesheet" type="text/css" href="vendors/styles/style.css" />
+
+		<script
+			async
+			src="https://www.googletagmanager.com/gtag/js?id=G-GBZ3SGGX85"
+		></script>
+		<script
+			async
+			src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2973766580778258"
+			crossorigin="anonymous"
+		></script>
+		<script>
+			window.dataLayer = window.dataLayer || [];
+			function gtag() {
+				dataLayer.push(arguments);
+			}
+			gtag("js", new Date());
+
+			gtag("config", "G-GBZ3SGGX85");
+		</script>
+		<script>
+			(function (w, d, s, l, i) {
+				w[l] = w[l] || [];
+				w[l].push({ "gtm.start": new Date().getTime(), event: "gtm.js" });
+				var f = d.getElementsByTagName(s)[0],
+					j = d.createElement(s),
+					dl = l != "dataLayer" ? "&l=" + l : "";
+				j.async = true;
+				j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
+				f.parentNode.insertBefore(j, f);
+			})(window, document, "script", "dataLayer", "GTM-NXZMQSS");
+		</script>
+		</head>
+	<body>
+		<div class="pre-loader">
+			<div class="pre-loader-box">
+				<div class="loader-logo">
+					<img src="/Tela Inicial copy/w.png" alt="" />
+				</div>
+				<div class="loader-progress" id="progress_div">
+					<div class="bar" id="bar1"></div>
+				</div>
+				<div class="percent" id="percent1">0%</div>
+				<div class="loading-text">Carregando...</div>
+			</div>
+		</div>
+
+		<div class="header">
+			<div class="header-left">
+				<div class="menu-icon bi bi-list"></div>
+				<div
+					class="search-toggle-icon bi bi-search"
+					data-toggle="header_search"
+				></div>
+				<div class="header-search">
+					<form>
+						<div class="form-group mb-0">
+							<i class="dw dw-search2 search-icon"></i>
+							<input
+								type="text"
+								class="form-control search-input"
+								placeholder="Search Here"
+							/>
+							<div class="dropdown">
+								<a
+									class="dropdown-toggle no-arrow"
+									href="#"
+									role="button"
+									data-toggle="dropdown"
+								>
+									<i class="ion-arrow-down-c"></i>
+								</a>
+								<div class="dropdown-menu dropdown-menu-right">
+									<div class="form-group row">
+										<label class="col-sm-12 col-md-2 col-form-label"
+											>De</label
+										>
+										<div class="col-sm-12 col-md-10">
+											<input
+												class="form-control form-control-sm form-control-line"
+												type="text"
+											/>
+										</div>
+									</div>
+									<div class="form-group row">
+										<label class="col-sm-12 col-md-2 col-form-label">Para</label>
+										<div class="col-sm-12 col-md-10">
+											<input
+												class="form-control form-control-sm form-control-line"
+												type="text"
+											/>
+										</div>
+									</div>
+									<div class="form-group row">
+										<label class="col-sm-12 col-md-2 col-form-label"
+											>Sujeito</label
+										>
+										<div class="col-sm-12 col-md-10">
+											<input
+												class="form-control form-control-sm form-control-line"
+												type="text"
+											/>
+										</div>
+									</div>
+									<div class="text-right">
+										<button class="btn btn-primary">Pesquisar</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+			<div class="header-right">
+				<div class="dashboard-setting user-notification">
+					<div class="dropdown">
+						<a
+							class="dropdown-toggle no-arrow"
+							href="javascript:;"
+							data-toggle="right-sidebar"
+						>
+							<i class="dw dw-settings2"></i>
+						</a>
+					</div>
+				</div>
+
+				<div class="user-info-dropdown">
+					<div class="dropdown">
+						<a
+							class="dropdown-toggle"
+							href="#"
+							role="button"
+							data-toggle="dropdown"
+						>
+							<span class="user-icon">
+								<img src="/w/1.png" alt="" />
+							</span>
+							<span class="user-name">Prestador</span>
+						</a>
+						<div
+							class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list"
+						>
+							<a class="dropdown-item" href="profile.html"
+								><i class="dw dw-user1"></i> Perfil</a
+							>
+							<a class="dropdown-item" href="profile.html"
+								><i class="dw dw-settings2"></i>Configurações</a
+							>
+							<a class="dropdown-item" href="faq.html"
+								><i class="dw dw-help"></i> Ajuda</a
+							>
+							<a class="dropdown-item" href="#" id="logout-link"
+								><i class="dw dw-logout"></i> Sair</a
+							>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="right-sidebar">
+			<div class="sidebar-title">
+				<h3 class="weight-600 font-16 text-blue">
+					Configuração de Layout
+					<span class="btn-block font-weight-400 font-12"
+						>Personalização</span
+					>
+				</h3>
+				<div class="close-sidebar" data-toggle="right-sidebar-close">
+					<i class="icon-copy ion-close-round"></i>
+				</div>
+			</div>
+			<div class="right-sidebar-body customscroll">
+				<div class="right-sidebar-body-content">
+					<h4 class="weight-600 font-18 pb-10">Fundo</h4>
+					<div class="sidebar-btn-group pb-30 mb-10">
+						<a
+							href="javascript:void(0);"
+							class="btn btn-outline-primary header-white active"
+							>Claro</a
+						>
+						<a
+							href="javascript:void(0);"
+							class="btn btn-outline-primary header-dark"
+							>Escuro</a
+						>
+					</div>
+
+					<h4 class="weight-600 font-18 pb-10">Menu Lateral</h4>
+					<div class="sidebar-btn-group pb-30 mb-10">
+						<a
+							href="javascript:void(0);"
+							class="btn btn-outline-primary sidebar-light"
+							>Claro</a
+						>
+						<a
+							href="javascript:void(0);"
+							class="btn btn-outline-primary sidebar-dark active"
+							>Escuro</a
+						>
+					</div>
+
+					<h4 class="weight-600 font-18 pb-10">Icone Dropdown</h4>
+					<div class="sidebar-radio-group pb-10 mb-10">
+						<div class="custom-control custom-radio custom-control-inline">
+							<input
+								type="radio"
+								id="sidebaricon-1"
+								name="menu-dropdown-icon"
+								class="custom-control-input"
+								value="icon-style-1"
+								checked=""
+							/>
+							<label class="custom-control-label" for="sidebaricon-1"
+								><i class="fa fa-angle-down"></i
+							></label>
+						</div>
+						<div class="custom-control custom-radio custom-control-inline">
+							<input
+								type="radio"
+								id="sidebaricon-2"
+								name="menu-dropdown-icon"
+								class="custom-control-input"
+								value="icon-style-2"
+							/>
+							<label class="custom-control-label" for="sidebaricon-2"
+								><i class="ion-plus-round"></i
+							></label>
+						</div>
+						<div class="custom-control custom-radio custom-control-inline">
+							<input
+								type="radio"
+								id="sidebaricon-3"
+								name="menu-dropdown-icon"
+								class="custom-control-input"
+								value="icon-style-3"
+							/>
+							<label class="custom-control-label" for="sidebaricon-3"
+								><i class="fa fa-angle-double-right"></i
+							></label>
+						</div>
+					</div>
+
+					<h4 class="weight-600 font-18 pb-10">Icones do Menu</h4>
+					<div class="sidebar-radio-group pb-30 mb-10">
+						<div class="custom-control custom-radio custom-control-inline">
+							<input
+								type="radio"
+								id="sidebariconlist-1"
+								name="menu-list-icon"
+								class="custom-control-input"
+								value="icon-list-style-1"
+								checked=""
+							/>
+							<label class="custom-control-label" for="sidebariconlist-1"
+								><i class="ion-minus-round"></i
+							></label>
+						</div>
+						<div class="custom-control custom-radio custom-control-inline">
+							<input
+								type="radio"
+								id="sidebariconlist-2"
+								name="menu-list-icon"
+								class="custom-control-input"
+								value="icon-list-style-2"
+							/>
+							<label class="custom-control-label" for="sidebariconlist-2"
+								><i class="fa fa-circle-o" aria-hidden="true"></i
+							></label>
+						</div>
+						<div class="custom-control custom-radio custom-control-inline">
+							<input
+								type="radio"
+								id="sidebariconlist-3"
+								name="menu-list-icon"
+								class="custom-control-input"
+								value="icon-list-style-3"
+							/>
+							<label class="custom-control-label" for="sidebariconlist-3"
+								><i class="dw dw-check"></i
+							></label>
+						</div>
+						<div class="custom-control custom-radio custom-control-inline">
+							<input
+								type="radio"
+								id="sidebariconlist-4"
+								name="menu-list-icon"
+								class="custom-control-input"
+								value="icon-list-style-4"
+								checked=""
+							/>
+							<label class="custom-control-label" for="sidebariconlist-4"
+								><i class="icon-copy dw dw-next-2"></i
+							></label>
+						</div>
+						<div class="custom-control custom-radio custom-control-inline">
+							<input
+								type="radio"
+								id="sidebariconlist-5"
+								name="menu-list-icon"
+								class="custom-control-input"
+								value="icon-list-style-5"
+							/>
+							<label class="custom-control-label" for="sidebariconlist-5"
+								><i class="dw dw-fast-forward-1"></i
+							></label>
+						</div>
+						<div class="custom-control custom-radio custom-control-inline">
+							<input
+								type="radio"
+								id="sidebariconlist-6"
+								name="menu-list-icon"
+								class="custom-control-input"
+								value="icon-list-style-6"
+							/>
+							<label class="custom-control-label" for="sidebariconlist-6"
+								><i class="dw dw-next"></i
+							></label>
+						</div>
+					</div>
+
+					<div class="reset-options pt-30 text-center">
+						<button class="btn btn-danger" id="reset-settings">
+							Resetar Configurações
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="left-side-bar">
+			<div class="brand-logo">
+				<a href="index.html">
+					<img src="/Tela Inicial copy/w (1).png" alt="" class="dark-logo" />
+					<img
+						src="/Tela Inicial copy/w (1).png"
+						alt=""
+						class="light-logo"
+					/>
+				</a>
+				<div class="close-sidebar" data-toggle="left-sidebar-close">
+					<i class="ion-close-round"></i>
+				</div>
+			</div>
+			<div class="menu-block customscroll">
+				<div class="sidebar-menu">
+					<ul id="accordion-menu">
+						<li>
+							<a href="index.html" class="dropdown-toggle no-arrow">
+								<span class="micon bi bi-house"></span
+								><span class="mtext">Dashboard</span>
+							</a>
+						</li>
+						<li>
+							<a href="prestador-solicitacoes.html" class="dropdown-toggle no-arrow">
+								<span class="micon bi bi-textarea-resize"></span
+								><span class="mtext">Solicitações Pendentes</span>
+							</a>
+						</li>
+						<li>
+							<a href="prestador-meus-servicos.html" class="dropdown-toggle no-arrow">
+								<span class="micon bi bi-check-circle"></span
+								><span class="mtext">Meus Serviços Aceitos</span>
+							</a>
+						</li>
+						<li>
+							<a href="prestador-historico.html" class="dropdown-toggle no-arrow active"> <span class="micon bi bi-clock-history"></span
+								><span class="mtext">Histórico de Serviços</span>
+							</a>
+						</li>
+						<li>
+							<a href="prestador-avaliacoes.html" class="dropdown-toggle no-arrow">
+								<span class="micon bi bi-star-fill"></span
+								><span class="mtext">Minhas Avaliações</span>
+							</a>
+						</li>
+						<li class="dropdown">
+							<a href="javascript:;" class="dropdown-toggle">
+								<span class="micon bi bi-file-pdf"></span
+								><span class="mtext">Documentação</span>
+							</a>
+							<ul class="submenu">
+								<li><a href="/Tela Inicial copy/Termos e Condições.docx">Termos e Condições</a></li>
+							</ul>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<div class="mobile-menu-overlay"></div>
+
+		<div class="main-container">
+			<div class="xs-pd-20-10 pd-ltr-20">
+				<div class="page-header">
+					<div class="row">
+						<div class="col-md-6 col-sm-12">
+							<div class="title">
+								<h4>Histórico de Serviços</h4>
+							</div>
+							<nav aria-label="breadcrumb" role="navigation">
+								<ol class="breadcrumb">
+									<li class="breadcrumb-item">
+										<a href="index.html">Dashboard</a>
+									</li>
+									<li class="breadcrumb-item active" aria-current="page">
+										Histórico de Serviços
+									</li>
+								</ol>
+							</nav>
+						</div>
+						<div class="col-md-6 col-sm-12 text-right">
+							<div class="dropdown">
+								<a class="btn btn-primary dropdown-toggle" href="#" role="button" data-toggle="dropdown">
+									Ver Mais
+								</a>
+								<div class="dropdown-menu dropdown-menu-right">
+									<a class="dropdown-item" href="#">Exportar Histórico</a>
+									<a class="dropdown-item" href="#">Relatórios</a>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="card-box pb-10">
+					<div class="h5 pd-20 mb-0">Serviços Concluídos (Histórico)</div>
+					<div id="loading" style="text-align: center; display: none;">Carregando Histórico...</div>
+					<div id="feedback" style="text-align: center; color: red; display: none;"></div>
+					<div style="margin-bottom: 10px;">
+						<input type="text" id="filtro-cliente" placeholder="Filtrar por nome do Cliente" style="padding: 5px; width: 200px;" />
+					</div>
+					<table class="data-table table nowrap">
+						<thead>
+							<tr>
+								<th class="table-plus">Cliente</th>
+								<th>Tipo de Serviço</th>
+								<th>Data Conclusão</th>
+								<th>Valor</th>
+								<th>Status</th>
+								<th class="datatable-nosort">Ações</th>
+							</tr>
+						</thead>
+						<tbody id="historico-tabela">
+							</tbody>
+					</table>
+				</div>
+
+				<div class="footer-wrap pd-20 mb-20 card-box">
+					Plataforma WYN-TECH
+				</div>
+			</div>
+		</div>
+
+		<script src="vendors/scripts/core.js"></script>
+		<script src="vendors/scripts/script.min.js"></script>
+		<script src="vendors/scripts/process.js"></script>
+		<script src="vendors/scripts/layout-settings.js"></script>
+		<script src="src/plugins/datatables/js/jquery.dataTables.min.js"></script>
+		<script src="src/plugins/datatables/js/dataTables.bootstrap4.min.js"></script>
+		<script src="src/plugins/datatables/js/dataTables.responsive.min.js"></script>
+		<script src="src/plugins/datatables/js/responsive.bootstrap4.min.js"></script>
+
+		<noscript>
+			<iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NXZMQSS" height="0" width="0" style="display: none; visibility: hidden"></iframe>
+		</noscript>
+
+		<script>
+			let prestadorLogado = null; // Variável para armazenar os dados do prestador logado
+
+			// Função para carregar o perfil do prestador (copiada e adaptada do dashboard)
+			async function carregarPerfilPrestador() {
+				const token = localStorage.getItem('token');
+				const prestadorCache = localStorage.getItem('prestador');
+
+				if (!token || !prestadorCache) {
+					console.warn("Prestador não autenticado. Redirecionando para login.");
+					window.location.href = "login-prestador.html";
+					return;
+				}
+
+				try {
+					 prestadorLogado = JSON.parse(prestadorCache);
+					 const nomeSpan = document.querySelector(".user-name");
+					 if (nomeSpan && prestadorLogado?.nome) {
+						 nomeSpan.textContent = prestadorLogado.nome;
+					 }
+
+					 const res = await fetch('http://localhost:3000/perfil', {
+						 headers: { 'Authorization': 'Bearer ' + token }
+					 });
+
+					 const resClone = res.clone();
+
+					 if (!res.ok) {
+						 if (res.status === 401 || res.status === 403) {
+							  alert("Sua sessão expirou ou você não tem permissão. Faça login novamente.");
+							  window.location.href = "login-prestador.html";
+							  return;
+						 }
+						 throw new Error(`Erro HTTP ao buscar perfil: ${res.status}`);
+					 }
+
+					let data = {};
+					 try {
+						 data = await res.json();
+					 } catch(jsonError) {
+						 console.error("Erro ao parsear JSON do perfil:", await resClone.text());
+						 throw new Error("Resposta de perfil inválida.");
+					 }
+
+					 if (data.tipo !== 'prestador' || !data.prestador?._id) {
+						  console.error("Token válido, mas não corresponde a um prestador.");
+						  alert("Acesso negado para este tipo de usuário.");
+						  window.location.href = "login-prestador.html";
+						  return;
+					 }
+
+					 prestadorLogado = data.prestador;
+
+					if (prestadorLogado?.nome && nomeSpan) {
+						nomeSpan.textContent = prestadorLogado.nome;
+					}
+
+					console.log("Perfil do prestador carregado:", prestadorLogado);
+
+                    // Chamar a função para carregar o histórico APÓS carregar o perfil
+                    carregarHistoricoServicos();
+
+
+				} catch (err) {
+					console.error('Erro ao carregar perfil do prestador:', err);
+					 if (prestadorLogado) {
+						 alert('Erro ao validar sessão do prestador. Pode haver problemas na conexão.');
+					 } else {
+						 alert('Ocorreu um erro ao carregar informações do prestador.');
+					 }
+				}
+			}
+
+			// Função de Logout (copiada do dashboard)
+			document.getElementById('logout-link').addEventListener('click', (e) => {
+				 e.preventDefault();
+				 localStorage.removeItem('token');
+				 localStorage.removeItem('prestador');
+				 window.location.href = 'login-prestador.html';
+			});
+
+            // Mapeamento de status do backend para texto amigável (adaptado para histórico)
+			const statusMapHistorico = {
+				 'concluido_pelo_prestador': 'Concluído',
+				 'avaliado_pelo_cliente': 'Avaliado',
+				 'cancelado': 'Cancelado' // Incluir cancelados no histórico
+			};
+
+
+            // Função para carregar o histórico de serviços concluídos do prestador
+            async function carregarHistoricoServicos() {
+                const loading = document.getElementById("loading");
+                const tabelaBody = document.getElementById("historico-tabela"); // ID do tbody
+                const feedback = document.getElementById("feedback");
+                const token = localStorage.getItem("token");
+
+                loading.style.display = "block";
+                feedback.style.display = "none";
+                tabelaBody.innerHTML = ""; // Limpa a tabela antes de carregar
+
+                if (!token) {
+                    feedback.textContent = "Autenticação necessária para carregar histórico.";
+                    feedback.style.display = "block";
+                    loading.style.display = "none";
+                    return;
+                }
+
+                try {
+                    // Precisamos de um novo endpoint no backend para buscar serviços CONCLUÍDOS
+                    // associados ao prestador logado. Vamos criar um endpoint hipotético:
+                    // GET /meus-servicos-concluidos-prestador
+                    // Este endpoint deve ser protegido por authMiddlewarePrestador
+                    // e filtrar por prestador_id = req.user.id E status = 'concluido_pelo_prestador' ou 'avaliado_pelo_cliente' ou 'cancelado'
+
+                    // *** NOTA: Este endpoint /meus-servicos-concluidos-prestador PRECISA SER IMPLEMENTADO NO SEU index.js ***
+                    const response = await fetch("http://localhost:3000/meus-servicos-concluidos-prestador", {
+                         headers: { 'Authorization': `Bearer ${token}` }
+                    });
+
+                    if (!response.ok) {
+                        if (response.status === 401 || response.status === 403) {
+                             alert("Sua sessão expirou ou você não tem permissão. Faça login novamente.");
+                             window.location.href = "login-prestador.html";
+                             return;
+                        }
+                        throw new Error(`Erro HTTP ao buscar histórico de serviços: ${response.status}`);
+                    }
+
+                    const historicoServicos = await response.json();
+                    console.log("Histórico de serviços carregado:", historicoServicos);
+
+                    if (historicoServicos.length === 0) {
+                        tabelaBody.innerHTML = '<tr><td colspan="6">Nenhum serviço concluído encontrado no histórico.</td></tr>'; // Colspan ajustado
+                    } else {
+                        historicoServicos.forEach((servico) => {
+                            const row = document.createElement("tr");
+
+                            // Formatar a data de conclusão (assumindo que o backend retorna data_conclusao)
+                            // Se o backend não retornar data_conclusao, pode usar data_solicitacao ou a data que o status mudou para concluído
+                            const dataConclusao = servico.data_conclusao ? new Date(servico.data_conclusao).toLocaleDateString() : 'N/A';
+                            const valorFormatado = servico.valor_servico ? `R$ ${servico.valor_servico.toFixed(2).replace('.', ',')}` : 'N/A';
+
+
+                            row.innerHTML = `
+                                <td class="table-plus">
+                                    <div class="name-avatar d-flex align-items-center">
+                                        <div class="avatar mr-2 flex-shrink-0">
+                                            <img src="vendors/images/photo4.jpg" class="border-radius-100 shadow" width="40" height="40" alt="" />
+                                        </div>
+                                        <div class="txt">
+                                            <div class="weight-600">${servico.nome_cliente || 'Cliente'}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>${servico.tipo_servico || 'Serviço'}</td>
+                                <td>${dataConclusao}</td>
+                                <td>${valorFormatado}</td>
+                                <td>${statusMapHistorico[servico.status] || servico.status}</td>
+                                <td>
+                                    <div class="table-actions">
+                                        <a href="#" data-id="${servico._id}" class="view-details btn btn-sm btn-primary mr-1" title="Ver Detalhes"><i class="dw dw-eye"></i></a>
+                                        </div>
+                                </td>
+                            `;
+                            tabelaBody.appendChild(row);
+                        });
+
+                         // Adicionar listeners para os botões de ação (Ver Detalhes)
+                         addHistoricoActionListeners();
+                    }
+
+                } catch (error) {
+                    console.error("Erro ao carregar histórico de serviços:", error);
+                    feedback.textContent = "Erro ao carregar histórico de serviços. Verifique a conexão ou faça login novamente.";
+                    feedback.style.display = "block";
+                } finally {
+                    loading.style.display = "none";
+                }
+            }
+
+            // Função para adicionar listeners aos botões de ação do histórico
+            function addHistoricoActionListeners() {
+                 const buttons = document.querySelectorAll('#historico-tabela .view-details');
+                 buttons.forEach(button => {
+                      button.addEventListener('click', handleHistoricoActionClick);
+                 });
+                 // Adicionar listeners para outros botões de ação do histórico aqui, se houver
+            }
+
+             // Handler para o clique nos botões de ação do histórico
+             async function handleHistoricoActionClick(event) {
+                  event.preventDefault(); // Previne o comportamento padrão do link
+                  const target = event.target.closest('a'); // Pega o link clicado
+                  const serviceId = target.dataset.id;
+                  const token = localStorage.getItem("token");
+
+                  if (!serviceId || !token) {
+                       console.warn("Ação de histórico clicada sem ID de serviço ou token.");
+                       return;
+                  }
+
+                  // Ação de Ver Detalhes
+                  if (target.classList.contains("view-details")) {
+                       console.log(`Clicado em Ver Detalhes para o serviço ID: ${serviceId}`);
+                       // Redirecionar ou abrir um modal para mostrar os detalhes completos do serviço
+                       // Você já tem uma rota /servico/:id no backend que retorna os detalhes.
+                       // Pode redirecionar para uma página de detalhes ou usar um modal.
+                       // Exemplo de redirecionamento:
+                       window.location.href = `detalhes-servico.html?serviceId=${serviceId}`; // Assumindo uma página de detalhes genérica
+                       // Ou, para abrir um modal, você precisaria da estrutura do modal nesta página
+                       // e uma função para preenchê-lo e exibi-lo.
+                  }
+
+                  // Adicionar handlers para outros botões de ação do histórico aqui, se houver
+             }
+
+
+            // Filtrar a tabela de histórico pelo nome do cliente
+			document.getElementById("filtro-cliente").addEventListener("input", (event) => {
+				const filtro = event.target.value.toLowerCase();
+				const rows = document.querySelectorAll("#historico-tabela tr");
+				rows.forEach((row) => {
+					const clienteCell = row.querySelector(".weight-600");
+					if (clienteCell) {
+						const cliente = clienteCell.textContent.toLowerCase();
+						row.style.display = cliente.includes(filtro) ? "" : "none";
+					}
+				});
+			});
+
+
+			// Chamar carregarPerfilPrestador ao carregar a página
+			document.addEventListener("DOMContentLoaded", carregarPerfilPrestador); // carregarHistoricoServicos é chamado dentro dela
+		</script>
+
+	</body>
+</html>
+

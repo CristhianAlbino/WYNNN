@@ -1,0 +1,2007 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>WYN - DASHBOARD PRESTADOR</title>
+		<link
+			rel="apple-touch-icon"
+			sizes="180x180"
+			href="/w/1.png"
+		/>
+		<link
+			rel="icon"
+			type="image/png"
+			sizes="32x32"
+			href="/w/1.png"
+		/>
+		<link
+			rel="icon"
+			type="image/png"
+			sizes="16x16"
+			href="/w/1.png"
+		/>
+
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1, maximum-scale=1"
+		/>
+
+		<link
+			href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+			rel="stylesheet"
+		/>
+		<link rel="stylesheet" type="text/css" href="vendors/styles/core.css" />
+		<link
+			rel="stylesheet"
+			type="text/css"
+			href="vendors/styles/icon-font.min.css"
+		/>
+		<link
+			rel="stylesheet"
+			type="text/css"
+			href="src/plugins/datatables/css/dataTables.bootstrap4.min.css"
+		/>
+		<link
+			rel="stylesheet"
+			type="text/css"
+			href="src/plugins/datatables/css/responsive.bootstrap4.min.css"
+		/>
+		<link rel="stylesheet" type="text/css" href="vendors/styles/style.css" />
+
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+		<style>
+			/* Estilo para a foto de perfil no header */
+			.user-icon img.profile-pic-header {
+				border-radius: 50% !important;
+				object-fit: cover;
+				width: 40px;
+				height: 40px;
+			}
+
+			/* Ajustes para os filtros da tabela */
+			.filter-container {
+				margin-bottom: 15px;
+				padding: 0 20px; /* Alinha com a tabela */
+				display: flex; /* Usa flexbox para alinhar os filtros */
+				gap: 10px; /* Espaço entre os filtros */
+				flex-wrap: wrap; /* Permite quebra de linha em telas pequenas */
+				align-items: center; /* Alinha verticalmente */
+			}
+
+			.filter-container label {
+				margin-bottom: 0; /* Remove margem inferior dos labels */
+				font-weight: 500;
+			}
+
+			.filter-container input,
+			.filter-container select {
+				padding: 8px 12px;
+				border: 1px solid #ccc;
+				border-radius: 4px;
+				font-size: 14px;
+				flex-grow: 1; /* Permite que os inputs cresçam */
+				max-width: 250px; /* Limita largura máxima em telas maiores */
+			}
+
+            @media (max-width: 768px) {
+                 .filter-container input,
+                 .filter-container select {
+                      max-width: 100%; /* Ocupa largura total em telas pequenas */
+                 }
+            }
+
+			/* Estilo para mensagens de feedback (loading, erro, vazio) */
+			.feedback-message {
+				text-align: center;
+				padding: 10px;
+				margin: 15px 20px; /* Espaçamento alinhado com a tabela */
+				border-radius: 4px;
+				font-weight: 500;
+			}
+
+			.feedback-loading {
+				color: #007bff; /* Cor azul */
+				background-color: #e9f5ff; /* Fundo azul claro */
+				border: 1px solid #b8daff;
+			}
+
+			.feedback-error {
+				color: #dc3545; /* Cor vermelha */
+				background-color: #f8d7da; /* Fundo vermelho claro */
+				border: 1px solid #f5c6cb;
+			}
+
+			.feedback-empty {
+				color: #6c757d; /* Cor cinza */
+				background-color: #f8f9fa; /* Fundo branco/claro */
+				border: 1px solid #dee2e6;
+			}
+
+             /* Estilo para o indicador de notificações no sino */
+            .notification-badge {
+                position: absolute;
+                top: 5px; /* Ajuste a posição vertical */
+                right: 5px; /* Ajuste a posição horizontal */
+                padding: 3px 6px;
+                border-radius: 50%;
+                background-color: red;
+                color: white;
+                font-size: 10px;
+                font-weight: bold;
+                display: none; /* Inicialmente oculto */
+            }
+
+             /* Estilo para o dropdown de notificações */
+             .notification-dropdown {
+                 width: 300px; /* Largura fixa para o dropdown */
+                 max-height: 400px; /* Altura máxima */
+                 overflow-y: auto; /* Scroll se necessário */
+             }
+
+             .notification-item {
+                 padding: 10px;
+                 border-bottom: 1px solid #eee;
+             }
+
+             .notification-item:last-child {
+                 border-bottom: none;
+             }
+
+             .notification-item a {
+                 text-decoration: none;
+                 color: #333; /* Cor do texto */
+                 display: block; /* Ocupa toda a área do item */
+             }
+
+             .notification-item a:hover {
+                 background-color: #f8f9fa; /* Fundo suave no hover */
+             }
+
+             .notification-item .timestamp {
+                 font-size: 11px;
+                 color: #999;
+                 display: block;
+                 margin-top: 3px;
+             }
+
+             .notification-item.unread {
+                 background-color: #e9f5ff; /* Fundo azul claro para não lidas */
+                 font-weight: bold;
+             }
+
+             /* Estilo para o container de toasts */
+             #toastContainer {
+                 position: fixed;
+                 top: 20px;
+                 right: 20px;
+                 z-index: 1050; /* Acima de modais */
+             }
+
+             /* Estilo individual do toast */
+             .toast {
+                 width: 300px;
+                 max-width: 100%;
+                 font-size: .875rem;
+                 background-color: rgba(255,255,255,.85);
+                 background-clip: padding-box;
+                 border: 1px solid rgba(0,0,0,.1);
+                 box-shadow: 0 .25rem .75rem rgba(0,0,0,.1);
+                 opacity: 0;
+                 border-radius: .25rem;
+             }
+
+             .toast.showing {
+                 opacity: 1;
+             }
+
+             .toast.show {
+                 display: block;
+                 opacity: 1;
+             }
+
+             .toast.hide {
+                 display: none;
+             }
+
+             .toast-header {
+                 display: flex;
+                 align-items: center;
+                 padding: .25rem .75rem;
+                 color: #6c757d;
+                 background-color: rgba(255,255,255,.85);
+                 background-clip: padding-box;
+                 border-bottom: 1px solid rgba(0,0,0,.05);
+                 border-top-left-radius: calc(.25rem - 1px);
+                 border-top-right-radius: calc(.25rem - 1px);
+             }
+
+             .toast-body {
+                 padding: .75rem;
+             }
+
+             /* Cores para os headers dos toasts */
+             .toast-header.bg-success { background-color: #28a745 !important; color: white !important; }
+             .toast-header.bg-danger { background-color: #dc3545 !important; color: white !important; }
+             .toast-header.bg-info { background-color: #17a2b8 !important; color: white !important; }
+
+             /* Estilo para o botão grande */
+             .btn-add-service {
+                 font-size: 1.5rem;
+                 padding: 20px 40px;
+                 margin-bottom: 20px;
+                 width: 100%; /* Ocupa a largura total do container */
+                 text-align: center;
+                 border-radius: 8px;
+             }
+
+             /* Estilo para a lista de próximos agendamentos */
+             #upcoming-appointments-list {
+                 list-style: none;
+                 padding: 0;
+                 margin: 0;
+             }
+
+             #upcoming-appointments-list li {
+                 padding: 15px;
+                 border-bottom: 1px solid #eee;
+                 display: flex;
+                 justify-content: space-between;
+                 align-items: center;
+             }
+
+             #upcoming-appointments-list li:last-child {
+                 border-bottom: none;
+             }
+
+             #upcoming-appointments-list li strong {
+                 margin-right: 10px;
+             }
+
+		</style>
+
+
+		<script
+			async
+			src="https://www.googletagmanager.com/gtag/js?id=G-GBZ3SGGX85"
+		></script>
+		<script
+			async
+			src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2973766580778258"
+			crossorigin="anonymous"
+		></script>
+		<script>
+			window.dataLayer = window.dataLayer || [];
+			function gtag() {
+				dataLayer.push(arguments);
+			}
+			gtag("js", new Date());
+
+			gtag("config", "G-GBZ3SGGX85");
+		</script>
+		<script>
+			(function (w, d, s, l, i) {
+				w[l] = w[l] || [];
+				w[l].push({ "gtm.start": new Date().getTime(), event: "gtm.js" });
+				var f = d.getElementsByTagName(s)[0],
+					j = d.createElement(s),
+					dl = l != "dataLayer" ? "&l=" + l : "";
+				j.async = true;
+				j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
+				f.parentNode.insertBefore(j, f);
+			})(window, document, "script", "dataLayer", "GTM-NXZMQSS");
+		</script>
+	</head>
+	<body>
+		<div class="pre-loader">
+			<div class="pre-loader-box">
+				<div class="loader-logo">
+					<img src="/Tela Inicial copy/w.png" alt="" />
+				</div>
+				<div class="loader-progress" id="progress_div">
+					<div class="bar" id="bar1"></div>
+				</div>
+				<div class="percent" id="percent1">0%</div>
+				<div class="loading-text">Carregando...</div>
+			</div>
+		</div>
+
+		<div class="header">
+			<div class="header-left">
+				<div class="menu-icon bi bi-list"></div>
+				<div
+					class="search-toggle-icon bi bi-search"
+					data-toggle="header_search"
+				></div>
+				<div class="header-search">
+					<form>
+						<div class="form-group mb-0">
+							<i class="dw dw-search2 search-icon"></i>
+							<input
+								type="text"
+								class="form-control search-input"
+								placeholder="Search Here"
+							/>
+							<div class="dropdown">
+								<a
+									class="dropdown-toggle no-arrow"
+									href="#"
+									role="button"
+									data-toggle="dropdown"
+								>
+									<i class="ion-arrow-down-c"></i>
+								</a>
+								<div class="dropdown-menu dropdown-menu-right">
+									<div class="form-group row">
+										<label class="col-sm-12 col-md-2 col-form-label"
+											>De</label
+										>
+										<div class="col-sm-12 col-md-10">
+											<input
+												class="form-control form-control-sm form-control-line"
+												type="text"
+											/>
+										</div>
+									</div>
+									<div class="form-group row">
+										<label class="col-sm-12 col-md-2 col-form-label">Para</label>
+										<div class="col-sm-12 col-md-10">
+											<input
+												class="form-control form-control-sm form-control-line"
+												type="text"
+											/>
+										</div>
+									</div>
+									<div class="form-group row">
+										<label class="col-sm-12 col-md-2 col-form-label"
+											>Sujeito</label
+										>
+										<div class="col-sm-12 col-md-10">
+											<input
+												class="form-control form-control-sm form-control-line"
+												type="text"
+											/>
+										</div>
+									</div>
+									<div class="text-right">
+										<button class="btn btn-primary">Pesquisar</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+			<div class="header-right">
+				<div class="user-notification">
+					<div class="dropdown">
+						<a
+							class="dropdown-toggle no-arrow"
+							href="#"
+							role="button"
+							data-toggle="dropdown"
+                            id="notification-dropdown-toggle" >
+							<i class="icon-copy dw dw-notification"></i>
+							<span class="badge notification-badge" id="notification-count">0</span> </a>
+						<div class="dropdown-menu dropdown-menu-right dropdown-menu-lg notification-dropdown customscroll">
+							<h4 class="mb-0">Notificações</h4>
+							<div id="notification-list">
+								<a class="dropdown-item notification-item" href="#">
+									<i class="icon-copy dw dw-info"></i>
+									<p>Nenhuma notificação nova.</p>
+                                    <span class="timestamp">Agora</span>
+								</a>
+							</div>
+                             <div class="text-center">
+                                 <a href="#" class="btn btn-sm btn-link">Ver todas as notificações</a>
+                             </div>
+						</div>
+					</div>
+				</div>
+
+				<div class="dashboard-setting user-notification">
+					<div class="dropdown">
+						<a
+							class="dropdown-toggle no-arrow"
+							href="javascript:;"
+							data-toggle="right-sidebar"
+						>
+							<i class="dw dw-settings2"></i>
+						</a>
+					</div>
+				</div>
+
+				<div class="user-info-dropdown">
+					<div class="dropdown">
+						<a
+							class="dropdown-toggle"
+							href="#"
+							role="button"
+							data-toggle="dropdown"
+						>
+							<span class="user-icon">
+								<img src="vendors/images/photo4.jpg" id="prestador-profile-pic" class="profile-pic-header" alt="" />
+							</span>
+							<span class="user-name">Prestador</span>
+						</a>
+						<div
+							class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list"
+						>
+							<a class="dropdown-item" href="prestador-profile.html"
+								><i class="dw dw-user1"></i> Perfil</a
+							>
+							<a class="dropdown-item" href="prestador-profile.html"
+								><i class="dw dw-settings2"></i>Configurações</a
+							>
+							<a class="dropdown-item" href="faq.html"
+								><i class="dw dw-help"></i> Ajuda</a
+							>
+							<a class="dropdown-item" href="#" id="logout-link"
+								><i class="dw dw-logout"></i> Sair</a
+							>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="right-sidebar">
+			<div class="sidebar-title">
+				<h3 class="weight-600 font-16 text-blue">
+					Configuração de Layout
+					<span class="btn-block font-weight-400 font-12"
+						>Personalização</span
+					>
+				</h3>
+				<div class="close-sidebar" data-toggle="right-sidebar-close">
+					<i class="icon-copy ion-close-round"></i>
+				</div>
+			</div>
+			<div class="right-sidebar-body customscroll">
+				<div class="right-sidebar-body-content">
+					<h4 class="weight-600 font-18 pb-10">Fundo</h4>
+					<div class="sidebar-btn-group pb-30 mb-10">
+						<a
+							href="javascript:void(0);"
+							class="btn btn-outline-primary header-white active"
+							>Claro</a
+						>
+						<a
+							href="javascript:void(0);"
+							class="btn btn-outline-primary header-dark"
+							>Escuro</a
+						>
+					</div>
+
+					<h4 class="weight-600 font-18 pb-10">Menu Lateral</h4>
+					<div class="sidebar-btn-group pb-30 mb-10">
+						<a
+							href="javascript:void(0);"
+							class="btn btn-outline-primary sidebar-light"
+							>Claro</a
+						>
+						<a
+							href="javascript:void(0);"
+							class="btn btn-outline-primary sidebar-dark active"
+							>Escuro</a
+						>
+					</div>
+
+					<h4 class="weight-600 font-18 pb-10">Icone Dropdown</h4>
+					<div class="sidebar-radio-group pb-10 mb-10">
+						<div class="custom-control custom-radio custom-control-inline">
+							<input
+								type="radio"
+								id="sidebaricon-1"
+								name="menu-dropdown-icon"
+								class="custom-control-input"
+								value="icon-style-1"
+								checked=""
+							/>
+							<label class="custom-control-label" for="sidebaricon-1"
+								><i class="fa fa-angle-down"></i
+							></label>
+						</div>
+						<div class="custom-control custom-radio custom-control-inline">
+							<input
+								type="radio"
+								id="sidebaricon-2"
+								name="menu-dropdown-icon"
+								class="custom-control-input"
+								value="icon-style-2"
+							/>
+							<label class="custom-control-label" for="sidebaricon-2"
+								><i class="ion-plus-round"></i
+							></label>
+						</div>
+						<div class="custom-control custom-radio custom-control-inline">
+							<input
+								type="radio"
+								id="sidebariconlist-3"
+								name="menu-list-icon"
+								class="custom-control-input"
+								value="icon-list-style-3"
+							/>
+							<label class="custom-control-label" for="sidebariconlist-3"
+								><i class="fa fa-angle-double-right"></i
+							></label>
+						</div>
+					</div>
+
+					<h4 class="weight-600 font-18 pb-10">Icones do Menu</h4>
+					<div class="sidebar-radio-group pb-30 mb-10">
+						<div class="custom-control custom-radio custom-control-inline">
+							<input
+								type="radio"
+								id="sidebariconlist-1"
+								name="menu-list-icon"
+								class="custom-control-input"
+								value="icon-list-style-1"
+								checked=""
+							/>
+							<label class="custom-control-label" for="sidebariconlist-1"
+								><i class="ion-minus-round"></i
+							></label>
+						</div>
+						<div class="custom-control custom-radio custom-control-inline">
+							<input
+								type="radio"
+								id="sidebariconlist-2"
+								name="menu-list-icon"
+								class="custom-control-input"
+								value="icon-list-style-2"
+							/>
+							<label class="custom-control-label" for="sidebariconlist-2"
+								><i class="fa fa-circle-o" aria-hidden="true"></i
+							></label>
+						</div>
+						<div class="custom-control custom-radio custom-control-inline">
+							<input
+								type="radio"
+								id="sidebariconlist-3"
+								name="menu-list-icon"
+								class="custom-control-input"
+								value="icon-list-style-3"
+							/>
+							<label class="custom-control-label" for="sidebariconlist-3"
+								><i class="dw dw-check"></i
+							></label>
+						</div>
+						<div class="custom-control custom-radio custom-control-inline">
+							<input
+								type="radio"
+								id="sidebariconlist-4"
+								name="menu-list-icon"
+								class="custom-control-input"
+								value="icon-list-style-4"
+								checked=""
+							/>
+							<label class="custom-control-label" for="sidebariconlist-4"
+								><i class="icon-copy dw dw-next-2"></i
+							></label>
+						</div>
+						<div class="custom-control custom-radio custom-control-inline">
+							<input
+								type="radio"
+								id="sidebariconlist-5"
+								name="menu-list-icon"
+								class="custom-control-input"
+								value="icon-list-style-5"
+							/>
+							<label class="custom-control-label" for="sidebariconlist-5"
+								><i class="dw dw-fast-forward-1"></i
+							></label>
+						</div>
+						<div class="custom-control custom-radio custom-control-inline">
+							<input
+								type="radio"
+								id="sidebariconlist-6"
+								name="menu-list-icon"
+								class="custom-control-input"
+								value="icon-list-style-6"
+							/>
+							<label class="custom-control-label" for="sidebariconlist-6"
+								><i class="dw dw-next"></i
+							></label>
+						</div>
+					</div>
+
+					<div class="reset-options pt-30 text-center">
+						<button class="btn btn-danger" id="reset-settings">
+							Resetar Configurações
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="left-side-bar">
+			<div class="brand-logo">
+				<a href="index.html"> <img src="/Tela Inicial copy/w (1).png" alt="" class="dark-logo" />
+					<img
+						src="/Tela Inicial copy/w (1).png"
+						alt=""
+						class="light-logo"
+					/>
+				</a>
+				<div class="close-sidebar" data-toggle="left-sidebar-close">
+					<i class="ion-close-round"></i>
+				</div>
+			</div>
+			<div class="menu-block customscroll">
+				<div class="sidebar-menu">
+					<ul id="accordion-menu">
+						<li>
+							<a href="index.html" class="dropdown-toggle no-arrow active"> <span class="micon bi bi-house"></span
+								><span class="mtext">Dashboard</span>
+							</a>
+						</li>
+						<li>
+							<a href="prestador-solicitacoes.html" class="dropdown-toggle no-arrow">
+                                <span class="micon bi bi-textarea-resize"></span>
+								<span class="mtext">Solicitações Pendentes</span>
+                                <span id="new-solicitation-indicator" class="badge badge-pill badge-danger" style="display: none; margin-left: 5px;">Novo!</span>
+							</a>
+						</li>
+						<li>
+							<a href="prestador-meus-servicos.html" class="dropdown-toggle no-arrow"> <span class="micon bi bi-check-circle"></span
+								><span class="mtext">Meus Serviços Aceitos</span>
+							</a>
+						</li>
+						<li>
+							<a href="prestador-historico.html" class="dropdown-toggle no-arrow"> <span class="micon bi bi-clock-history"></span
+								><span class="mtext">Histórico de Serviços</span>
+							</a>
+						</li>
+						<li>
+							<a href="prestador-avaliacoes.html" class="dropdown-toggle no-arrow"> <span class="micon bi bi-star-fill"></span
+								><span class="mtext">Minhas Avaliações</span>
+							</a>
+						</li>
+                        <li>
+							<a href="prestador-gerenciar-servicos.html" class="dropdown-toggle no-arrow"> <span class="micon bi bi-gear"></span>
+                                <span class="mtext">Gerenciar Serviços</span>
+                            </a>
+                        </li>
+                         <li>
+							<a href="prestador-minha-disponibilidade.html" class="dropdown-toggle no-arrow"> <span class="micon bi bi-calendar-week"></span>
+                                <span class="mtext">Minha Disponibilidade</span>
+                            </a>
+                        </li>
+                         <li>
+							<a href="chat-list.html" class="dropdown-toggle no-arrow"> <span class="micon bi bi-chat-dots"></span>
+                                <span class="mtext">Chat de Serviços</span>
+                                 <span id="unread-chat-count-sidebar-prestador" class="badge badge-pill badge-danger" style="display: none; margin-left: 5px;">0</span>
+                             </a>
+                        </li>
+
+						<li class="dropdown">
+							<a href="javascript:;" class="dropdown-toggle">
+								<span class="micon bi bi-file-pdf"></span
+								><span class="mtext">Documentação</span>
+							</a>
+							<ul class="submenu">
+								<li><a href="/Tela Inicial copy/Termos e Condições.docx">Termos e Condições</a></li>
+								</ul>
+						</li>
+						</ul>
+				</div>
+			</div>
+		</div>
+		<div class="mobile-menu-overlay"></div>
+
+		<div class="main-container">
+			<div class="xs-pd-20-10 pd-ltr-20">
+				 <div class="title pb-20">
+					<div class="welcome-message card-box p-4 mb-20">
+						<h1 class="h3 text-center mb-20">Bem-vindo Prestador à Plataforma WYN</h1>
+						<p class="text-center font-16">Aqui você gerencia seus serviços, acompanha solicitações e avalia seu desempenho. Conte conosco!</p>
+					</div>
+
+					<div class="row pb-20">
+                        <div class="col-md-12">
+                            <a href="prestador-gerenciar-servicos.html" class="btn btn-primary btn-lg btn-block btn-add-service">
+                                <i class="icon-copy dw dw-add"></i> Adicionar Novo Serviço
+                            </a>
+                        </div>
+                    </div>
+                    <div>
+						<h2 class="h3 mb-0">Visão Geral</h2>
+					</div>
+
+					<div class="row pb-10">
+						<div class="col-xl-3 col-lg-3 col-md-6 mb-20">
+							<a href="prestador-solicitacoes.html" style="text-decoration: none;">
+								<div class="card-box height-100-p widget-style3 cursor-pointer">
+									<div class="d-flex flex-wrap">
+										<div class="widget-data">
+											<div class="weight-700 font-24 text-dark" id="total-solicitacoes">0</div>
+											<div class="font-14 text-secondary weight-500">Total de Solicitações</div>
+										</div>
+										<div class="widget-icon">
+											<div class="icon" data-color="#00eccf">
+												<i class="icon-copy dw dw-calendar1"></i>
+											</div>
+										</div>
+									</div>
+								</div>
+							</a>
+						</div>
+
+						<div class="col-xl-3 col-lg-3 col-md-6 mb-20">
+							 <a href="prestador-solicitacoes.html" style="text-decoration: none;"> <div class="card-box height-100-p widget-style3 cursor-pointer">
+									<div class="d-flex flex-wrap">
+										<div class="widget-data">
+											<div class="weight-700 font-24 text-dark" id="total-pendentes">0</div> <div class="font-14 text-secondary weight-500">Pedidos Pendentes (Para Aceitar)</div> </div>
+										<div class="widget-icon">
+											<div class="icon" data-color="#f39c12">
+												<i class="icon-copy dw dw-clock"></i>
+											</div>
+										</div>
+									</div>
+								</div>
+							</a>
+						</div>
+
+						<div class="col-xl-3 col-lg-3 col-md-6 mb-20">
+							 <a href="prestador-meus-servicos.html" style="text-decoration: none;"> <div class="card-box height-100-p widget-style3 cursor-pointer">
+									<div class="d-flex flex-wrap">
+										<div class="widget-data">
+											<div class="weight-700 font-24 text-dark" id="total-aceitos">0</div> <div class="font-14 text-secondary weight-500">Meus Serviços (Em Andamento)</div> </div>
+										<div class="widget-icon">
+											<div class="icon" data-color="#2980b9"> <i class="icon-copy dw dw-briefcase-1"></i> </div>
+										</div>
+									</div>
+								</div>
+							 </a>
+						</div>
+
+						<div class="col-xl-3 col-lg-3 col-md-6 mb-20">
+							<a href="prestador-historico.html" style="text-decoration: none;"> <div class="card-box height-100-p widget-style3 cursor-pointer">
+									<div class="d-flex flex-wrap">
+										<div class="widget-data">
+											<div class="weight-700 font-24 text-dark" id="total-concluidos">0</div>
+											<div class="font-14 text-secondary weight-500">Serviços Concluídos</div>
+										</div>
+										<div class="widget-icon">
+											<div class="icon" data-color="#2ecc71">
+												<i class="icon-copy dw dw-check"></i>
+											</div>
+										</div>
+									</div>
+								</div>
+							</a>
+						</div>
+						 </div>
+				</div>
+
+                <div class="card-box pb-10 mb-20">
+                    <div class="h5 pd-20 mb-0">Próximos Agendamentos</div>
+                    <div id="upcoming-loading" class="feedback-message feedback-loading" style="display: none;">Carregando agendamentos...</div>
+                    <div id="upcoming-feedback" class="feedback-message feedback-error" style="display: none;"></div>
+                    <div id="upcoming-empty" class="feedback-message feedback-empty" style="display: none;">Nenhum agendamento futuro encontrado.</div>
+
+                    <ul id="upcoming-appointments-list" class="pd-20">
+                        </ul>
+                </div>
+                <div class="card-box pb-10 mb-20">
+                    <div class="h5 pd-20 mb-0">Desempenho Mensal (Lucro Estimado)</div>
+                    <div style="padding: 20px;">
+                        <canvas id="performanceChart"></canvas>
+                        <div id="chart-feedback" class="feedback-message feedback-empty" style="display: none;">Dados de desempenho insuficientes para gerar o gráfico.</div>
+                         <div id="chart-loading" class="feedback-message feedback-loading" style="display: none;">Carregando dados do gráfico...</div>
+                          <div id="chart-error" class="feedback-message feedback-error" style="display: none;">Erro ao carregar dados do gráfico.</div>
+                    </div>
+                </div>
+
+
+				<div class="card-box pb-10">
+					<div class="h5 pd-20 mb-0">Solicitações de Serviços Pendentes</div>
+					<div id="table-loading" class="feedback-message feedback-loading" style="display: none;">Carregando solicitações...</div>
+					<div id="table-feedback" class="feedback-message feedback-error" style="display: none;"></div>
+                    <div id="table-empty" class="feedback-message feedback-empty" style="display: none;">Nenhuma solicitação pendente encontrada.</div>
+
+
+					 <div class="filter-container">
+						 <label for="filtro-nome">Cliente:</label>
+						<input type="text" id="filtro-nome" placeholder="Filtrar por Cliente" />
+                         <label for="filtro-tipo">Serviço:</label>
+                        <input type="text" id="filtro-tipo" placeholder="Filtrar por Tipo de Serviço" />
+                         <label for="filtro-urgente">Urgência:</label>
+                        <select id="filtro-urgente">
+                            <option value="">Todos</option>
+                            <option value="Sim">Sim</option>
+                            <option value="Não">Não</option>
+                        </select>
+                         </div>
+
+					<table class="data-table table nowrap">
+						<thead>
+							<tr>
+								<th class="table-plus">Cliente</th>
+								<th>Tipo de Serviço</th>
+								<th>Endereço</th>
+								<th>Urgente</th>
+								<th>Data</th>
+								<th>Notas</th>
+								<th>Status</th>
+                                <th class="datatable-nosort">Ações</th>
+							</tr>
+						</thead>
+						<tbody id="solicitacoes-tabela">
+							</tbody>
+					</table>
+				</div>
+
+				<div class="footer-wrap pd-20 mb-20 card-box">
+					Plataforma WYN-TECH
+				</div>
+			</div>
+		</div>
+
+        <div class="modal fade" id="detalhesServicoModal" tabindex="-1" role="dialog" aria-labelledby="detalhesServicoModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="detalhesServicoModalLabel">Detalhes da Solicitação</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" id="detalhesServicoContent">
+                        Carregando detalhes...
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                         </div>
+                </div>
+            </div>
+        </div>
+
+         <div id="toastContainer">
+            </div>
+
+
+		<script src="vendors/scripts/core.js"></script>
+		<script src="vendors/scripts/script.min.js"></script>
+		<script src="vendors/scripts/process.js"></script>
+		<script src="vendors/scripts/layout-settings.js"></script>
+		<script src="src/plugins/datatables/js/jquery.dataTables.min.js"></script>
+		<script src="src/plugins/datatables/js/dataTables.bootstrap4.min.js"></script>
+		<script src="src/plugins/datatables/js/responsive.bootstrap4.min.js"></script>
+
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+		<noscript>
+			<iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NXZMQSS" height="0" width="0" style="display: none; visibility: hidden"></iframe>
+		</noscript>
+
+		<script>
+			let prestadorLogado = null; // Variável para armazenar os dados do prestador logado
+            let allPendingServices = []; // Variável para armazenar todos os serviços pendentes carregados
+            let previousPendingCount = 0; // Para a notificação de novas solicitações
+            let pendingPollingInterval = null; // Para o polling de novas solicitações
+            let notificationPollingInterval = null; // NOVO: Para o polling de todas as notificações
+
+            // Função para exibir toast notifications
+            function showToast(message, type = 'success') {
+                const toastContainer = document.getElementById('toastContainer');
+                if (!toastContainer) {
+                    console.error("Toast container não encontrado!");
+                    return;
+                }
+
+                const toastElement = document.createElement('div');
+                toastElement.classList.add('toast');
+                toastElement.setAttribute('role', 'alert');
+                toastElement.setAttribute('aria-live', 'assertive');
+                toastElement.setAttribute('aria-atomic', 'true');
+                toastElement.setAttribute('data-delay', '5000');
+
+                toastElement.innerHTML = `
+                    <div class="toast-header ${type === 'success' ? 'bg-success text-white' : type === 'danger' ? 'bg-danger text-white' : 'bg-info text-white'}">
+                        <strong class="mr-auto">${type === 'success' ? 'Sucesso' : type === 'danger' ? 'Erro' : 'Informação'}</strong>
+                        <small>Agora</small>
+                        <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="toast-body">
+                        ${message}
+                    </div>
+                `;
+
+                toastContainer.appendChild(toastElement);
+                $(toastElement).toast('show');
+                $(toastElement).on('hidden.bs.toast', function () {
+                    $(this).remove();
+                });
+            }
+
+
+			async function carregarPerfilPrestador() {
+				const token = localStorage.getItem('token');
+				const prestadorCache = localStorage.getItem('prestador');
+
+				if (!token || !prestadorCache) {
+					console.warn("Prestador não autenticado. Redirecionando para login.");
+					window.location.href = "login prestador.html";
+					return;
+				}
+
+				try {
+					 prestadorLogado = JSON.parse(prestadorCache);
+					 const nomeSpan = document.querySelector(".user-name");
+                     const prestadorProfilePicImg = document.getElementById("prestador-profile-pic");
+
+					 if (nomeSpan && prestadorLogado?.nome) {
+						 nomeSpan.textContent = prestadorLogado.nome;
+					 }
+                     if (prestadorProfilePicImg && prestadorLogado?.foto_perfil_url) {
+                         prestadorProfilePicImg.src = prestadorLogado.foto_perfil_url;
+                          prestadorProfilePicImg.onerror = function() {
+                             this.onerror = null;
+                             this.src = "vendors/images/photo4.jpg";
+                         };
+                     } else if (prestadorProfilePicImg) {
+                          prestadorProfilePicImg.src = "vendors/images/photo4.jpg";
+                     }
+
+
+					 const res = await fetch('http://localhost:3000/perfil', {
+						 headers: { 'Authorization': 'Bearer ' + token }
+					 });
+
+					 const resClone = res.clone();
+
+					 if (!res.ok) {
+						 if (res.status === 401 || res.status === 403) {
+							 console.error("Token inválido ou expirado. Redirecionando para login.");
+							 showToast("Sua sessão expirou. Por favor, faça login novamente.", 'danger');
+							 setTimeout(() => { window.location.href = "login prestador.html"; }, 3000);
+							 return;
+						 }
+						 throw new Error(`Erro HTTP ao buscar perfil: ${res.status}`);
+					 }
+
+					let data = {};
+					 try {
+						 data = await res.json();
+					 } catch(jsonError) {
+						 console.error("Erro ao parsear JSON do perfil:", await resClone.text());
+						 throw new Error("Resposta de perfil inválida.");
+					 }
+
+					 if (data.tipo !== 'prestador' || !data.prestador?._id) {
+						  console.error("Token válido, mas não corresponde a um prestador.");
+						  showToast("Acesso negado para este tipo de usuário.", 'danger');
+						   setTimeout(() => { window.location.href = "login.html"; }, 3000);
+						  return;
+					 }
+
+					 prestadorLogado = data.prestador;
+
+					if (prestadorLogado?.nome && nomeSpan) {
+						nomeSpan.textContent = prestadorLogado.nome;
+					}
+                     if (prestadorProfilePicImg && prestadorLogado?.foto_perfil_url) {
+                         prestadorProfilePicImg.src = prestadorLogado.foto_perfil_url;
+                          prestadorProfilePicImg.onerror = function() {
+                             this.onerror = null;
+                             this.src = "vendors/images/photo4.jpg";
+                         };
+                     } else if (prestadorProfilePicImg) {
+                          prestadorProfilePicImg.src = "vendors/images/photo4.jpg";
+                     }
+
+					console.log("Perfil do prestador carregado:", prestadorLogado);
+
+                    // Após carregar o perfil, carregar as solicitações pendentes e iniciar polling
+                    carregarSolicitacoesPendentes();
+                    carregarContadoresPrestador(); // Carrega os contadores dos cards
+                    carregarDadosParaGrafico(); // Carrega dados para o gráfico
+                    carregarProximosAgendamentos(); // Carrega próximos agendamentos
+                    iniciarPollingNovasSolicitacoes(); // Inicia o polling para notificações de novas solicitações (apenas para o indicador na sidebar)
+                    iniciarPollingNotificacoes(); // NOVO: Inicia o polling para todas as notificações do sino
+
+
+				} catch (err) {
+					console.error('Erro ao carregar perfil do prestador:', err);
+					 if (prestadorLogado) {
+						 showToast('Erro ao validar sessão do prestador. Pode haver problemas na conexão.', 'danger');
+					 } else {
+						 showToast('Ocorreu um erro ao carregar informações do prestador.', 'danger');
+					 }
+				}
+			}
+
+			// Função de Logout
+			document.getElementById('logout-link').addEventListener('click', (e) => {
+				 e.preventDefault();
+				 localStorage.removeItem('token');
+				 localStorage.removeItem('prestador');
+                 pararPollingNovasSolicitacoes(); // Para o polling de novas solicitações
+                 pararPollingNotificacoes(); // NOVO: Para o polling de notificações
+				 window.location.href = 'login prestador.html';
+			});
+
+
+			// Mapeamento de status do backend para texto amigável
+			const statusMapPrestador = {
+				 'aguardando_aceite_prestador': 'Aguardando Aceite',
+				 'aguardando_pagamento_cliente': 'Aguardando Pagamento',
+				 'aguardando_confirmacao_pagamento': 'Pagamento em Processamento',
+				 'aceito_pelo_prestador': 'Em Andamento',
+				 'recusado_pelo_prestador': 'Recusado',
+				 'concluido_pelo_prestador': 'Concluído',
+				 'avaliado_pelo_cliente': 'Avaliado',
+				 'cancelado': 'Cancelado'
+			};
+
+            // Função para renderizar a tabela com base em um array de serviços
+            function renderizarTabela(servicosParaExibir) {
+                 const tabelaBody = document.getElementById("solicitacoes-tabela"); // ID correto para esta página
+                 const tableEmpty = document.getElementById("table-empty");
+
+                 tabelaBody.innerHTML = ""; // Limpa a tabela
+
+                 if (servicosParaExibir.length === 0) {
+                      tableEmpty.style.display = 'block';
+                 } else {
+                     tableEmpty.style.display = 'none';
+                     servicosParaExibir.forEach((servico) => {
+                         const row = document.createElement("tr");
+
+                         let actionsHtml = '';
+                         // O prestador só pode Aceitar ou Recusar se o status for 'aguardando_aceite_prestador'
+                         if (servico.status === 'aguardando_aceite_prestador') {
+                              actionsHtml += `<a href="#" data-id="${servico._id}" class="aceitar-servico btn btn-sm btn-success mr-1">Aceitar</a>`;
+                              actionsHtml += `<a href="#" data-id="${servico._id}" class="recusar-servico btn btn-sm btn-danger mr-1">Recusar</a>`;
+                         }
+                         // Adiciona botão para ver detalhes
+                         actionsHtml += `<a href="#" data-id="${servico._id}" class="ver-detalhes btn btn-sm btn-info">Detalhes</a>`;
+
+
+                         row.innerHTML = `
+                             <td class="table-plus">
+                                 <div class="name-avatar d-flex align-items-center">
+                                     <div class="avatar mr-2 flex-shrink-0">
+                                         <img src="${servico.foto_cliente_url || 'vendors/images/photo4.jpg'}" class="border-radius-100 shadow" width="40" height="40" alt="Foto do Cliente" onerror="this.onerror=null;this.src='vendors/images/photo4.jpg';"/>
+                                     </div>
+                                     <div class="txt">
+                                         <div class="weight-600">${servico.nome_cliente || 'Cliente Desconhecido'}</div>
+                                     </div>
+                                 </div>
+                             </td>
+                             <td>${servico.tipo_servico || 'Não informado'}</td>
+                             <td>${servico.endereco_servico || "Não informado"}</td>
+                             <td>${servico.urgente ? "Sim" : "Não"}</td>
+                             <td>${servico.data_solicitacao ? new Date(servico.data_solicitacao).toLocaleDateString('pt-BR') : 'Não informada'}</td>
+                             <td>${servico.notas_adicionais || "Nenhuma"}</td>
+                             <td>${statusMapPrestador[servico.status] || servico.status}</td>
+                             <td>
+                                 <div class="table-actions">
+                                     ${actionsHtml}
+                                 </div>
+                             </td>
+                         `;
+                         tabelaBody.appendChild(row);
+                     });
+                 }
+            }
+
+			async function carregarSolicitacoesPendentes() {
+				const loading = document.getElementById("table-loading");
+				const feedback = document.getElementById("table-feedback");
+                const tableEmpty = document.getElementById("table-empty");
+				const token = localStorage.getItem("token");
+
+				loading.style.display = "block";
+				feedback.style.display = "none";
+                tableEmpty.style.display = 'none';
+
+				if (!token) {
+					feedback.textContent = "Autenticação necessária para carregar solicitações.";
+					feedback.style.display = "block";
+					loading.style.display = "none";
+					return;
+				}
+
+				try {
+					const response = await fetch("http://localhost:3000/solicitacoes-servicos-pendentes", {
+						 headers: { 'Authorization': `Bearer ${token}` }
+					});
+
+					if (!response.ok) {
+						 if (response.status === 401 || response.status === 403) {
+							  showToast("Sua sessão expirou ou você não tem permissão. Faça login novamente.", 'danger');
+							  setTimeout(() => { window.location.href = "login-prestador.html"; }, 3000);
+							  return;
+						 }
+                         const errorText = await response.text();
+                         console.error("Erro HTTP ao buscar solicitações pendentes:", response.status, errorText);
+						throw new Error(errorText || `Erro HTTP ao buscar solicitações pendentes: ${response.status}`);
+					}
+
+					const servicos = await response.json();
+					console.log("Solicitações pendentes carregadas:", servicos);
+
+                    // --- Lógica de Notificação de Novas Solicitações (Indicador na Sidebar) ---
+                    const currentPendingCount = servicos.length;
+                    const newSolicitationIndicator = document.getElementById('new-solicitation-indicator');
+
+                    if (newSolicitationIndicator) { // Verifica se o elemento existe
+                         if (currentPendingCount > 0) {
+                             newSolicitationIndicator.textContent = currentPendingCount; // Exibe a contagem
+                             newSolicitationIndicator.style.display = 'inline'; // Exibe o indicador
+                         } else {
+                             newSolicitationIndicator.style.display = 'none'; // Oculta se não houver pendentes
+                         }
+                    }
+                    // A lógica de toast para novas solicitações será movida para carregarNotificacoesDropdown
+
+
+                    allPendingServices = servicos; // Armazena os dados carregados globalmente
+                    aplicarFiltrosTabela(); // Aplica os filtros e renderiza a tabela
+
+
+				} catch (error) {
+					console.error("Erro ao carregar solicitações pendentes:", error);
+					feedback.textContent = "Erro ao carregar solicitações pendentes. Verifique a conexão ou faça login novamente.";
+					feedback.style.display = "block";
+                     tableEmpty.style.display = 'none';
+                     // Em caso de erro, esconde o indicador de nova solicitação
+                     const newSolicitationIndicator = document.getElementById('new-solicitation-indicator');
+                     if (newSolicitationIndicator) {
+                         newSolicitationIndicator.style.display = 'none';
+                     }
+				} finally {
+					loading.style.display = "none";
+				}
+			}
+
+            // Função para iniciar o polling de novas solicitações (apenas para o indicador na sidebar)
+            function iniciarPollingNovasSolicitacoes() {
+                 // Limpa qualquer intervalo existente para evitar duplicação
+                 if (pendingPollingInterval) {
+                     clearInterval(pendingPollingInterval);
+                 }
+
+                 // Inicia o polling
+                 pendingPollingInterval = setInterval(() => {
+                     console.log("Verificando contagem de solicitações pendentes...");
+                     // Busca apenas a contagem para atualizar o indicador na sidebar
+                     // A lista completa é carregada por carregarSolicitacoesPendentes()
+                     carregarContadoresPrestador();
+                 }, 60000); // A cada 60 segundos (pode ajustar)
+
+                 console.log("Polling de contagem de solicitações pendentes iniciado.");
+            }
+
+            // Função para parar o polling de novas solicitações
+            function pararPollingNovasSolicitacoes() {
+                 if (pendingPollingInterval) {
+                     clearInterval(pendingPollingInterval);
+                     pendingPollingInterval = null;
+                     console.log("Polling de contagem de solicitações pendentes parado.");
+                 }
+            }
+
+
+             // --- NOVO: Função para carregar e exibir notificações no dropdown do sino ---
+             async function carregarNotificacoesDropdown() {
+                 const notificationList = document.getElementById("notification-list");
+                 const notificationCountElement = document.getElementById("notification-count");
+                 const token = localStorage.getItem("token");
+
+                 // Limpa a lista atual e adiciona um item de loading
+                 notificationList.innerHTML = `
+                     <a class="dropdown-item notification-item">
+                         <i class="icon-copy dw dw-refresh"></i>
+                         <p>Carregando notificações...</p>
+                         <span class="timestamp"></span>
+                     </a>
+                 `;
+                 notificationCountElement.style.display = 'none'; // Oculta o badge enquanto carrega
+
+                 if (!token) {
+                     notificationList.innerHTML = `
+                         <a class="dropdown-item notification-item">
+                             <i class="icon-copy dw dw-info"></i>
+                             <p>Autenticação necessária.</p>
+                             <span class="timestamp"></span>
+                         </a>
+                     `;
+                     notificationCountElement.textContent = '0';
+                     notificationCountElement.style.display = 'none';
+                     return;
+                 }
+
+                 try {
+                     // --- ASSUMIR ENDPOINT NO BACKEND: /api/notifications/prestador ---
+                     // Este endpoint deve retornar uma lista das notificações mais recentes para o prestador logado
+                     const response = await fetch("http://localhost:3000/api/notifications/prestador", {
+                         headers: { 'Authorization': `Bearer ${token}` }
+                     });
+
+                     if (!response.ok) {
+                          // Erros 401/403 são tratados pelo middleware de perfil
+                          console.error("Erro HTTP ao buscar notificações:", response.status);
+                           notificationList.innerHTML = `
+                               <a class="dropdown-item notification-item">
+                                   <i class="icon-copy dw dw-warning"></i>
+                                   <p>Erro ao carregar notificações.</p>
+                                   <span class="timestamp"></span>
+                               </a>
+                           `;
+                           notificationCountElement.textContent = '0';
+                           notificationCountElement.style.display = 'none';
+                          return;
+                     }
+
+                     const notifications = await response.json();
+                     console.log("Notificações carregadas:", notifications);
+
+                      // Limpa a lista para adicionar as notificações reais
+                      notificationList.innerHTML = "";
+
+                     if (notifications.length === 0) {
+                          notificationList.innerHTML = `
+                              <a class="dropdown-item notification-item" href="#">
+                                  <i class="icon-copy dw dw-info"></i>
+                                  <p>Nenhuma notificação nova.</p>
+                                  <span class="timestamp">Agora</span>
+                              </a>
+                          `;
+                          notificationCountElement.textContent = '0';
+                          notificationCountElement.style.display = 'none';
+                     } else {
+                          let unreadCount = 0;
+                          notifications.forEach(notif => {
+                              if (!notif.lida) {
+                                  unreadCount++;
+                              }
+
+                              const notificationItem = document.createElement("a");
+                               // Adiciona a classe 'unread' se a notificação não foi lida
+                              notificationItem.classList.add("dropdown-item", "notification-item", "cursor-pointer");
+                              if (!notif.lida) {
+                                  notificationItem.classList.add("unread");
+                              }
+                               // Armazena o ID da notificação e referência para marcar como lida
+                              notificationItem.dataset.notificationId = notif._id;
+                              notificationItem.dataset.referenceId = notif.referenciaId;
+                              notificationItem.dataset.notificationType = notif.tipo; // Armazena o tipo
+
+                              let iconClass = 'dw dw-info'; // Ícone padrão
+                              let defaultLink = '#'; // Link padrão
+                              let summary = notif.resumo || 'Nova notificação'; // Resumo padrão
+
+                              // Define ícone e link com base no tipo de notificação
+                              switch (notif.tipo) {
+                                  case 'new_message':
+                                      iconClass = 'dw dw-chat-dots';
+                                      defaultLink = `chat-room.html?chatId=${notif.referenciaId}`; // Link para a sala de chat
+                                      summary = notif.resumo || 'Nova mensagem de chat';
+                                      break;
+                                  case 'new_solicitation':
+                                      iconClass = 'dw dw-calendar-form';
+                                      defaultLink = `prestador-solicitacoes.html?serviceId=${notif.referenciaId}`; // Link para a solicitação pendente
+                                       summary = notif.resumo || 'Nova solicitação de serviço';
+                                      break;
+                                  case 'new_review':
+                                      iconClass = 'dw dw-star-half';
+                                      defaultLink = `prestador-avaliacoes.html`; // Link para a página de avaliações (pode ser específico para a avaliação se o backend retornar ID)
+                                       summary = notif.resumo || 'Nova avaliação recebida';
+                                      break;
+                                  // Adicionar outros tipos de notificação aqui
+                                  default:
+                                       iconClass = 'dw dw-info';
+                                       defaultLink = '#'; // Link padrão ou para uma página geral de notificações
+                                       summary = notif.resumo || 'Nova notificação';
+                              }
+
+                               // Define o href com base no link padrão
+                              notificationItem.href = defaultLink;
+
+
+                              // Formata o timestamp
+                              const date = new Date(notif.timestamp);
+                              const timestampText = date.toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
+
+
+                              notificationItem.innerHTML = `
+                                  <i class="icon-copy ${iconClass}"></i>
+                                  <p>${summary}</p>
+                                  <span class="timestamp">${timestampText}</span>
+                              `;
+
+                              notificationList.appendChild(notificationItem);
+                          });
+
+                           // Atualiza o badge de contagem de notificações não lidas
+                           if (unreadCount > 0) {
+                               notificationCountElement.textContent = unreadCount;
+                               notificationCountElement.style.display = 'inline';
+                           } else {
+                               notificationCountElement.style.display = 'none';
+                           }
+
+                            // Adiciona listener de clique para marcar como lida e redirecionar
+                            notificationList.querySelectorAll('.notification-item').forEach(item => {
+                                item.addEventListener('click', async (event) => {
+                                    // Previne o comportamento padrão do link por enquanto, trataremos o redirect no JS
+                                    event.preventDefault();
+
+                                    const notifId = item.dataset.notificationId;
+                                    const referenceId = item.dataset.referenceId;
+                                    const notificationType = item.dataset.notificationType;
+
+                                    if (notifId && !item.classList.contains('unread')) {
+                                         // Se já foi lida na UI, não faz nada no backend
+                                         console.log(`Notificação ${notifId} já marcada como lida.`);
+                                    } else if (notifId) {
+                                        // Marca como lida no backend
+                                        try {
+                                            // --- ASSUMIR ENDPOINT NO BACKEND: /api/notifications/:id/mark-as-read ---
+                                            const response = await fetch(`http://localhost:3000/api/notifications/${notifId}/mark-as-read`, {
+                                                method: 'PUT', // Ou PATCH, dependendo do backend
+                                                headers: { 'Authorization': `Bearer ${token}` }
+                                            });
+
+                                            if (!response.ok) {
+                                                console.error("Erro ao marcar notificação como lida:", response.status);
+                                                // Continua mesmo com erro, para permitir o redirect
+                                            } else {
+                                                console.log(`Notificação ${notifId} marcada como lida.`);
+                                                // Remove a classe 'unread' da UI
+                                                item.classList.remove('unread');
+                                                // Atualiza a contagem no badge
+                                                let currentCount = parseInt(notificationCountElement.textContent) || 0;
+                                                if (currentCount > 0) {
+                                                     notificationCountElement.textContent = currentCount - 1;
+                                                     if (currentCount - 1 === 0) {
+                                                          notificationCountElement.style.display = 'none';
+                                                     }
+                                                }
+                                            }
+                                        } catch (error) {
+                                            console.error("Erro ao marcar notificação como lida:", error);
+                                             // Continua mesmo com erro
+                                        }
+                                    }
+
+                                    // Redireciona para a página relevante após (ou enquanto) marca como lida
+                                    let redirectUrl = '#';
+                                     switch (notificationType) {
+                                         case 'new_message':
+                                             redirectUrl = `chat-room.html?chatId=${referenceId}`;
+                                             break;
+                                         case 'new_solicitation':
+                                             redirectUrl = `prestador-solicitacoes.html?serviceId=${referenceId}`;
+                                             break;
+                                         case 'new_review':
+                                             redirectUrl = `prestador-avaliacoes.html`; // Pode ser mais específico se tiver ID da avaliação
+                                             break;
+                                         default:
+                                             redirectUrl = item.href; // Usa o href definido anteriormente
+                                     }
+
+                                     if (redirectUrl && redirectUrl !== '#') {
+                                          window.location.href = redirectUrl;
+                                     }
+                                });
+                            });
+
+
+                     }
+
+
+                 } catch (error) {
+                     console.error("Erro ao carregar notificações:", error);
+                      notificationList.innerHTML = `
+                          <a class="dropdown-item notification-item">
+                              <i class="icon-copy dw dw-warning"></i>
+                              <p>Erro ao carregar notificações.</p>
+                              <span class="timestamp"></span>
+                          </a>
+                      `;
+                      notificationCountElement.textContent = '0';
+                      notificationCountElement.style.display = 'none';
+                 }
+             }
+             // --- FIM NOVO: Função para carregar e exibir notificações ---
+
+             // --- NOVO: Função para iniciar o polling de notificações ---
+             function iniciarPollingNotificacoes() {
+                 if (notificationPollingInterval) {
+                     clearInterval(notificationPollingInterval);
+                 }
+                 // Carrega as notificações imediatamente e depois a cada 30 segundos
+                 carregarNotificacoesDropdown();
+                 notificationPollingInterval = setInterval(() => {
+                     console.log("Verificando notificações no sino...");
+                     carregarNotificacoesDropdown();
+                 }, 30000); // A cada 30 segundos (pode ajustar)
+                 console.log("Polling de notificações iniciado.");
+             }
+
+             // --- NOVO: Função para parar o polling de notificações ---
+             function pararPollingNotificacoes() {
+                 if (notificationPollingInterval) {
+                     clearInterval(notificationPollingInterval);
+                     notificationPollingInterval = null;
+                     console.log("Polling de notificações parado.");
+                 }
+             }
+
+
+            // Função para carregar os contadores dos cards do Prestador
+            async function carregarContadoresPrestador() {
+                 const token = localStorage.getItem("token");
+                 const prestadorId = prestadorLogado?._id; // ID do prestador logado
+
+                 if (!token || !prestadorId) {
+                      console.warn("Não foi possível carregar contadores: Token ou ID do prestador ausente.");
+                      return; // Sai se não houver token ou ID do prestador
+                 }
+
+                 try {
+                     // Contar solicitações PENDENTES (aguardando aceite)
+                     const responsePendentes = await fetch("http://localhost:3000/solicitacoes-servicos-pendentes", {
+                          headers: { 'Authorization': `Bearer ${token}` }
+                     });
+                     const pendentes = await responsePendentes.json();
+                     document.getElementById("total-pendentes").innerText = pendentes.length;
+
+
+                     // Contar MEUS serviços (aceitos, aguardando pagamento, em andamento)
+                     // Assumindo que /meus-servicos-prestador retorna serviços com status 'aguardando_pagamento_cliente' e 'aceito_pelo_prestador'
+                     const responseMeusAceitos = await fetch("http://localhost:3000/meus-servicos-prestador", {
+                          headers: { 'Authorization': `Bearer ${token}` }
+                     });
+                     const meusAceitos = await responseMeusAceitos.json();
+                     document.getElementById("total-aceitos").innerText = meusAceitos.length;
+
+                     // Contar serviços CONCLUÍDOS por este prestador
+                     const responseMeusConcluidos = await fetch(`http://localhost:3000/meus-servicos-concluidos-prestador`, {
+                          headers: { 'Authorization': `Bearer ${token}` }
+                     });
+                     const meusConcluidos = await responseMeusConcluidos.json();
+                     document.getElementById("total-concluidos").innerText = meusConcluidos.length;
+
+
+                      // Para o total de solicitações (geral), somamos os contadores que temos.
+                      document.getElementById("total-solicitacoes").innerText = pendentes.length + meusAceitos.length + meusConcluidos.length;
+
+                      // A contagem de mensagens não lidas agora é parte da função carregarNotificacoesDropdown
+                      // carregarContadorMensagensNaoLidas(); // REMOVIDO
+
+                 } catch (error) {
+                     console.error("Erro ao carregar contadores do prestador:", error);
+                     // Opcional: Exibir mensagem de erro nos cards
+                     document.getElementById("total-solicitacoes").innerText = '-';
+                     document.getElementById("total-pendentes").innerText = '-';
+                     document.getElementById("total-aceitos").innerText = '-';
+                     document.getElementById("total-concluidos").innerText = '-';
+                 }
+            }
+
+            // Função para carregar e exibir detalhes do serviço no modal
+            async function carregarDetalhesServico(serviceId) {
+                const detalhesContent = document.getElementById("detalhesServicoContent");
+                const modalTitle = document.getElementById("detalhesServicoModalLabel");
+                detalhesContent.innerHTML = 'Carregando detalhes...'; // Limpa e mostra loading
+                modalTitle.textContent = 'Detalhes da Solicitação'; // Título padrão
+
+                const token = localStorage.getItem("token");
+
+                if (!token) {
+                    detalhesContent.innerHTML = '<p style="color: red;">Autenticação necessária para ver detalhes.</p>';
+                    return;
+                }
+
+                try {
+                    // Assumindo que existe um endpoint /servico/:id que retorna os detalhes completos
+                    const response = await fetch(`http://localhost:3000/servico/${serviceId}`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+
+                    if (!response.ok) {
+                         const errorText = await response.text();
+                         console.error("Erro HTTP ao buscar detalhes:", response.status, errorText);
+                         throw new Error(errorText || `Erro HTTP: ${response.status}`);
+                    }
+
+                    const servico = await response.json();
+                    console.log("Detalhes do serviço carregados:", servico);
+
+                    // Construir a string da faixa de preço
+                    let faixaPrecoHtml = '';
+                    // Verifica se o objeto prestador e as propriedades de faixa de preço existem
+                    if (servico.prestador && servico.prestador.faixa_preco_min !== undefined && servico.prestador.faixa_preco_max !== undefined) {
+                         const precoMin = servico.prestador.faixa_preco_min.toFixed(2).replace('.', ',');
+                         const precoMax = servico.prestador.faixa_preco_max.toFixed(2).replace('.', ',');
+                         faixaPrecoHtml = `<p><strong>Faixa de Preço Cadastrada pelo Prestador:</strong> R$ ${precoMin} a R$ ${precoMax}</p>`;
+                    } else {
+                         faixaPrecoHtml = `<p><strong>Faixa de Preço Cadastrada pelo Prestador:</strong> Não informada</p>`;
+                    }
+
+
+                    // Preenche o modal com os detalhes do serviço
+                    modalTitle.textContent = `Detalhes da Solicitação #${servico._id.substring(0, 6)}`; // Exibe parte do ID
+                    detalhesContent.innerHTML = `
+                        <p><strong>Cliente:</strong> ${servico.nome_cliente || 'Não informado'}</p>
+                        <p><strong>Tipo de Serviço:</strong> ${servico.tipo_servico || 'Não informado'}</p>
+                        <p><strong>Endereço:</strong> ${servico.endereco_servico || 'Não informado'}</p>
+                        <p><strong>Urgente:</strong> ${servico.urgente ? 'Sim' : 'Não'}</p>
+                        <p><strong>Data da Solicitação:</strong> ${servico.data_solicitacao ? new Date(servico.data_solicitacao).toLocaleString('pt-BR') : 'Não informada'}</p>
+                         <p><strong>Data Preferencial:</strong> ${servico.data_servico_preferencial ? new Date(servico.data_servico_preferencial).toLocaleDateString('pt-BR') : 'Não informada'}</p>
+                         <p><strong>Horário Preferencial:</strong> ${servico.hora_servico_preferencial || 'Não informado'}</p>
+                        <p><strong>Notas Adicionais:</strong> ${servico.notas_adicionais || 'Nenhuma'}</p>
+                        <p><strong>Status:</strong> ${statusMapPrestador[servico.status] || servico.status}</p>
+                        ${servico.valor_servico ? `<p><strong>Valor Proposto:</strong> R$ ${servico.valor_servico.toFixed(2).replace('.', ',')}</p>` : ''}
+                        ${faixaPrecoHtml}
+                        ${servico.data_aceite ? `<p><strong>Data de Aceite:</strong> ${new Date(servico.data_aceite).toLocaleString('pt-BR')}</p>` : ''}
+                         ${servico.data_conclusao ? `<p><strong>Data de Conclusão:</strong> ${new Date(servico.data_conclusao).toLocaleString('pt-BR')}</p>` : ''}
+                        ${servico.comprovantes_url && servico.comprovantes_url.length > 0 ?
+                            `<p><strong>Comprovantes:</strong></p>
+                             <ul>
+                                 ${servico.comprovantes_url.map(url => `<li><a href="${url}" target="_blank">${url.split('/').pop()}</a></li>`).join('')}
+                             </ul>`
+                            : ''}
+                         ${servico.avaliacao_cliente ? `<p><strong>Avaliação do Cliente:</strong> ${servico.avaliacao_cliente} estrelas</p>` : ''}
+                         ${servico.comentario_cliente ? `<p><strong>Comentário do Cliente:</strong> ${servico.comentario_cliente}</p>` : ''}
+                    `;
+
+
+                } catch (error) {
+                    console.error("Erro ao carregar detalhes do serviço:", error);
+                    detalhesContent.innerHTML = `<p style="color: red;">Erro ao carregar detalhes: ${error.message || 'Verifique a conexão.'}</p>`;
+                     modalTitle.textContent = 'Erro ao Carregar Detalhes';
+                }
+            }
+
+            // Função para carregar dados para o gráfico de desempenho
+            async function carregarDadosParaGrafico() {
+                const chartFeedback = document.getElementById("chart-feedback");
+                const chartLoading = document.getElementById("chart-loading");
+                const chartError = document.getElementById("chart-error");
+                const chartCanvas = document.getElementById('performanceChart');
+                const ctx = chartCanvas.getContext('2d');
+
+                chartFeedback.style.display = 'none';
+                chartLoading.style.display = 'block';
+                chartError.style.display = 'none';
+                chartCanvas.style.display = 'none'; // Esconde o canvas enquanto carrega
+
+                const token = localStorage.getItem("token");
+
+                if (!token) {
+                     console.warn("Não foi possível carregar dados do gráfico: Token ausente.");
+                     chartLoading.style.display = 'none';
+                     chartError.textContent = "Autenticação necessária para carregar dados do gráfico.";
+                     chartError.style.display = 'block';
+                     return;
+                }
+
+                try {
+                    const response = await fetch(`http://localhost:3000/prestador/dados-grafico-lucro`, {
+                         headers: { 'Authorization': `Bearer ${token}` }
+                    });
+
+                    if (!response.ok) {
+                         const errorText = await response.text();
+                         console.error("Erro HTTP ao buscar dados do gráfico:", response.status, errorText);
+                         throw new Error(errorText || `Erro HTTP: ${response.status}`);
+                    }
+
+                    const dadosDesempenho = await response.json();
+                    console.log("Dados de desempenho carregados:", dadosDesempenho);
+
+                    // Verifica se há dados para exibir
+                    if (!dadosDesempenho || !dadosDesempenho.labels || !dadosDesempenho.data || dadosDesempenho.data.length === 0) {
+                         chartLoading.style.display = 'none';
+                         chartFeedback.textContent = "Dados de desempenho insuficientes para gerar o gráfico.";
+                         chartFeedback.style.display = 'block';
+                         chartCanvas.style.display = 'none'; // Garante que o canvas continue oculto
+                         return;
+                    }
+
+                    // Destroi o gráfico anterior se ele existir
+                    if (window.myPerformanceChart) {
+                        window.myPerformanceChart.destroy();
+                    }
+
+                    // Renderiza o gráfico usando Chart.js
+                    window.myPerformanceChart = new Chart(ctx, {
+                        type: 'bar', // Pode ser 'line', 'bar', 'pie', etc.
+                        data: {
+                            labels: dadosDesempenho.labels, // Ex: ['Jan/2023', 'Fev/2023']
+                            datasets: [{
+                                label: 'Lucro Estimado (R$)', // Rótulo mais claro
+                                data: dadosDesempenho.data, // Ex: [1000, 1500]
+                                backgroundColor: 'rgba(46, 204, 113, 0.6)', // Cor verde (do card de concluídos)
+                                borderColor: 'rgba(46, 204, 113, 1)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false, // Permite controlar o tamanho pelo container
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    title: {
+                                        display: true,
+                                        text: 'Lucro Estimado (R$)' // Título do eixo Y
+                                    },
+                                     ticks: {
+                                         // Formata os valores do eixo Y como moeda
+                                         callback: function(value, index, ticks) {
+                                             return 'R$ ' + value.toFixed(2).replace('.', ',');
+                                         }
+                                     }
+                                },
+                                x: {
+                                     title: {
+                                         display: true,
+                                         text: 'Mês/Ano' // Título do eixo X
+                                     }
+                                }
+                            },
+                            plugins: {
+                                legend: {
+                                    display: true,
+                                    position: 'top',
+                                },
+                                title: {
+                                    display: false, // O título já está no h5 acima
+                                },
+                                 tooltip: {
+                                     callbacks: {
+                                         label: function(context) {
+                                             let label = context.dataset.label || '';
+                                             if (label) {
+                                                 label += ': ';
+                                             }
+                                             if (context.parsed.y !== null) {
+                                                 label += new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(context.parsed.y);
+                                             }
+                                             return label;
+                                         }
+                                     }
+                                 }
+                            }
+                        }
+                    });
+
+                    chartLoading.style.display = 'none';
+                    chartCanvas.style.display = 'block'; // Exibe o canvas com o gráfico
+
+                } catch (error) {
+                    console.error("Erro ao carregar dados para o gráfico:", error);
+                    chartLoading.style.display = 'none';
+                    chartError.textContent = `Erro ao carregar dados do gráfico: ${error.message || 'Verifique a conexão.'}`;
+                    chartError.style.display = 'block';
+                    chartCanvas.style.display = 'none'; // Garante que o canvas continue oculto
+                }
+            }
+
+
+			// Listener para os cliques nos botões de ação (usando delegação de evento)
+			document.addEventListener("click", async (event) => {
+				const target = event.target;
+				const serviceId = target.dataset.id;
+				const token = localStorage.getItem("token");
+				const prestadorId = prestadorLogado?._id; // ID do prestador logado
+
+				if (!serviceId || !token || !prestadorId) {
+					 // Não faz nada se não tiver ID, token ou ID do prestador
+					 console.warn("Ação de serviço clicada sem ID de serviço, token ou ID de prestador.", { serviceId, hasToken: !!token, prestadorId });
+					 return;
+				}
+
+
+				// Ação de Aceitar
+				if (target.classList.contains("aceitar-servico")) {
+					event.preventDefault(); // Previne o comportamento padrão do link
+
+                    // Solicitar o valor do serviço ao prestador
+                    const valorServicoStr = prompt("Por favor, informe o valor final para este serviço:");
+
+                    // Verifica se o usuário cancelou ou não inseriu um valor
+                    if (valorServicoStr === null || valorServicoStr.trim() === "") {
+                         showToast("Ação cancelada. O valor do serviço é obrigatório para aceitar.", 'info');
+                         return;
+                    }
+
+                    const valorServico = parseFloat(valorServicoStr.replace(',', '.')); // Converte para número, tratando vírgula
+
+                    // Validação básica do valor
+                    if (isNaN(valorServico) || valorServico <= 0) {
+                         showToast("Valor inválido. Por favor, insira um número maior que zero.", 'danger');
+                         return;
+                    }
+
+
+					 if (!confirm(`Tem certeza que deseja aceitar esta solicitação pelo valor de R$ ${valorServico.toFixed(2).replace('.', ',')}?`)) return; // Confirmação com o valor
+
+
+					try {
+						const response = await fetch(`http://localhost:3000/aceitar-servico/${serviceId}`, {
+							method: "POST",
+							headers: {
+								 "Content-Type": "application/json",
+								 'Authorization': `Bearer ${token}` // Incluir token
+							},
+                            // Incluir o valor do serviço no body
+                            body: JSON.stringify({ valor_servico: valorServico })
+						});
+
+						const result = await response.json(); // Leia a resposta
+
+						if (!response.ok) {
+							 showToast(result.message || "Erro ao aceitar serviço.", 'danger');
+                             console.error("Erro ao aceitar serviço:", result);
+						} else {
+                            showToast("Solicitação aceita com sucesso! O cliente será notificado para realizar o pagamento.", 'success');
+                            carregarSolicitacoesPendentes(); // Recarrega a lista de PENDENTES (o serviço aceito sumirá daqui)
+                            carregarContadoresPrestador(); // Atualiza os contadores
+                            carregarProximosAgendamentos(); // Atualiza a lista de agendamentos
+                            // carregarDadosParaGrafico(); // Atualiza o gráfico (se aceitar impactar dados de desempenho - geralmente só impacta ao CONCLUIR)
+                        }
+
+					} catch (error) {
+						console.error("Erro ao aceitar solicitação:", error);
+						showToast(error.message || "Erro ao aceitar solicitação.", 'danger');
+					}
+				}
+
+				// Ação de Recusar
+				if (target.classList.contains("recusar-servico")) {
+					event.preventDefault();
+					 if (!confirm("Tem certeza que deseja recusar esta solicitação?")) return;
+
+					try {
+						const response = await fetch(`http://localhost:3000/recusar-servico/${serviceId}`, {
+							method: "POST",
+							headers: {
+								 "Content-Type": "application/json",
+								 'Authorization': `Bearer ${token}` // Incluir token
+							},
+                            // O backend /recusar-servico/:id não precisa do prestador_id no body, ele apenas muda o status
+						});
+
+						 const result = await response.json();
+
+						if (!response.ok) {
+							showToast(result.message || "Erro ao recusar serviço.", 'danger');
+                             console.error("Erro ao recusar serviço:", result);
+						} else {
+                            showToast("Solicitação recusada com sucesso!", 'success');
+                            carregarSolicitacoesPendentes(); // Recarrega a lista de PENDENTES (o serviço recusado sumirá daqui)
+                            carregarContadoresPrestador(); // Atualiza os contadores
+                            // carregarDadosParaGrafico(); // Atualiza o gráfico (se recusar impactar dados de desempenho - geralmente não impacta)
+                        }
+
+					} catch (error) {
+						console.error("Erro ao recusar solicitação:", error);
+						showToast(error.message || "Erro ao recusar solicitação.", 'danger');
+					}
+				}
+
+                // Ação de Ver Detalhes
+                 if (target.classList.contains("ver-detalhes")) {
+                      event.preventDefault();
+                       // Abre o modal e carrega os detalhes
+                      $('#detalhesServicoModal').modal('show'); // Usa jQuery do Bootstrap para mostrar o modal
+                      carregarDetalhesServico(serviceId); // Chama a função para carregar os detalhes
+                 }
+
+                // Ação de Deletar (Mantida, mas a permissão é controlada pelo backend)
+                // Em uma lista de solicitações PENDENTES (aguardando aceite),
+                // o prestador não deveria ter permissão para deletar.
+                // A rota /deletar-servico/:id no backend já verifica se o usuário (pelo token)
+                // tem permissão para deletar aquele serviço específico com base no status e no ID do usuário/prestador.
+                // Portanto, o botão pode aparecer no HTML, mas a ação será bloqueada pelo backend se o prestador não tiver permissão.
+				 if (target.classList.contains("deletar-servico")) {
+					 event.preventDefault();
+					 const botaoDeletar = target.closest(".deletar-servico");
+					 const id = botaoDeletar.dataset.id;
+
+					 if (!id) {
+						 showToast("ID inválido ou não encontrado.", 'danger');
+						 return;
+					 }
+
+					 if (!confirm("Você tem certeza que deseja deletar esta solicitação? Esta ação não pode ser desfeita.")) return;
+
+					 try {
+						 const response = await fetch(`http://localhost:3000/deletar-servico/${id}`, {
+							 method: "DELETE",
+							 headers: {
+								  "Content-Type": "application/json",
+								  'Authorization': `Bearer ${token}` // Incluir token
+							 },
+						 });
+
+						 const result = await response.json(); // Leia a resposta JSON
+
+						 if (!response.ok) {
+							 // Se a resposta não for OK (status >= 400), lance um erro com a mensagem do backend
+							 showToast(result.message || `Erro HTTP: ${response.status}`, 'danger');
+                             console.error("Erro ao deletar solicitação:", result);
+						 } else {
+                             // Se a resposta for OK
+                             showToast(result.message || "Solicitação deletada com sucesso!", 'success');
+                             carregarSolicitacoesPendentes(); // Atualiza a interface (nesta página, mostra pendentes)
+                             carregarContadoresPrestador(); // Atualiza os contadores
+                             // carregarDadosParaGrafico(); // Atualiza o gráfico (se deletar impactar dados de desempenho - geralmente não impacta)
+                         }
+
+					 } catch (error) {
+						 console.error("Erro ao deletar solicitação:", error);
+						 // Exiba a mensagem de erro do backend se disponível, caso contrário, uma genérica
+						 showToast(error.message || "Não foi possível deletar a solicitação. Verifique sua conexão ou tente novamente.", 'danger');
+					 }
+				 }
+
+			});
+
+
+			// Função para aplicar os filtros na tabela
+            function aplicarFiltrosTabela() {
+                const filtroNome = document.getElementById("filtro-nome").value.toLowerCase();
+                const filtroTipo = document.getElementById("filtro-tipo").value.toLowerCase();
+                const filtroUrgente = document.getElementById("filtro-urgente").value; // 'Sim', 'Não', ou ''
+
+                const servicosFiltrados = allPendingServices.filter(servico => {
+                    const nomeCliente = (servico.nome_cliente || '').toLowerCase();
+                    const tipoServico = (servico.tipo_servico || '').toLowerCase();
+                    const urgente = servico.urgente ? 'Sim' : 'Não';
+
+                    const nomeMatch = nomeCliente.includes(filtroNome);
+                    const tipoMatch = tipoServico.includes(filtroTipo);
+                    const urgenteMatch = (filtroUrgente === '' || urgente === filtroUrgente);
+
+                    return nomeMatch && tipoMatch && urgenteMatch;
+                });
+
+                renderizarTabela(servicosFiltrados); // Renderiza a tabela com os resultados filtrados
+            }
+
+
+            // Função para carregar e exibir próximos agendamentos
+            async function carregarProximosAgendamentos() {
+                 const loading = document.getElementById("upcoming-loading");
+                 const feedback = document.getElementById("upcoming-feedback");
+                 const empty = document.getElementById("upcoming-empty");
+                 const list = document.getElementById("upcoming-appointments-list");
+
+                 loading.style.display = "block";
+                 feedback.style.display = "none";
+                 empty.style.display = "none";
+                 list.innerHTML = ""; // Limpa a lista
+
+                 const token = localStorage.getItem("token");
+                 const prestadorId = prestadorLogado?._id;
+
+                 if (!token || !prestadorId) {
+                      feedback.textContent = "Autenticação necessária para carregar agendamentos.";
+                      feedback.style.display = "block";
+                      loading.style.display = "none";
+                      return;
+                 }
+
+                 try {
+                     // Endpoint para buscar serviços aceitos (ou em andamento) pelo prestador
+                     const response = await fetch("http://localhost:3000/meus-servicos-prestador", {
+                          headers: { 'Authorization': `Bearer ${token}` }
+                     });
+
+                     if (!response.ok) {
+                          if (response.status === 401 || response.status === 403) {
+                               showToast("Sua sessão expirou ou você não tem permissão. Faça login novamente.", 'danger');
+                               setTimeout(() => { window.location.href = "login-prestador.html"; }, 3000);
+                               return;
+                          }
+                          const errorText = await response.text();
+                          console.error("Erro HTTP ao buscar serviços aceitos:", response.status, errorText);
+                          throw new Error(errorText || `Erro HTTP ao buscar serviços aceitos: ${response.status}`);
+                     }
+
+                     const servicosAceitos = await response.json();
+                     console.log("Serviços aceitos carregados:", servicosAceitos);
+
+                     // Filtra os serviços que têm data preferencial no futuro e status 'aceito_pelo_prestador'
+                     const now = new Date();
+                     const proximosAgendamentos = servicosAceitos.filter(servico => {
+                          // Verifica se há data preferencial, se ela é uma data válida no futuro (ou hoje)
+                          // E se o status é 'aceito_pelo_prestador' (ou outro status que indique agendamento confirmado)
+                          if (servico.data_servico_preferencial && servico.status === 'aceito_pelo_prestador') {
+                               const serviceDate = new Date(servico.data_servico_preferencial);
+                               // Compara apenas a data (ignora hora) para considerar o dia inteiro
+                               const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                               const serviceDay = new Date(serviceDate.getFullYear(), serviceDate.getMonth(), serviceDate.getDate());
+                               return serviceDay >= today;
+                          }
+                          return false; // Ignora serviços sem data preferencial, com data passada ou status diferente
+                     });
+
+                     // Ordena os agendamentos por data e hora
+                     proximosAgendamentos.sort((a, b) => {
+                          const dateA = new Date(`${a.data_servico_preferencial} ${a.hora_servico_preferencial || '00:00'}`);
+                          const dateB = new Date(`${b.data_servico_preferencial} ${b.hora_servico_preferencial || '00:00'}`);
+                          return dateA - dateB;
+                     });
+
+
+                     // Renderiza a lista de agendamentos futuros
+                     if (proximosAgendamentos.length > 0) {
+                          proximosAgendamentos.forEach(servico => {
+                               const listItem = document.createElement("li");
+                               // Formata a data e hora
+                               const dataFormatada = servico.data_servico_preferencial ? new Date(servico.data_servico_preferencial).toLocaleDateString('pt-BR') : 'Data não informada';
+                               const horaFormatada = servico.hora_servico_preferencial || 'Hora não informada';
+
+                               listItem.innerHTML = `
+                                   <div>
+                                       <strong>${dataFormatada} ${horaFormatada}</strong> - ${servico.tipo_servico || 'Serviço'} com ${servico.nome_cliente || 'Cliente Desconhecido'}
+                                   </div>
+                                   <div>
+                                       <a href="#" data-id="${servico._id}" class="ver-detalhes btn btn-sm btn-info">Detalhes</a>
+                                   </div>
+                               `;
+                               list.appendChild(listItem);
+                          });
+                          empty.style.display = 'none';
+                     } else {
+                          empty.style.display = 'block';
+                     }
+
+                 } catch (error) {
+                     console.error("Erro ao carregar próximos agendamentos:", error);
+                     feedback.textContent = `Erro ao carregar agendamentos: ${error.message || 'Verifique a conexão.'}`;
+                     feedback.style.display = "block";
+                     empty.style.display = 'none';
+                 } finally {
+                     loading.style.display = "none";
+                 }
+            }
+            // --- FIM Função para carregar e exibir próximos agendamentos ---
+
+
+			// Listeners para os inputs de filtro
+            // Estes listeners só devem ser adicionados se a página for a de solicitações pendentes
+            // Como este código está no index.html (dashboard), eles podem ser mantidos,
+            // mas é importante garantir que os elementos com estes IDs existam na página.
+            // Pelo snippet do index.html, eles existem.
+			document.getElementById("filtro-nome").addEventListener("input", aplicarFiltrosTabela);
+            document.getElementById("filtro-tipo").addEventListener("input", aplicarFiltrosTabela);
+            document.getElementById("filtro-urgente").addEventListener("change", aplicarFiltrosTabela); // Use 'change' para selects
+
+
+            // Chamar carregarPerfilPrestador ao carregar a página
+			document.addEventListener("DOMContentLoaded", () => {
+				 carregarPerfilPrestador();
+                 // Adiciona o listener para o dropdown do sino para carregar notificações ao abrir
+                 $('#notification-dropdown-toggle').on('shown.bs.dropdown', function () {
+                      carregarNotificacoesDropdown(); // Carrega/atualiza notificações sempre que o dropdown é aberto
+                 });
+			});
+
+            // Opcional: Parar o polling ao fechar a janela/aba
+            window.addEventListener('beforeunload', () => {
+                 pararPollingNovasSolicitacoes();
+                 pararPollingNotificacoes();
+            });
+
+		</script>
+
+
+	</body>
+</html>
+
