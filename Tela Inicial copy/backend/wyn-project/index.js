@@ -348,9 +348,11 @@ const validateResetPassword = (data) => {
     return schema.validate(data);
 };
 
+// --- FUNÇÃO DE VALIDAÇÃO CORRIGIDA ---
 const validateServicoOferecido = (data) => {
     const schema = Joi.object({
-        prestador_id: Joi.string().required(), // Prestador associado ao serviço oferecido
+        // prestador_id NÃO é mais obrigatório no corpo da requisição, pois é pego do token
+        // prestador_id: Joi.string().required(), // Removido
         nome: Joi.string().required(),
         descricao: Joi.string().allow('', null).optional(),
         faixa_preco_min: Joi.number().min(0).allow(null).optional(),
@@ -359,6 +361,8 @@ const validateServicoOferecido = (data) => {
     });
     return schema.validate(data);
 };
+// --- FIM FUNÇÃO DE VALIDAÇÃO CORRIGIDA ---
+
 
 // Validação Joi para Disponibilidade
 const validatePrestadorDisponibilidade = (data) => {
@@ -1978,9 +1982,10 @@ app.get('/prestador/servicos-oferecidos', authMiddlewarePrestador, async (req, r
 app.post('/prestador/servicos-oferecidos', authMiddlewarePrestador, async (req, res, next) => {
     try {
         console.log('[BACKEND] Recebida requisição POST /prestador/servicos-oferecidos');
-        const prestadorId = req.user.id;
+        const prestadorId = req.user.id; // Pega o ID do prestador do token
         const { nome, descricao, faixa_preco_min, faixa_preco_max, categorias } = req.body;
 
+        // Usa a validação CORRIGIDA que não exige prestador_id no body
         const { error, value } = validateServicoOferecido(req.body);
         if (error) {
             console.error("[BACKEND] Erro de validação Joi ao adicionar serviço oferecido:", error.details);
@@ -1988,7 +1993,7 @@ app.post('/prestador/servicos-oferecidos', authMiddlewarePrestador, async (req, 
         }
 
         const novoServicoOferecido = new ServicoOferecido({
-            prestador_id: prestadorId,
+            prestador_id: prestadorId, // Usa o ID do prestador obtido do token
             nome: value.nome,
             descricao: value.descricao,
             faixa_preco_min: value.faixa_preco_min,
@@ -2004,6 +2009,8 @@ app.post('/prestador/servicos-oferecidos', authMiddlewarePrestador, async (req, 
     } catch (error) {
         console.error('[BACKEND] Erro ao adicionar serviço oferecido:', error);
          if (error.code === 11000) {
+             // Esta verificação de duplicidade pode precisar ser mais sofisticada
+             // para verificar se é o mesmo nome DESTE prestador
              return res.status(400).json({ message: 'Este serviço já parece estar cadastrado.' });
          }
         next(error);
@@ -2043,7 +2050,7 @@ app.get('/prestador/servicos-oferecidos/:id', authMiddlewarePrestador, async (re
 app.put('/prestador/servicos-oferecidos/:id', authMiddlewarePrestador, async (req, res, next) => {
     try {
         console.log(`[BACKEND] Recebida requisição PUT /prestador/servicos-oferecidos/${req.params.id}`);
-        const prestadorId = req.user.id;
+        const prestadorId = req.user.id; // Pega o ID do prestador do token
         const { id } = req.params;
         const { nome, descricao, faixa_preco_min, faixa_preco_max, categorias } = req.body;
 
@@ -2052,6 +2059,7 @@ app.put('/prestador/servicos-oferecidos/:id', authMiddlewarePrestador, async (re
             return res.status(400).json({ message: 'ID do serviço inválido.' });
         }
 
+        // Usa a validação CORRIGIDA que não exige prestador_id no body
         const { error, value } = validateServicoOferecido(req.body);
         if (error) {
             console.error("[BACKEND] Erro de validação Joi ao atualizar serviço oferecido:", error.details);
@@ -2059,7 +2067,7 @@ app.put('/prestador/servicos-oferecidos/:id', authMiddlewarePrestador, async (re
         }
 
         const servicoAtualizado = await ServicoOferecido.findOneAndUpdate(
-            { _id: id, prestador_id: prestadorId },
+            { _id: id, prestador_id: prestadorId }, // Garante que o serviço pertence a este prestador
             {
                 nome: value.nome,
                 descricao: value.descricao,
@@ -2081,6 +2089,8 @@ app.put('/prestador/servicos-oferecidos/:id', authMiddlewarePrestador, async (re
     } catch (error) {
         console.error('[BACKEND] Erro ao atualizar serviço oferecido:', error);
          if (error.code === 11000) {
+              // Esta verificação de duplicidade pode precisar ser mais sofisticada
+             // para verificar se é o mesmo nome DESTE prestador
              return res.status(400).json({ message: 'Este serviço já parece estar cadastrado.' });
          }
         next(error);
@@ -2310,7 +2320,7 @@ app.put('/prestador/disponibilidade/:prestadorId/periodo/:periodoId', authMiddle
           const periodoIndex = disponibilidade.periodos_indisponibilidade_especificos.findIndex(p => p._id.toString() === periodoId);
 
           if (periodoIndex === -1) {
-               console.warn(`[BACKEND] Período Indisponibilidade: Período com ID ${periodoId} não encontrado para o prestador ${prestadorId}.`);
+               console.warn(`[BACKEND] Período Indisponibilidade: Período com ID ${periodoId} não encontrado para o prestador ${prestadorId} durante a exclusão.`);
                return res.status(404).json({ message: 'Período de indisponibilidade não encontrado.' });
           }
 
@@ -2883,7 +2893,7 @@ app.put('/admin/prestadores/:id', adminAuthMiddleware, uploadProfilePicture, asy
                   const oldFilePath = path.join(__dirname, prestador.foto_perfil);
                   if (fs.existsSync(oldFilePath)) {
                        fs.unlink(oldFilePath, (err) => {
-                           if (err) console.error(`[BACKEND] Erro ao excluir foto de perfil antiga ${oldFilePath}:`, err);
+                           if (err) console.error(`[BACKEND] Erro ao excluir foto de perfil antiga do prestador ${oldFilePath}:`, err);
                        });
                   } else {
                        console.warn(`[BACKEND] Foto de perfil antiga do prestador não encontrada para exclusão: ${oldFilePath}`);
@@ -2902,12 +2912,6 @@ app.put('/admin/prestadores/:id', adminAuthMiddleware, uploadProfilePicture, asy
 
     } catch (error) {
         console.error('[BACKEND] ADMIN: Erro ao atualizar prestador:', error);
-         if (fotoPerfil) {
-              const filePath = path.join(__dirname, fotoPerfil.path);
-              fs.unlink(filePath, (err) => {
-                  if (err) console.error(`[BACKEND] Erro ao excluir arquivo temporário ${filePath} após erro no banco de dados:`, err);
-              });
-         }
          if (error.code === 11000) {
               return res.status(400).json({ message: 'Email já cadastrado.' });
          }
@@ -3276,9 +3280,7 @@ app.delete('/admin/servicos-oferecidos/:id', adminAuthMiddleware, async (req, re
         // 1. Deletar em cascata os pedidos (perigoso)
         // 2. Desassociar (definir servico_oferecido_id para null nos pedidos)
         // 3. Marcar o serviço oferecido como inativo em vez de deletar
-
-        console.log(`[BACKEND] ADMIN: Desassociando serviços (pedidos) que referenciam o serviço oferecido ${id}...`);
-        await Servico.updateMany({ servico_oferecido_id: id }, { servico_oferecido_id: null, tipo_servico: servicoToDelete.nome + ' [Removido do Catálogo]', descricao_servico: servicoToDelete.descricao + ' [Removido do Catálogo]' });
+        await Servico.updateMany({ servico_oferecido_id: id }, { servico_oferecido_id: null }); // Exemplo: Desassociar
 
 
         console.log(`[BACKEND] ADMIN: Deletando serviço oferecido (catálogo) ${id}...`);
@@ -3298,7 +3300,6 @@ app.delete('/admin/servicos-oferecidos/:id', adminAuthMiddleware, async (req, re
 app.get('/admin/avaliacoes', adminAuthMiddleware, async (req, res, next) => {
     try {
         console.log('[BACKEND] ADMIN: Listando avaliações...');
-        // Popula cliente, prestador e o serviço (pedido) associado
         const avaliacoes = await Avaliacao.find({})
             .populate('cliente_id', 'nome email')
             .populate('prestador_id', 'nome email')
@@ -3308,6 +3309,71 @@ app.get('/admin/avaliacoes', adminAuthMiddleware, async (req, res, next) => {
         res.status(200).json(avaliacoes);
     } catch (error) {
         console.error('[BACKEND] ADMIN: Erro ao listar avaliações:', error);
+        next(error);
+    }
+});
+
+// Rota para obter detalhes de uma avaliação específica (ADMIN)
+app.get('/admin/avaliacoes/:id', adminAuthMiddleware, async (req, res, next) => {
+    try {
+        console.log(`[BACKEND] ADMIN: Buscando detalhes da avaliação ${req.params.id}...`);
+        const { id } = req.params;
+         if (!mongoose.Types.ObjectId.isValid(id)) {
+              console.warn(`[BACKEND] ADMIN: Detalhes Avaliação: ID inválido recebido: ${id}`);
+              return res.status(400).json({ message: 'ID de avaliação inválido.' });
+         }
+        const avaliacao = await Avaliacao.findById(id)
+            .populate('cliente_id', 'nome email')
+            .populate('prestador_id', 'nome email')
+            .populate('pedido_servico_id', 'tipo_servico'); // Popula o tipo de serviço do pedido
+
+        if (!avaliacao) {
+            console.warn(`[BACKEND] ADMIN: Avaliação ${id} não encontrada.`);
+            return res.status(404).json({ message: 'Avaliação não encontrada.' });
+        }
+        console.log(`[BACKEND] ADMIN: Detalhes da avaliação ${id} encontrados.`);
+        res.status(200).json(avaliacao);
+    } catch (error) {
+        console.error('[BACKEND] ADMIN: Erro ao buscar detalhes da avaliação:', error);
+        next(error);
+    }
+});
+
+// Rota para atualizar uma avaliação existente (ADMIN) - Admin pode querer corrigir nota ou comentário
+app.put('/admin/avaliacoes/:id', adminAuthMiddleware, async (req, res, next) => {
+    console.log(`[BACKEND] ADMIN: Recebida requisição PUT /admin/avaliacoes/${req.params.id}`);
+    const { id } = req.params;
+    const { nota, comentario } = req.body; // Admin só pode atualizar nota e comentário
+
+     if (!mongoose.Types.ObjectId.isValid(id)) {
+          console.warn(`[BACKEND] ADMIN: Atualizar Avaliação: ID inválido recebido: ${id}`);
+          return res.status(400).json({ message: 'ID de avaliação inválido.' });
+     }
+
+    const { error, value } = validateAvaliacao({ nota, comentario }); // Reutiliza validação de avaliação
+    if (error) {
+        console.error("[BACKEND] ADMIN: Erro de validação Joi ao atualizar avaliação:", error.details);
+        return res.status(400).json({ message: error.details[0].message });
+    }
+
+    try {
+        const avaliacao = await Avaliacao.findById(id);
+        if (!avaliacao) {
+            console.warn(`[BACKEND] ADMIN: Avaliação ${id} não encontrada para atualização.`);
+            return res.status(404).json({ message: 'Avaliação não encontrada.' });
+        }
+
+        // Atualiza os campos permitidos
+        if (value.nota !== undefined) avaliacao.nota = value.nota;
+        if (value.comentario !== undefined) avaliacao.comentario = value.comentario;
+
+        await avaliacao.save();
+
+        console.log(`[BACKEND] ADMIN: Avaliação ${id} atualizada com sucesso.`);
+        res.status(200).json({ message: 'Avaliação atualizada com sucesso!', avaliacao });
+
+    } catch (error) {
+        console.error('[BACKEND] ADMIN: Erro ao atualizar avaliação:', error);
         next(error);
     }
 });
@@ -3330,6 +3396,12 @@ app.delete('/admin/avaliacoes/:id', adminAuthMiddleware, async (req, res, next) 
             return res.status(404).json({ message: 'Avaliação não encontrada.' });
         }
 
+         // Opcional: Atualizar o status do serviço associado de volta para 'concluido_pelo_prestador'
+         // se a avaliação for deletada, para permitir que o cliente avalie novamente.
+         // Isso depende da sua regra de negócio.
+         // await Servico.findByIdAndUpdate(avaliacaoDeletada.pedido_servico_id, { status: 'concluido_pelo_prestador' });
+
+
         console.log(`[BACKEND] ADMIN: Avaliação ${id} deletada com sucesso.`);
         res.status(200).json({ message: 'Avaliação deletada com sucesso!' });
 
@@ -3343,7 +3415,7 @@ app.delete('/admin/avaliacoes/:id', adminAuthMiddleware, async (req, res, next) 
 // --- FIM NOVAS ROTAS PARA O DASHBOARD ADMIN ---
 
 
-// --- Middleware para rotas não encontradas (404) ---
+// --- Middleware para lidar com rotas não encontradas (404) ---
 app.use((req, res, next) => {
     console.warn(`[BACKEND] Rota não encontrada: ${req.method} ${req.originalUrl}`);
     res.status(404).json({ message: 'Rota não encontrada.' });
@@ -3356,6 +3428,7 @@ app.use((err, req, res, next) => {
 
     if (err instanceof multer.MulterError) {
         console.error('[BACKEND] Erro do Multer:', err.message);
+        // Tenta excluir o arquivo temporário em caso de erro no upload
         if (req.file) {
              const filePath = path.join(__dirname, req.file.path);
              fs.unlink(filePath, (unlinkErr) => {
@@ -3372,10 +3445,44 @@ app.use((err, req, res, next) => {
         return res.status(400).json({ message: 'Erro no upload do arquivo: ' + err.message });
     }
 
-    res.status(500).json({ message: 'Erro interno no servidor. Tente novamente mais tarde.', error: err.message });
+    // Erros de validação Joi (já tratados nas rotas, mas como fallback)
+    if (Joi.isError(err)) {
+         console.error('[BACKEND] Erro de validação Joi (fallback):', err.details);
+         return res.status(400).json({ message: err.details[0].message });
+    }
+
+    // Erros de conexão com o MongoDB
+    if (err.name === 'MongoNetworkError' || err.name === 'MongooseServerSelectionError') {
+         console.error('[BACKEND] Erro de conexão com MongoDB:', err.message);
+         return res.status(503).json({ message: 'Erro de conexão com o banco de dados.' });
+    }
+
+    // Erros de duplicação (E11000)
+    if (err.code === 11000) {
+         const field = Object.keys(err.keyValue)[0];
+         const value = err.keyValue[field];
+         console.error(`[BACKEND] Erro de duplicação: Campo '${field}' com valor '${value}' já existe.`);
+         return res.status(400).json({ message: `O valor '${value}' para o campo '${field}' já existe.` });
+    }
+
+    // Erros de validação do Mongoose (ex: campos required faltando)
+    if (err.name === 'ValidationError') {
+         const messages = Object.values(err.errors).map(val => val.message);
+         console.error('[BACKEND] Erro de validação do Mongoose:', messages);
+         return res.status(400).json({ message: messages.join(', ') });
+    }
+
+     // Erros de Cast (IDs inválidos, por exemplo)
+     if (err.name === 'CastError') {
+          console.error(`[BACKEND] Erro de Cast: Valor inválido para o tipo ${err.kind} no caminho ${err.path}. Valor: ${err.value}`);
+          return res.status(400).json({ message: `Valor inválido para o campo ${err.path}.` });
+     }
+
+
+    // Outros erros não tratados
+    res.status(err.status || 500).json({
+        message: err.message || 'Ocorreu um erro interno no servidor.',
+        // Em produção, evite enviar o stack trace completo para o cliente por segurança
+        // stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+    });
 });
-
-
-// --- Final da configuração ---
-module.exports = app;
-

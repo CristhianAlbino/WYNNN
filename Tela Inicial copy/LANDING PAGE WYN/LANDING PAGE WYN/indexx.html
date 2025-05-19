@@ -661,7 +661,8 @@
 
 								// Chamada ao backend para validar o token e obter dados completos
 								 // Usando a rota /perfil que agora verifica o tipo no token
-								 const res = await fetch('http://localhost:3000/perfil', {
+								 // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+								 const res = await fetch('https://wyn-backend.onrender.com/perfil', {
 									 headers: { 'Authorization': 'Bearer ' + token }
 								 });
 
@@ -674,6 +675,8 @@
 										 window.location.href = "login.html";
 										 return;
 									 }
+                                     const errorText = await resClone.text();
+                                     console.error("Erro HTTP ao buscar perfil:", res.status, errorText);
 									 throw new Error(`Erro HTTP ao buscar perfil: ${res.status}`);
 								 }
 
@@ -781,7 +784,8 @@
 
 							try {
 								// Chamar o endpoint correto para buscar TODOS os serviços do usuário logado
-								const responseServicos = await fetch("http://localhost:3000/meus-servicos", {
+								// --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+								const responseServicos = await fetch("https://wyn-backend.onrender.com/meus-servicos", {
 									 headers: { 'Authorization': `Bearer ${token}` } // Incluir o token
 								});
 
@@ -791,6 +795,8 @@
 										  window.location.href = "login.html"; // Redireciona para login do usuário
 										  return;
 									 }
+                                     const errorText = await responseServicos.text();
+                                     console.error("Erro HTTP ao buscar seus serviços:", responseServicos.status, errorText);
 									throw new Error(`Erro HTTP ao buscar seus serviços: ${responseServicos.status}`);
 								}
 
@@ -832,7 +838,7 @@
                                 // ESTA CHAMADA ESTÁ COMENTADA POIS O ENDPOINT AINDA PRECISA SER CRIADO NO BACKEND
                                 /*
                                 // Contagem de Notificações (exemplo)
-                                fetch(`http://localhost:3000/api/notificacoes/quantidade`, { headers: { 'Authorization': `Bearer ${token}` } }) // Endpoint hipotético
+                                fetch(`https://wyn-backend.onrender.com/api/notificacoes/quantidade`, { headers: { 'Authorization': `Bearer ${token}` } }) // Endpoint hipotético // --- URL ATUALIZADA ---
                                     .then(res => {
                                          if (!res.ok) {
                                               console.error(`Erro HTTP ao buscar notificações: ${res.status}`);
@@ -875,7 +881,8 @@
                             }
 
                             try {
-                                const response = await fetch(`http://localhost:3000/api/chat/unread-count`, {
+								// --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+                                const response = await fetch(`https://wyn-backend.onrender.com/api/chat/unread-count`, {
                                     headers: { 'Authorization': `Bearer ${token}` }
                                 });
 
