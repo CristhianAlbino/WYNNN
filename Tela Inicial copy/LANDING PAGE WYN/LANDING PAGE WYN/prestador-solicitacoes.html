@@ -532,7 +532,8 @@
 						 nomeSpan.textContent = prestadorLogado.nome;
 					 }
 
-					 const res = await fetch('http://localhost:3000/perfil', {
+					 // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+					 const res = await fetch('https://wyn-backend.onrender.com/perfil', {
 						 headers: { 'Authorization': 'Bearer ' + token }
 					 });
 
@@ -545,7 +546,7 @@
 							 window.location.href = "login-prestador.html";
 							 return;
 						 }
-						 throw new Error(`Erro HTTP ao buscar perfil: ${res.status}`);
+						throw new Error(`Erro HTTP ao buscar perfil: ${res.status}`);
 					 }
 
 					let data = {};
@@ -624,7 +625,8 @@
 				}
 
 				try {
-					const response = await fetch("http://localhost:3000/solicitacoes-servicos-pendentes", {
+					// --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+					const response = await fetch("https://wyn-backend.onrender.com/solicitacoes-servicos-pendentes", {
 						 headers: { 'Authorization': `Bearer ${token}` }
 					});
 
@@ -712,7 +714,8 @@
 					 if (!confirm("Tem certeza que deseja aceitar esta solicitação?")) return;
 
 					try {
-						const response = await fetch(`http://localhost:3000/aceitar-servico/${serviceId}`, {
+						// --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+						const response = await fetch(`https://wyn-backend.onrender.com/aceitar-servico/${serviceId}`, {
 							method: "POST",
 							headers: {
 								 "Content-Type": "application/json",
@@ -742,7 +745,8 @@
 					 if (!confirm("Tem certeza que deseja recusar esta solicitação?")) return;
 
 					try {
-						const response = await fetch(`http://localhost:3000/recusar-servico/${serviceId}`, {
+						// --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+						const response = await fetch(`https://wyn-backend.onrender.com/recusar-servico/${serviceId}`, {
 							method: "POST",
 							headers: {
 								 "Content-Type": "application/json",

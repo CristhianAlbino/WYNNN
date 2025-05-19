@@ -834,7 +834,8 @@
                           prestadorProfilePicImg.src = "vendors/images/photo4.jpg";
                      }
 
-					 const res = await fetch('http://localhost:3000/perfil', {
+					 // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+					 const res = await fetch('https://wyn-backend.onrender.com/perfil', {
 						 headers: { 'Authorization': 'Bearer ' + token }
 					 });
 
@@ -924,7 +925,8 @@
                  }
 
                  try {
-                     const response = await fetch("http://localhost:3000/api/chat/unread-count", {
+                     // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+                     const response = await fetch("https://wyn-backend.onrender.com/api/chat/unread-count", {
                          headers: { 'Authorization': `Bearer ${token}` }
                      });
 
@@ -1010,7 +1012,8 @@
 
                 try {
                     // --- ROTA CORRIGIDA: Não inclui prestadorId na URL ---
-                    const response = await fetch(`http://localhost:3000/prestador/servicos-oferecidos`, {
+                    // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+                    const response = await fetch(`https://wyn-backend.onrender.com/prestador/servicos-oferecidos`, {
                          headers: { 'Authorization': `Bearer ${token}` }
                     });
 
@@ -1115,7 +1118,8 @@
 
                       try {
                           // --- ROTA CORRIGIDA: Não inclui prestadorId na URL ---
-                          const response = await fetch(`http://localhost:3000/prestador/servicos-oferecidos/${serviceId}`, {
+                          // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+                          const response = await fetch(`https://wyn-backend.onrender.com/prestador/servicos-oferecidos/${serviceId}`, {
                               headers: { 'Authorization': `Bearer ${token}` }
                           });
 
@@ -1155,7 +1159,8 @@
 
                       try {
                            // --- ROTA CORRIGIDA: Não inclui prestadorId na URL ---
-                          const response = await fetch(`http://localhost:3000/prestador/servicos-oferecidos/${serviceId}`, {
+                           // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+                          const response = await fetch(`https://wyn-backend.onrender.com/prestador/servicos-oferecidos/${serviceId}`, {
                               method: "DELETE",
                               headers: {
                                   'Authorization': `Bearer ${token}` // Incluir token
@@ -1230,11 +1235,13 @@
                      if (serviceId) { // Se tem ID, é uma edição (PUT)
                          method = 'PUT';
                          // --- ROTA CORRIGIDA: Não inclui prestadorId na URL ---
-                         url = `http://localhost:3000/prestador/servicos-oferecidos/${serviceId}`;
+                         // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+                         url = `https://wyn-backend.onrender.com/prestador/servicos-oferecidos/${serviceId}`;
                      } else { // Se não tem ID, é uma adição (POST)
                          method = 'POST';
                          // --- ROTA CORRIGIDA: Não inclui prestadorId na URL ---
-                         url = `http://localhost:3000/prestador/servicos-oferecidos`; // Endpoint para adicionar serviço a um prestador
+                         // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+                         url = `https://wyn-backend.onrender.com/prestador/servicos-oferecidos`; // Endpoint para adicionar serviço a um prestador
                      }
 
                      response = await fetch(url, {

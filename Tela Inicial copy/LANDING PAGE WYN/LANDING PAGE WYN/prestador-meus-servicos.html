@@ -263,7 +263,7 @@
                             class="custom-control-input"
                             value="icon-style-3"
                         />
-                        <label class="custom-control-label" for="sidebaricon-3"
+                        <label class="custom-control-label" for="sidebariconlist-3"
                             ><i class="fa fa-angle-double-right"></i
                         ></label>
                     </div>
@@ -383,7 +383,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="prestador-meus-servicos.html" class="dropdown-toggle no-arrow"> <span class="micon bi bi-check-circle"></span
+                        <a href="prestador-meus-servicos.html" class="dropdown-toggle no-arrow active"> <span class="micon bi bi-check-circle"></span
                             ><span class="mtext">Meus Serviços Aceitos</span>
                         </a>
                     </li>
@@ -479,7 +479,7 @@
 
             if (!token || !prestadorCache) {
                 console.warn("Prestador não autenticado. Redirecionando para login.");
-                window.location.href = "login.html"; // Redirecionar para login do prestador
+                window.location.href = "login prestador.html"; // Redirecionar para login do prestador
                 return;
             }
 
@@ -494,7 +494,8 @@
 
                 // Chamada ao backend para validar o token e obter dados completos
                  // Usando a rota /perfil que agora verifica o tipo no token
-                 const res = await fetch('http://localhost:3000/perfil', {
+                 // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+                 const res = await fetch('https://wyn-backend.onrender.com/perfil', {
                      headers: { 'Authorization': 'Bearer ' + token }
                  });
 
@@ -504,7 +505,7 @@
                      if (res.status === 401 || res.status === 403) {
                          console.error("Token inválido ou expirado. Redirecionando para login.");
                          alert("Sua sessão expirou. Por favor, faça login novamente.");
-                         window.location.href = "login.html";
+                         window.location.href = "login prestador.html";
                          return;
                      }
                      throw new Error(`Erro HTTP ao buscar perfil: ${res.status}`);
@@ -538,6 +539,9 @@
 
                 console.log("Perfil do prestador carregado:", prestadorLogado);
 
+                // Chamar carregarMeusServicosAceitos somente depois de tentar carregar o perfil para garantir o token/ID
+                carregarMeusServicosAceitos();
+
 
             } catch (err) {
                 console.error('Erro ao carregar perfil do prestador:', err);
@@ -556,16 +560,14 @@
              e.preventDefault();
              localStorage.removeItem('token');
              localStorage.removeItem('prestador'); // Limpa também o cache do prestador
-             window.location.href = 'login.html'; // Redireciona para a página de login do prestador
+             window.location.href = 'login prestador.html'; // Redireciona para a página de login do prestador
         });
 
 
         // Chamar carregarPerfilPrestador ao carregar a página
         document.addEventListener("DOMContentLoaded", () => {
              carregarPerfilPrestador();
-             // Chamar carregarMeusServicosAceitos somente depois de tentar carregar o perfil para garantir o token/ID
-             // Adicionar um pequeno delay se necessário para garantir que prestadorLogado seja populado
-             setTimeout(carregarMeusServicosAceitos, 150); // Ajuste o delay se necessário
+             // carregarMeusServicosAceitos é chamado dentro de carregarPerfilPrestador
         });
     </script>
 
@@ -573,8 +575,10 @@
     <script>
         // Mapeamento de status do backend para texto amigável
         const statusMapPrestador = { // Mapeamento específico para a visão do prestador
-             'pendente': 'Pendente',
-             'aceito_pelo_prestador': 'Aceito',
+             'aguardando_aceite_prestador': 'Pendente',
+             'aguardando_pagamento_cliente': 'Aguardando Pagamento',
+             'aguardando_confirmacao_pagamento': 'Pagamento em Processamento',
+             'aceito_pelo_prestador': 'Aceito', // Em Andamento
              'recusado_pelo_prestador': 'Recusado',
              'concluido_pelo_prestador': 'Concluído',
              'avaliado_pelo_cliente': 'Avaliado',
@@ -600,14 +604,15 @@
 
             try {
                 // *** CHAMANDO O ENDPOINT CORRETO para serviços aceitos pelo prestador ***
-                const response = await fetch("http://localhost:3000/meus-servicos-prestador", {
+                // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+                const response = await fetch("https://wyn-backend.onrender.com/meus-servicos-prestador", {
                      headers: { 'Authorization': `Bearer ${token}` } // Incluir o token
                 });
 
                 if (!response.ok) {
                      if (response.status === 401 || response.status === 403) {
                           alert("Sua sessão expirou ou você não tem permissão. Faça login novamente.");
-                          window.location.href = "login.html"; // Redireciona para login do prestador
+                          window.location.href = "login prestador.html"; // Redireciona para login do prestador
                           return;
                      }
                     throw new Error(`Erro HTTP ao buscar seus serviços aceitos: ${response.status}`);
@@ -781,7 +786,7 @@
             const token = localStorage.getItem("token");
             if (!token) {
                 alert("Sessão expirada. Faça login novamente.");
-                window.location.href = "login.html"; // Redireciona para login do prestador
+                window.location.href = "login prestador.html"; // Redireciona para login do prestador
                 return;
             }
 
@@ -807,10 +812,11 @@
             try {
                 // *** CHAMANDO O ENDPOINT CORRETO PARA CONCLUIR SERVIÇO E UPLOAD ***
                 // O backend espera o ID do serviço na URL e os arquivos no body (via multer)
-                const response = await fetch(`http://localhost:3000/concluir-servico/${serviceId}`, {
+                // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+                const response = await fetch(`https://wyn-backend.onrender.com/concluir-servico/${serviceId}`, {
                     method: "POST", // Ou PUT, mas POST é comum para enviar dados de formulário com arquivos
                     headers: {
-                        // Não defina 'Content-Type': 'application/json' quando usar FormData com upload de arquivo.
+                        // Não defina 'Content-Type': 'application/json' manualmente quando usar FormData com upload de arquivo.
                         // O navegador define o Content-Type correto ('multipart/form-data') automaticamente com o boundary.
                         // 'Content-Type': 'application/json', // Removido
                         'Authorization': `Bearer ${token}` // Incluir o token
@@ -861,7 +867,8 @@
             // Implementar lógica para buscar e exibir detalhes em um modal ou seção
             console.log(`Buscando detalhes para o serviço ID ${serviceId} (Prestador)`);
             try {
-                const response = await fetch(`http://localhost:3000/servico/${serviceId}`, {
+                 // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+                const response = await fetch(`https://wyn-backend.onrender.com/servico/${serviceId}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 if (!response.ok) {

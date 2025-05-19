@@ -537,16 +537,20 @@
 				<div class="row">
 					<div class="col-md-4 col-sm-12 text-center">
 						<img src="vendors/images/photo1.jpg" id="profile-picture" class="profile-picture" alt="Foto de Perfil" />
+                         <div class="mt-2">
+                             <input type="file" id="upload-profile-pic" accept="image/*" style="display: none;">
+                             <button class="btn btn-primary btn-sm" id="change-profile-pic-btn">Alterar Foto</button>
+                         </div>
 					</div>
 					<div class="col-md-8 col-sm-12 profile-info">
 						<h5 class="mb-20" id="profile-name">Carregando Nome...</h5>
 						<p><strong>Tipo de Perfil:</strong> <span id="profile-type">Carregando...</span></p>
 						<p><strong>Email:</strong> <span id="profile-email">Carregando...</span></p>
 						<p><strong>Telefone:</strong> <span id="profile-phone">Carregando...</span></p>
-						</div>
+                         </div>
 				</div>
 				<div class="mt-30 text-right">
-					</div>
+                     </div>
 			</div>
 
 			<div class="footer-wrap pd-20 mb-20 card-box">
@@ -643,7 +647,8 @@
 
 			try {
 				// Chamada ao backend para validar o token e obter dados completos e atualizados
-				const res = await fetch('http://localhost:3000/perfil', {
+				// --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+				const res = await fetch('https://wyn-backend.onrender.com/perfil', {
 					headers: { 'Authorization': 'Bearer ' + token }
 				});
 
@@ -755,6 +760,89 @@
                  }
 			}
 		}
+
+        // Listener para o botão "Alterar Foto"
+        document.getElementById('change-profile-pic-btn').addEventListener('click', () => {
+             document.getElementById('upload-profile-pic').click(); // Simula o clique no input de arquivo
+        });
+
+        // Listener para quando um arquivo é selecionado no input de arquivo
+        document.getElementById('upload-profile-pic').addEventListener('change', async (event) => {
+             const file = event.target.files[0]; // Pega o primeiro arquivo selecionado
+
+             if (!file) {
+                  return; // Sai se nenhum arquivo foi selecionado
+             }
+
+             const token = localStorage.getItem('token');
+             if (!token) {
+                  alert('Sua sessão expirou. Faça login novamente para alterar a foto.');
+                  window.location.href = 'login.html';
+                  return;
+             }
+
+             const formData = new FormData();
+             formData.append('foto_perfil', file); // 'foto_perfil' deve corresponder ao nome esperado no backend (upload.single('foto_perfil'))
+
+             // Desabilita o botão e indica que está enviando
+             const changeButton = document.getElementById('change-profile-pic-btn');
+             changeButton.disabled = true;
+             changeButton.textContent = 'Enviando...';
+
+             try {
+                  // Endpoint para upload de foto de perfil
+                  // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+                  const response = await fetch('https://wyn-backend.onrender.com/upload-foto-perfil', {
+                       method: 'POST',
+                       headers: {
+                            // Não defina 'Content-Type' manualmente com FormData
+                           'Authorization': `Bearer ${token}`
+                       },
+                       body: formData
+                  });
+
+                  const result = await response.json();
+
+                  if (!response.ok) {
+                       alert(result.message || 'Erro ao fazer upload da foto.');
+                       console.error('Erro no upload:', result);
+                  } else {
+                       alert('Foto de perfil atualizada com sucesso!');
+                       console.log('Upload bem-sucedido:', result);
+
+                       // Atualiza a imagem na UI com a nova URL retornada pelo backend
+                       const newPhotoUrl = result.foto_perfil_url; // O backend deve retornar a nova URL
+                       if (newPhotoUrl) {
+                           document.getElementById('profile-picture').src = newPhotoUrl;
+                           document.getElementById('user-profile-pic-header').src = newPhotoUrl; // Atualiza também no header
+                           // Opcional: Atualizar o cache local com a nova URL
+                           if (loggedInUser) {
+                                loggedInUser.foto_perfil_url = newPhotoUrl;
+                                if (loggedInUser.tipo === 'usuario') {
+                                     localStorage.setItem('usuario', JSON.stringify(loggedInUser));
+                                } else if (loggedInUser.tipo === 'prestador') {
+                                     localStorage.setItem('prestador', JSON.stringify(loggedInUser));
+                                }
+                           }
+                       } else {
+                           console.warn("Backend não retornou a URL da nova foto.");
+                           // Recarregar a página pode ser uma opção para garantir que a imagem seja exibida
+                           // window.location.reload();
+                       }
+                  }
+
+             } catch (error) {
+                  console.error("Erro ao enviar foto:", error);
+                  alert("Erro ao enviar foto: " + (error.message || "Verifique sua conexão."));
+             } finally {
+                  // Reabilita o botão e restaura o texto
+                  changeButton.disabled = false;
+                  changeButton.textContent = 'Alterar Foto';
+                  // Limpa o input de arquivo para permitir o upload do mesmo arquivo novamente, se necessário
+                  event.target.value = '';
+             }
+        });
+
 
 		// Função de Logout (adaptada para limpar cache de usuário ou prestador)
 		document.getElementById('logout-link').addEventListener('click', (e) => {

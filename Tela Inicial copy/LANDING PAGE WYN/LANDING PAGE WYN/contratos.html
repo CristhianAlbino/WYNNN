@@ -572,7 +572,8 @@
 
 					// Chamada ao backend para validar o token e obter dados completos
 					 // Usando a rota /perfil que agora verifica o tipo no token
-					 const res = await fetch('http://localhost:3000/perfil', {
+					 // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+					 const res = await fetch('https://wyn-backend.onrender.com/perfil', {
 						 headers: { 'Authorization': 'Bearer ' + token }
 					 });
 
@@ -688,8 +689,15 @@
 				return;
 			  }
 
+              // Destroi a instância anterior do DataTables antes de recarregar
+              if ($.fn.DataTable.isDataTable('.data-table')) { // Usa a classe genérica se houver mais de uma tabela
+                 $('.data-table').DataTable().destroy();
+              }
+
+
 			  try {
-				const response = await fetch("http://localhost:3000/meus-servicos", {
+				// --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+				const response = await fetch("https://wyn-backend.onrender.com/meus-servicos", {
 				  headers: {
 					'Authorization': `Bearer ${token}` // Incluir o token
 				  }
@@ -718,6 +726,18 @@
                 populateFilters(servicos);
                 // Exibe os pedidos na tabela (sem filtro inicial, a menos que já haja algo nos campos)
                 displayPedidos(servicos);
+
+                 // Inicializa o DataTables após popular a tabela
+                 $('.data-table').DataTable({
+                      responsive: true,
+                      paging: true, // Habilita paginação
+                      searching: true, // Habilita busca
+                      ordering: true, // Habilita ordenação
+                      info: true, // Mostra informações de "Mostrando X de Y"
+                      language: { // Configurações de idioma para português
+                          url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/pt-BR.json'
+                      }
+                 });
 
 
 			  } catch (error) {
@@ -879,7 +899,8 @@
 
 					try {
 						// Usando a rota genérica de status por enquanto, mas idealmente seria uma rota específica no backend
-						const response = await fetch(`http://localhost:3000/atualizar-status-servico/${serviceId}`, { // Esta rota não existe no backend atual, precisa ser implementada
+						// --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+						const response = await fetch(`https://wyn-backend.onrender.com/atualizar-status-servico/${serviceId}`, { // Esta rota não existe no backend atual, precisa ser implementada
 							method: "POST", // Ou PUT
 							headers: {
 								 "Content-Type": "application/json",
@@ -950,7 +971,8 @@
 					 if (!confirm("Você tem certeza que deseja deletar esta solicitação? Esta ação não pode ser desfeita.")) return;
 
 					 try {
-						 const response = await fetch(`http://localhost:3000/deletar-servico/${id}`, {
+						 // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+						 const response = await fetch(`https://wyn-backend.onrender.com/deletar-servico/${id}`, {
 							 method: "DELETE",
 							 headers: {
 								  "Content-Type": "application/json",
@@ -1014,7 +1036,8 @@
                 try {
                     // *** CHAMANDO O ENDPOINT PARA ENVIAR A AVALIAÇÃO ***
                     // Endpoint implementado no backend: POST /avaliar-servico/:id
-                    const response = await fetch(`http://localhost:3000/avaliar-servico/${serviceId}`, {
+                    // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+                    const response = await fetch(`https://wyn-backend.onrender.com/avaliar-servico/${serviceId}`, {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json",
@@ -1071,7 +1094,8 @@
                  try {
                      // *** CHAMANDO O ENDPOINT PARA BUSCAR DETALHES DE UM SERVIÇO ***
                      // Endpoint implementado no backend: GET /servico/:id
-                     const response = await fetch(`http://localhost:3000/servico/${serviceId}`, {
+                     // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+                     const response = await fetch(`https://wyn-backend.onrender.com/servico/${serviceId}`, {
                          headers: {
                              'Authorization': `Bearer ${token}` // Incluir o token
                          }

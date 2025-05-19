@@ -2,481 +2,610 @@
 let usuarioLogado = null;
 // Variável para armazenar a lista completa de serviços
 let allServices = [];
-
-// Lista de serviços com informações detalhadas e URLs de imagem (placeholders)
-const services = [
-     {
-          type: "Troca de Lâmpadas",
-          title: "Troca de Lâmpadas",
-          description: "Substituição de lâmpadas queimadas ou troca por LED.",
-          price: 70.00,
-          imageUrl: "https://placehold.co/600x400/1b00ff/ffffff?text=Troca+L%C3%A2mpadas", // Placeholder mais relevante
-          details: "Inclui verificação de soquete, tensão e instalação segura. Ideal para ambientes residenciais ou comerciais."
-     },
-     {
-          type: "Instalação de Tomadas",
-          title: "Instalação de Tomadas",
-          description: "Instalação ou substituição de tomadas 110V/220V.",
-          price: 90.00,
-          imageUrl: "https://placehold.co/600x400/1b00ff/ffffff?text=Instala%C3%A7%C3%A3o+Tomadas", // Placeholder mais relevante
-          details: "Verificação da fiação e disjuntores para segurança elétrica. Pode incluir mudança de local e instalação embutida."
-     },
-     {
-          type: "Troca de Disjuntor",
-          title: "Troca de Disjuntor",
-          description: "Substituição de disjuntores danificados ou obsoletos.",
-          price: 180.00,
-          imageUrl: "https://placehold.co/600x400/1b00ff/ffffff?text=Troca+Disjuntor", // Placeholder mais relevante
-          details: "Verificação do quadro elétrico e dimensionamento correto. Indicado para prevenir curtos e sobrecargas."
-     },
-     {
-          type: "Instalação de Quadro de Luz",
-          title: "Instalação de Quadro de Luz",
-          description: "Montagem ou substituição de quadro de distribuição.",
-          price: 350.00,
-          imageUrl: "https://placehold.co/600x400/1b00ff/ffffff?text=Quadro+de+Luz", // Placeholder mais relevante
-          details: "Ideal para obras ou atualizações de rede elétrica. Inclui organização de circuitos e identificação de disjuntores."
-     },
-     {
-          type: "Reparo em Curto-Circuito",
-          title: "Reparo em Curto-Circuito",
-          description: "Identificação e correção de falhas elétricas.",
-          price: 120.00,
-          imageUrl: "https://placehold.co/600x400/1b00ff/ffffff?text=Curto-Circuito", // Placeholder mais relevante
-          details: "Diagnóstico com ferramentas específicas e reparo imediato. Segurança garantida para evitar choques e incêndios."
-     },
-     {
-          type: "Instalação de Ventilador de Teto",
-          title: "Instalação de Ventilador de Teto",
-          description: "Montagem e fixação de ventiladores com ou sem lustre.",
-          price: 220.00,
-          imageUrl: "https://placehold.co/600x400/1b00ff/ffffff?text=Ventilador+Teto", // Placeholder mais relevante
-          details: "Inclui instalação elétrica e verificação de suporte adequado. Equilíbrio, teste de funcionamento e ajustes finais inclusos."
-     },
-     {
-          type: "Instalação de Luminárias",
-          title: "Instalação de Luminárias",
-          description: "Fixação e ligação elétrica de luminárias diversas.",
-          price: 130.00,
-          imageUrl: "https://placehold.co/600x400/1b00ff/ffffff?text=Instala%C3%A7%C3%A3o+Lumin%C3%A1rias", // Placeholder
-          details: "Para tetos, paredes, trilhos ou spots embutidos. Inclui testes e ajustes de iluminação."
-     },
-     {
-          type: "Troca de Fiação",
-          title: "Troca de Fiação",
-          description: "Substituição de fiação elétrica antiga ou danificada.",
-          price: 280.00,
-          imageUrl: "https://placehold.co/600x400/1b00ff/ffffff?text=Troca+Fia%C3%A7%C3%A3o", // Placeholder
-          details: "Segurança, eficiência e atualização da rede elétrica. Ideal para reformas ou imóveis antigos."
-     },
-     {
-          type: "Instalação de DPS e DR",
-          title: "Instalação de DPS e DR",
-          description: "Proteção contra surtos elétricos e choques.",
-          price: 300.00,
-          imageUrl: "https://placehold.co/600x400/1b00ff/ffffff?text=Instala%C3%A7%C3%A3o+DPS+DR", // Placeholder
-          details: "Instalação dos dispositivos no quadro de luz. Previne queima de aparelhos e garante segurança."
-     },
-     {
-          type: "Instalação Elétrica Residencial",
-          title: "Instalação Elétrica Residencial",
-          description: "Serviço completo de elétrica para nova residência.",
-          price: 1.00, // Preço simbólico, o prestador orça
-          imageUrl: "https://placehold.co/600x400/1b00ff/ffffff?text=El%C3%A9trica+Residencial", // Placeholder
-          details: "Desde o quadro de distribuição até os pontos de uso. Planejamento de circuitos, tomadas, iluminação e padrões."
-     }
-];
-
-// Elementos do modal de solicitação
-const solicitationSection = document.getElementById('solicitation-section');
-const closeSolicitationBtn = document.getElementById('close-solicitation');
-const solicitationForm = document.getElementById('formSolicitarServico'); // ID do formulário no modal
-const modalServiceTitleSpan = document.getElementById('modal-service-title'); // Título no modal
-const selectedServiceDescriptionSpan = document.getElementById('selected-service-description'); // Descrição no modal
-const selectedServicePriceSpan = document.getElementById('selected-service-price'); // Preço no modal
-const serviceTypeInput = document.getElementById('service-type-input'); // Input hidden para tipo
-const servicePriceInput = document.getElementById('service-price-input'); // Input hidden para preço
-const serviceFullDescriptionInput = document.getElementById('service-full-description-input'); // Input hidden para descrição completa
-
-// Campos do formulário no modal
-const nomeClienteInput = document.getElementById('nome_cliente');
-const emailClienteInput = document.getElementById('email_cliente');
-const telefoneClienteInput = document.getElementById('telefone_cliente');
-const enderecoServicoInput = document.getElementById('endereco_servico');
-const dataServicoInput = document.getElementById('data_servico_preferencial');
-const horaServicoInput = document.getElementById('hora_servico_preferencial');
-const notasAdicionaisTextarea = document.getElementById('notas_adicionais');
-const urgenteCheckbox = document.getElementById('urgente');
-const submitButton = solicitationForm.querySelector('button[type="submit"]');
-
-// Elemento de busca
-const serviceSearchInput = document.getElementById('service-search');
+// Intervalo para o polling de serviços
+let servicesPollingInterval = null;
+// Intervalo para o polling de mensagens de chat não lidas
+let unreadChatPollingInterval = null;
 
 
-// Função para carregar o perfil do usuário
-async function carregarPerfilUsuario() {
-    const token = localStorage.getItem('token');
-    const usuarioCache = localStorage.getItem('usuario');
-
-    if (!token || !usuarioCache) {
-        console.warn("Usuário não autenticado. Redirecionando para login.");
-        window.location.href = "login.html"; // Redirecionar para login do usuário
+// Função para exibir toast notifications (copiada de outras telas)
+function showToast(message, type = 'success') {
+    const toastContainer = document.getElementById('toastContainer');
+    if (!toastContainer) {
+        console.error("[CATALOGO JS] Toast container não encontrado!");
         return;
     }
 
+    const toastElement = document.createElement('div');
+    toastElement.classList.add('toast');
+    toastElement.setAttribute('role', 'alert');
+    toastElement.setAttribute('aria-live', 'assertive');
+    toastElement.setAttribute('aria-atomic', 'true');
+    toastElement.setAttribute('data-delay', '5000');
+
+    toastElement.innerHTML = `
+        <div class="toast-header ${type === 'success' ? 'bg-success text-white' : type === 'danger' ? 'bg-danger text-white' : 'bg-info text-white'}">
+            <strong class="mr-auto">${type === 'success' ? 'Sucesso' : type === 'danger' ? 'Erro' : 'Informação'}</strong>
+            <small>Agora</small>
+            <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="toast-body">
+            ${message}
+        </div>
+    `;
+
+    toastContainer.appendChild(toastElement);
+    $(toastElement).toast('show');
+    $(toastElement).on('hidden.bs.toast', function () {
+        $(this).remove();
+    });
+}
+
+
+// Função para carregar o perfil do usuário logado
+async function carregarPerfilUsuario() {
+    const token = localStorage.getItem('token');
+    const usuarioCache = localStorage.getItem('usuario'); // Chave correta para usuário cliente
+
+    // Se não houver token ou cache, redireciona imediatamente
+    if (!token || !usuarioCache) {
+        console.warn("[CATALOGO JS] Usuário não autenticado ou cache vazio. Redirecionando para login do cliente.");
+        window.location.href = "login.html"; // Redireciona para a página de login do cliente
+        return; // Interrompe a execução da função
+    }
+
     try {
-         // Parse do cache para obter o ID e nome rapidamente
+         // Tenta usar o cache primeiro para preencher nome e foto rapidamente
          usuarioLogado = JSON.parse(usuarioCache);
-         const nomeSpan = document.querySelector(".user-name");
+         const nomeSpan = document.getElementById("user-name");
+         const userProfilePicImg = document.getElementById("user-profile-pic");
+
          if (nomeSpan && usuarioLogado?.nome) {
              nomeSpan.textContent = usuarioLogado.nome;
          }
+          if (userProfilePicImg && usuarioLogado?.foto_perfil_url) {
+             userProfilePicImg.src = usuarioLogado.foto_perfil_url;
+              userProfilePicImg.onerror = function() {
+                 // Fallback para imagem padrão se a URL da foto falhar
+                 this.onerror = null; // Evita loop infinito de erro
+                 this.src = "vendors/images/photo1.jpg"; // Imagem padrão para cliente
+             };
+         } else if (userProfilePicImg) {
+              // Se não houver foto no cache, usa a imagem padrão
+              userProfilePicImg.src = "vendors/images/photo1.jpg"; // Imagem padrão para cliente
+         }
 
 
-        // Chamada ao backend para validar o token e obter dados completos
-         const res = await fetch('http://localhost:3000/perfil', {
+        // Chamada ao backend para validar o token e obter dados completos e atualizados
+         console.log("[CATALOGO JS] Verificando token e buscando perfil no backend...");
+         // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+         const res = await fetch('https://wyn-backend.onrender.com/perfil', {
              headers: { 'Authorization': 'Bearer ' + token }
          });
 
          const resClone = res.clone(); // Clonar para ler o body se der erro de JSON
 
          if (!res.ok) {
+             // Se o backend retornar 401 ou 403, o token é inválido ou expirado
              if (res.status === 401 || res.status === 403) {
-                 console.error("Token inválido ou expirado. Redirecionando para login.");
-                 alert("Sua sessão expirou. Por favor, faça login novamente.");
-                 window.location.href = "login.html";
-                 return;
+                 console.error("[CATALOGO JS] Token inválido ou expirado. Redirecionando para login do cliente.");
+                 showToast("Sua sessão expirou. Por favor, faça login novamente.", 'danger');
+                 localStorage.removeItem('token'); // Limpa token inválido
+                 localStorage.removeItem('usuario'); // Limpa cache
+                 setTimeout(() => { window.location.href = "login.html"; }, 3000); // Redireciona
+                 return; // Interrompe a execução
              }
-             throw new Error(`Erro HTTP ao buscar perfil: ${res.status}`);
+              // Para outros erros HTTP, loga e lança exceção
+              const errorText = await resClone.text();
+              console.error("[CATALOGO JS] Erro HTTP ao buscar perfil:", res.status, errorText);
+              throw new Error(errorText || `Erro HTTP ao buscar perfil: ${res.status}`);
          }
 
         let data = {};
          try {
              data = await res.json();
+             console.log("[CATALOGO JS] Dados de perfil recebidos do backend:", data); // LOG ADICIONADO
          } catch(jsonError) {
-             console.error("Erro ao parsear JSON do perfil:", await resClone.text());
+             console.error("[CATALOGO JS] Erro ao parsear JSON do perfil:", await resClone.text());
              throw new Error("Resposta de perfil inválida.");
          }
 
 
-        // Verifique se o perfil retornado é de um usuário cliente
-         if (data.tipo !== 'usuario' || !data.usuario?._id) {
-              console.error("Token válido, mas não corresponde a um usuário cliente.");
-              alert("Acesso negado para este tipo de usuário.");
-              // Redireciona para o dashboard do prestador se for um prestador
-              window.location.href = "index.html"; // Assumindo que index.html é o dashboard do prestador
-              return;
+        // Verifique se o perfil retornado é de um usuário cliente ('usuario') E se o ID corresponde
+         if (data.tipo !== 'usuario' || !data.usuario?._id || data.usuario._id !== usuarioLogado._id) {
+              console.error("[CATALOGO JS] Token válido, mas não corresponde a um usuário cliente ou ID não coincide.");
+              showToast("Acesso negado. Esta página é para clientes. Faça login com uma conta de cliente.", 'danger');
+              // Redireciona para a página de login geral, pois o token não é de cliente válido
+               localStorage.removeItem('token'); // Limpa token incorreto
+               localStorage.removeItem('usuario'); // Limpa cache
+               setTimeout(() => { window.location.href = "login.html"; }, 3000);
+              return; // Interrompe a execução
          }
 
-         // Atualiza a variável global com os dados completos do usuário
+         // Atualiza a variável global com os dados completos e validados do usuário
          usuarioLogado = data.usuario;
+         console.log("[CATALOGO JS] Variável usuarioLogado atualizada:", usuarioLogado); // LOG ADICIONADO
 
-        // Atualiza o nome na interface (se a chamada backend for bem sucedida)
+
+        // Atualiza o nome e foto na interface com os dados validados do backend
         if (usuarioLogado?.nome && nomeSpan) {
             nomeSpan.textContent = usuarioLogado.nome;
+             console.log("[CATALOGO JS] Nome do usuário atualizado na UI:", usuarioLogado.nome); // LOG ADICIONADO
         }
+         if (userProfilePicImg && usuarioLogado?.foto_perfil_url) {
+             userProfilePicImg.src = usuarioLogado.foto_perfil_url;
+              userProfilePicImg.onerror = function() {
+                 this.onerror = null;
+                 this.src = "vendors/images/photo1.jpg";
+                 console.warn("[CATALOGO JS] Erro ao carregar foto de perfil, usando padrão."); // LOG ADICIONADO
+             };
+              console.log("[CATALOGO JS] Foto de perfil do usuário atualizada na UI:", usuarioLogado.foto_perfil_url); // LOG ADICIONADO
+         } else if (userProfilePicImg) {
+              userProfilePicImg.src = "vendors/images/photo1.jpg";
+               console.log("[CATALOGO JS] Sem foto de perfil no backend, usando padrão."); // LOG ADICIONADO
+         }
 
-        console.log("Perfil do usuário carregado:", usuarioLogado);
 
-        // Armazena a lista completa de serviços e popula o catálogo
-        allServices = services; // Assume que 'services' é a lista completa
-        populateCatalog(allServices);
+        console.log("[CATALOGO JS] Perfil do usuário (cliente) carregado e validado com sucesso.");
+
+        // --- CHAMA A FUNÇÃO PARA CARREGAR O CATÁLOGO SOMENTE AQUI ---
+        carregarServicosCatalogo();
+        iniciarPollingServicos(); // Inicia o polling para atualizações
+        carregarContadorMensagensNaoLidas(); // Carrega contador de mensagens
+        iniciarPollingMensagensNaoLidas(); // Inicia polling para mensagens
 
 
     } catch (err) {
-        console.error('Erro ao carregar perfil do usuário:', err);
-         if (usuarioLogado) {
-             alert('Erro ao validar sessão do usuário. Pode haver problemas na conexão.');
-         } else {
-             alert('Ocorreu um erro ao carregar informações do usuário.');
-         }
+        console.error('[CATALOGO JS] Erro ao carregar perfil do usuário ou validar sessão:', err);
+         // Se ocorreu um erro na chamada fetch ou no processamento da resposta
+         showToast('Erro ao carregar informações do usuário. Por favor, faça login novamente.', 'danger');
+         localStorage.removeItem('token'); // Limpa token em caso de erro
+         localStorage.removeItem('usuario'); // Limpa cache em caso de erro
+         setTimeout(() => { window.location.href = "login.html"; }, 3000); // Redireciona para login do cliente
     }
 }
 
-
-// Função para popular o catálogo com os serviços
-function populateCatalog(servicesList) {
-    const catalogGrid = document.querySelector('.service-catalog-grid');
-    catalogGrid.innerHTML = ''; // Limpa o grid antes de popular
-
-    if (servicesList.length === 0) {
-        catalogGrid.innerHTML = '<p class="text-center col-12">Nenhum serviço encontrado com o filtro aplicado.</p>';
-        return;
-    }
-
-    servicesList.forEach(service => {
-        const serviceCard = document.createElement('div');
-        serviceCard.classList.add('service-card');
-        // Adiciona data attributes com os detalhes do serviço
-        serviceCard.dataset.serviceType = service.type;
-        serviceCard.dataset.serviceTitle = service.title;
-        serviceCard.dataset.serviceDescription = service.description;
-        serviceCard.dataset.servicePrice = service.price;
-        serviceCard.dataset.serviceDetails = service.details; // Detalhes completos
-
-        serviceCard.innerHTML = `
-            <img src="${service.imageUrl}" alt="${service.title}" onerror="this.onerror=null;this.src='https://placehold.co/600x400/e0e0e0/333333?text=Imagem+Indisponível';">
-            <div class="service-card-content">
-                <h4>${service.title}</h4>
-                <p class="description">${service.description}</p>
-            </div>
-            <div class="service-card-footer">
-                <span class="price">R$ ${service.price.toFixed(2).replace('.', ',')}</span>
-                <button class="select-button btn btn-primary">Solicitar</button>
-            </div>
-        `;
-
-        // Adiciona listener de clique ao card (não apenas ao botão) para feedback visual
-        serviceCard.addEventListener('click', () => {
-            // Remove a classe 'selected' de todos os cards
-            document.querySelectorAll('.service-card').forEach(card => {
-                card.classList.remove('selected');
-            });
-            // Adiciona a classe 'selected' ao card clicado
-            serviceCard.classList.add('selected');
-            // Abre o modal com os dados deste serviço
-            openSolicitationModal({
-                type: serviceCard.dataset.serviceType,
-                title: serviceCard.dataset.serviceTitle,
-                description: serviceCard.dataset.serviceDescription,
-                price: parseFloat(serviceCard.dataset.servicePrice),
-                details: serviceCard.dataset.serviceDetails
-            });
-        });
-
-
-        catalogGrid.appendChild(serviceCard);
-    });
-}
-
-
-// Função para abrir o modal de solicitação e preencher os dados
-function openSolicitationModal(service) {
-    // Preenche os detalhes do serviço no modal
-    modalServiceTitleSpan.textContent = service.title;
-    selectedServiceDescriptionSpan.textContent = service.description; // Descrição curta
-    selectedServicePriceSpan.textContent = service.price.toFixed(2).replace('.', ','); // Preço formatado
-
-    // Preenche os campos ocultos para envio ao backend
-    serviceTypeInput.value = service.type;
-    servicePriceInput.value = service.price; // Valor numérico
-    serviceFullDescriptionInput.value = service.details || service.description; // Descrição completa ou curta
-
-
-    // Preenche os dados do usuário logado (nome, email, telefone)
-    if (usuarioLogado) {
-         nomeClienteInput.value = usuarioLogado.nome || '';
-         emailClienteInput.value = usuarioLogado.email || '';
-         telefoneClienteInput.value = usuarioLogado.telefone || ''; // Preenche o telefone se existir no perfil
-    } else {
-         // Caso raro de usuário não logado chegar aqui, limpar campos
-         nomeClienteInput.value = '';
-         emailClienteInput.value = '';
-         telefoneClienteInput.value = '';
-    }
-
-    // Limpa mensagens de validação anteriores
-    clearValidationMessages();
-
-
-    // Exibe o modal
-    solicitationSection.style.display = 'flex'; // Usa flex para centralizar
-}
-
-// Função para fechar o modal de solicitação
-function closeSolicitationModal() {
-    solicitationSection.style.display = 'none'; // Esconde a seção
-    solicitationForm.reset(); // Reseta o formulário ao fechar
-    // Remove a classe 'selected' de todos os cards ao fechar o modal
-    document.querySelectorAll('.service-card').forEach(card => {
-        card.classList.remove('selected');
-    });
-     // Limpa mensagens de validação ao fechar
-    clearValidationMessages();
-}
-
-// Adiciona listener para o botão de fechar do modal
-closeSolicitationBtn.addEventListener('click', closeSolicitationModal);
-
-// Fecha o modal se o usuário clicar fora dele
-solicitationSection.addEventListener('click', (event) => {
-    // Se o clique foi diretamente na seção (não dentro do container do formulário)
-    if (event.target === solicitationSection) {
-         closeSolicitationModal();
-    }
+// Função de Logout
+document.getElementById('logout-link').addEventListener('click', (e) => {
+     e.preventDefault();
+     localStorage.removeItem('token');
+     localStorage.removeItem('usuario'); // Limpa também o cache do usuário
+     localStorage.removeItem('userId'); // Remover também o userId (se estiver usando em algum lugar)
+     pararPollingServicos(); // Para o polling de serviços
+     pararPollingMensagensNaoLidas(); // Para o polling de mensagens
+     window.location.href = 'login.html'; // Redireciona para a página de login do cliente
 });
 
 
-// Função para validar o formulário antes de enviar
-function validateForm() {
-    let isValid = true;
-    clearValidationMessages(); // Limpa mensagens anteriores
+// Função para carregar o contador de mensagens não lidas (copiada do dashboard do prestador e adaptada)
+async function carregarContadorMensagensNaoLidas() {
+     const token = localStorage.getItem("token");
+     const unreadCountElementSidebar = document.getElementById("unread-chat-count-sidebar");
+     // const notificationCountElement = document.getElementById("notification-count"); // Contador no sino - não existe nesta página
 
-    // Validação do telefone (exemplo simples: verifica se não está vazio e um formato básico)
-    const telefoneValue = telefoneClienteInput.value.trim();
-    if (telefoneValue === '') {
-        displayValidationMessage(telefoneClienteInput, 'Por favor, informe seu telefone.');
-        isValid = false;
-    } else if (!/^\(?\d{2}\)?[\s-]?\d{4,5}-?\d{4}$/.test(telefoneValue)) {
-         // Regex para formatos comuns: (XX) XXXX-XXXX, (XX) XXXXX-XXXX, XXXX-XXXX, XXXXX-XXXX, (XX)XXXX-XXXX etc.
-         displayValidationMessage(telefoneClienteInput, 'Formato de telefone inválido (Ex: (XX) 9XXXX-XXXX ou (XX) XXXX-XXXX).');
-         isValid = false;
-    }
-
-    // Adicione outras validações conforme necessário (ex: data, hora se forem obrigatórios)
-    // Exemplo: Tornar data e hora obrigatórias se uma delas for preenchida
-    const dataServicoValue = dataServicoInput.value;
-    const horaServicoValue = horaServicoInput.value;
-
-    if ((dataServicoValue && !horaServicoValue) || (!dataServicoValue && horaServicoValue)) {
-         if (!dataServicoValue) {
-              displayValidationMessage(dataServicoInput, 'Se informar a hora, informe a data também.');
-              isValid = false;
-         }
-         if (!horaServicoValue) {
-              displayValidationMessage(horaServicoInput, 'Se informar a data, informe a hora também.');
-              isValid = false;
-         }
-    }
-
-
-    return isValid;
-}
-
-// Função para exibir mensagem de validação
-function displayValidationMessage(inputElement, message) {
-    const formGroup = inputElement.closest('.form-group');
-    if (formGroup) {
-        let feedbackElement = formGroup.querySelector('.invalid-feedback');
-        if (!feedbackElement) {
-            feedbackElement = document.createElement('div');
-            feedbackElement.classList.add('invalid-feedback');
-            // Encontra o elemento onde a mensagem deve ser inserida (após o input)
-            const insertAfter = inputElement.nextElementSibling || inputElement;
-            insertAfter.parentNode.insertBefore(feedbackElement, insertAfter.nextSibling);
-        }
-        feedbackElement.textContent = message;
-        inputElement.classList.add('is-invalid');
-        feedbackElement.style.display = 'block'; // Mostra a mensagem
-    }
-}
-
-// Função para limpar mensagens de validação
-function clearValidationMessages() {
-    document.querySelectorAll('.invalid-feedback').forEach(el => {
-        el.textContent = '';
-        el.style.display = 'none'; // Esconde a mensagem
-    });
-    document.querySelectorAll('.form-control').forEach(el => {
-        el.classList.remove('is-invalid');
-    });
-}
-
-
-// Listener para o envio do formulário de solicitação
-solicitationForm.addEventListener('submit', async (event) => {
-    event.preventDefault(); // Previne o envio padrão do formulário
-
-    // Valida o formulário antes de enviar
-    if (!validateForm()) {
-        console.log("Formulário inválido. Não enviando.");
-        return; // Interrompe o envio se a validação falhar
-    }
-
-    // Coleta os dados do formulário
-    const data = {
-        nome_cliente: nomeClienteInput.value,
-        email_cliente: emailClienteInput.value,
-        telefone_cliente: telefoneClienteInput.value,
-        endereco_servico: enderecoServicoInput.value,
-        notas_adicionais: notasAdicionaisTextarea.value,
-        tipo_servico: serviceTypeInput.value, // Pega do campo hidden
-        descricao_servico: serviceFullDescriptionInput.value, // Pega do campo hidden (descrição completa)
-        valor_servico: parseFloat(servicePriceInput.value), // Pega do campo hidden (valor numérico)
-        urgente: urgenteCheckbox.checked, // Pega do checkbox
-        data_servico_preferencial: dataServicoInput.value || null, // Data ou null
-        hora_servico_preferencial: horaServicoInput.value || null // Hora ou null
-    };
-
-    console.log("Dados da solicitação a serem enviados:", data); // Log para depuração
-
-    const token = localStorage.getItem('token');
-    if (!token) {
-         alert("Usuário não autenticado. Faça login novamente.");
-         window.location.href = "login.html";
+     if (!token) {
+         if (unreadCountElementSidebar) unreadCountElementSidebar.style.display = 'none';
+         // if (notificationCountElement) notificationCountElement.style.display = 'none';
          return;
-    }
+     }
 
-     // Desabilitar o botão de envio enquanto a requisição está em andamento
-     submitButton.disabled = true;
-     submitButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Enviando...'; // Feedback com spinner
-     // Adicionar classe para estilo de loading se necessário
-     submitButton.classList.add('loading');
-
-
-    try {
-         const response = await fetch('http://localhost:3000/solicitar-servico', {
-              method: 'POST',
-              headers: {
-                   'Content-Type': 'application/json',
-                   'Authorization': `Bearer ${token}` // Incluir o token
-              },
-              body: JSON.stringify(data)
+     try {
+         // Assumindo um endpoint no backend para contar mensagens não lidas para o usuário logado
+         // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+         const response = await fetch("https://wyn-backend.onrender.com/api/chat/unread-count", { // Endpoint genérico para contar mensagens não lidas do usuário logado
+             headers: { 'Authorization': `Bearer ${token}` }
          });
 
-          // Verifica se a resposta não foi OK antes de tentar parsear JSON
-          if (!response.ok) {
-              // Tenta ler a resposta como texto para depuração antes de lançar o erro
-              const errorText = await response.text();
-              console.error("Erro HTTP ao solicitar serviço:", response.status, errorText);
-              // Tenta parsear o texto como JSON para ver a mensagem de erro do backend
-              try {
-                  const errorJson = JSON.parse(errorText);
-                  throw new Error(errorJson.message || errorText || `Erro HTTP: ${response.status}`);
-              } catch (parseError) {
-                  // Se não for JSON, lança o texto ou o status
-                  throw new Error(errorText || `Erro HTTP: ${response.status}`);
-              }
-          }
+         if (!response.ok) {
+              // Em caso de erro (ex: 401, 403), o middleware de perfil já trata o redirect/toast
+             console.error("[CATALOGO JS] Erro ao buscar contagem de mensagens não lidas (cliente):", response.status);
+             if (unreadCountElementSidebar) unreadCountElementSidebar.style.display = 'none';
+             // if (notificationCountElement) notificationCountElement.style.display = 'none';
+             return;
+         }
+
+         const data = await response.json();
+         const unreadCount = data.total || 0;
+
+         // Atualiza o contador na sidebar (se o elemento existir)
+         if (unreadCountElementSidebar) {
+             if (unreadCount > 0) {
+                 unreadCountElementSidebar.textContent = unreadCount;
+                 unreadCountElementSidebar.style.display = 'inline';
+             } else {
+                 unreadCountElementSidebar.style.display = 'none';
+             }
+         }
+
+         // Atualiza o contador no sino (se o elemento existir) - não existe nesta página
+          // if (notificationCountElement) {
+          //     if (unreadCount > 0) {
+          //          notificationCountElement.textContent = unreadCount; // Ou some com outras contagens de notificações futuras
+          //          notificationCountElement.style.display = 'inline';
+          //     } else {
+          //          notificationCountElement.style.display = 'none';
+          //     }
+          // }
 
 
-         const result = await response.json(); // Leia a resposta JSON (agora deve ser JSON em caso de sucesso/erro do backend)
+     } catch (error) {
+         console.error("[CATALOGO JS] Erro ao carregar contagem de mensagens não lidas (cliente):", error);
+         if (unreadCountElementSidebar) unreadCountElementSidebar.style.display = 'none';
+         // if (notificationCountElement) notificationCountElement.style.display = 'none';
+     }
+}
 
-         alert(result.message || "Solicitação enviada com sucesso!");
+ // Função para iniciar o polling de mensagens não lidas (a cada 30 segundos) - copiada e adaptada
+ // let unreadChatPollingInterval = null; // REMOVIDA A DECLARAÇÃO DUPLICADA AQUI
+ function iniciarPollingMensagensNaoLidas() {
+     // Limpa qualquer intervalo existente para evitar duplicação
+     if (unreadChatPollingInterval) {
+         clearInterval(unreadChatPollingInterval);
+     }
 
-         closeSolicitationModal(); // Fecha o modal após sucesso
+     // Inicia o polling
+     unreadChatPollingInterval = setInterval(() => {
+         console.log("[CATALOGO JS] Verificando mensagens não lidas (cliente)...");
+         carregarContadorMensagensNaoLidas(); // Chama a função para atualizar a contagem
+     }, 30000); // A cada 30 segundos
 
-         // Opcional: Redirecionar para a página "Meus Pedidos" após a solicitação
-         // window.location.href = "contratos.html";
+     console.log("[CATALOGO JS] Polling de mensagens não lidas (cliente) iniciado.");
+
+     // Opcional: Parar o polling quando o usuário sair da página ou fizer logout (já adicionado no logout e beforeunload)
+ }
+
+ // Função para parar o polling de mensagens não lidas (copiada e adaptada)
+ function pararPollingMensagensNaoLidas() {
+     if (unreadChatPollingInterval) {
+         clearInterval(unreadChatPollingInterval);
+         unreadChatPollingInterval = null;
+         console.log("[CATALOGO JS] Polling de mensagens não lidas parado.");
+     }
+ }
+
+
+// Função para carregar os serviços do catálogo do backend
+async function carregarServicosCatalogo() {
+    const loading = document.getElementById("services-loading");
+    const feedback = document.getElementById("services-feedback");
+    const empty = document.getElementById("services-empty");
+    const serviceListDiv = document.getElementById("service-list");
+    const token = localStorage.getItem("token");
+
+
+    loading.style.display = "block";
+    feedback.style.display = "none";
+    empty.style.display = "none";
+    serviceListDiv.innerHTML = ""; // Limpa a lista atual
+
+     // A verificação de token já é feita em carregarPerfilUsuario,
+     // mas é bom ter uma redundância aqui caso esta função seja chamada diretamente.
+     if (!token) {
+          feedback.textContent = "Autenticação necessária para carregar o catálogo.";
+          feedback.style.display = "block";
+          loading.style.display = "none";
+          console.warn("[CATALOGO JS] carregarServicosCatalogo: Token não encontrado.");
+          return;
+     }
+
+    console.log("[CATALOGO JS] Buscando serviços do catálogo no backend...");
+    try {
+        // --- CHAMA A ROTA PARA O CATÁLOGO ---
+        // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+        const response = await fetch("https://wyn-backend.onrender.com/servicos-catalogo", { // <-- Rota para o catálogo
+             headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        console.log("[CATALOGO JS] Resposta do backend recebida:", response.status);
+
+        if (!response.ok) {
+             // Se o backend retornar 401 ou 403, o middleware de perfil já trata o redirect/toast
+             // Para outros erros, exibe uma mensagem genérica
+             const errorText = await response.text();
+             console.error("[CATALOGO JS] Erro HTTP ao buscar serviços do catálogo:", response.status, errorText);
+             throw new Error(errorText || `Erro HTTP ao buscar serviços do catálogo: ${response.status}`);
+        }
+
+        const servicos = await response.json();
+        console.log("[CATALOGO JS] Serviços do catálogo carregados:", servicos);
+
+        allServices = servicos; // Armazena a lista completa
+
+        // Popula o catálogo com os serviços carregados
+        populateCatalog(allServices);
+
 
     } catch (error) {
-         console.error('Erro ao enviar solicitação:', error);
-         // Exiba a mensagem de erro do backend se disponível, caso contrário, uma genérica
-         alert("Erro ao enviar solicitação: " + (error.message || "Verifique sua conexão ou tente novamente."));
+        console.error("[CATALOGO JS] Erro ao carregar serviços do catálogo:", error);
+        feedback.textContent = `Erro ao carregar serviços: ${error.message || 'Verifique a conexão com o servidor.'}`;
+        feedback.style.display = "block";
+        empty.style.display = "none";
     } finally {
-         // Reabilitar o botão de envio
-         submitButton.disabled = false;
-         submitButton.innerHTML = "Enviar Solicitação"; // Restaura o texto original
-         submitButton.classList.remove('loading'); // Remove classe de loading
+        loading.style.display = "none";
     }
-});
+}
+
+// Função para popular a lista de serviços na UI
+function populateCatalog(servicesToDisplay) {
+    const serviceListDiv = document.getElementById("service-list");
+    const empty = document.getElementById("services-empty");
+
+    serviceListDiv.innerHTML = ""; // Limpa a lista atual
+
+    if (!servicesToDisplay || servicesToDisplay.length === 0) {
+        console.log("[CATALOGO JS] Nenhum serviço para exibir. Mostrando mensagem de vazio.");
+        empty.style.display = "block";
+    } else {
+        console.log(`[CATALOGO JS] Exibindo ${servicesToDisplay.length} serviços.`);
+        empty.style.display = "none";
+        servicesToDisplay.forEach(servico => {
+            const serviceCard = document.createElement('div');
+            serviceCard.classList.add('col-lg-4', 'col-md-6', 'col-sm-12', 'mb-20');
+            // Adiciona data attributes para o ID do serviço oferecido e o ID do prestador
+            serviceCard.setAttribute('data-servico-oferecido-id', servico._id);
+            // Garante que prestador_id existe antes de tentar acessar _id
+            serviceCard.setAttribute('data-prestador-id', servico.prestador_id?._id || '');
+
+            const precoTexto = (servico.faixa_preco_min !== undefined && servico.faixa_preco_max !== undefined)
+                                ? `R$ ${servico.faixa_preco_min.toFixed(2).replace('.', ',')} - R$ ${servico.faixa_preco_max.toFixed(2).replace('.', ',')}`
+                                : (servico.faixa_preco_min !== undefined ? `A partir de R$ ${servico.faixa_preco_min.toFixed(2).replace('.', ',')}` : 'Preço a combinar');
+
+            serviceCard.innerHTML = `
+                <div class="service-card">
+                    <img src="${servico.foto_perfil_prestador_url || 'https://placehold.co/600x400/1b00ff/ffffff?text=Servi%C3%A7o'}" alt="${servico.nome || 'Serviço sem Nome'}" onerror="this.onerror=null;this.src='https://placehold.co/600x400/1b00ff/ffffff?text=Servi%C3%A7o';"/>
+                    <h5>${servico.nome || 'Serviço sem Nome'}</h5>
+                    <p>${servico.descricao || 'Sem descrição.'}</p>
+                    <p class="price">Faixa de Preço: ${precoTexto}</p>
+                    <div class="provider-info">
+                         ${servico.foto_perfil_prestador_url ? `<img src="${servico.foto_perfil_prestador_url}" alt="Foto de Perfil do Prestador" onerror="this.onerror=null;this.src='vendors/images/photo4.jpg';"/>` : `<img src="vendors/images/photo4.jpg" alt="Foto de Perfil Padrão"/>`}
+                         <span>Prestador: ${servico.nome_prestador || 'Desconhecido'}</span>
+                    </div>
+                </div>
+            `;
+            serviceListDiv.appendChild(serviceCard);
+        });
+
+         // Adiciona listener de clique aos novos cards
+         addServiceCardListeners();
+    }
+}
+
+ // Função para adicionar listeners de clique aos cards de serviço
+ function addServiceCardListeners() {
+     document.querySelectorAll('.service-card').forEach(card => {
+         card.addEventListener('click', function() {
+             // Pega os IDs dos data attributes
+             const servicoOferecidoId = this.closest('.col-lg-4, .col-md-6, .col-sm-12').dataset.servicoOferecidoId;
+             const prestadorId = this.closest('.col-lg-4, .col-md-6, .col-sm-12').dataset.prestadorId;
+
+             if (servicoOferecidoId && prestadorId) {
+                 // Encontra o objeto de serviço completo na lista allServices
+                 const selectedService = allServices.find(s => s._id === servicoOferecidoId);
+                 if (selectedService) {
+                      openSolicitationModal(selectedService); // Passa o objeto de serviço completo
+                 } else {
+                      console.error("[CATALOGO JS] Serviço selecionado não encontrado na lista carregada:", servicoOferecidoId);
+                       showToast("Não foi possível carregar detalhes do serviço.", 'danger');
+                 }
+             } else {
+                 console.error("[CATALOGO JS] ID do serviço oferecido ou do prestador faltando no card:", this);
+                 showToast("Não foi possível solicitar este serviço. Informações incompletas.", 'danger');
+             }
+         });
+     });
+ }
 
 
-// Função para filtrar os serviços com base no input de busca
+// Função para filtrar os serviços exibidos
 function filterServices() {
-    const searchTerm = serviceSearchInput.value.toLowerCase();
+    const searchTerm = document.getElementById("service-search-input").value.toLowerCase();
+     const filterProvider = document.getElementById("filter-provider").value.toLowerCase();
+     const filterCategory = document.getElementById("filter-category").value.toLowerCase();
+
+    console.log(`[CATALOGO JS] Aplicando filtros: Busca="${searchTerm}", Prestador="${filterProvider}", Categoria="${filterCategory}"`);
+
     const filteredServices = allServices.filter(service => {
-        // Busca no título ou na descrição curta
-        return service.title.toLowerCase().includes(searchTerm) ||
-               service.description.toLowerCase().includes(searchTerm);
+        const serviceName = (service.nome || '').toLowerCase();
+        const serviceDescription = (service.descricao || '').toLowerCase(); // Usa descrição do ServicoOferecido
+         const providerName = (service.nome_prestador || '').toLowerCase(); // Usa nome_prestador populado
+         const categories = (service.categorias?.join(', ') || '').toLowerCase();
+
+
+        const searchMatch = serviceName.includes(searchTerm) || serviceDescription.includes(searchTerm);
+         const providerMatch = providerName.includes(filterProvider);
+         const categoryMatch = categories.includes(filterCategory);
+
+        return searchMatch && providerMatch && categoryMatch;
     });
     populateCatalog(filteredServices); // Popula o catálogo com os serviços filtrados
 }
 
-// Adiciona listener para o evento 'input' no campo de busca
-serviceSearchInput.addEventListener('input', filterServices);
+// Adiciona listeners para os campos de busca e filtros
+document.getElementById('service-search-input').addEventListener('input', filterServices);
+document.getElementById('filter-provider').addEventListener('input', filterServices);
+document.getElementById('filter-category').addEventListener('input', filterServices);
+// O botão "Aplicar Filtros" (apply-filters-btn) no dropdown de busca também pode chamar filterServices se quiser um botão explícito.
+// Para simplificar, estou usando 'input' nos campos do dropdown por enquanto.
+
+
+// Função para abrir o modal de solicitação e preencher com os dados do serviço (MODIFICADA)
+function openSolicitationModal(servicoOferecido) { // Recebe o objeto ServicoOferecido
+     const modalLabel = document.getElementById('solicitationModalLabel');
+     const modalServiceName = document.getElementById('modal-service-name');
+     const modalServiceDetails = document.getElementById('modal-service-details');
+     const solicitacaoServicoOferecidoIdInput = document.getElementById('solicitacao-servico-oferecido-id');
+     const solicitacaoPrestadorIdInput = document.getElementById('solicitacao-prestador-id');
+
+
+     // Limpa campos e preenche com dados do serviço oferecido
+     modalServiceName.textContent = servicoOferecido.nome || 'Serviço sem Nome';
+     document.getElementById('modal-provider-name').textContent = servicoOferecido.nome_prestador || 'Desconhecido';
+     document.getElementById('modal-service-description').textContent = servicoOferecido.descricao || 'Sem descrição detalhada.';
+      const precoDetalhes = (servicoOferecido.faixa_preco_min !== undefined && servicoOferecido.faixa_preco_max !== undefined)
+                            ? `R$ ${servicoOferecido.faixa_preco_min.toFixed(2).replace('.', ',')} - R$ ${servicoOferecido.faixa_preco_max.toFixed(2).replace('.', ',')}`
+                            : (servicoOferecido.faixa_preco_min !== undefined ? `A partir de R$ ${servicoOferecido.faixa_preco_min.toFixed(2).replace('.', ',')}` : 'Preço a combinar');
+     document.getElementById('modal-service-price').textContent = precoDetalhes;
+
+     // Armazena os IDs no formulário oculto
+     solicitacaoServicoOferecidoIdInput.value = servicoOferecido._id;
+     solicitacaoPrestadorIdInput.value = servicoOferecido.prestador_id?._id || ''; // Garante que pega o ID do prestador
+
+     // Limpa campos de input do cliente
+     document.getElementById('data-preferencial').value = '';
+     document.getElementById('hora-preferencial').value = '';
+     document.getElementById('endereco-servico').value = ''; // Pode pré-preencher com endereço do usuário logado se tiver
+     document.getElementById('notas-adicionais').value = '';
+     document.getElementById('servico-urgente').checked = false;
+
+
+     $('#solicitationModal').modal('show'); // Usa jQuery do Bootstrap para mostrar o modal
+
+     // Opcional: Preencher endereço padrão do usuário se disponível no perfil
+     if (usuarioLogado?.endereco) { // Assumindo que o perfil do usuário logado tem um campo 'endereco'
+         document.getElementById('endereco-servico').value = usuarioLogado.endereco;
+     }
+}
+
+// Função para fechar o modal de solicitação
+ function closeSolicitationModal() {
+      $('#solicitationModal').modal('hide'); // Usa jQuery do Bootstrap para fechar o modal
+ }
+
+
+// Listener para o formulário de solicitação de serviço dentro do modal (MODIFICADA)
+document.getElementById("solicitation-form").addEventListener("submit", async (event) => {
+     event.preventDefault();
+
+     const form = event.target;
+     const submitButton = document.getElementById("submit-btn");
+     submitButton.disabled = true;
+     submitButton.innerHTML = "Enviando..."; // Mudar texto do botão
+
+     const token = localStorage.getItem("token");
+     const userId = usuarioLogado?._id; // Pega o ID do usuário logado
+
+     if (!token || !userId) {
+          showToast("Erro: Usuário não autenticado.", 'danger');
+          submitButton.disabled = false;
+          submitButton.textContent = "Enviar Solicitação";
+          console.error("[CATALOGO JS] Tentativa de enviar solicitação sem token ou userId.");
+          return;
+     }
+
+     // Pega os IDs dos campos ocultos
+     const servicoOferecidoId = document.getElementById("solicitacao-servico-oferecido-id").value;
+     const prestadorId = document.getElementById("solicitacao-prestador-id").value;
+
+     const dataPreferencial = document.getElementById("data-preferencial").value;
+     const horaPreferencial = document.getElementById("hora-preferencial").value;
+     const enderecoServico = document.getElementById("endereco-servico").value;
+     const notasAdicionais = document.getElementById("notas-adicionais").value;
+     const urgente = document.getElementById("servico-urgente").checked;
+
+      // Validação básica
+     if (!servicoOferecidoId || !prestadorId || !dataPreferencial || !enderecoServico) {
+          showToast("Por favor, preencha todos os campos obrigatórios do formulário.", 'danger');
+          submitButton.disabled = false;
+          submitButton.textContent = "Enviar Solicitação";
+           console.warn("[CATALOGO JS] Campos obrigatórios da solicitação não preenchidos.");
+          return;
+     }
+
+
+     const solicitationData = {
+         servico_oferecido_id: servicoOferecidoId, // Envia o ID do serviço oferecido
+         prestador_id: prestadorId, // Envia o ID do prestador
+         data_servico_preferencial: dataPreferencial,
+         hora_servico_preferencial: horaPreferencial || undefined,
+         endereco_servico: enderecoServico,
+         notas_adicionais: notasAdicionais,
+         urgente: urgente
+         // cliente_id, nome_cliente, email_cliente, telefone_cliente, tipo_servico, descricao_servico, etc.
+         // serão preenchidos no backend usando o token e o servico_oferecido_id
+     };
+
+     console.log("[CATALOGO JS] Enviando solicitação:", solicitationData);
+
+     try {
+         // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+         const response = await fetch("https://wyn-backend.onrender.com/solicitar-servico", {
+             method: "POST",
+             headers: {
+                 "Content-Type": "application/json",
+                 'Authorization': `Bearer ${token}`
+             },
+             body: JSON.stringify(solicitationData),
+         });
+
+        console.log("[CATALOGO JS] Resposta do backend para solicitação:", response.status);
+
+            let result;
+            try {
+                result = await response.json();
+            } catch (jsonError) {
+                const errorText = await response.text();
+                console.error("[CATALOGO JS] Erro ao parsear JSON da resposta de solicitação:", jsonError, "Resposta do servidor:", errorText);
+                 if (!response.ok) {
+                     throw new Error(errorText || `Erro HTTP: ${response.status}`);
+                 }
+                throw new Error("Resposta do servidor inválida.");
+            }
+
+
+         if (!response.ok) {
+              showToast(result.message || `Erro ao enviar solicitação.`, 'danger');
+              console.error("[CATALOGO JS] Erro ao enviar solicitação:", result);
+         } else {
+             showToast(result.message || "Solicitação enviada com sucesso! Aguarde o aceite do prestador.", 'success');
+             closeSolicitationModal();
+
+             // Opcional: Redirecionar para a página "Meus Pedidos" após a solicitação
+              // setTimeout(() => { window.location.href = "contratos.html"; }, 2000); // Redireciona após 2 segundos
+         }
+
+     } catch (error) {
+          console.error('[CATALOGO JS] Erro ao enviar solicitação:', error);
+          showToast("Erro ao enviar solicitação: " + (error.message || "Verifique sua conexão ou tente novamente."), 'danger');
+     } finally {
+          submitButton.disabled = false;
+          submitButton.textContent = "Enviar Solicitação";
+     }
+});
+
+
+// Função para iniciar o polling de serviços (a cada 60 segundos)
+function iniciarPollingServicos() {
+     if (servicesPollingInterval) {
+         clearInterval(servicesPollingInterval);
+     }
+
+     servicesPollingInterval = setInterval(() => {
+         console.log("[CATALOGO JS] Verificando atualizações no catálogo...");
+         carregarServicosCatalogo();
+     }, 60000); // A cada 60 segundos (1 minuto)
+
+     console.log("[CATALOGO JS] Polling de serviços do catálogo iniciado.");
+
+     window.addEventListener('beforeunload', pararPollingServicos);
+}
+
+// Função para parar o polling de serviços
+function pararPollingServicos() {
+     if (servicesPollingInterval) {
+         clearInterval(servicesPollingInterval);
+         servicesPollingInterval = null;
+         console.log("[CATALOGO JS] Polling de serviços do catálogo parado.");
+     }
+}
 
 
 // Chamar carregarPerfilUsuario ao carregar a página
 document.addEventListener("DOMContentLoaded", carregarPerfilUsuario);
 
+// Opcional: Parar polling ao fechar a janela/aba
+ window.addEventListener('beforeunload', () => {
+     pararPollingServicos();
+     pararPollingMensagensNaoLidas();
+ });

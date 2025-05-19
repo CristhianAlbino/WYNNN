@@ -563,7 +563,8 @@
 
 
                 // Chamada ao backend para validar o token e obter dados completos
-                 const res = await fetch('http://localhost:3000/perfil', {
+                // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+                 const res = await fetch('https://wyn-backend.onrender.com/perfil', {
                      headers: { 'Authorization': 'Bearer ' + token }
                  });
 
@@ -737,7 +738,8 @@
 
             try {
                 // *** CHAMANDO O ENDPOINT PARA BUSCAR MENSAGENS ***
-                const response = await fetch(`http://localhost:3000/chat/${serviceId}/messages`, {
+                // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+                const response = await fetch(`https://wyn-backend.onrender.com/chat/${serviceId}/messages`, {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}` // Incluir o token
                     }
@@ -799,7 +801,8 @@
 
             try {
                 // *** CHAMANDO O ENDPOINT PARA ENVIAR MENSAGEM ***
-                const response = await fetch(`http://localhost:3000/chat/message`, {
+                // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+                const response = await fetch(`https://wyn-backend.onrender.com/chat/message`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",

@@ -912,7 +912,8 @@
 
                 // --- Verificar se o token é de um ADMIN válido no backend ---
                 // Esta requisição valida o token e confirma se o usuário é admin
-                const res = await fetch('http://localhost:3000/perfil', { // Reutiliza o endpoint /perfil do backend
+                // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+                const res = await fetch('https://wyn-backend.onrender.com/perfil', { // Reutiliza o endpoint /perfil do backend
                     headers: { 'Authorization': 'Bearer ' + token }
                 });
 
@@ -996,28 +997,32 @@
               try {
                    // --- Requisições para os novos endpoints de contagem no backend ---
                    // Endpoint para contar todos os usuários
-                   const resUsuarios = await fetch("http://localhost:3000/admin/count/usuarios", {
+                   // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+                   const resUsuarios = await fetch("https://wyn-backend.onrender.com/admin/count/usuarios", {
                         headers: { 'Authorization': `Bearer ${token}` }
                    });
                    const dataUsuarios = await resUsuarios.json();
                    document.getElementById("total-usuarios").innerText = dataUsuarios.total || 0;
 
                    // Endpoint para contar todos os prestadores
-                   const resPrestadores = await fetch("http://localhost:3000/admin/count/prestadores", {
+                   // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+                   const resPrestadores = await fetch("https://wyn-backend.onrender.com/admin/count/prestadores", {
                         headers: { 'Authorization': `Bearer ${token}` }
                    });
                    const dataPrestadores = await resPrestadores.json();
                    document.getElementById("total-prestadores").innerText = dataPrestadores.total || 0;
 
                     // Endpoint para contar todos os serviços (pedidos)
-                   const resServicos = await fetch("http://localhost:3000/admin/count/servicos", {
+                    // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+                   const resServicos = await fetch("https://wyn-backend.onrender.com/admin/count/servicos", {
                         headers: { 'Authorization': `Bearer ${token}` }
                    });
                    const dataServicos = await resServicos.json();
                    document.getElementById("total-servicos").innerText = dataServicos.total || 0;
 
                     // Endpoint para contar todas as avaliações
-                   const resAvaliacoes = await fetch("http://localhost:3000/admin/count/avaliacoes", {
+                    // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+                   const resAvaliacoes = await fetch("https://wyn-backend.onrender.com/admin/count/avaliacoes", {
                         headers: { 'Authorization': `Bearer ${token}` }
                    });
                    const dataAvaliacoes = await resAvaliacoes.json();
@@ -1062,7 +1067,8 @@
               try {
                    // --- Requisição para o endpoint de estatísticas do backend ---
                    // Este endpoint deve retornar dados agregados para o gráfico (Ex: serviços por status)
-                   const response = await fetch(`http://localhost:3000/admin/stats/servicos-por-status`, { // Exemplo: serviços por status
+                   // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+                   const response = await fetch(`https://wyn-backend.onrender.com/admin/stats/servicos-por-status`, { // Exemplo: serviços por status
                         headers: { 'Authorization': `Bearer ${token}` }
                    });
 
@@ -1264,7 +1270,8 @@
 
             try {
                 // --- Requisição GET para o endpoint de listar usuários do admin ---
-                const response = await fetch("http://localhost:3000/admin/usuarios", {
+                // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+                const response = await fetch("https://wyn-backend.onrender.com/admin/usuarios", {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
 
@@ -1287,7 +1294,8 @@
                     usuarios.forEach(usuario => {
                         const row = document.createElement("tr");
                         // Constrói a URL completa da foto de perfil, com fallback
-                        const fotoUrl = usuario.foto_perfil ? `http://localhost:3000/${usuario.foto_perfil.replace(/\\/g, '/')}` : 'vendors/images/photo4.jpg';
+                        // --- URL BASE ATUALIZADA PARA O BACKEND NO RENDER ---
+                        const fotoUrl = usuario.foto_perfil ? `https://wyn-backend.onrender.com/${usuario.foto_perfil.replace(/\\/g, '/')}` : 'vendors/images/photo4.jpg';
 
                         // Preenche a linha da tabela com os dados do usuário
                         row.innerHTML = `
@@ -1353,7 +1361,8 @@
 
              try {
                  // --- Requisição GET para o endpoint de listar prestadores do admin ---
-                 const response = await fetch("http://localhost:3000/admin/prestadores", {
+                 // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+                 const response = await fetch("https://wyn-backend.onrender.com/admin/prestadores", {
                      headers: { 'Authorization': `Bearer ${token}` }
                  });
 
@@ -1372,7 +1381,8 @@
                  } else {
                      prestadores.forEach(prestador => {
                          const row = document.createElement("tr");
-                         const fotoUrl = prestador.foto_perfil ? `http://localhost:3000/${prestador.foto_perfil.replace(/\\/g, '/')}` : 'vendors/images/photo4.jpg';
+                         // --- URL BASE ATUALIZADA PARA O BACKEND NO RENDER ---
+                         const fotoUrl = prestador.foto_perfil ? `https://wyn-backend.onrender.com/${prestador.foto_perfil.replace(/\\/g, '/')}` : 'vendors/images/photo4.jpg';
 
                          row.innerHTML = `
                              <td>${prestador.nome || 'Nome não informado'}</td>
@@ -1436,7 +1446,8 @@
               try {
                   // --- Requisição GET para o endpoint de listar serviços do admin ---
                   // Este endpoint deve retornar todos os serviços (pedidos), populando cliente e prestador
-                  const response = await fetch("http://localhost:3000/admin/servicos", {
+                  // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+                  const response = await fetch("https://wyn-backend.onrender.com/admin/servicos", {
                       headers: { 'Authorization': `Bearer ${token}` }
                   });
 
@@ -1521,7 +1532,8 @@
               try {
                   // --- Requisição GET para o endpoint de listar serviços oferecidos do admin ---
                   // Este endpoint deve retornar todos os serviços oferecidos, populando o prestador
-                  const response = await fetch("http://localhost:3000/admin/servicos-oferecidos", {
+                  // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+                  const response = await fetch("https://wyn-backend.onrender.com/admin/servicos-oferecidos", {
                       headers: { 'Authorization': `Bearer ${token}` }
                   });
 
@@ -1605,7 +1617,8 @@
               try {
                   // --- Requisição GET para o endpoint de listar avaliações do admin ---
                   // Este endpoint deve retornar todas as avaliações, populando cliente, prestador e serviço
-                  const response = await fetch("http://localhost:3000/admin/avaliacoes", {
+                  // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+                  const response = await fetch("https://wyn-backend.onrender.com/admin/avaliacoes", {
                       headers: { 'Authorization': `Bearer ${token}` }
                   });
 
@@ -1692,7 +1705,8 @@
 
             // Define o método e a URL da requisição com base se é adição ou edição
             const method = id ? 'PUT' : 'POST';
-            const url = id ? `http://localhost:3000/admin/usuarios/${id}` : 'http://localhost:3000/admin/usuarios';
+            // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+            const url = id ? `https://wyn-backend.onrender.com/admin/usuarios/${id}` : 'https://wyn-backend.onrender.com/admin/usuarios';
 
             try {
                  // --- Requisição para o endpoint de adicionar/atualizar usuário do admin ---
@@ -1750,7 +1764,8 @@
 
                  try {
                       // --- Requisição DELETE para o endpoint de deletar usuário do admin ---
-                      const response = await fetch(`http://localhost:3000/admin/usuarios/${usuarioId}`, {
+                      // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+                      const response = await fetch(`https://wyn-backend.onrender.com/admin/usuarios/${usuarioId}`, {
                           method: 'DELETE',
                            headers: { 'Authorization': `Bearer ${token}` } // Inclui o token
                       });
@@ -1789,7 +1804,8 @@
 
               try {
                    // --- Requisição GET para obter detalhes de um usuário específico (admin) ---
-                   const response = await fetch(`http://localhost:3000/admin/usuarios/${usuarioId}`, {
+                   // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+                   const response = await fetch(`https://wyn-backend.onrender.com/admin/usuarios/${usuarioId}`, {
                        headers: { 'Authorization': `Bearer ${token}` }
                    });
 
@@ -1863,7 +1879,8 @@
 
 
              const method = id ? 'PUT' : 'POST';
-             const url = id ? `http://localhost:3000/admin/prestadores/${id}` : 'http://localhost:3000/admin/prestadores';
+             // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+             const url = id ? `https://wyn-backend.onrender.com/admin/prestadores/${id}` : 'https://wyn-backend.onrender.com/admin/prestadores';
 
              try {
                   // --- Requisição para o endpoint de adicionar/atualizar prestador do admin ---
@@ -1916,7 +1933,8 @@
 
                   try {
                        // --- Requisição DELETE para o endpoint de deletar prestador do admin ---
-                       const response = await fetch(`http://localhost:3000/admin/prestadores/${prestadorId}`, {
+                       // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+                       const response = await fetch(`https://wyn-backend.onrender.com/admin/prestadores/${prestadorId}`, {
                            method: 'DELETE',
                             headers: { 'Authorization': `Bearer ${token}` }
                        });
@@ -1955,7 +1973,8 @@
 
                try {
                     // --- Requisição GET para obter detalhes de um prestador específico (admin) ---
-                    const response = await fetch(`http://localhost:3000/admin/prestadores/${prestadorId}`, {
+                    // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+                    const response = await fetch(`https://wyn-backend.onrender.com/admin/prestadores/${prestadorId}`, {
                         headers: { 'Authorization': `Bearer ${token}` }
                     });
 
@@ -2017,7 +2036,8 @@
                   try {
                        // --- Requisição DELETE para o endpoint de deletar serviço (pedido) do admin ---
                        // Note: No seu backend, a rota /deletar-servico/:id já tem a verificação de admin
-                       const response = await fetch(`http://localhost:3000/admin/servicos/${servicoId}`, {
+                       // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+                       const response = await fetch(`https://wyn-backend.onrender.com/admin/servicos/${servicoId}`, {
                            method: 'DELETE',
                             headers: { 'Authorization': `Bearer ${token}` }
                        });
@@ -2063,7 +2083,8 @@
               try {
                   // --- Requisição GET para obter detalhes de um serviço específico (admin) ---
                   // Este endpoint deve retornar os detalhes completos de um serviço (pedido) para o admin
-                  const response = await fetch(`http://localhost:3000/admin/servicos/${serviceId}`, {
+                  // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+                  const response = await fetch(`https://wyn-backend.onrender.com/admin/servicos/${serviceId}`, {
                       headers: { 'Authorization': `Bearer ${token}` }
                   });
 
@@ -2150,7 +2171,8 @@
 
               // Define o método e a URL da requisição
               const method = id ? 'PUT' : 'POST';
-              const url = id ? `http://localhost:3000/admin/servicos-oferecidos/${id}` : 'http://localhost:3000/admin/servicos-oferecidos';
+              // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+              const url = id ? `https://wyn-backend.onrender.com/admin/servicos-oferecidos/${id}` : 'https://wyn-backend.onrender.com/admin/servicos-oferecidos';
 
               try {
                    // --- Requisição para o endpoint de adicionar/atualizar serviço oferecido do admin ---
@@ -2206,7 +2228,8 @@
 
                    try {
                         // --- Requisição DELETE para o endpoint de deletar serviço oferecido do admin ---
-                        const response = await fetch(`http://localhost:3000/admin/servicos-oferecidos/${servicoId}`, {
+                        // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+                        const response = await fetch(`https://wyn-backend.onrender.com/admin/servicos-oferecidos/${servicoId}`, {
                             method: 'DELETE',
                              headers: { 'Authorization': `Bearer ${token}` }
                         });
@@ -2245,7 +2268,8 @@
 
                 try {
                      // --- Requisição GET para obter detalhes de um serviço oferecido específico (admin) ---
-                     const response = await fetch(`http://localhost:3000/admin/servicos-oferecidos/${servicoId}`, {
+                     // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+                     const response = await fetch(`https://wyn-backend.onrender.com/admin/servicos-oferecidos/${servicoId}`, {
                          headers: { 'Authorization': `Bearer ${token}` }
                      });
 
@@ -2304,7 +2328,8 @@
 
                     try {
                          // --- Requisição DELETE para o endpoint de deletar avaliação do admin ---
-                         const response = await fetch(`http://localhost:3000/admin/avaliacoes/${avaliacaoId}`, {
+                         // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+                         const response = await fetch(`https://wyn-backend.onrender.com/admin/avaliacoes/${avaliacaoId}`, {
                              method: 'DELETE',
                               headers: { 'Authorization': `Bearer ${token}` }
                          });
@@ -2399,7 +2424,8 @@
                    }
                    try {
                        // Busca a lista de prestadores do endpoint admin
-                       const response = await fetch("http://localhost:3000/admin/prestadores", {
+                       // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+                       const response = await fetch("https://wyn-backend.onrender.com/admin/prestadores", {
                            headers: { 'Authorization': `Bearer ${token}` }
                        });
                         if (response.ok) {
