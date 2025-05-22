@@ -228,7 +228,7 @@
 		<div class="pre-loader">
 			<div class="pre-loader-box">
 				<div class="loader-logo">
-					<img src="/Tela Inicial copy/w.png" alt="" />
+					<img src="w (1).png" alt="" />
 				</div>
 				<div class="loader-progress" id="progress_div">
 					<div class="bar" id="bar1"></div>
@@ -509,9 +509,9 @@
 
 		<div class="left-side-bar">
 			<div class="brand-logo">
-				<a href="indexx.html"> <img src="/Tela Inicial copy/w (1).png" alt="" class="dark-logo" />
+				<a href="indexx.html"> <img src="w (1).png" alt="" class="dark-logo" />
 					<img
-						src="/Tela Inicial copy/w (1).png"
+						src="w (1).png"
 						alt=""
 						class="light-logo"
 					/>
@@ -541,7 +541,7 @@
 							</a>
 						</li>
                         <li>
-							<a href="chat-cliente.html" class="dropdown-toggle no-arrow">
+							<a href="chat-list.html" class="dropdown-toggle no-arrow">
                                 <span class="micon bi bi-chat-dots"></span>
                                 <span class="mtext">Chat de Pedidos</span>
                                 <span id="unread-chat-count-sidebar" class="badge badge-pill badge-danger" style="display: none; margin-left: 5px;">0</span> </a>
@@ -758,7 +758,8 @@
 
 					// Chamada ao backend para validar o token e obter dados completos e atualizados
 					 console.log("[CATALOGO] Verificando token e buscando perfil no backend...");
-					 const res = await fetch('http://localhost:3000/perfil', {
+					 // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+					 const res = await fetch('https://wyn-backend.onrender.com/perfil', {
 						 headers: { 'Authorization': 'Bearer ' + token }
 					 });
 
@@ -870,7 +871,8 @@
 
                  try {
                      // Assumindo um endpoint no backend para contar mensagens não lidas para o usuário logado
-                     const response = await fetch("http://localhost:3000/api/chat/unread-count", { // Endpoint genérico para contar mensagens não lidas do usuário logado
+                     // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+                     const response = await fetch("https://wyn-backend.onrender.com/api/chat/unread-count", { // Endpoint genérico para contar mensagens não lidas do usuário logado
                          headers: { 'Authorization': `Bearer ${token}` }
                      });
 
@@ -969,7 +971,8 @@
                 console.log("[CATALOGO] Buscando serviços do catálogo no backend...");
                 try {
                     // --- CHAMA A ROTA PARA O CATÁLOGO ---
-                    const response = await fetch("http://localhost:3000/servicos-catalogo", { // <-- Rota para o catálogo
+                    // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+                    const response = await fetch("https://wyn-backend.onrender.com/servicos-catalogo", { // <-- Rota para o catálogo
                          headers: { 'Authorization': `Bearer ${token}` }
                     });
 
@@ -1156,7 +1159,7 @@
                  const form = event.target;
                  const submitButton = document.getElementById("submit-btn");
                  submitButton.disabled = true;
-                 submitButton.textContent = "Enviando..."; // Mudar texto do botão
+                 submitButton.innerHTML = "Enviando..."; // Mudar texto do botão
 
                  const token = localStorage.getItem("token");
                  const userId = usuarioLogado?._id; // Pega o ID do usuário logado
@@ -1204,7 +1207,8 @@
                  console.log("[CATALOGO] Enviando solicitação:", solicitationData);
 
                  try {
-                     const response = await fetch("http://localhost:3000/solicitar-servico", {
+                     // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+                     const response = await fetch("https://wyn-backend.onrender.com/solicitar-servico", {
                          method: "POST",
                          headers: {
                              "Content-Type": "application/json",
