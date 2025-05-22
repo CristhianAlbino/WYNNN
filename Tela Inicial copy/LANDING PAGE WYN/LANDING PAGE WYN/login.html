@@ -87,6 +87,9 @@
   </div>
 
   <script>
+    // Obter a URL base do backend do ambiente (se definida) ou usar localhost para desenvolvimento
+    const BACKEND_BASE_URL = 'https://wyn-backend.onrender.com'; // Sua URL do Render
+
     // Listener para o Login de Usuário
     document.getElementById('btnLogin').addEventListener('click', async (e) => {
       e.preventDefault();
@@ -94,8 +97,7 @@
       const senha = document.querySelector('input[name="senha"]').value;
 
       try {
-        // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
-        const response = await fetch('https://wyn-backend.onrender.com/login', {
+        const response = await fetch(`${BACKEND_BASE_URL}/login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, senha })
@@ -109,13 +111,16 @@
           localStorage.setItem("usuario", JSON.stringify(data.usuario));
           // localStorage.setItem("userId", data.usuario._id); // Não é estritamente necessário se você sempre usa o objeto usuario
 
-          alert(data.message);
+          // Substituído alert por console.log para evitar bloqueio em alguns ambientes
+          console.log(data.message);
           window.location.href = "indexx.html"; // Redireciona para o dashboard do cliente
         } else {
-          alert(data.message || "Erro ao fazer login.");
+          // Substituído alert por console.error para evitar bloqueio em alguns ambientes
+          console.error(data.message || "Erro ao fazer login.");
         }
       } catch (error) {
-        alert("Erro ao conectar ao servidor.");
+        // Substituído alert por console.error para evitar bloqueio em alguns ambientes
+        console.error("Erro ao conectar ao servidor.");
         console.error(error);
       }
     });
@@ -149,8 +154,7 @@
 
 
       try {
-        // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
-        const response = await fetch('https://wyn-backend.onrender.com/cadastrar', {
+        const response = await fetch(`${BACKEND_BASE_URL}/cadastrar`, {
           method: 'POST',
           // Não defina o cabeçalho 'Content-Type' manualmente ao usar FormData.
           // O navegador definirá automaticamente como 'multipart/form-data' com o boundary correto.
@@ -159,14 +163,16 @@
         });
 
         const data = await response.json();
-        alert(data.message);
+        // Substituído alert por console.log para evitar bloqueio em alguns ambientes
+        console.log(data.message);
 
         if (response.ok) {
              form.reset(); // Limpa o formulário em caso de sucesso
         }
 
       } catch (error) {
-        alert("Erro ao conectar ao servidor ou no upload da foto.");
+        // Substituído alert por console.error para evitar bloqueio em alguns ambientes
+        console.error("Erro ao conectar ao servidor ou no upload da foto.");
         console.error(error);
       } finally {
          btnCadastrar.disabled = false; // Reabilita o botão

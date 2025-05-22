@@ -54,6 +54,11 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // Middleware para parsear JSON no corpo das requisições (ADICIONADO GLOBALMENTE AQUI)
 app.use(express.json());
 
+// --- Variável de ambiente para a URL base do backend ---
+// Em produção, process.env.BACKEND_BASE_URL deve ser a URL do seu deploy (ex: https://wyn-backend.onrender.com)
+// Em desenvolvimento, será 'http://localhost:3000'
+const BACKEND_BASE_URL = process.env.BACKEND_BASE_URL || 'http://localhost:3000';
+
 
 // Configuração da URI do MongoDB
 const mongoURI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/wyn_project';
@@ -1099,7 +1104,7 @@ app.get('/servico/:id', authMiddleware, async (req, res, next) => {
                  faixa_preco_max: servico.servico_oferecido_id.faixa_preco_max,
             } : null,
             comprovantes_url: comprovacoes.map(comp =>
-                 `http://localhost:3000/${comp.caminho_arquivo.replace(/\\/g, '/')}`
+                 `${BACKEND_BASE_URL}/${comp.caminho_arquivo.replace(/\\/g, '/')}`
             ),
             avaliacao_cliente: avaliacao ? avaliacao.nota : null,
             comentario_cliente: avaliacao ? avaliacao.comentario : null,
@@ -1332,7 +1337,8 @@ app.post('/login', async (req, res, next) => {
                  _id: usuario._id,
                  nome: usuario.nome,
                  email: usuario.email,
-                 foto_perfil_url: usuario.foto_perfil ? `http://localhost:3000/${usuario.foto_perfil.replace(/\\/g, '/')}` : null,
+                 // Usa BACKEND_BASE_URL para construir a URL completa da foto
+                 foto_perfil_url: usuario.foto_perfil ? `${BACKEND_BASE_URL}/${usuario.foto_perfil.replace(/\\/g, '/')}` : null,
                  isAdmin: usuario.isAdmin // Inclui o status de admin na resposta
             }
         });
@@ -1375,7 +1381,8 @@ app.post('/login-prestador', async (req, res, next) => {
                  _id: prestador._id,
                  nome: prestador.nome,
                  email: prestador.email,
-                 foto_perfil_url: prestador.foto_perfil ? `http://localhost:3000/${prestador.foto_perfil.replace(/\\/g, '/')}` : null
+                 // Usa BACKEND_BASE_URL para construir a URL completa da foto
+                 foto_perfil_url: prestador.foto_perfil ? `${BACKEND_BASE_URL}/${prestador.foto_perfil.replace(/\\/g, '/')}` : null
             }
         });
     } catch (error) {
@@ -1395,7 +1402,8 @@ app.get('/perfil', authMiddleware, async (req, res, next) => {
                  console.warn(`[BACKEND] Perfil: Usuário ${req.user.id} não encontrado.`);
                  return res.status(404).json({ message: 'Usuário não encontrado.' });
             }
-             const fotoPerfilUrl = usuario.foto_perfil ? `http://localhost:3000/${usuario.foto_perfil.replace(/\\/g, '/')}` : null;
+             // Usa BACKEND_BASE_URL para construir a URL completa da foto
+             const fotoPerfilUrl = usuario.foto_perfil ? `${BACKEND_BASE_URL}/${usuario.foto_perfil.replace(/\\/g, '/')}` : null;
             res.status(200).json({ usuario: { ...usuario.toObject(), foto_perfil_url: fotoPerfilUrl }, tipo: 'usuario' });
         } else if (req.user.tipo === 'prestador') {
              const prestador = await Prestador.findById(req.user.id).select('_id nome email telefone foto_perfil'); // Adicionado telefone
@@ -1403,7 +1411,8 @@ app.get('/perfil', authMiddleware, async (req, res, next) => {
                   console.warn(`[BACKEND] Perfil: Prestador ${req.user.id} não encontrado.`);
                   return res.status(404).json({ message: 'Prestador não encontrado.' });
              }
-             const fotoPerfilUrl = prestador.foto_perfil ? `http://localhost:3000/${prestador.foto_perfil.replace(/\\/g, '/')}` : null;
+             // Usa BACKEND_BASE_URL para construir a URL completa da foto
+             const fotoPerfilUrl = prestador.foto_perfil ? `${BACKEND_BASE_URL}/${prestador.foto_perfil.replace(/\\/g, '/')}` : null;
              res.status(200).json({ prestador: { ...prestador.toObject(), foto_perfil_url: fotoPerfilUrl }, tipo: 'prestador' });
         } else {
             console.warn(`[BACKEND] Perfil: Tipo de usuário no token desconhecido: ${req.user.tipo}`);
@@ -1415,6 +1424,78 @@ app.get('/perfil', authMiddleware, async (req, res, next) => {
         next(error);
     }
 });
+
+// Endpoint para upload de foto de perfil (para usuário e prestador)
+app.post('/upload-foto-perfil', authMiddleware, uploadProfilePicture, async (req, res, next) => {
+    console.log('[BACKEND] Recebida requisição POST /upload-foto-perfil');
+    const fotoPerfil = req.file;
+
+    if (!fotoPerfil) {
+        console.warn('[BACKEND] Upload Foto Perfil: Nenhum arquivo de foto enviado.');
+        return res.status(400).json({ message: 'Nenhum arquivo de foto enviado.' });
+    }
+
+    try {
+        let userModel;
+        if (req.user.tipo === 'usuario') {
+            userModel = Usuario;
+        } else if (req.user.tipo === 'prestador') {
+            userModel = Prestador;
+        } else {
+            console.warn(`[BACKEND] Upload Foto Perfil: Tipo de usuário no token desconhecido: ${req.user.tipo}`);
+            // Exclui o arquivo temporário
+            const filePath = path.join(__dirname, fotoPerfil.path);
+            fs.unlink(filePath, (err) => {
+                if (err) console.error(`[BACKEND] Erro ao excluir arquivo temporário ${filePath}:`, err);
+            });
+            return res.status(400).json({ message: 'Tipo de usuário não suportado para upload de foto de perfil.' });
+        }
+
+        const user = await userModel.findById(req.user.id);
+        if (!user) {
+            console.warn(`[BACKEND] Upload Foto Perfil: Usuário/Prestador ${req.user.id} não encontrado.`);
+            // Exclui o arquivo temporário
+            const filePath = path.join(__dirname, fotoPerfil.path);
+            fs.unlink(filePath, (err) => {
+                if (err) console.error(`[BACKEND] Erro ao excluir arquivo temporário ${filePath}:`, err);
+            });
+            return res.status(404).json({ message: 'Usuário ou Prestador não encontrado.' });
+        }
+
+        // Se já existe uma foto, tenta deletar a antiga
+        if (user.foto_perfil) {
+            const oldFilePath = path.join(__dirname, user.foto_perfil);
+            if (fs.existsSync(oldFilePath)) {
+                fs.unlink(oldFilePath, (err) => {
+                    if (err) console.error(`[BACKEND] Erro ao excluir foto de perfil antiga ${oldFilePath}:`, err);
+                });
+            } else {
+                console.warn(`[BACKEND] Foto de perfil antiga não encontrada para exclusão: ${oldFilePath}`);
+            }
+        }
+
+        user.foto_perfil = fotoPerfil.path; // Salva o novo caminho no banco de dados
+        await user.save();
+
+        // Constrói a URL completa da nova foto
+        const newPhotoUrl = `${BACKEND_BASE_URL}/${fotoPerfil.path.replace(/\\/g, '/')}`;
+
+        console.log(`[BACKEND] Foto de perfil atualizada com sucesso para ${user.email}. Nova URL: ${newPhotoUrl}`);
+        res.status(200).json({ message: 'Foto de perfil atualizada com sucesso!', foto_perfil_url: newPhotoUrl });
+
+    } catch (error) {
+        console.error('[BACKEND] Erro ao fazer upload da foto de perfil:', error);
+        // Em caso de erro, tenta excluir o arquivo temporário
+        if (fotoPerfil) {
+            const filePath = path.join(__dirname, fotoPerfil.path);
+            fs.unlink(filePath, (err) => {
+                if (err) console.error(`[BACKEND] Erro ao excluir arquivo temporário ${filePath} após erro no banco de dados:`, err);
+            });
+        }
+        next(error);
+    }
+});
+
 
 // Quantidade de pedidos por usuário (agora protegida)
 app.get("/api/pedidos/quantidade", authMiddlewareUsuario, async (req, res, next) => {
@@ -2141,7 +2222,7 @@ app.get('/servicos-catalogo', authMiddlewareUsuario, async (req, res, next) => {
               ...servico.toObject(),
               nome_prestador: servico.prestador_id ? servico.prestador_id.nome : 'Prestador Desconhecido',
               foto_perfil_prestador_url: (servico.prestador_id && servico.prestador_id.foto_perfil)
-                                        ? `http://localhost:3000/${servico.prestador_id.foto_perfil.replace(/\\/g, '/')}`
+                                        ? `${BACKEND_BASE_URL}/${servico.prestador_id.foto_perfil.replace(/\\/g, '/')}`
                                         : null // URL da foto do prestador ou null
          }));
 
@@ -2549,7 +2630,7 @@ app.post('/admin/usuarios', adminAuthMiddleware, uploadProfilePicture, async (re
             senha: senhaHash,
             telefone: value.telefone,
             foto_perfil: fotoPerfil ? fotoPerfil.path : null,
-            isAdmin: isAdmin === 'true' || isAdmin === true // Converte string 'true'/'false' para boolean
+             isAdmin: isAdmin === 'true' || isAdmin === true // Converte string 'true'/'false' para boolean
         });
         await novoUsuario.save();
 
@@ -3021,7 +3102,7 @@ app.get('/admin/servicos/:id', adminAuthMiddleware, async (req, res, next) => {
         // Busca comprovantes associados
         const comprovacoes = await ComprovacaoServico.find({ pedido_servico_id: id });
          const comprovantes_url = comprovacoes.map(comp =>
-              `http://localhost:3000/${comp.caminho_arquivo.replace(/\\/g, '/')}`
+              `${BACKEND_BASE_URL}/${comp.caminho_arquivo.replace(/\\/g, '/')}`
          );
 
         // Busca avaliação associada
@@ -3035,12 +3116,12 @@ app.get('/admin/servicos/:id', adminAuthMiddleware, async (req, res, next) => {
              nome_cliente: servico.usuario_id ? servico.usuario_id.nome : 'Cliente Desconhecido',
              email_cliente: servico.usuario_id ? servico.usuario_id.email : 'Email Desconhecido',
              telefone_cliente: servico.usuario_id ? servico.usuario_id.telefone : 'Telefone Desconhecido',
-             foto_perfil_cliente_url: (servico.usuario_id && servico.usuario_id.foto_perfil) ? `http://localhost:3000/${servico.usuario_id.foto_perfil.replace(/\\/g, '/')}` : null,
+             foto_perfil_cliente_url: (servico.usuario_id && servico.usuario_id.foto_perfil) ? `${BACKEND_BASE_URL}/${servico.usuario_id.foto_perfil.replace(/\\/g, '/')}` : null,
 
              nome_prestador: servico.prestador_id ? servico.prestador_id.nome : 'Prestador Não Atribuído',
              email_prestador: servico.prestador_id ? servico.prestador_id.email : 'Email Não Atribuído',
              telefone_prestador: servico.prestador_id ? servico.prestador_id.telefone : 'Telefone Não Atribuído',
-             foto_perfil_prestador_url: (servico.prestador_id && servico.prestador_id.foto_perfil) ? `http://localhost:3000/${servico.prestador_id.foto_perfil.replace(/\\/g, '/')}` : null,
+             foto_perfil_prestador_url: (servico.prestador_id && servico.prestador_id.foto_perfil) ? `${BACKEND_BASE_URL}/${servico.prestador_id.foto_perfil.replace(/\\/g, '/')}` : null,
 
              detalhes_servico_oferecido: servico.servico_oferecido_id ? {
                   _id: servico.servico_oferecido_id._id,
@@ -3341,12 +3422,12 @@ app.get('/admin/avaliacoes/:id', adminAuthMiddleware, async (req, res, next) => 
 
 // Rota para atualizar uma avaliação existente (ADMIN) - Admin pode querer corrigir nota ou comentário
 app.put('/admin/avaliacoes/:id', adminAuthMiddleware, async (req, res, next) => {
-    console.log(`[BACKEND] ADMIN: Recebida requisição PUT /admin/avaliacoes/${req.params.id}`);
+    console.log(`[BACKEND] Recebida requisição PUT /admin/avaliacoes/${req.params.id}`);
     const { id } = req.params;
     const { nota, comentario } = req.body; // Admin só pode atualizar nota e comentário
 
      if (!mongoose.Types.ObjectId.isValid(id)) {
-          console.warn(`[BACKEND] ADMIN: Atualizar Avaliação: ID inválido recebido: ${id}`);
+          console.warn(`[BACKEND] Atualizar Avaliação: ID inválido recebido: ${id}`);
           return res.status(400).json({ message: 'ID de avaliação inválido.' });
      }
 
@@ -3359,7 +3440,7 @@ app.put('/admin/avaliacoes/:id', adminAuthMiddleware, async (req, res, next) => 
     try {
         const avaliacao = await Avaliacao.findById(id);
         if (!avaliacao) {
-            console.warn(`[BACKEND] ADMIN: Avaliação ${id} não encontrada para atualização.`);
+            console.warn(`[BACKEND] Avaliação ${id} não encontrada para atualização.`);
             return res.status(404).json({ message: 'Avaliação não encontrada.' });
         }
 
@@ -3381,18 +3462,18 @@ app.put('/admin/avaliacoes/:id', adminAuthMiddleware, async (req, res, next) => 
 // Rota para deletar uma avaliação (ADMIN)
 app.delete('/admin/avaliacoes/:id', adminAuthMiddleware, async (req, res, next) => {
     try {
-        console.log(`[BACKEND] ADMIN: Recebida requisição DELETE /admin/avaliacoes/${req.params.id}`);
+        console.log(`[BACKEND] Recebida requisição DELETE /admin/avaliacoes/${req.params.id}`);
         const { id } = req.params;
 
         if (!mongoose.Types.ObjectId.isValid(id)) {
-            console.warn(`[BACKEND] ADMIN: Deletar Avaliação: ID inválido recebido: ${id}`);
+            console.warn(`[BACKEND] Deletar Avaliação: ID inválido recebido: ${id}`);
             return res.status(400).json({ message: 'ID de avaliação inválido.' });
         }
 
         const avaliacaoDeletada = await Avaliacao.findByIdAndDelete(id);
 
         if (!avaliacaoDeletada) {
-            console.warn(`[BACKEND] ADMIN: Avaliação ${id} não encontrada para exclusão.`);
+            console.warn(`[BACKEND] Avaliação ${id} não encontrada para exclusão.`);
             return res.status(404).json({ message: 'Avaliação não encontrada.' });
         }
 

@@ -569,6 +569,9 @@
 	<script>
 		let loggedInUser = null; // Variável para armazenar os dados do usuário/prestador logado
 
+        // Obter a URL base do backend do ambiente (se definida) ou usar localhost para desenvolvimento
+        const BACKEND_BASE_URL = 'https://wyn-backend.onrender.com'; // Sua URL do Render
+
 		async function loadProfile() {
 			const token = localStorage.getItem('token');
 			const userCache = localStorage.getItem('usuario'); // Tenta pegar do cache de usuário
@@ -642,8 +645,7 @@
 
 			try {
 				// Chamada ao backend para validar o token e obter dados completos e atualizados
-				// --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
-				const res = await fetch('https://wyn-backend.onrender.com/perfil', {
+				const res = await fetch(`${BACKEND_BASE_URL}/perfil`, {
 					headers: { 'Authorization': 'Bearer ' + token }
 				});
 
@@ -652,7 +654,8 @@
 				if (!res.ok) {
 					if (res.status === 401 || res.status === 403) {
 						console.error("Token inválido ou expirado. Redirecionando para login.");
-						alert("Sua sessão expirou. Por favor, faça login novamente.");
+						// Substituído alert por console.error para evitar bloqueio em alguns ambientes
+						console.error("Sua sessão expirou. Por favor, faça login novamente.");
 						window.location.href = "login.html";
 						return;
 					}
@@ -672,12 +675,9 @@
 
                 if (!loggedInUser) {
                      console.error("Dados de usuário/prestador não encontrados na resposta do perfil.");
-                     alert("Não foi possível carregar os dados do seu perfil.");
-                     // Opcional: redirecionar para login se não conseguir carregar os dados
-                     // window.location.href = "login.html";
+                     console.error("Não foi possível carregar os dados do seu perfil.");
                      return;
                 }
-
 
                 // Atualiza a interface com os dados retornados pelo backend
                 if (data.tipo === 'usuario') {
@@ -734,9 +734,7 @@
                      }
                 } else {
                     console.error("Tipo de usuário no token desconhecido ou não suportado nesta página.");
-                    alert("Não foi possível determinar o tipo de perfil.");
-                    // Opcional: redirecionar para login
-                    // window.location.href = "login.html";
+                    console.error("Não foi possível determinar o tipo de perfil.");
                 }
 
 				console.log("Perfil carregado do backend:", loggedInUser);
@@ -744,7 +742,7 @@
 
 			} catch (err) {
 				console.error('Erro ao carregar perfil:', err);
-				 alert('Ocorreu um erro ao carregar informações do perfil.');
+				 console.error('Ocorreu um erro ao carregar informações do perfil.');
 				// Se a chamada falhou, manter os dados do cache (se existirem) ou exibir mensagem de erro
                  if (!loggedInUser) { // Se nem o cache foi populado
                       if (profileNameEl) profileNameEl.textContent = 'Erro ao carregar nome';
@@ -771,7 +769,7 @@
 
              const token = localStorage.getItem('token');
              if (!token) {
-                  alert('Sua sessão expirou. Faça login novamente para alterar a foto.');
+                  console.error('Sua sessão expirou. Faça login novamente para alterar a foto.');
                   window.location.href = 'login.html';
                   return;
              }
@@ -786,8 +784,7 @@
 
              try {
                   // Endpoint para upload de foto de perfil
-                  // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
-                  const response = await fetch('https://wyn-backend.onrender.com/upload-foto-perfil', {
+                  const response = await fetch(`${BACKEND_BASE_URL}/upload-foto-perfil`, {
                        method: 'POST',
                        headers: {
                             // Não defina 'Content-Type' manualmente com FormData
@@ -799,10 +796,10 @@
                   const result = await response.json();
 
                   if (!response.ok) {
-                       alert(result.message || 'Erro ao fazer upload da foto.');
+                       console.error(result.message || 'Erro ao fazer upload da foto.');
                        console.error('Erro no upload:', result);
                   } else {
-                       alert('Foto de perfil atualizada com sucesso!');
+                       console.log('Foto de perfil atualizada com sucesso!');
                        console.log('Upload bem-sucedido:', result);
 
                        // Atualiza a imagem na UI com a nova URL retornada pelo backend
@@ -821,14 +818,12 @@
                            }
                        } else {
                            console.warn("Backend não retornou a URL da nova foto.");
-                           // Recarregar a página pode ser uma opção para garantir que a imagem seja exibida
-                           // window.location.reload();
                        }
                   }
 
              } catch (error) {
                   console.error("Erro ao enviar foto:", error);
-                  alert("Erro ao enviar foto: " + (error.message || "Verifique sua conexão."));
+                  console.error("Erro ao enviar foto: " + (error.message || "Verifique sua conexão."));
              } finally {
                   // Reabilita o botão e restaura o texto
                   changeButton.disabled = false;
