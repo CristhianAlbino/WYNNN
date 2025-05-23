@@ -30,6 +30,7 @@
   --section-title-color: var(--primary-dark); /* Cor dos títulos de seção como "Nossos Clientes" */
   --section-background-alt: #f8f8f8; /* Cor de fundo alternativa para seções */
   --icon-color: var(--primary-color); /* Cor padrão para ícones */
+  --text-light: #ffffff; /* Cor de texto claro */
 
 
   /* Cores do Modo Escuro */
@@ -1772,4 +1773,441 @@ to { transform: rotate(0deg); }
 /* Animações para telas menores (opcional, pode ajustar ou remover) */
 @media (max-width: 600px) {
   /* Pode desabilitar ou simplificar algumas animações em dispositivos móveis para performance */
+}
+
+/* Estilos adicionais para as novas seções, adaptados ao seu design existente */
+/* Seção de Contato */
+.contact-section-content {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+.contact-card {
+    background-color: var(--card-background); /* Usa variável */
+    border-radius: 10px;
+    box-shadow: 0 5px 15px var(--shadow-color); /* Usa variável */
+    padding: 2.5rem;
+    flex: 1 1 45%;
+    min-width: 300px;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+body.dark-mode .contact-card {
+    background-color: var(--dark-card-background);
+    box-shadow: 0 5px 15px var(--dark-shadow-color);
+}
+
+.contact-card h3 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--card-text-color); /* Usa variável */
+    margin-bottom: 1.5rem;
+    text-align: center;
+    transition: color 0.3s ease;
+}
+
+body.dark-mode .contact-card h3 {
+    color: var(--dark-card-text-color);
+}
+
+.form-group {
+    margin-bottom: 1.25rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--card-text-color); /* Usa variável */
+    transition: color 0.3s ease;
+}
+
+body.dark-mode .form-group label {
+    color: var(--dark-card-text-color);
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border-color); /* Usa variável */
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    background-color: var(--background-color); /* Usa variável */
+    color: var(--text-color); /* Usa variável */
+    transition: border-color 0.2s, background-color 0.3s ease, color 0.3s ease;
+}
+
+body.dark-mode .form-group input,
+body.dark-mode .form-group textarea {
+    border-color: var(--dark-border-color);
+    background-color: var(--dark-card-background);
+    color: var(--dark-card-text-color);
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--primary-color); /* Usa variável */
+    box-shadow: 0 0 0 3px rgba(255, 108, 15, 0.2);
+}
+
+.btn-submit {
+    background-color: var(--primary-color); /* Usa variável */
+    color: var(--text-light); /* Usa variável */
+    padding: 0.85rem 2rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    transition: background-color 0.2s, color 0.3s ease;
+    cursor: pointer;
+    border: none;
+    width: 100%;
+    font-size: 1.1rem;
+}
+
+body.dark-mode .btn-submit {
+    background-color: var(--dark-primary-color);
+    color: var(--dark-text-color);
+}
+
+.btn-submit:hover {
+    background-color: #e05e0a;
+}
+
+.contact-info-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    color: var(--text-color); /* Usa variável */
+    transition: color 0.3s ease;
+}
+
+body.dark-mode .contact-info-item {
+    color: var(--dark-text-color);
+}
+
+.contact-info-item i {
+    font-size: 1.75rem;
+    color: var(--primary-color); /* Usa variável */
+    margin-right: 1rem;
+    flex-shrink: 0;
+    transition: color 0.3s ease;
+}
+
+body.dark-mode .contact-info-item i {
+    color: var(--dark-primary-color);
+}
+
+.social-icons-contact a {
+    display: inline-block;
+    margin-right: 1.25rem;
+    font-size: 2.5rem;
+    color: var(--text-color); /* Usa variável */
+    transition: color 0.2s;
+}
+
+body.dark-mode .social-icons-contact a {
+    color: var(--dark-text-color);
+}
+
+.social-icons-contact a:hover {
+    color: var(--primary-color); /* Usa variável */
+}
+
+body.dark-mode .social-icons-contact a:hover {
+    color: var(--dark-primary-color);
+}
+
+.faq-item {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color); /* Usa variável */
+    transition: border-color 0.3s ease;
+}
+
+body.dark-mode .faq-item {
+    border-color: var(--dark-border-color);
+}
+
+.faq-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.faq-item h4 {
+    font-weight: 700;
+    color: var(--text-color); /* Usa variável */
+    margin-bottom: 0.75rem;
+    font-size: 1.25rem;
+    transition: color 0.3s ease;
+}
+
+body.dark-mode .faq-item h4 {
+    color: var(--dark-text-color);
+}
+
+.faq-item p {
+    color: var(--text-color); /* Usa variável */
+    font-size: 1rem;
+    transition: color 0.3s ease;
+}
+
+body.dark-mode .faq-item p {
+    color: var(--dark-text-color);
+}
+
+/* Seção Nosso Time */
+.team-section {
+    background-color: var(--section-background-alt); /* Usa variável */
+    padding: 5rem 0;
+    transition: background-color 0.3s ease;
+}
+
+body.dark-mode .team-section {
+    background-color: var(--dark-section-background-alt);
+}
+
+.team-section .text-center {
+    color: var(--text-color); /* Usa variável */
+    transition: color 0.3s ease;
+}
+
+body.dark-mode .team-section .text-center {
+    color: var(--dark-text-color);
+}
+
+.team-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2.5rem;
+    margin-top: 3rem;
+}
+
+.team-member-card {
+    background-color: var(--card-background); /* Usa variável */
+    border-radius: 10px;
+    box-shadow: 0 5px 15px var(--shadow-color); /* Usa variável */
+    padding: 2rem;
+    text-align: center;
+    transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+body.dark-mode .team-member-card {
+    background-color: var(--dark-card-background);
+    box-shadow: 0 5px 15px var(--dark-shadow-color);
+}
+
+.team-member-card:hover {
+    transform: translateY(-10px);
+}
+
+.team-member-card img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin: 0 auto 1.5rem;
+    border: 4px solid var(--primary-color); /* Usa variável */
+    transition: border-color 0.3s ease;
+}
+
+body.dark-mode .team-member-card img {
+    border-color: var(--dark-primary-color);
+}
+
+.team-member-card h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--card-text-color); /* Usa variável */
+    margin-bottom: 0.5rem;
+    transition: color 0.3s ease;
+}
+
+body.dark-mode .team-member-card h3 {
+    color: var(--dark-card-text-color);
+}
+
+.team-member-card p.role {
+    font-size: 1rem;
+    color: var(--primary-color); /* Usa variável */
+    font-weight: 600;
+    margin-bottom: 1rem;
+    transition: color 0.3s ease;
+}
+
+body.dark-mode .team-member-card p.role {
+    color: var(--dark-primary-color);
+}
+
+.team-member-card p.bio {
+    font-size: 0.95rem;
+    color: var(--card-text-color); /* Usa variável */
+    line-height: 1.5;
+    transition: color 0.3s ease;
+}
+
+body.dark-mode .team-member-card p.bio {
+    color: var(--dark-card-text-color);
+}
+
+/* Seção Categorias Em Breve */
+.upcoming-categories-section {
+    padding: 5rem 0;
+    background-color: var(--section-background-alt); /* Usa variável */
+    transition: background-color 0.3s ease;
+}
+
+body.dark-mode .upcoming-categories-section {
+    background-color: var(--dark-section-background-alt);
+}
+
+.upcoming-categories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+    justify-items: center;
+}
+
+.upcoming-category-card {
+    background-color: var(--card-background); /* Usa variável */
+    border-radius: 10px;
+    box-shadow: 0 5px 15px var(--shadow-color); /* Usa variável */
+    padding: 2rem;
+    text-align: center;
+    transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+    width: 100%;
+    max-width: 350px;
+}
+
+body.dark-mode .upcoming-category-card {
+    background-color: var(--dark-card-background);
+    box-shadow: 0 5px 15px var(--dark-shadow-color);
+}
+
+.upcoming-category-card:hover {
+    transform: translateY(-8px);
+}
+
+.upcoming-category-card i {
+    font-size: 3.5rem;
+    color: var(--primary-color); /* Usa variável */
+    margin-bottom: 1.5rem;
+    transition: color 0.3s ease;
+}
+
+body.dark-mode .upcoming-category-card i {
+    color: var(--dark-primary-color);
+}
+
+.upcoming-category-card h3 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--card-text-color); /* Usa variável */
+    margin-bottom: 1rem;
+    transition: color 0.3s ease;
+}
+
+body.dark-mode .upcoming-category-card h3 {
+    color: var(--dark-card-text-color);
+}
+
+.upcoming-category-card p {
+    font-size: 1rem;
+    color: var(--card-text-color); /* Usa variável */
+    margin-bottom: 1.5rem;
+    transition: color 0.3s ease;
+}
+
+body.dark-mode .upcoming-category-card p {
+    color: var(--dark-card-text-color);
+}
+
+.interest-form {
+    margin-top: 2rem;
+    background-color: var(--card-background); /* Usa variável */
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px var(--shadow-color); /* Usa variável */
+    text-align: center;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+body.dark-mode .interest-form {
+    background-color: var(--dark-card-background);
+    box-shadow: 0 3px 10px var(--dark-shadow-color);
+}
+
+.interest-form h4 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--card-text-color); /* Usa variável */
+    margin-bottom: 1.5rem;
+    transition: color 0.3s ease;
+}
+
+body.dark-mode .interest-form h4 {
+    color: var(--dark-card-text-color);
+}
+
+.interest-form input[type="email"] {
+    width: calc(100% - 100px);
+    padding: 0.75rem;
+    border: 1px solid var(--border-color); /* Usa variável */
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    margin-right: 10px;
+    vertical-align: middle;
+    background-color: var(--background-color); /* Usa variável */
+    color: var(--text-color); /* Usa variável */
+    transition: border-color 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+}
+
+body.dark-mode .interest-form input[type="email"] {
+    border-color: var(--dark-border-color);
+    background-color: var(--dark-card-background);
+    color: var(--dark-card-text-color);
+}
+
+.interest-form button {
+    padding: 0.75rem 1.5rem;
+    background-color: var(--primary-color); /* Usa variável */
+    color: var(--text-light); /* Usa variável */
+    border: none;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.3s ease;
+    vertical-align: middle;
+}
+
+body.dark-mode .interest-form button {
+    background-color: var(--dark-primary-color);
+    color: var(--dark-text-color);
+}
+
+.interest-form button:hover {
+    background-color: #e05e0a;
+}
+
+@media (max-width: 768px) {
+    .contact-card {
+        flex: 1 1 100%;
+    }
+    .interest-form input[type="email"] {
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: 1rem;
+    }
+    .interest-form button {
+        width: 100%;
+    }
 }
