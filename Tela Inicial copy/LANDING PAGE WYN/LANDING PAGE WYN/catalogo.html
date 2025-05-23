@@ -709,7 +709,7 @@
              let unreadChatPollingInterval = null; // DECLARADA AQUI APENAS UMA VEZ
 
             // API Key para o Gemini API (deixe vazia, será preenchida pelo ambiente Canvas)
-            const GEMINI_API_KEY = "";
+            const GEMINI_API_KEY = ""; // Esta chave será preenchida automaticamente pelo ambiente Canvas.
             const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
 
 
@@ -889,7 +889,7 @@
             // Função para carregar o contador de mensagens não lidas (copiada do dashboard do prestador e adaptada)
             async function carregarContadorMensagensNaoLidas() {
                  const token = localStorage.getItem("token");
-                 const unreadCountElementSidebar = document.getElementById("unread-chat-count-sidebar");
+                 const unreadCountElementSidebar = document.getElementById("unread-chat-count-sidebar-cliente"); // ID corrigido
                  // const notificationCountElement = document.getElementById("notification-count"); // Contador no sino - não existe nesta página
 
                  if (!token) {
@@ -1013,7 +1013,7 @@
                          // Para outros erros, exibe uma mensagem genérica
                          const errorText = await response.text();
                          console.error("[CATALOGO] Erro HTTP ao buscar serviços do catálogo:", response.status, errorText);
-                         throw new Error(errorText || `Erro HTTP ao buscar serviços do catálogo: ${response.status}`);
+                         throw new Error(errorText || `Erro HTTP ao buscar serviços do catálogo: ${res.status}`);
                     }
 
                     const servicos = await response.json();
@@ -1185,6 +1185,13 @@
 
             // Função para chamar o Gemini API para sugestões de busca inteligente
             async function getSmartFilterSuggestions(query) {
+                // Verifica se a API Key está configurada
+                if (!GEMINI_API_KEY) {
+                    console.error("[GEMINI API] Erro: GEMINI_API_KEY está vazia. Verifique a configuração do ambiente Canvas.");
+                    showToast("Erro na IA: Chave da API não configurada. Contate o suporte.", 'danger');
+                    throw new Error("GEMINI_API_KEY não configurada.");
+                }
+
                 const prompt = `Dada a consulta de busca do usuário, extraia nomes de serviços relevantes, categorias e nomes de prestadores. Responda no formato JSON com as chaves "service_names", "categories", "provider_names" como arrays de strings. Se nenhum termo específico for encontrado para uma chave, retorne um array vazio. Consulta: "${query}"`;
 
                 const chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
@@ -1256,6 +1263,13 @@
                 }
 
                 try {
+                    // Verifica se a API Key está configurada
+                    if (!GEMINI_API_KEY) {
+                        console.error("[GEMINI API] Erro: GEMINI_API_KEY está vazia. Verifique a configuração do ambiente Canvas.");
+                        showToast("Erro na IA: Chave da API não configurada. Contate o suporte.", 'danger');
+                        throw new Error("GEMINI_API_KEY não configurada.");
+                    }
+
                     const previousServiceNames = userPastServices.map(s => s.nome_servico_oferecido || s.tipo_servico).join(', ');
                     const allServiceNames = allServices.map(s => s.nome).join(', ');
 
@@ -1387,7 +1401,15 @@
                 aiGeneratedDescriptionTextarea.value = ''; // Limpa o campo anterior
 
                 try {
-                    const prompt = `Com base na seguinte solicitação do usuário, gere uma descrição detalhada do serviço que ele precisa, incluindo possíveis subtarefas, ferramentas ou materiais comuns, e considerações importantes. O tom deve ser profissional e informativo. Responda apenas com a descrição detalhada. Solicitação: "${userInput}"`;
+                    // Verifica se a API Key está configurada
+                    if (!GEMINI_API_KEY) {
+                        console.error("[GEMINI API] Erro: GEMINI_API_KEY está vazia. Verifique a configuração do ambiente Canvas.");
+                        showToast("Erro na IA: Chave da API não configurada. Contate o suporte.", 'danger');
+                        aiDescriptionLoading.style.display = 'none';
+                        return; // Interrompe a execução se a chave estiver vazia
+                    }
+
+                    const prompt = `Com base na seguinte solicitação do usuário, gere uma descrição detalhada do serviço que ele precisa, incluindo possíveis subtarefas, ferramentas ou materiais comuns, e considerações importantes. O tone deve ser profissional e informativo. Responda apenas com a descrição detalhada. Solicitação: "${userInput}"`;
 
                     const chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
                     const payload = {
