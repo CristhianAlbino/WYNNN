@@ -11,6 +11,7 @@ const fs = require('fs'); // Importar 'fs' para operações de arquivo
 const mercadopago = require('mercadopago'); // Importar SDK do Mercado Pago
 const nodemailer = require('nodemailer'); // Importar Nodemailer
 const crypto = require('crypto'); // Importar crypto para gerar tokens
+const { GoogleGenerativeAI } = require('@google/generative-ai'); // NOVO: Importar a biblioteca Gemini API
 
 // Carrega as variáveis de ambiente do arquivo .env
 dotenv.config();
@@ -38,6 +39,11 @@ const transporter = nodemailer.createTransport({
     }
 });
 // --- Fim Configuração Nodemailer ---
+
+// --- Configuração da Gemini API ---
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY; // Acessa a chave de API do ambiente
+const genAI = GEMINI_API_KEY ? new GoogleGenerativeAI(GEMINI_API_KEY) : null;
+// --- Fim Configuração da Gemini API ---
 
 
 // --- Inicializa a aplicação Express ---
@@ -1849,6 +1855,134 @@ app.put('/api/notifications/:id/mark-as-read', authMiddleware, async (req, res, 
 
 // --- FIM NOVOS ENDPOINTS PARA NOTIFICAÇÕES ---
 
+// --- NOVOS ENDPOINTS PARA INTEGRAÇÃO COM GEMINI API ---
+
+// Endpoint para gerar descrição detalhada usando Gemini API
+app.post('/api/gemini/generate-description', authMiddlewareUsuario, async (req, res) => {
+    console.log('[BACKEND] Recebida requisição POST /api/gemini/generate-description');
+    const { userInput } = req.body;
+
+    if (!GEMINI_API_KEY || !genAI) {
+        console.error("[BACKEND] Erro: GEMINI_API_KEY não configurada no servidor.");
+        return res.status(500).json({ message: "Erro na IA: Chave da API não configurada no servidor. Contate o suporte." });
+    }
+
+    if (!userInput || userInput.length < 5) {
+        return res.status(400).json({ message: "Por favor, forneça uma descrição mais detalhada para a IA." });
+    }
+
+    try {
+        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+        const prompt = `Com base na seguinte solicitação do usuário, gere uma descrição detalhada do serviço que ele precisa, incluindo possíveis subtarefas, ferramentas ou materiais comuns, e considerações importantes. O tone deve ser profissional e informativo. Responda apenas com a descrição detalhada. Solicitação: "${userInput}"`;
+
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        const text = response.text();
+
+        console.log("[BACKEND] Descrição gerada pela IA com sucesso.");
+        res.status(200).json({ generatedText: text });
+
+    } catch (error) {
+        console.error("[BACKEND] Erro ao chamar Gemini API para gerar descrição:", error);
+        res.status(500).json({ message: "Erro ao gerar descrição detalhada com IA. Tente novamente." });
+    }
+});
+
+// Endpoint para gerar recomendações personalizadas usando Gemini API
+app.post('/api/gemini/recommendations', authMiddlewareUsuario, async (req, res) => {
+    console.log('[BACKEND] Recebida requisição POST /api/gemini/recommendations');
+    const { previousServiceNames, allServiceNames } = req.body;
+
+    if (!GEMINI_API_KEY || !genAI) {
+        console.error("[BACKEND] Erro: GEMINI_API_KEY não configurada no servidor.");
+        return res.status(500).json({ message: "Erro na IA: Chave da API não configurada no servidor. Contate o suporte." });
+    }
+
+    if (!previousServiceNames || !allServiceNames) {
+        return res.status(400).json({ message: "Dados insuficientes para gerar recomendações." });
+    }
+
+    try {
+        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+        const prompt = `Dado o histórico de serviços que o usuário solicitou: "${previousServiceNames}", e a lista de todos os serviços disponíveis: "${allServiceNames}", sugira 3 a 5 novos serviços que o usuário possa ter interesse. Foque em serviços relacionados aos seus interesses passados ou serviços complementares. Forneça apenas os nomes dos serviços recomendados como um array JSON de strings.`;
+
+        const chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
+        const payload = {
+            contents: chatHistory,
+            generationConfig: {
+                responseMimeType: "application/json",
+                responseSchema: {
+                    type: "ARRAY",
+                    items: { "type": "STRING" }
+                }
+            }
+        };
+
+        const result = await model.generateContent(payload);
+        const response = await result.response;
+        const jsonString = response.text();
+        const recommendedNames = JSON.parse(jsonString);
+
+        console.log("[BACKEND] Recomendações geradas pela IA com sucesso.");
+        res.status(200).json({ recommendedNames: recommendedNames });
+
+    } catch (error) {
+        console.error("[BACKEND] Erro ao chamar Gemini API para recomendações:", error);
+        res.status(500).json({ message: "Erro ao gerar recomendações com IA. Tente novamente." });
+    }
+});
+
+// Endpoint para busca inteligente de serviços usando Gemini API
+app.post('/api/gemini/smart-filter', authMiddlewareUsuario, async (req, res) => {
+    console.log('[BACKEND] Recebida requisição POST /api/gemini/smart-filter');
+    const { query } = req.body;
+
+    if (!GEMINI_API_KEY || !genAI) {
+        console.error("[BACKEND] Erro: GEMINI_API_KEY não configurada no servidor.");
+        return res.status(500).json({ message: "Erro na IA: Chave da API não configurada no servidor. Contate o suporte." });
+    }
+
+    if (!query || query.length < 3) {
+        return res.status(400).json({ message: "Consulta muito curta para busca inteligente." });
+    }
+
+    try {
+        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+        const prompt = `Dada a consulta de busca do usuário, extraia nomes de serviços relevantes, categorias e nomes de prestadores. Responda no formato JSON com as chaves "service_names", "categories", "provider_names" como arrays de strings. Se nenhum termo específico for encontrado para uma chave, retorne um array vazio. Consulta: "${query}"`;
+
+        const chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
+        const payload = {
+            contents: chatHistory,
+            generationConfig: {
+                responseMimeType: "application/json",
+                responseSchema: {
+                    type: "OBJECT",
+                    properties: {
+                        "service_names": { "type": "ARRAY", "items": { "type": "STRING" } },
+                        "categories": { "type": "ARRAY", "items": { "type": "STRING" } },
+                        "provider_names": { "type": "ARRAY", "items": { "type": "STRING" } }
+                    },
+                    "propertyOrdering": ["service_names", "categories", "provider_names"]
+                }
+            }
+        };
+
+        const result = await model.generateContent(payload);
+        const response = await result.response;
+        const jsonString = response.text();
+        const smartSuggestions = JSON.parse(jsonString);
+
+        console.log("[BACKEND] Sugestões de filtro inteligente geradas pela IA com sucesso.");
+        res.status(200).json({ smartSuggestions: smartSuggestions });
+
+    } catch (error) {
+        console.error("[BACKEND] Erro ao chamar Gemini API para busca inteligente:", error);
+        res.status(500).json({ message: "Erro ao gerar sugestões de busca inteligente com IA. Tente novamente." });
+    }
+});
+
+// --- FIM NOVOS ENDPOINTS PARA INTEGRAÇÃO COM GEMINI API ---
+
 
 // --- Webhook do Mercado Pago ---
 app.post('/mercadopago/webhook', async (req, res) => {
@@ -2634,6 +2768,11 @@ app.get('/admin/stats/servicos-por-status', adminAuthMiddleware, async (req, res
         console.log('[BACKEND] ADMIN: Gerando dados de serviços por status para gráfico...');
         const dados = await Servico.aggregate([
             {
+                $match: {
+                    // Sem filtro de prestador_id aqui, pois é para o admin ver todos
+                }
+            },
+            {
                 $group: {
                     _id: "$status",
                     count: { $sum: 1 }
@@ -2841,12 +2980,6 @@ app.put('/admin/usuarios/:id', adminAuthMiddleware, uploadProfilePicture, async 
 
     } catch (error) {
         console.error('[BACKEND] ADMIN: Erro ao atualizar usuário:', error);
-         if (fotoPerfil) {
-              const filePath = path.join(__dirname, fotoPerfil.path);
-              fs.unlink(filePath, (err) => {
-                  if (err) console.error(`[BACKEND] Erro ao excluir arquivo temporário ${filePath} após erro no banco de dados:`, err);
-              });
-         }
          if (error.code === 11000) {
               return res.status(400).json({ message: 'Email já cadastrado.' });
          }
@@ -3389,7 +3522,7 @@ app.post('/admin/servicos-oferecidos', adminAuthMiddleware, async (req, res, nex
 
 // Rota para atualizar um serviço oferecido existente (catálogo) (ADMIN)
 app.put('/admin/servicos-oferecidos/:id', adminAuthMiddleware, async (req, res, next) => {
-    console.log(`[BACKEND] ADMIN: Recebida requisição PUT /admin/servicos-oferecidos/${req.params.id}`);
+    console.log(`[BACKEND] Recebida requisição PUT /admin/servicos-oferecidos/${req.params.id}`);
     const { id } = req.params;
     const updateData = req.body;
 
