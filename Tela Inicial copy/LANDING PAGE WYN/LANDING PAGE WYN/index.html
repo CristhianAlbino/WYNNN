@@ -42,8 +42,7 @@
 			href="src/plugins/datatables/css/dataTables.bootstrap4.min.css"
 		/>
 		<link
-			rel="stylesheet"
-			type="text/css"
+			rel="stylesheet" type="text/css"
 			href="src/plugins/datatables/css/responsive.bootstrap4.min.css"
 		/>
 		<link rel="stylesheet" type="text/css" href="vendors/styles/style.css" />
@@ -768,7 +767,7 @@
 										<div class="widget-icon">
 											<div class="icon" data-color="#2ecc71">
 												<i class="icon-copy dw dw-check"></i>
-											</div>
+											</i>
 										</div>
 									</div>
 								</div>
@@ -1278,34 +1277,34 @@
                                // Armazena o ID da notificação e referência para marcar como lida
                               notificationItem.dataset.notificationId = notif._id;
                               notificationItem.dataset.referenceId = notif.referenciaId;
-                              notificationItem.dataset.notificationType = notif.tipo; // Armazena o tipo
+                              notificationItem.dataset.notificationType = notif.type; // Corrigido para 'type' do backend
 
                               let iconClass = 'dw dw-info'; // Ícone padrão
                               let defaultLink = '#'; // Link padrão
-                              let summary = notif.resumo || 'Nova notificação'; // Resumo padrão
+                              let summary = notif.summary || 'Nova notificação'; // Corrigido para 'summary' do backend
 
                               // Define ícone e link com base no tipo de notificação
-                              switch (notif.tipo) {
+                              switch (notif.type) { // Corrigido para 'type' do backend
                                   case 'new_message':
                                       iconClass = 'dw dw-chat-dots';
                                       defaultLink = `chat-room.html?chatId=${notif.referenciaId}`; // Link para a sala de chat
-                                      summary = notif.resumo || 'Nova mensagem de chat';
+                                      summary = notif.summary || 'Nova mensagem de chat';
                                       break;
                                   case 'new_solicitation':
                                       iconClass = 'dw dw-calendar-form';
                                       defaultLink = `prestador-solicitacoes.html?serviceId=${notif.referenciaId}`; // Link para a solicitação pendente
-                                       summary = notif.resumo || 'Nova solicitação de serviço';
+                                       summary = notif.summary || 'Nova solicitação de serviço';
                                       break;
                                   case 'new_review':
                                       iconClass = 'dw dw-star-half';
                                       defaultLink = `prestador-avaliacoes.html`; // Link para a página de avaliações (pode ser específico para a avaliação se o backend retornar ID)
-                                       summary = notif.resumo || 'Nova avaliação recebida';
+                                       summary = notif.summary || 'Nova avaliação recebida';
                                       break;
                                   // Adicionar outros tipos de notificação aqui
                                   default:
                                        iconClass = 'dw dw-info';
                                        defaultLink = '#'; // Link padrão ou para uma página geral de notificações
-                                       summary = notif.resumo || 'Nova notificação';
+                                       summary = notif.summary || 'Nova notificação';
                               }
 
                                // Define o href com base no link padrão
@@ -1344,10 +1343,7 @@
                                     const referenceId = item.dataset.referenceId;
                                     const notificationType = item.dataset.notificationType;
 
-                                    if (notifId && !item.classList.contains('unread')) {
-                                         // Se já foi lida na UI, não faz nada no backend
-                                         console.log(`Notificação ${notifId} já marcada como lida.`);
-                                    } else if (notifId) {
+                                    if (notifId && item.classList.contains('unread')) { // Só marca como lida se ainda não foi lida na UI
                                         // Marca como lida no backend
                                         try {
                                             // --- ASSUMIR ENDPOINT NO BACKEND: /api/notifications/:id/mark-as-read ---
@@ -1478,7 +1474,7 @@
                      const responseMeusConcluidos = await fetch(`https://wyn-backend.onrender.com/meus-servicos-concluidos-prestador`, {
                           headers: { 'Authorization': `Bearer ${token}` }
                      });
-                     const meusConcluidos = await responseMeusConcluidos.json();
+                     const meusConcluidos = await meusConcluidos.json();
                      document.getElementById("total-concluidos").innerText = meusConcluidos.length;
 
 
