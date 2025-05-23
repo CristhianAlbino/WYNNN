@@ -711,8 +711,14 @@
                                         <input type="text" class="form-control" id="service-name" required>
                                     </div>
                                     <div class="form-group">
-                                        <label for="service-description">Descrição:</label>
-                                        <textarea class="form-control" id="service-description" rows="3"></textarea>
+                                        <label for="user-service-description-ai">Descreva o serviço em poucas palavras:</label>
+                                        <textarea class="form-control" id="user-service-description-ai" rows="2" placeholder="Ex: Instalação de torneira, Limpeza de piscina, Aula de violão"></textarea>
+                                        <button type="button" class="btn btn-info btn-sm mt-2" id="generate-description-ai-btn">Gerar Descrição Detalhada (IA)</button>
+                                        <div id="ai-description-loading" class="feedback-message feedback-loading mt-2" style="display: none;">Gerando descrição...</div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="service-description">Descrição Detalhada do Serviço (Gerada por IA, editável):</label>
+                                        <textarea class="form-control" id="service-description" rows="5" placeholder="A descrição detalhada gerada pela IA aparecerá aqui. Você pode editá-la se desejar."></textarea>
                                     </div>
                                      <div class="row">
                                          <div class="col-md-6 col-sm-12">
@@ -1091,11 +1097,13 @@
                  // Limpa o formulário do modal e abre para adicionar novo serviço
                  document.getElementById('service-id').value = '';
                  document.getElementById('service-name').value = '';
+                 document.getElementById('user-service-description-ai').value = ''; // Limpa o campo de input da IA
                  document.getElementById('service-description').value = '';
                  document.getElementById('service-price-min').value = '';
                  document.getElementById('service-price-max').value = '';
                  document.getElementById('service-categories').value = '';
                  document.getElementById('serviceModalLabel').textContent = 'Adicionar Novo Serviço';
+                 document.getElementById('ai-description-loading').style.display = 'none'; // Esconde o loading
                  $('#serviceModal').modal('show');
             });
 
@@ -1135,11 +1143,14 @@
                           // Preenche o modal com os dados do serviço
                           document.getElementById('service-id').value = servico._id;
                           document.getElementById('service-name').value = servico.nome || '';
+                          document.getElementById('user-service-description-ai').value = ''; // Limpa o campo de input da IA ao editar
                           document.getElementById('service-description').value = servico.descricao || '';
                           document.getElementById('service-price-min').value = servico.faixa_preco_min !== undefined ? servico.faixa_preco_min : '';
                           document.getElementById('service-price-max').value = servico.faixa_preco_max !== undefined ? servico.faixa_preco_max : '';
                           document.getElementById('service-categories').value = servico.categorias?.join(', ') || '';
                           document.getElementById('serviceModalLabel').textContent = 'Editar Serviço';
+                          document.getElementById('ai-description-loading').style.display = 'none'; // Esconde o loading
+
 
                           $('#serviceModal').modal('show'); // Abre o modal
 
@@ -1185,6 +1196,58 @@
             });
 
 
+            // Listener para o botão "Gerar Descrição Detalhada (IA)"
+            document.getElementById('generate-description-ai-btn').addEventListener('click', async () => {
+                const userInput = document.getElementById('user-service-description-ai').value.trim();
+                const aiDescriptionField = document.getElementById('service-description');
+                const aiLoading = document.getElementById('ai-description-loading');
+                const token = localStorage.getItem('token');
+
+                if (!userInput) {
+                    showToast("Por favor, digite uma breve descrição do serviço antes de gerar a descrição detalhada.", 'info');
+                    return;
+                }
+                if (!token) {
+                    showToast("Você precisa estar logado para usar a IA.", 'danger');
+                    return;
+                }
+
+                aiLoading.style.display = 'block';
+                aiDescriptionField.value = 'Gerando descrição...';
+                aiDescriptionField.disabled = true; // Desabilita enquanto gera
+
+                try {
+                    console.log("[GERENCIAR SERVICOS] Chamando backend para gerar descrição detalhada com IA...");
+                    const response = await fetch("https://wyn-backend.onrender.com/api/gemini/generate-description", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({ userInput: userInput })
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        aiDescriptionField.value = data.generatedText;
+                        showToast("Descrição gerada com sucesso pela IA!", 'success');
+                    } else {
+                        const errorData = await response.json();
+                        console.error("[GERENCIAR SERVICOS] Erro HTTP na resposta da IA para descrição:", response.status, errorData);
+                        aiDescriptionField.value = 'Erro ao gerar descrição. Tente novamente.';
+                        showToast(`Erro na IA: ${errorData.message || 'Não foi possível gerar a descrição.'}`, 'danger');
+                    }
+                } catch (error) {
+                    console.error("[GERENCIAR SERVICOS] Erro ao chamar backend para gerar descrição com IA:", error);
+                    aiDescriptionField.value = 'Erro de conexão ao gerar descrição. Verifique sua rede.';
+                    showToast("Erro de conexão ao usar a IA. Tente novamente.", 'danger');
+                } finally {
+                    aiLoading.style.display = 'none';
+                    aiDescriptionField.disabled = false; // Habilita novamente
+                }
+            });
+
+
             // Listener para o formulário do modal de serviço (Adicionar/Editar)
             document.getElementById("service-form").addEventListener("submit", async (event) => {
                  event.preventDefault();
@@ -1206,7 +1269,7 @@
                  }
 
                  const nome = document.getElementById("service-name").value;
-                 const descricao = document.getElementById("service-description").value;
+                 const descricao = document.getElementById("service-description").value; // Pega a descrição, que pode ser a da IA
                  const faixaPrecoMin = document.getElementById("service-price-min").value;
                  const faixaPrecoMax = document.getElementById("service-price-max").value;
                  const categorias = document.getElementById("service-categories").value.split(',').map(cat => cat.trim()).filter(cat => cat !== ''); // Divide por vírgula e remove espaços/vazios
@@ -1221,7 +1284,7 @@
 
                  const serviceData = {
                      nome: nome,
-                     descricao: descricao,
+                     descricao: descricao, // Usa a descrição do campo, seja manual ou gerada pela IA
                      faixa_preco_min: faixaPrecoMin ? parseFloat(faixaPrecoMin) : undefined, // Envia como número ou undefined
                      faixa_preco_max: faixaPrecoMax ? parseFloat(faixaPrecoMax) : undefined, // Envia como número ou undefined
                      categorias: categorias
