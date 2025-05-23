@@ -623,7 +623,7 @@
                      <div class="modal-body">
                          <div id="modal-service-details">
                              <p><strong>Prestador:</strong> <span id="modal-provider-name"></span></p>
-                              <p><strong>Descrição:</strong> <span id="modal-service-description"></span></p>
+                              <p><strong>Descrição do Catálogo:</strong> <span id="modal-service-description"></span></p>
                               <p><strong>Faixa de Preço:</strong> <span id="modal-service-price"></span></p>
                               </div>
 
@@ -632,6 +632,18 @@
                          <form id="solicitation-form">
                              <input type="hidden" id="solicitacao-servico-oferecido-id">
                              <input type="hidden" id="solicitacao-prestador-id">
+
+                             <div class="form-group">
+                                 <label for="user-service-request">Descreva o que você precisa (em suas palavras):</label>
+                                 <textarea class="form-control" id="user-service-request" rows="3" placeholder="Ex: Preciso instalar uma nova torneira na cozinha, a antiga está vazando."></textarea>
+                                 <button type="button" class="btn btn-info btn-sm mt-2" id="generate-description-ai-btn">Gerar Descrição Detalhada (IA)</button>
+                                 <div id="ai-description-loading" class="feedback-message feedback-loading mt-2" style="display: none;">Gerando descrição...</div>
+                             </div>
+
+                             <div class="form-group">
+                                 <label for="ai-generated-description">Descrição Detalhada do Serviço (Gerada por IA, editável):</label>
+                                 <textarea class="form-control" id="ai-generated-description" rows="5" placeholder="A descrição detalhada gerada pela IA aparecerá aqui. Você pode editá-la se desejar." ></textarea>
+                             </div>
 
                              <div class="form-group">
                                  <label for="data-preferencial">Data Preferencial para o Serviço:</label>
@@ -649,8 +661,8 @@
                              </div>
 
                               <div class="form-group">
-                                 <label for="notas-adicionais">Notas Adicionais (Opcional):</label>
-                                 <textarea class="form-control" id="notas-adicionais" rows="3" placeholder="Detalhes sobre o serviço, acesso, etc."></textarea>
+                                 <label for="notas-adicionais">Notas Adicionais (Opcional - para qualquer outro detalhe):</label>
+                                 <textarea class="form-control" id="notas-adicionais" rows="3" placeholder="Qualquer outra observação que não se encaixe na descrição principal."></textarea>
                              </div>
 
                              <div class="form-group form-check">
@@ -1337,8 +1349,13 @@
                  document.getElementById('data-preferencial').value = '';
                  document.getElementById('hora-preferencial').value = '';
                  document.getElementById('endereco-servico').value = ''; // Pode pré-preencher com endereço do usuário logado se tiver
-                 document.getElementById('notas-adicionais').value = '';
+                 document.getElementById('user-service-request').value = ''; // Limpa o campo de input livre
+                 document.getElementById('ai-generated-description').value = ''; // Limpa o campo de descrição gerada
+                 document.getElementById('notas-adicionais').value = ''; // Limpa o campo de notas adicionais
                  document.getElementById('servico-urgente').checked = false;
+
+                 // Esconde o loading da IA
+                 document.getElementById('ai-description-loading').style.display = 'none';
 
 
                  $('#solicitationModal').modal('show'); // Usa jQuery do Bootstrap para mostrar o modal
@@ -1353,6 +1370,57 @@
              function closeSolicitationModal() {
                   $('#solicitationModal').modal('hide'); // Usa jQuery do Bootstrap para fechar o modal
              }
+
+            // Função para gerar a descrição detalhada do serviço usando IA
+            document.getElementById('generate-description-ai-btn').addEventListener('click', async () => {
+                const userServiceRequestInput = document.getElementById('user-service-request');
+                const aiGeneratedDescriptionTextarea = document.getElementById('ai-generated-description');
+                const aiDescriptionLoading = document.getElementById('ai-description-loading');
+                const userInput = userServiceRequestInput.value.trim();
+
+                if (userInput.length < 5) {
+                    showToast("Por favor, descreva o que você precisa com mais detalhes (mínimo 5 caracteres).", 'info');
+                    return;
+                }
+
+                aiDescriptionLoading.style.display = 'block';
+                aiGeneratedDescriptionTextarea.value = ''; // Limpa o campo anterior
+
+                try {
+                    const prompt = `Com base na seguinte solicitação do usuário, gere uma descrição detalhada do serviço que ele precisa, incluindo possíveis subtarefas, ferramentas ou materiais comuns, e considerações importantes. O tom deve ser profissional e informativo. Responda apenas com a descrição detalhada. Solicitação: "${userInput}"`;
+
+                    const chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
+                    const payload = {
+                        contents: chatHistory,
+                        // Não precisamos de responseSchema JSON aqui, queremos apenas o texto
+                    };
+
+                    console.log("[CATALOGO] Chamando Gemini API para gerar descrição detalhada...");
+                    const response = await fetch(GEMINI_API_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    const result = await response.json();
+
+                    if (result.candidates && result.candidates.length > 0 &&
+                        result.candidates[0].content && result.candidates[0].content.parts &&
+                        result.candidates[0].content.parts.length > 0) {
+                        const generatedText = result.candidates[0].content.parts[0].text;
+                        aiGeneratedDescriptionTextarea.value = generatedText;
+                        showToast("Descrição gerada com sucesso! Revise e edite se necessário.", 'success');
+                    } else {
+                        console.warn("[CATALOGO] Resposta da IA para descrição detalhada vazia ou inválida.");
+                        showToast("Não foi possível gerar uma descrição detalhada. Tente novamente ou digite manualmente.", 'danger');
+                    }
+
+                } catch (error) {
+                    console.error("[CATALOGO] Erro ao chamar Gemini API para descrição detalhada:", error);
+                    showToast("Erro ao gerar descrição detalhada. Verifique sua conexão ou tente novamente.", 'danger');
+                } finally {
+                    aiDescriptionLoading.style.display = 'none';
+                }
+            });
 
 
             // Listener para o formulário de solicitação de serviço dentro do modal (MODIFICADA)
@@ -1382,12 +1450,13 @@
                  const dataPreferencial = document.getElementById("data-preferencial").value;
                  const horaPreferencial = document.getElementById("hora-preferencial").value;
                  const enderecoServico = document.getElementById("endereco-servico").value;
-                 const notasAdicionais = document.getElementById("notas-adicionais").value;
+                 const aiGeneratedDescription = document.getElementById("ai-generated-description").value; // Pega a descrição gerada/editada
+                 const notasAdicionais = document.getElementById("notas-adicionais").value; // Pega as notas adicionais
                  const urgente = document.getElementById("servico-urgente").checked;
 
                   // Validação básica
-                 if (!servicoOferecidoId || !prestadorId || !dataPreferencial || !enderecoServico) {
-                      showToast("Por favor, preencha todos os campos obrigatórios do formulário.", 'danger');
+                 if (!servicoOferecidoId || !prestadorId || !dataPreferencial || !enderecoServico || (!aiGeneratedDescription && !notasAdicionais)) {
+                      showToast("Por favor, preencha todos os campos obrigatórios do formulário, incluindo a descrição do serviço.", 'danger');
                       submitButton.disabled = false;
                       submitButton.textContent = "Enviar Solicitação";
                        console.warn("[CATALOGO] Campos obrigatórios da solicitação não preenchidos.");
@@ -1401,7 +1470,9 @@
                      data_servico_preferencial: dataPreferencial,
                      hora_servico_preferencial: horaPreferencial || undefined,
                      endereco_servico: enderecoServico,
-                     notas_adicionais: notasAdicionais,
+                     // Usamos a descrição gerada pela IA (ou editada pelo usuário) como a descrição principal
+                     // e as notas adicionais para outros detalhes.
+                     notas_adicionais: aiGeneratedDescription + (notasAdicionais ? `\n\nOutras notas: ${notasAdicionais}` : ''),
                      urgente: urgente
                      // cliente_id, nome_cliente, email_cliente, telefone_cliente, tipo_servico, descricao_servico, etc.
                      // serão preenchidos no backend usando o token e o servico_oferecido_id
