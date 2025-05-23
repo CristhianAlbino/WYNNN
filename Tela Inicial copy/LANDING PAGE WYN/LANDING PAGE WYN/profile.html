@@ -61,6 +61,10 @@
         .profile-info p {
             margin-bottom: 10px;
         }
+        /* Estilo para o botão de salvar */
+        .save-profile-btn {
+            margin-top: 20px;
+        }
     </style>
 
 	<script
@@ -391,7 +395,7 @@
 		</div>
 	</div>
 
-    <div class="left-side-bar" id="sidebar-cliente">
+    <div class="left-side-bar">
 		<div class="brand-logo">
 			<a href="indexx.html"> <img src="w (1).png" alt="" class="dark-logo" />
 				<img
@@ -443,67 +447,6 @@
 		</div>
 	</div>
 
-    <div class="left-side-bar" id="sidebar-prestador" style="display: none;">
-		<div class="brand-logo">
-			<a href="index.html"> <img src="w (1).png" alt="" class="dark-logo" />
-				<img
-					src="w (1).png"
-					alt=""
-					class="light-logo"
-				/>
-			</a>
-			<div class="close-sidebar" data-toggle="left-sidebar-close">
-				<i class="ion-close-round"></i>
-			</div>
-		</div>
-		<div class="menu-block customscroll">
-			<div class="sidebar-menu">
-				<ul id="accordion-menu">
-					<li>
-						<a href="index.html" class="dropdown-toggle no-arrow"> <span class="micon bi bi-house"></span
-							><span class="mtext">Dashboard</span>
-						</a>
-					</li>
-					<li>
-						<a href="prestador-solicitacoes.html" class="dropdown-toggle no-arrow"> <span class="micon bi bi-textarea-resize"></span
-							><span class="mtext">Solicitações Pendentes</span>
-						</a>
-					</li>
-					<li>
-						<a href="prestador-meus-servicos.html" class="dropdown-toggle no-arrow"> <span class="micon bi bi-check-circle"></span
-							><span class="mtext">Meus Serviços Aceitos</span>
-						</a>
-					</li>
-					<li>
-						<a href="prestador-historico.html" class="dropdown-toggle no-arrow"> <span class="micon bi bi-clock-history"></span
-							><span class="mtext">Histórico de Serviços</span>
-						</a>
-					</li>
-					<li>
-						<a href="prestador-avaliacoes.html" class="dropdown-toggle no-arrow"> <span class="micon bi bi-star-fill"></span
-							><span class="mtext">Minhas Avaliações</span>
-						</a>
-					</li>
-                     <li>
-                        <a href="chat.html" class="dropdown-toggle no-arrow">
-                            <span class="micon bi bi-chat-dots"></span
-                            ><span class="mtext">Chat</span>
-                        </a>
-                    </li>
-					<li>
-						<a href="javascript:;" class="dropdown-toggle">
-							<span class="micon bi bi-file-pdf"></span
-							><span class="mtext">Documentação</span>
-						</a>
-						<ul class="submenu">
-							<li><a href="/Tela Inicial copy/Termos e Condições.docx">Termos e Condições</a></li>
-						</ul>
-					</li>
-				</ul>
-			</div>
-		</div>
-	</div>
-
 	<div class="mobile-menu-overlay"></div>
 
 	<div class="main-container">
@@ -512,12 +455,12 @@
 				<div class="row">
 					<div class="col-md-12 col-sm-12">
 						<div class="title">
-							<h4 id="profile-title">Meu Perfil</h4>
+							<h4 id="profile-title">Meu Perfil (Cliente)</h4>
 						</div>
 						<nav aria-label="breadcrumb" role="navigation">
 							<ol class="breadcrumb">
 								<li class="breadcrumb-item">
-									<a href="#" id="dashboard-link">Dashboard</a>
+									<a href="indexx.html" id="dashboard-link">Dashboard</a>
 								</li>
 								<li class="breadcrumb-item active" aria-current="page">
 									Perfil
@@ -539,14 +482,45 @@
 					</div>
 					<div class="col-md-8 col-sm-12 profile-info">
 						<h5 class="mb-20" id="profile-name">Carregando Nome...</h5>
-						<p><strong>Tipo de Perfil:</strong> <span id="profile-type">Carregando...</span></p>
+						<p><strong>Tipo de Perfil:</strong> <span id="profile-type">Cliente</span></p>
 						<p><strong>Email:</strong> <span id="profile-email">Carregando...</span></p>
 						<p><strong>Telefone:</strong> <span id="profile-phone">Carregando...</span></p>
-                         </div>
+                        <div class="mt-30 text-right">
+                            <button class="btn btn-info" id="edit-profile-btn">Editar Perfil</button>
+                        </div>
+                    </div>
 				</div>
-				<div class="mt-30 text-right">
-                     </div>
-			</div>
+            </div>
+
+            <div class="modal fade" id="editProfileModal" tabindex="-1" role="dialog" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="editProfileModalLabel">Editar Perfil do Cliente</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="editProfileForm">
+                                <div class="form-group">
+                                    <label for="editName">Nome</label>
+                                    <input type="text" class="form-control" id="editName" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="editEmail">Email</label>
+                                    <input type="email" class="form-control" id="editEmail" disabled> </div>
+                                <div class="form-group">
+                                    <label for="editPhone">Telefone</label>
+                                    <input type="text" class="form-control" id="editPhone">
+                                </div>
+                                <button type="submit" class="btn btn-primary save-profile-btn">Salvar Alterações</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
 
 			<div class="footer-wrap pd-20 mb-20 card-box">
 				Plataforma WYN-TECH
@@ -567,7 +541,7 @@
 	</noscript>
 
 	<script>
-		let loggedInUser = null; // Variável para armazenar os dados do usuário/prestador logado
+		let loggedInUser = null; // Variável para armazenar os dados do usuário logado
 
         // Obter a URL base do backend do ambiente (se definida) ou usar localhost para desenvolvimento
         const BACKEND_BASE_URL = 'https://wyn-backend.onrender.com'; // Sua URL do Render
@@ -575,7 +549,6 @@
 		async function loadProfile() {
 			const token = localStorage.getItem('token');
 			const userCache = localStorage.getItem('usuario'); // Tenta pegar do cache de usuário
-            const prestadorCache = localStorage.getItem('prestador'); // Tenta pegar do cache de prestador
 
 			const userNameHeaderSpan = document.getElementById("user-name-header");
             const userProfilePicHeaderImg = document.getElementById("user-profile-pic-header");
@@ -585,62 +558,36 @@
             const profileTypeEl = document.getElementById("profile-type");
             const profileEmailEl = document.getElementById("profile-email");
             const profilePhoneEl = document.getElementById("profile-phone");
-            const sidebarCliente = document.getElementById("sidebar-cliente");
-            const sidebarPrestador = document.getElementById("sidebar-prestador");
-            const dashboardLink = document.getElementById("dashboard-link");
+            const sidebarCliente = document.querySelector(".left-side-bar"); // Seleciona a sidebar do cliente
 
 
-			if (!token || (!userCache && !prestadorCache)) {
-				console.warn("Usuário/Prestador não autenticado. Redirecionando para login.");
-				// Redireciona para a página de login principal (onde o usuário pode escolher)
-				window.location.href = "login.html";
+			if (!token || !userCache) {
+				console.warn("Usuário não autenticado. Redirecionando para login.");
+				window.location.href = "login.html"; // Redireciona para o login do cliente
 				return;
 			}
 
             // Tenta usar os dados do cache primeiro para exibição rápida
-            if (userCache) {
-                 loggedInUser = JSON.parse(userCache);
-                 if (userNameHeaderSpan) userNameHeaderSpan.textContent = loggedInUser.nome || 'Usuário';
-                 if (userProfilePicHeaderImg && loggedInUser.foto_perfil_url) {
-                     userProfilePicHeaderImg.src = loggedInUser.foto_perfil_url;
-                     userProfilePicHeaderImg.onerror = function() { this.onerror = null; this.src = "vendors/images/photo1.jpg"; };
-                 } else if (userProfilePicHeaderImg) {
-                      userProfilePicHeaderImg.src = "vendors/images/photo1.jpg"; // Imagem padrão cliente
-                 }
-                 if (profilePictureImg && loggedInUser.foto_perfil_url) {
-                      profilePictureImg.src = loggedInUser.foto_perfil_url;
-                      profilePictureImg.onerror = function() { this.onerror = null; this.src = "vendors/images/photo1.jpg"; };
-                 } else if (profilePictureImg) {
-                      profilePictureImg.src = "vendors/images/photo1.jpg"; // Imagem padrão cliente
-                 }
-                 if (profileTitle) profileTitle.textContent = 'Meu Perfil (Cliente)';
-                 if (profileTypeEl) profileTypeEl.textContent = 'Cliente';
-                 if (dashboardLink) dashboardLink.href = 'indexx.html'; // Link para dashboard cliente
-                 if (sidebarCliente) sidebarCliente.style.display = 'block';
-                 if (sidebarPrestador) sidebarPrestador.style.display = 'none';
-
-
-            } else if (prestadorCache) {
-                 loggedInUser = JSON.parse(prestadorCache);
-                 if (userNameHeaderSpan) userNameHeaderSpan.textContent = loggedInUser.nome || 'Prestador';
-                 if (userProfilePicHeaderImg && loggedInUser.foto_perfil_url) {
-                     userProfilePicHeaderImg.src = loggedInUser.foto_perfil_url;
-                      userProfilePicHeaderImg.onerror = function() { this.onerror = null; this.src = "vendors/images/photo4.jpg"; };
-                 } else if (userProfilePicHeaderImg) {
-                      userProfilePicHeaderImg.src = "vendors/images/photo4.jpg"; // Imagem padrão prestador
-                 }
-                  if (profilePictureImg && loggedInUser.foto_perfil_url) {
-                       profilePictureImg.src = loggedInUser.foto_perfil_url;
-                       profilePictureImg.onerror = function() { this.onerror = null; this.src = "vendors/images/photo4.jpg"; };
-                  } else if (profilePictureImg) {
-                       profilePictureImg.src = "vendors/images/photo4.jpg"; // Imagem padrão prestador
-                  }
-                 if (profileTitle) profileTitle.textContent = 'Meu Perfil (Prestador)';
-                 if (profileTypeEl) profileTypeEl.textContent = 'Prestador';
-                 if (dashboardLink) dashboardLink.href = 'index.html'; // Link para dashboard prestador
-                 if (sidebarCliente) sidebarCliente.style.display = 'none';
-                 if (sidebarPrestador) sidebarPrestador.style.display = 'block';
+            loggedInUser = JSON.parse(userCache);
+            if (userNameHeaderSpan) userNameHeaderSpan.textContent = loggedInUser.nome || 'Usuário';
+            if (userProfilePicHeaderImg && loggedInUser.foto_perfil_url) {
+                userProfilePicHeaderImg.src = loggedInUser.foto_perfil_url;
+                userProfilePicHeaderImg.onerror = function() { this.onerror = null; this.src = "vendors/images/photo1.jpg"; };
+            } else if (userProfilePicHeaderImg) {
+                userProfilePicHeaderImg.src = "vendors/images/photo1.jpg"; // Imagem padrão cliente
             }
+            if (profilePictureImg && loggedInUser.foto_perfil_url) {
+                profilePictureImg.src = loggedInUser.foto_perfil_url;
+                profilePictureImg.onerror = function() { this.onerror = null; this.src = "vendors/images/photo1.jpg"; };
+            } else if (profilePictureImg) {
+                profilePictureImg.src = "vendors/images/photo1.jpg"; // Imagem padrão cliente
+            }
+            if (profileTitle) profileTitle.textContent = 'Meu Perfil (Cliente)';
+            if (profileTypeEl) profileTypeEl.textContent = 'Cliente';
+            if (profileNameEl) profileNameEl.textContent = loggedInUser.nome || 'Nome não informado';
+            if (profileEmailEl) profileEmailEl.textContent = loggedInUser.email || 'Email não informado';
+            if (profilePhoneEl) profilePhoneEl.textContent = loggedInUser.telefone || 'Telefone não informado';
+            if (sidebarCliente) sidebarCliente.style.display = 'block'; // Garante que a sidebar do cliente esteja visível
 
 
 			try {
@@ -654,7 +601,6 @@
 				if (!res.ok) {
 					if (res.status === 401 || res.status === 403) {
 						console.error("Token inválido ou expirado. Redirecionando para login.");
-						// Substituído alert por console.error para evitar bloqueio em alguns ambientes
 						console.error("Sua sessão expirou. Por favor, faça login novamente.");
 						window.location.href = "login.html";
 						return;
@@ -670,74 +616,44 @@
 					throw new Error("Resposta de perfil inválida.");
 				}
 
-                // Atualiza a variável global com os dados completos do backend
-                loggedInUser = data.usuario || data.prestador; // Pega o objeto correto (usuario ou prestador)
-
-                if (!loggedInUser) {
-                     console.error("Dados de usuário/prestador não encontrados na resposta do perfil.");
-                     console.error("Não foi possível carregar os dados do seu perfil.");
-                     return;
+                // Verifica se o tipo de usuário retornado é realmente um usuário (cliente)
+                if (data.tipo !== 'usuario' || !data.usuario?._id) {
+                    console.error("Token válido, mas não corresponde a um cliente. Redirecionando para login de prestador ou geral.");
+                    // Se não for um usuário, pode ser um prestador ou um tipo desconhecido.
+                    // Redireciona para o login de prestador se o cache de prestador existir,
+                    // caso contrário, volta para o login geral.
+                    if (localStorage.getItem('prestador')) {
+                        window.location.href = "login prestador.html";
+                    } else {
+                        window.location.href = "login.html";
+                    }
+                    return;
                 }
+
+                // Atualiza a variável global com os dados frescos do backend
+                loggedInUser = data.usuario;
 
                 // Atualiza a interface com os dados retornados pelo backend
-                if (data.tipo === 'usuario') {
-                    if (profileTitle) profileTitle.textContent = 'Meu Perfil (Cliente)';
-                    if (profileTypeEl) profileTypeEl.textContent = 'Cliente';
-                    if (dashboardLink) dashboardLink.href = 'indexx.html'; // Link para dashboard cliente
-                    if (sidebarCliente) sidebarCliente.style.display = 'block';
-                    if (sidebarPrestador) sidebarPrestador.style.display = 'none';
+                if (userNameHeaderSpan) userNameHeaderSpan.textContent = loggedInUser.nome || 'Usuário';
+                if (profileNameEl) profileNameEl.textContent = loggedInUser.nome || 'Nome não informado';
+                if (profileEmailEl) profileEmailEl.textContent = loggedInUser.email || 'Email não informado';
+                if (profilePhoneEl) profilePhoneEl.textContent = loggedInUser.telefone || 'Telefone não informado';
 
-                    if (userNameHeaderSpan) userNameHeaderSpan.textContent = loggedInUser.nome || 'Cliente';
-                    if (profileNameEl) profileNameEl.textContent = loggedInUser.nome || 'Nome não informado';
-                    if (profileEmailEl) profileEmailEl.textContent = loggedInUser.email || 'Email não informado';
-                    if (profilePhoneEl) profilePhoneEl.textContent = loggedInUser.telefone || 'Telefone não informado';
-
-                     // Atualiza a foto de perfil com a URL retornada pelo backend
-                    if (userProfilePicHeaderImg && loggedInUser.foto_perfil_url) {
-                        userProfilePicHeaderImg.src = loggedInUser.foto_perfil_url;
-                         userProfilePicHeaderImg.onerror = function() { this.onerror = null; this.src = "vendors/images/photo1.jpg"; };
-                    } else if (userProfilePicHeaderImg) {
-                         userProfilePicHeaderImg.src = "vendors/images/photo1.jpg"; // Imagem padrão cliente
-                    }
-                    if (profilePictureImg && loggedInUser.foto_perfil_url) {
-                         profilePictureImg.src = loggedInUser.foto_perfil_url;
-                         profilePictureImg.onerror = function() { this.onerror = null; this.src = "vendors/images/photo1.jpg"; };
-                    } else if (profilePictureImg) {
-                         profilePictureImg.src = "vendors/images/photo1.jpg"; // Imagem padrão cliente
-                    }
-
-
-                } else if (data.tipo === 'prestador') {
-                    if (profileTitle) profileTitle.textContent = 'Meu Perfil (Prestador)';
-                    if (profileTypeEl) profileTypeEl.textContent = 'Prestador';
-                    if (dashboardLink) dashboardLink.href = 'index.html'; // Link para dashboard prestador
-                    if (sidebarCliente) sidebarCliente.style.display = 'none';
-                    if (sidebarPrestador) sidebarPrestador.style.display = 'block';
-
-                    if (userNameHeaderSpan) userNameHeaderSpan.textContent = loggedInUser.nome || 'Prestador';
-                    if (profileNameEl) profileNameEl.textContent = loggedInUser.nome || 'Nome não informado';
-                    if (profileEmailEl) profileEmailEl.textContent = loggedInUser.email || 'Email não informado';
-                    if (profilePhoneEl) profilePhoneEl.textContent = loggedInUser.telefone || 'Telefone não informado';
-
-                     // Atualiza a foto de perfil com a URL retornada pelo backend
-                     if (userProfilePicHeaderImg && loggedInUser.foto_perfil_url) {
-                         userProfilePicHeaderImg.src = loggedInUser.foto_perfil_url;
-                          userProfilePicHeaderImg.onerror = function() { this.onerror = null; this.src = "vendors/images/photo4.jpg"; };
-                     } else if (userProfilePicHeaderImg) {
-                          userProfilePicHeaderImg.src = "vendors/images/photo4.jpg"; // Imagem padrão prestador
-                     }
-                     if (profilePictureImg && loggedInUser.foto_perfil_url) {
-                          profilePictureImg.src = loggedInUser.foto_perfil_url;
-                          profilePictureImg.onerror = function() { this.onerror = null; this.src = "vendors/images/photo4.jpg"; };
-                     } else if (profilePictureImg) {
-                          profilePictureImg.src = "vendors/images/photo4.jpg"; // Imagem padrão prestador
-                     }
-                } else {
-                    console.error("Tipo de usuário no token desconhecido ou não suportado nesta página.");
-                    console.error("Não foi possível determinar o tipo de perfil.");
+                // Atualiza a foto de perfil com a URL retornada pelo backend
+                if (userProfilePicHeaderImg && loggedInUser.foto_perfil_url) {
+                    userProfilePicHeaderImg.src = loggedInUser.foto_perfil_url;
+                    userProfilePicHeaderImg.onerror = function() { this.onerror = null; this.src = "vendors/images/photo1.jpg"; };
+                } else if (userProfilePicHeaderImg) {
+                    userProfilePicHeaderImg.src = "vendors/images/photo1.jpg"; // Imagem padrão cliente
+                }
+                if (profilePictureImg && loggedInUser.foto_perfil_url) {
+                    profilePictureImg.src = loggedInUser.foto_perfil_url;
+                    profilePictureImg.onerror = function() { this.onerror = null; this.src = "vendors/images/photo1.jpg"; };
+                } else if (profilePictureImg) {
+                    profilePictureImg.src = "vendors/images/photo1.jpg"; // Imagem padrão cliente
                 }
 
-				console.log("Perfil carregado do backend:", loggedInUser);
+				console.log("Perfil do cliente carregado do backend:", loggedInUser);
 
 
 			} catch (err) {
@@ -807,14 +723,10 @@
                        if (newPhotoUrl) {
                            document.getElementById('profile-picture').src = newPhotoUrl;
                            document.getElementById('user-profile-pic-header').src = newPhotoUrl; // Atualiza também no header
-                           // Opcional: Atualizar o cache local com a nova URL
+                           // Atualiza o cache local com a nova URL
                            if (loggedInUser) {
                                 loggedInUser.foto_perfil_url = newPhotoUrl;
-                                if (loggedInUser.tipo === 'usuario') {
-                                     localStorage.setItem('usuario', JSON.stringify(loggedInUser));
-                                } else if (loggedInUser.tipo === 'prestador') {
-                                     localStorage.setItem('prestador', JSON.stringify(loggedInUser));
-                                }
+                                localStorage.setItem('usuario', JSON.stringify(loggedInUser));
                            }
                        } else {
                            console.warn("Backend não retornou a URL da nova foto.");
@@ -833,14 +745,71 @@
              }
         });
 
+        // Listener para o botão "Editar Perfil" (abre o modal)
+        document.getElementById('edit-profile-btn').addEventListener('click', () => {
+            // Preenche o formulário do modal com os dados atuais do cliente
+            if (loggedInUser) {
+                document.getElementById('editName').value = loggedInUser.nome || '';
+                document.getElementById('editEmail').value = loggedInUser.email || '';
+                document.getElementById('editPhone').value = loggedInUser.telefone || '';
+            }
+            $('#editProfileModal').modal('show'); // Abre o modal
+        });
+
+        // Listener para o formulário de edição de perfil (salvar alterações)
+        document.getElementById('editProfileForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const token = localStorage.getItem('token');
+            if (!token) {
+                console.error('Sua sessão expirou. Faça login novamente para salvar alterações.');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const updatedData = {
+                nome: document.getElementById('editName').value,
+                telefone: document.getElementById('editPhone').value
+            };
+
+            try {
+                // Endpoint para atualizar o perfil do usuário (cliente)
+                const response = await fetch(`${BACKEND_BASE_URL}/perfil-usuario`, { // Assumindo este endpoint no backend
+                    method: 'PUT', // Ou PATCH
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(updatedData)
+                });
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    console.error(result.message || 'Erro ao atualizar perfil.');
+                    alert('Erro ao atualizar perfil: ' + (result.message || 'Verifique seus dados.'));
+                } else {
+                    console.log('Perfil atualizado com sucesso!', result);
+                    alert('Perfil atualizado com sucesso!');
+                    $('#editProfileModal').modal('hide'); // Fecha o modal
+
+                    // Atualiza o cache local e recarrega a página para refletir as mudanças
+                    localStorage.setItem('usuario', JSON.stringify(result.usuario)); // Backend deve retornar o usuário atualizado
+                    loadProfile(); // Recarrega os dados na página
+                }
+
+            } catch (error) {
+                console.error("Erro ao salvar perfil:", error);
+                alert("Erro ao salvar perfil: " + (error.message || "Verifique sua conexão."));
+            }
+        });
+
 
 		// Função de Logout (adaptada para limpar cache de usuário ou prestador)
 		document.getElementById('logout-link').addEventListener('click', (e) => {
 			e.preventDefault();
 			localStorage.removeItem('token');
-			// Remove ambos os caches, pois não sabemos qual está ativo
-			localStorage.removeItem('usuario');
-			localStorage.removeItem('prestador');
+			localStorage.removeItem('usuario'); // Remove o cache específico do usuário
 			window.location.href = 'login.html'; // Redireciona para a página de login principal
 		});
 

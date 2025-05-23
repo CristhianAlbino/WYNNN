@@ -189,7 +189,10 @@ const PrestadorSchema = new mongoose.Schema({
     telefone: { type: String },
     foto_perfil: { type: String }, // Caminho relativo no servidor
     resetPasswordToken: { type: String },
-    resetPasswordExpires: { type: Date }
+    resetPasswordExpires: { type: Date },
+    especialidades: [{ type: String }], // Adicionado para prestador
+    area_atuacao: { type: String }, // Adicionado para prestador
+    disponibilidade: { type: String } // Adicionado para prestador
 });
 const Prestador = mongoose.model('Prestador', PrestadorSchema);
 
@@ -452,8 +455,27 @@ const validateAdminServicoUpdate = (data) => {
     return schema.validate(data);
 };
 
+// --- NOVAS VALIDAÇÕES JOI PARA ATUALIZAÇÃO DE PERFIL DO USUÁRIO E PRESTADOR ---
+const validateUsuarioUpdate = (data) => {
+    const schema = Joi.object({
+        nome: Joi.string().optional(),
+        telefone: Joi.string().allow(null, '').optional(),
+    }).min(1); // Pelo menos um campo deve ser fornecido para atualização
+    return schema.validate(data);
+};
 
-// --- FIM NOVA VALIDAÇÃO JOI PARA ADMIN ---
+const validatePrestadorUpdate = (data) => {
+    const schema = Joi.object({
+        nome: Joi.string().optional(),
+        telefone: Joi.string().allow(null, '').optional(),
+        especialidades: Joi.array().items(Joi.string()).optional(),
+        area_atuacao: Joi.string().allow(null, '').optional(),
+        disponibilidade: Joi.string().allow(null, '').optional()
+    }).min(1); // Pelo menos um campo deve ser fornecido para atualização
+    return schema.validate(data);
+};
+// --- FIM NOVAS VALIDAÇÕES JOI ---
+
 
 // --- FIM Validação Joi ---
 
@@ -1337,6 +1359,7 @@ app.post('/login', async (req, res, next) => {
                  _id: usuario._id,
                  nome: usuario.nome,
                  email: usuario.email,
+                 telefone: usuario.telefone, // Incluído telefone
                  // Usa BACKEND_BASE_URL para construir a URL completa da foto
                  foto_perfil_url: usuario.foto_perfil ? `${BACKEND_BASE_URL}/${usuario.foto_perfil.replace(/\\/g, '/')}` : null,
                  isAdmin: usuario.isAdmin // Inclui o status de admin na resposta
@@ -1381,6 +1404,10 @@ app.post('/login-prestador', async (req, res, next) => {
                  _id: prestador._id,
                  nome: prestador.nome,
                  email: prestador.email,
+                 telefone: prestador.telefone, // Incluído telefone
+                 especialidades: prestador.especialidades, // Incluído especialidades
+                 area_atuacao: prestador.area_atuacao, // Incluído area_atuacao
+                 disponibilidade: prestador.disponibilidade, // Incluído disponibilidade
                  // Usa BACKEND_BASE_URL para construir a URL completa da foto
                  foto_perfil_url: prestador.foto_perfil ? `${BACKEND_BASE_URL}/${prestador.foto_perfil.replace(/\\/g, '/')}` : null
             }
@@ -1406,7 +1433,7 @@ app.get('/perfil', authMiddleware, async (req, res, next) => {
              const fotoPerfilUrl = usuario.foto_perfil ? `${BACKEND_BASE_URL}/${usuario.foto_perfil.replace(/\\/g, '/')}` : null;
             res.status(200).json({ usuario: { ...usuario.toObject(), foto_perfil_url: fotoPerfilUrl }, tipo: 'usuario' });
         } else if (req.user.tipo === 'prestador') {
-             const prestador = await Prestador.findById(req.user.id).select('_id nome email telefone foto_perfil'); // Adicionado telefone
+             const prestador = await Prestador.findById(req.user.id).select('_id nome email telefone foto_perfil especialidades area_atuacao disponibilidade'); // Adicionado campos específicos do prestador
              if (!prestador) {
                   console.warn(`[BACKEND] Perfil: Prestador ${req.user.id} não encontrado.`);
                   return res.status(404).json({ message: 'Prestador não encontrado.' });
@@ -1424,6 +1451,87 @@ app.get('/perfil', authMiddleware, async (req, res, next) => {
         next(error);
     }
 });
+
+// --- NOVA ROTA: Atualizar perfil do USUÁRIO (CLIENTE) logado ---
+app.put('/perfil-usuario', authMiddlewareUsuario, async (req, res, next) => {
+    console.log(`[BACKEND] Recebida requisição PUT /perfil-usuario para usuário ${req.user.id}`);
+    const { nome, telefone } = req.body;
+
+    const { error, value } = validateUsuarioUpdate(req.body);
+    if (error) {
+        console.error("[BACKEND] Erro de validação Joi na atualização do perfil do usuário:", error.details);
+        return res.status(400).json({ message: error.details[0].message });
+    }
+
+    try {
+        const usuario = await Usuario.findById(req.user.id);
+        if (!usuario) {
+            console.warn(`[BACKEND] Perfil Usuário: Usuário ${req.user.id} não encontrado para atualização.`);
+            return res.status(404).json({ message: 'Usuário não encontrado.' });
+        }
+
+        // Atualiza os campos permitidos
+        if (value.nome !== undefined) usuario.nome = value.nome;
+        if (value.telefone !== undefined) usuario.telefone = value.telefone;
+
+        await usuario.save();
+
+        // Retorna o objeto de usuário atualizado, incluindo a URL da foto de perfil
+        const fotoPerfilUrl = usuario.foto_perfil ? `${BACKEND_BASE_URL}/${usuario.foto_perfil.replace(/\\/g, '/')}` : null;
+        const updatedUser = { ...usuario.toObject(), foto_perfil_url: fotoPerfilUrl };
+        delete updatedUser.senha; // Não retorna a senha
+
+        console.log(`[BACKEND] Perfil do usuário ${req.user.id} atualizado com sucesso.`);
+        res.status(200).json({ message: 'Perfil atualizado com sucesso!', usuario: updatedUser });
+
+    } catch (error) {
+        console.error('[BACKEND] Erro ao atualizar perfil do usuário:', error);
+        next(error);
+    }
+});
+
+// --- NOVA ROTA: Atualizar perfil do PRESTADOR logado ---
+app.put('/perfil-prestador', authMiddlewarePrestador, async (req, res, next) => {
+    console.log(`[BACKEND] Recebida requisição PUT /perfil-prestador para prestador ${req.user.id}`);
+    const { nome, telefone, especialidades, area_atuacao, disponibilidade } = req.body;
+
+    const { error, value } = validatePrestadorUpdate(req.body);
+    if (error) {
+        console.error("[BACKEND] Erro de validação Joi na atualização do perfil do prestador:", error.details);
+        return res.status(400).json({ message: error.details[0].message });
+    }
+
+    try {
+        const prestador = await Prestador.findById(req.user.id);
+        if (!prestador) {
+            console.warn(`[BACKEND] Perfil Prestador: Prestador ${req.user.id} não encontrado para atualização.`);
+            return res.status(404).json({ message: 'Prestador não encontrado.' });
+        }
+
+        // Atualiza os campos permitidos
+        if (value.nome !== undefined) prestador.nome = value.nome;
+        if (value.telefone !== undefined) prestador.telefone = value.telefone;
+        if (value.especialidades !== undefined) prestador.especialidades = value.especialidades;
+        if (value.area_atuacao !== undefined) prestador.area_atuacao = value.area_atuacao;
+        if (value.disponibilidade !== undefined) prestador.disponibilidade = value.disponibilidade;
+
+        await prestador.save();
+
+        // Retorna o objeto de prestador atualizado, incluindo a URL da foto de perfil
+        const fotoPerfilUrl = prestador.foto_perfil ? `${BACKEND_BASE_URL}/${prestador.foto_perfil.replace(/\\/g, '/')}` : null;
+        const updatedPrestador = { ...prestador.toObject(), foto_perfil_url: fotoPerfilUrl };
+        delete updatedPrestador.senha; // Não retorna a senha
+
+        console.log(`[BACKEND] Perfil do prestador ${req.user.id} atualizado com sucesso.`);
+        res.status(200).json({ message: 'Perfil atualizado com sucesso!', prestador: updatedPrestador });
+
+    } catch (error) {
+        console.error('[BACKEND] Erro ao atualizar perfil do prestador:', error);
+        next(error);
+    }
+});
+// --- FIM NOVAS ROTAS DE ATUALIZAÇÃO DE PERFIL ---
+
 
 // Endpoint para upload de foto de perfil (para usuário e prestador)
 app.post('/upload-foto-perfil', authMiddleware, uploadProfilePicture, async (req, res, next) => {
