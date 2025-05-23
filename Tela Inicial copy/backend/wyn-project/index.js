@@ -1763,7 +1763,6 @@ app.post('/chat/message', authMiddleware, isServiceParticipant, async (req, res,
 
 // Endpoint para contar mensagens não lidas para o usuário logado (AGORA NÃO USADO PARA O SINO, APENAS PARA INDICADOR NA SIDEBAR SE NECESSÁRIO)
 // O sino usa o endpoint /api/notifications/prestador
-/*
 app.get('/api/chat/unread-count', authMiddleware, async (req, res, next) => {
     console.log(`[BACKEND] Recebida requisição GET /api/chat/unread-count para usuário: ${req.user.id}`);
     const userId = req.user.id;
@@ -1782,7 +1781,6 @@ app.get('/api/chat/unread-count', authMiddleware, async (req, res, next) => {
         next(error);
     }
 });
-*/
 
 
 // --- NOVOS ENDPOINTS PARA NOTIFICAÇÕES ---
@@ -3517,10 +3515,10 @@ app.get('/admin/avaliacoes/:id', adminAuthMiddleware, async (req, res, next) => 
             .populate('pedido_servico_id', 'tipo_servico'); // Popula o tipo de serviço do pedido
 
         if (!avaliacao) {
-            console.warn(`[BACKEND] ADMIN: Avaliação ${id} não encontrada.`);
+            console.warn(`[BACKEND] Avaliação ${id} não encontrada.`);
             return res.status(404).json({ message: 'Avaliação não encontrada.' });
         }
-        console.log(`[BACKEND] ADMIN: Detalhes da avaliação ${id} encontrados.`);
+        console.log(`[BACKEND] Detalhes da avaliação ${id} encontrados.`);
         res.status(200).json(avaliacao);
     } catch (error) {
         console.error('[BACKEND] ADMIN: Erro ao buscar detalhes da avaliação:', error);

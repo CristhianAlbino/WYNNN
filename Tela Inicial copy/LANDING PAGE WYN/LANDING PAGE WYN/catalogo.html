@@ -709,7 +709,9 @@
              let unreadChatPollingInterval = null; // DECLARADA AQUI APENAS UMA VEZ
 
             // API Key para o Gemini API (deixe vazia, será preenchida pelo ambiente Canvas)
-            const GEMINI_API_KEY = ""; // Esta chave será preenchida automaticamente pelo ambiente Canvas.
+            // REMOVIDO: const GEMINI_API_KEY = ""; // Esta chave será preenchida automaticamente pelo ambiente Canvas.
+            // A chave é injetada globalmente pelo ambiente Canvas como __gemini_api_key
+            const GEMINI_API_KEY = typeof __gemini_api_key !== 'undefined' ? __gemini_api_key : '';
             const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
 
 
@@ -889,34 +891,32 @@
             // Função para carregar o contador de mensagens não lidas (copiada do dashboard do prestador e adaptada)
             async function carregarContadorMensagensNaoLidas() {
                  const token = localStorage.getItem("token");
-                 const unreadCountElementSidebar = document.getElementById("unread-chat-count-sidebar-cliente"); // ID corrigido
-                 // const notificationCountElement = document.getElementById("notification-count"); // Contador no sino - não existe nesta página
+                 // ID do elemento na sidebar para o contador de mensagens não lidas
+                 const unreadCountElementSidebar = document.getElementById("unread-chat-count-sidebar-cliente");
 
                  if (!token) {
                      if (unreadCountElementSidebar) unreadCountElementSidebar.style.display = 'none';
-                     // if (notificationCountElement) notificationCountElement.style.display = 'none';
                      return;
                  }
 
                  try {
-                     // Assumindo um endpoint no backend para contar mensagens não lidas para o usuário logado
-                     // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
-                     const response = await fetch("https://wyn-backend.onrender.com/api/chat/unread-count", { // Endpoint genérico para contar mensagens não lidas do usuário logado
+                     // Este endpoint foi comentado no backend `index.js`.
+                     // Se você deseja uma contagem específica de mensagens não lidas para o chat,
+                     // você precisará descomentar e/ou ajustar essa rota no seu `index.js` do backend.
+                     // Por enquanto, esta função pode não funcionar como esperado devido ao 404.
+                     const response = await fetch("https://wyn-backend.onrender.com/api/chat/unread-count", {
                          headers: { 'Authorization': `Bearer ${token}` }
                      });
 
                      if (!response.ok) {
-                          // Em caso de erro (ex: 401, 403), o middleware de perfil já trata o redirect/toast
                          console.error("[CATALOGO] Erro ao buscar contagem de mensagens não lidas (cliente):", response.status);
                          if (unreadCountElementSidebar) unreadCountElementSidebar.style.display = 'none';
-                         // if (notificationCountElement) notificationCountElement.style.display = 'none';
                          return;
                      }
 
                      const data = await response.json();
                      const unreadCount = data.total || 0;
 
-                     // Atualiza o contador na sidebar (se o elemento existir)
                      if (unreadCountElementSidebar) {
                          if (unreadCount > 0) {
                              unreadCountElementSidebar.textContent = unreadCount;
@@ -926,45 +926,28 @@
                          }
                      }
 
-                     // Atualiza o contador no sino (se o elemento existir) - não existe nesta página
-                      // if (notificationCountElement) {
-                      //     if (unreadCount > 0) {
-                      //          notificationCountElement.textContent = unreadCount; // Ou some com outras contagens de notificações futuras
-                      //          notificationCountElement.style.display = 'inline';
-                      //     } else {
-                      //          notificationCountElement.style.display = 'none';
-                      //     }
-                      // }
-
-
                  } catch (error) {
                      console.error("[CATALOGO] Erro ao carregar contagem de mensagens não lidas (cliente):", error);
-                     if (unreadChatPollingInterval) clearInterval(unreadChatPollingInterval); // Parar polling em caso de erro persistente
+                     if (unreadChatPollingInterval) clearInterval(unreadChatPollingInterval);
                      if (unreadCountElementSidebar) unreadCountElementSidebar.style.display = 'none';
-                     // if (notificationCountElement) notificationCountElement.style.display = 'none';
                  }
             }
 
-             // Função para iniciar o polling de mensagens não lidas (a cada 30 segundos) - copiada e adaptada
-             // let unreadChatPollingInterval = null; // REMOVIDA A DECLARAÇÃO DUPLICADA AQUI
+             // Função para iniciar o polling de mensagens não lidas (a cada 30 segundos)
              function iniciarPollingMensagensNaoLidas() {
-                 // Limpa qualquer intervalo existente para evitar duplicação
                  if (unreadChatPollingInterval) {
                      clearInterval(unreadChatPollingInterval);
                  }
 
-                 // Inicia o polling
                  unreadChatPollingInterval = setInterval(() => {
                      console.log("[CATALOGO] Verificando mensagens não lidas (cliente)...");
-                     carregarContadorMensagensNaoLidas(); // Chama a função para atualizar a contagem
-                 }, 30000); // A cada 30 segundos
+                     carregarContadorMensagensNaoLidas();
+                 }, 30000);
 
                  console.log("[CATALOGO] Polling de mensagens não lidas (cliente) iniciado.");
-
-                 // Opcional: Parar o polling quando o usuário sair da página ou fizer logout (já adicionado no logout e beforeunload)
              }
 
-             // Função para parar o polling de mensagens não lidas (copiada e adaptada)
+             // Função para parar o polling de mensagens não lidas
              function pararPollingMensagensNaoLidas() {
                  if (unreadChatPollingInterval) {
                      clearInterval(unreadChatPollingInterval);
@@ -988,8 +971,6 @@
                 empty.style.display = "none";
                 serviceListDiv.innerHTML = ""; // Limpa a lista atual
 
-                 // A verificação de token já é feita em carregarPerfilUsuario,
-                 // mas é bom ter uma redundância aqui caso esta função seja chamada diretamente.
                  if (!token) {
                       feedback.textContent = "Autenticação necessária para carregar o catálogo.";
                       feedback.style.display = "block";
@@ -1000,20 +981,16 @@
 
                 console.log("[CATALOGO] Buscando serviços do catálogo no backend...");
                 try {
-                    // --- CHAMA A ROTA PARA O CATÁLOGO ---
-                    // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
-                    const response = await fetch("https://wyn-backend.onrender.com/servicos-catalogo", { // <-- Rota para o catálogo
+                    const response = await fetch("https://wyn-backend.onrender.com/servicos-catalogo", {
                          headers: { 'Authorization': `Bearer ${token}` }
                     });
 
                     console.log("[CATALOGO] Resposta do backend recebida:", response.status);
 
                     if (!response.ok) {
-                         // Se o backend retornar 401 ou 403, o middleware de perfil já trata o redirect/toast
-                         // Para outros erros, exibe uma mensagem genérica
                          const errorText = await response.text();
                          console.error("[CATALOGO] Erro HTTP ao buscar serviços do catálogo:", response.status, errorText);
-                         throw new Error(errorText || `Erro HTTP ao buscar serviços do catálogo: ${res.status}`);
+                         throw new Error(errorText || `Erro HTTP ao buscar serviços do catálogo: ${response.status}`);
                     }
 
                     const servicos = await response.json();
@@ -1503,7 +1480,6 @@
                  console.log("[CATALOGO] Enviando solicitação:", solicitationData);
 
                  try {
-                     // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
                      const response = await fetch("https://wyn-backend.onrender.com/solicitar-servico", {
                          method: "POST",
                          headers: {
