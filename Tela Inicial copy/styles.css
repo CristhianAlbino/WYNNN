@@ -334,11 +334,25 @@ body.dark-mode .icon-block {
   box-shadow: 0 0 10px var(--dark-shadow-color);
 }
 
-.icon-block img {
+/* Adicionado para estilizar os ícones do Boxicons dentro do .icon-block */
+.icon-block i {
+  font-size: 60%; /* Ajusta o tamanho do ícone para caber no bloco */
+  color: var(--primary-color); /* Cor do ícone */
+  animation: Rotate-reverse 20s linear infinite; /* Animação de rotação reversa */
+  transition: color 0.3s ease;
+}
+
+body.dark-mode .icon-block i {
+    color: var(--dark-primary-color); /* Cor do ícone no modo escuro */
+}
+
+
+/* Removido o estilo .icon-block img pois agora usamos <i> */
+/* .icon-block img {
   width: 60%;
   height: auto;
-  animation: Rotate-reverse 20s linear infinite; /* Animação de rotação reversa */
-}
+  animation: Rotate-reverse 20s linear infinite;
+} */
 
 /* Posições dos ícones */
 .icon-block:first-child { top: 0; left: 50%; transform: translate(-50%, -50%); }
