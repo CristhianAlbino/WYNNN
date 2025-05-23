@@ -16,9 +16,296 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
-    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="styles.css">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.1.1/assets/owl.carousel.min.css">
+
+    <style>
+        /* Estilos adicionais para as novas seções, adaptados ao seu design existente */
+        /* Seção de Contato */
+        .contact-section-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        .contact-card {
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            padding: 2.5rem;
+            flex: 1 1 45%; /* Permite que o card ocupe quase metade da largura em telas maiores */
+            min-width: 300px; /* Largura mínima para o card */
+        }
+
+        .contact-card h3 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #cbd5e0;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #ff6c0f;
+            box-shadow: 0 0 0 3px rgba(255, 108, 15, 0.2);
+        }
+
+        .btn-submit {
+            background-color: #ff6c0f;
+            color: white;
+            padding: 0.85rem 2rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: background-color 0.2s;
+            cursor: pointer;
+            border: none;
+            width: 100%;
+            font-size: 1.1rem;
+        }
+
+        .btn-submit:hover {
+            background-color: #e05e0a;
+        }
+
+        .contact-info-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+            color: #555;
+        }
+
+        .contact-info-item i {
+            font-size: 1.75rem;
+            color: #ff6c0f;
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+
+        .social-icons-contact a {
+            display: inline-block;
+            margin-right: 1.25rem;
+            font-size: 2.5rem;
+            color: #1a202c;
+            transition: color 0.2s;
+        }
+
+        .social-icons-contact a:hover {
+            color: #ff6c0f;
+        }
+
+        .faq-item {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .faq-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .faq-item h4 {
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 0.75rem;
+            font-size: 1.25rem;
+        }
+
+        .faq-item p {
+            color: #666;
+            font-size: 1rem;
+        }
+
+        /* Seção Nosso Time */
+        .team-section {
+            background-color: #f4f7f6;
+            padding: 5rem 0;
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2.5rem;
+            margin-top: 3rem;
+        }
+
+        .team-member-card {
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            padding: 2rem;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .team-member-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .team-member-card img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto 1.5rem;
+            border: 4px solid #ff6c0f;
+        }
+
+        .team-member-card h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 0.5rem;
+        }
+
+        .team-member-card p.role {
+            font-size: 1rem;
+            color: #ff6c0f;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .team-member-card p.bio {
+            font-size: 0.95rem;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        /* Seção Categorias Em Breve */
+        .upcoming-categories-section {
+            padding: 5rem 0;
+            background-color: #f4f7f6;
+        }
+
+        .upcoming-categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+            justify-items: center;
+        }
+
+        .upcoming-category-card {
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            padding: 2rem;
+            text-align: center;
+            transition: transform 0.3s ease;
+            width: 100%;
+            max-width: 350px;
+        }
+
+        .upcoming-category-card:hover {
+            transform: translateY(-8px);
+        }
+
+        .upcoming-category-card i {
+            font-size: 3.5rem;
+            color: #ff6c0f;
+            margin-bottom: 1.5rem;
+        }
+
+        .upcoming-category-card h3 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 1rem;
+        }
+
+        .upcoming-category-card p {
+            font-size: 1rem;
+            color: #666;
+            margin-bottom: 1.5rem;
+        }
+
+        .interest-form {
+            margin-top: 2rem;
+            background-color: #fff;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+            text-align: center;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .interest-form h4 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 1.5rem;
+        }
+
+        .interest-form input[type="email"] {
+            width: calc(100% - 100px); /* Ajusta a largura para o botão */
+            padding: 0.75rem;
+            border: 1px solid #cbd5e0;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+
+        .interest-form button {
+            padding: 0.75rem 1.5rem;
+            background-color: #ff6c0f;
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            vertical-align: middle;
+        }
+
+        .interest-form button:hover {
+            background-color: #e05e0a;
+        }
+
+        @media (max-width: 768px) {
+            .contact-card {
+                flex: 1 1 100%;
+            }
+            .interest-form input[type="email"] {
+                width: 100%;
+                margin-right: 0;
+                margin-bottom: 1rem;
+            }
+            .interest-form button {
+                width: 100%;
+            }
+        }
+    </style>
 
 </head>
 
@@ -47,9 +334,7 @@
                             <li><a href="#" class="active" style="--navAni:1">Inicio</a></li>
                             <li><a href="#how-it-works-section" style="--navAni:2">Como Funciona</a></li>
                             <li><a href="#services-section" style="--navAni:3">Serviços</a></li>
-                            <li><a href="#about-section" style="--navAni:4">Sobre Nós</a></li>
-                            <li><a href="#contact-section" style="--navAni:5">Contate-nos</a></li>
-                            <li><a href="/Seleção/dist/index.html" style="--navAni:6">Login/Cadastro</a></li>
+                            <li><a href="#our-team-section" style="--navAni:4">Sobre Nós</a></li> <li><a href="#contact-us-section" style="--navAni:5">Contate-nos</a></li> <li><a href="/Seleção/dist/index.html" style="--navAni:6">Login/Cadastro</a></li>
                             <li><a href="/LANDING PAGE WYN/LANDING PAGE WYN/login-admin.html" class="admin-link-header" style="--navAni:7">Admin</a></li>
                             <li><i class='bx bx-moon theme-switcher' id="theme-switcher-icon"></i></li>
                         </ul>
@@ -64,16 +349,16 @@
                     <div class="hero-image-container">
                         <div class="big-circle">
                             <div class="icon-block">
-                                <img src="/w/3.png" alt="Ícone 1" />
+                                <img src="/w/3.png" alt="Ícone de Eletricista" />
                             </div>
                             <div class="icon-block">
-                                <img src="/w/4.png" alt="Ícone 2" />
+                                <img src="/w/4.png" alt="Ícone de Encanador" />
                             </div>
                             <div class="icon-block">
-                                <img src="/w/5.png" alt="Ícone 3" />
+                                <img src="/w/5.png" alt="Ícone de Pintor" />
                             </div>
                             <div class="icon-block">
-                                <img src="/w/2.png" alt="Ícone 4" />
+                                <img src="/w/2.png" alt="Ícone de Limpeza" />
                             </div>
                         </div>
                         <div class="hero-image">
@@ -126,23 +411,23 @@
                          <i class='bx bx-plug category-icon'></i>
                          <h3>Eletricista</h3>
                      </a>
-                      <a href="/em breve/index.html" class="category-card">
+                      <a href="#upcoming-categories-section" class="category-card">
                          <i class='bx bx-wrench category-icon'></i>
                          <h3>Encanador</h3>
                      </a>
-                      <a href="/em breve/index.html" class="category-card">
+                      <a href="#upcoming-categories-section" class="category-card">
                          <i class='bx bx-paint category-icon'></i>
                          <h3>Pintor</h3>
                      </a>
-                      <a href="/em breve/index.html" class="category-card">
+                      <a href="#upcoming-categories-section" class="category-card">
                          <i class='bx bx-wind category-icon'></i>
                          <h3>Ar Condicionado</h3>
                      </a>
-                      <a href="/em breve/index.html" class="category-card">
+                      <a href="#upcoming-categories-section" class="category-card">
                          <i class='bx bx-droplet category-icon'></i>
                          <h3>Jardinagem</h3>
                      </a>
-                      <a href="/em breve/index.html" class="category-card">
+                      <a href="#upcoming-categories-section" class="category-card">
                          <i class='bx bx-hard-hat category-icon'></i>
                          <h3>Pedreiro</h3>
                      </a>
@@ -151,61 +436,7 @@
          </section>
 
 
-        <section class="services-section" id="services-section">
-            <div class="container">
-                <div class="button-container">
-                    <a href="/Tela Cliente/serviços/dist/index.html" style="text-decoration: none;">
-                        <h2 class="section-title">Explore Mais Serviços</h2>
-                    </a>
-                </div>
-                <div class="slider" x-data="{start: true, end: false}"
-                    x-on:scroll.debounce="$refs.slider.scrollLeft == 0 ? start = true : start = false; Math.abs(($refs.slider.scrollWidth - $refs.slider.offsetWidth) - $refs.slider.scrollLeft) < 5 ? end = true : end = false;">
-                    <div class="slider__content" x-ref="slider">
-                        <div class="slider__item">
-                            <a href="/Tela Cliente/serviços/dist/index.html#eletricista">
-                                <img class="slider__image"
-                                    src="https://i.pinimg.com/enabled_lo/564x/70/d2/a5/70d2a5bfb09edcb66b7507e1a3e199ec.jpg"
-                                    alt="Imagem de Eletricista">
-                            </a>
-                            <div class="slider__info">
-                                <h2>Eletricista</h2>
-                            </div>
-                        </div>
-                        <div class="slider__item">
-                             <a href="/em breve/index.html">
-                                <img class="slider__image"
-                                    src="https://i.pinimg.com/564x/18/a8/8e/18a88e4980d39c2405a2093aeb55ac22.jpg"
-                                    alt="Imagem de Encanador">
-                            </a>
-                            <div class="slider__info">
-                                <h2>Encanador</h2>
-                            </div>
-                        </div>
-                        <div class="slider__item">
-                             <a href="/em breve/index.html">
-                                <img class="slider__image"
-                                    src="https://i.pinimg.com/564x/e9/ab/f3/e9abf3d9d34571e70d88a97ae6f63b95.jpg"
-                                    alt="Imagem de Pintor">
-                            </a>
-                            <div class="slider__info">
-                                <h2>Pintor</h2>
-                            </div>
-                        </div>
-                        <div class="slider__item">
-                             <a href="/em breve/index.html">
-                                <img class="slider__image"
-                                    src="https://i.pinimg.com/564x/7a/63/28/7a6328a7c8e3cdb300c4f365985baa55.jpg"
-                                    alt="Imagem de Limpeza">
-                            </a>
-                            <div class="slider__info">
-                                <h2>Limpeza</h2>
-                            </div>
-                        </div>
-                        </div>
-                </div>
-                <script src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.10.2/cdn.js"></script>
-            </div>
-        </section>
+   
 
         <section class="for-providers-section">
              <div class="container">
@@ -213,11 +444,13 @@
                      <div class="provider-text">
                          <h2>É um Profissional de Serviços?</h2>
                          <p>Amplie sua base de clientes e gerencie seus serviços de forma prática e segura na WYN. Junte-se à nossa rede de prestadores verificados e encontre novas oportunidades de trabalho.</p>
-                         <a href="/Seleção/dist/index.html" class="cta-link-provider">    
+                         <a href="/Seleção/dist/index.html" class="cta-link-provider">
+                            <button class="cta-button-main">Seja um Prestador</button>
+                         </a>
+                     </div>
                      <div class="provider-image">
                           <img src="https://placehold.co/400x300/ff6c0f/white?text=Seja+um+Prestador" alt="Imagem de Profissional Trabalhando">
                      </div>
-                         </a>
                  </div>
              </div>
         </section>
@@ -320,9 +553,85 @@
              </div>
         </section>
 
-
-        <footer class="site-footer" id="contact-section">
+        <section class="team-section" id="our-team-section">
             <div class="container">
+                <h2 class="section-title">Conheça Nosso Time</h2>
+                <p class="text-center text-lg text-gray-700 mb-12">Por trás da WYN, há uma equipe dedicada a conectar você com os melhores profissionais e a simplificar sua vida.</p>
+
+                <div class="team-grid">
+                    <div class="team-member-card">
+                        <img src="https://placehold.co/120x120/ff6c0f/white?text=CEO" alt="Foto do CEO">
+                        <h3>Gabriel Galera</h3>
+                        <p class="role">Gestor do Projeto</p>
+                        <p class="bio">Visionário e apaixonado por tecnologia, João lidera a WYN com o objetivo de revolucionar o mercado de serviços.</p>
+                    </div>
+                    <div class="team-member-card">
+                        <img src="/Tela Inicial copy/Matheus.jpeg" alt="Foto do CTO">
+                        <h3>Matheus Henrique</h3>
+                        <p class="role">Scrum Master</p>
+                        <p class="bio">Ficou responsável pela organização de documentação e organização de reuniões de progresso, organizador na distribuição de tarefas individuais dos demais membros e ajustes as suas funções..</p>
+                    </div>
+                    <div class="team-member-card">
+                        <img src="/Tela Inicial copy/cristhian.jpeg" alt="Foto do CMO">
+                        <h3>Cristhian Albino</h3>
+                        <p class="role">Dev Full Stack</p>
+                        <p class="bio">Criou e manteve tanto o front-end quanto o back-end do WYN. Integrando essas duas partes para garantir que o sistema funcione de ponta a ponta. Implementou melhorias e garantindo a boa experiência do usuário e a eficiência do sistema</p>
+                    </div>
+                    <div class="team-member-card">
+                        <img src="/Tela Inicial copy/Jonathan.jpeg" alt="Foto do Gerente de Suporte">
+                        <h3>Jonathan Lensk</h3>
+                        <p class="role">Tester/Analista de Suporte</p>
+                        <p class="bio">Ana e sua equipe garantem que todos os usuários e prestadores tenham a melhor experiência e suporte.</p>
+                    </div>
+                    <div class="team-member-card">
+                        <img src="/Tela Inicial copy/gustavo.jpeg" alt="Foto do Gerente de Suporte">
+                        <h3>Gustavo Santos</h3>
+                        <p class="role">Designer e Mobile</p>
+                        <p class="bio">Designer e desenvolvedor do app mobile WYN. Criou as interfaces no Figma, com foco na usabilidade e consistência visual da aplicação. Desenvolveu o app mobile em Java, focando na experiência do usuário e nas principais funcionalidades do serviço.</p>
+                    </div>
+                    <div class="team-member-card">
+                        <img src="https://placehold.co/120x120/ff6c0f/white?text=Suporte" alt="Foto do Gerente de Suporte">
+                        <h3>Pablo Santos</h3>
+                        <p class="role">Analista de Requisitos</p>
+                        <p class="bio">Ana e sua equipe garantem que todos os usuários e prestadores tenham a melhor experiência e suporte.</p>
+                    </div>
+                                       <div class="team-member-card">
+                        <img src="https://placehold.co/120x120/ff6c0f/white?text=Suporte" alt="Foto do Gerente de Suporte">
+                        <h3>Gabriel Ferraz</h3>
+                        <p class="role">Analista de Requisitos</p>
+                        <p class="bio">Ana e sua equipe garantem que todos os usuários e prestadores tenham a melhor experiência e suporte.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="contact-us-section" id="contact-us-section">
+            <div class="container">
+                <h2 class="section-title">Entre em Contato Conosco</h2>
+                <p class="text-center text-lg text-gray-700 mb-12">Tem alguma dúvida ou sugestão? Preencha o formulário abaixo e entraremos em contato o mais breve possível.</p>
+                    <div class="contact-card">
+                        <h3>Informações e Redes Sociais</h3>
+                        <div class="contact-info-item">
+                            <i class='bx bx-envelope'></i>
+                            <span>wyn151518@gmail.com</span>
+                        </div>
+                        <div class="contact-info-item">
+                            <i class='bx bx-phone'></i>
+                            <span>(11) 98765-4321</span>
+                        </div>
+                        <div class="contact-info-item">
+                            <i class='bx bx-map'></i>
+                            <span>Rua Facens, 123 - Sorocaba, SP</span>
+                        </div>
+                        <h4 class="text-xl font-semibold mt-8 mb-4 text-gray-700">Nossas Redes Sociais</h4>
+                        <div class="social-icons-contact">
+                            <a href="https://facebook.com/wyn" target="_blank" aria-label="Facebook"><i class='bx bxl-facebook-square'></i></a>
+                            <a href="https://instagram.com/wyn" target="_blank" aria-label="Instagram"><i class='bx bxl-instagram-alt'></i></a>
+                            <a href="https://linkedin.com/company/wyn" target="_blank" aria-label="LinkedIn"><i class='bx bxl-linkedin-square'></i></a>
+                        </div>
+                    </div>
+                </div>
+        <footer class="site-footer" id="contact-section"> <div class="container">
                 <div class="footer-content">
                     <div class="footer-col logo-col">
                         <div class="footer-logo">
@@ -341,12 +650,8 @@
                             <li><a href="/indexx.html">Inicio</a></li>
                             <li><a href="#how-it-works-section">Como Funciona</a></li>
                             <li><a href="#services-section">Serviços</a></li>
-                            <li><a href="#about-section">Sobre</a></li>
-                            <li><a href="#contact-section">Contate-nos</a></li>
-                            <li><a href="/em breve/index.html">Nosso Time</a></li>
-                            <li><a href="/Seleção/dist/index.html">Login/Cadastro</a></li>
-                             <li><a href="/em breve/index.html">Em breve</a></li>
-                        </ul>
+                            <li><a href="#our-team-section">Sobre</a></li> <li> <li><a href="#our-team-section">Nosso Time</a></li> <li><a href="/Seleção/dist/index.html">Login/Cadastro</a></li>
+                             <li><a href="#upcoming-categories-section">Em breve</a></li> </ul>
                     </div>
                     <div class="footer-col subscribe-col">
                         <div class="footer-widget-heading">
@@ -377,8 +682,7 @@
                                 <li><a href="/Termos e Condições.docx">Termos</a></li>
                                 <li><a href="/Termos e Condições.docx">Privacidade</a></li>
                                 <li><a href="/LANDING PAGE WYN/LANDING PAGE WYN/login.html">Login</a></li>
-                                <li><a href="/em breve/index.html">Contate-nos</a></li>
-                            </ul>
+                                <li><a href="#contact-us-section">Contate-nos</a></li> </ul>
                         </div>
                     </div>
                 </div>
@@ -413,7 +717,7 @@
             });
         });
     </script>
-    <script src="/script.js"></script>
+    <script src="script.js"></script>
 </body>
 
 </html>
