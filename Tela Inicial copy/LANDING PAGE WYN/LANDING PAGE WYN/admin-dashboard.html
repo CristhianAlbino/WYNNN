@@ -939,6 +939,11 @@
                     throw new Error("Resposta de perfil inválida.");
                 }
 
+                // --- NOVO CONSOLE.LOG PARA DEPURAR ---
+                console.log("Dados do usuário recebidos do backend para admin:", data);
+                // --- FIM NOVO CONSOLE.LOG ---
+
+
                 // --- VERIFICAÇÃO CRUCIAL: O usuário logado é realmente um ADMIN? ---
                 // Verifica se o tipo de usuário é 'usuario' e se a propriedade 'isAdmin' é true
                 if (data.tipo !== 'usuario' || !data.usuario?._id || !data.usuario?.isAdmin) {
@@ -1221,15 +1226,15 @@
                      carregarServicos(); // Chama a função para carregar dados de serviços (pedidos)
                      break;
                 case 'servicos-oferecidos':
-                     carregarServicosOferecidos(); // Chama a função para carregar dados do catálogo
-                     break;
+                    carregarServicosOferecidos(); // Chama a função para carregar dados do catálogo
+                    break;
                 case 'avaliacoes':
-                     carregarAvaliacoes(); // Chama a função para carregar dados de avaliações
-                     break;
-                 case 'overview':
-                     carregarContadoresAdmin(); // Recarrega contadores
-                     carregarDadosParaGraficoAdmin(); // Recarrega dados do gráfico
-                     break;
+                    carregarAvaliacoes(); // Chama a função para carregar dados de avaliações
+                    break;
+                case 'overview':
+                    carregarContadoresAdmin(); // Recarrega contadores
+                    carregarDadosParaGraficoAdmin(); // Recarrega dados do gráfico
+                    break;
                 default:
                     console.warn("Seção desconhecida:", sectionId);
                     break;
@@ -1267,7 +1272,6 @@
                 $('#table-usuarios').DataTable().destroy();
             }
 
-
             try {
                 // --- Requisição GET para o endpoint de listar usuários do admin ---
                 // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
@@ -1277,10 +1281,10 @@
 
                 // Verifica se a resposta foi bem-sucedida (status 2xx)
                 if (!response.ok) {
-                     const errorText = await response.text();
-                     console.error("Erro HTTP ao buscar usuários:", response.status, errorText);
-                     // Lança um erro com a mensagem do backend ou status HTTP
-                     throw new Error(errorText || `Erro HTTP: ${response.status}`);
+                    const errorText = await response.text();
+                    console.error("Erro HTTP ao buscar usuários:", response.status, errorText);
+                    // Lança um erro com a mensagem do backend ou status HTTP
+                    throw new Error(errorText || `Erro HTTP: ${response.status}`);
                 }
 
                 const usuarios = await response.json(); // Parseia a resposta JSON
@@ -1314,15 +1318,14 @@
                         `;
                         tbody.appendChild(row); // Adiciona a linha ao corpo da tabela
                     });
-                     // Inicializa o plugin DataTables na tabela após carregar os dados
-                     // Isso adiciona funcionalidades como paginação, busca e ordenação
-                     $('#table-usuarios').DataTable({
-                          "destroy": true, // Permite reinicializar o DataTable na próxima carga
-                          "responsive": true
-                     });
+
+                    // Inicializa o plugin DataTables na tabela após carregar os dados
+                    // Isso adiciona funcionalidades como paginação, busca e ordenação
+                    $('#table-usuarios').DataTable({
+                        "destroy": true, // Permite reinicializar o DataTable na próxima carga
+                        "responsive": true
+                    });
                 }
-
-
             } catch (error) {
                 console.error("Erro ao carregar usuários:", error);
                 // Exibe mensagem de erro no feedback
@@ -1334,1130 +1337,1047 @@
             }
         }
 
-         // Carrega a lista de prestadores e preenche a tabela
-         async function carregarPrestadores() {
-             const loading = document.getElementById("prestadores-loading");
-             const feedback = document.getElementById("prestadores-feedback");
-             const empty = document.getElementById("prestadores-empty");
-             const tbody = document.getElementById("tbody-prestadores");
-             const token = localStorage.getItem("token");
-
-             loading.style.display = "block";
-             feedback.style.display = "none";
-             empty.style.display = "none";
-             tbody.innerHTML = "";
-
-             // Destroi a instância anterior do DataTables antes de recarregar
-             if ($.fn.DataTable.isDataTable('#table-prestadores')) {
-                 $('#table-prestadores').DataTable().destroy();
-             }
-
-             if (!token) {
-                 feedback.textContent = "Autenticação necessária para carregar prestadores.";
-                 feedback.style.display = "block";
-                 loading.style.display = "none";
-                 return;
-             }
-
-             try {
-                 // --- Requisição GET para o endpoint de listar prestadores do admin ---
-                 // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
-                 const response = await fetch("https://wyn-backend.onrender.com/admin/prestadores", {
-                     headers: { 'Authorization': `Bearer ${token}` }
-                 });
-
-                 if (!response.ok) {
-                      const errorText = await response.text();
-                      console.error("Erro HTTP ao buscar prestadores:", response.status, errorText);
-                      throw new Error(errorText || `Erro HTTP: ${response.status}`);
-                 }
-
-                 const prestadores = await response.json();
-                 console.log("Prestadores carregados:", prestadores);
-                 allPrestadores = prestadores; // Armazena a lista de prestadores para usar no modal de serviço oferecido
-
-                 if (prestadores.length === 0) {
-                     empty.style.display = 'block';
-                 } else {
-                     prestadores.forEach(prestador => {
-                         const row = document.createElement("tr");
-                         // --- URL BASE ATUALIZADA PARA O BACKEND NO RENDER ---
-                         const fotoUrl = prestador.foto_perfil ? `https://wyn-backend.onrender.com/${prestador.foto_perfil.replace(/\\/g, '/')}` : 'vendors/images/photo4.jpg';
-
-                         row.innerHTML = `
-                             <td>${prestador.nome || 'Nome não informado'}</td>
-                             <td>${prestador.email || 'Email não informado'}</td>
-                             <td>${prestador.telefone || 'Não informado'}</td>
-                             <td>
-                                 <img src="${fotoUrl}" width="40" height="40" style="border-radius: 50%; object-fit: cover;" alt="Foto de Perfil" onerror="this.onerror=null;this.src='vendors/images/photo4.jpg';"/>
-                             </td>
-                             <td>
-                                 <div class="table-actions">
-                                     <a href="#" data-id="${prestador._id}" class="btn btn-sm btn-primary edit-prestador" data-toggle="modal" data-target="#prestadorModal">Editar</a>
-                                     <a href="#" data-id="${prestador._id}" class="btn btn-sm btn-danger delete-prestador">Deletar</a>
-                                 </div>
-                             </td>
-                         `;
-                         tbody.appendChild(row);
-                     });
-                      // Inicializa DataTables para a tabela de prestadores
-                      $('#table-prestadores').DataTable({
-                           "destroy": true, // Permite reinicializar o DataTable
-                           "responsive": true
-                      });
-                 }
-
-             } catch (error) {
-                 console.error("Erro ao carregar prestadores:", error);
-                 feedback.textContent = `Erro ao carregar prestadores: ${error.message || 'Verifique a conexão.'}`;
-                 feedback.style.display = "block";
-                 empty.style.display = 'none';
-             } finally {
-                 loading.style.display = "none";
-             }
-         }
-
-         // Função para carregar dados dos Serviços (Pedidos dos Clientes) - Manter como estava
-         async function carregarServicos() {
-              const loading = document.getElementById("servicos-loading");
-              const feedback = document.getElementById("servicos-feedback");
-              const empty = document.getElementById("servicos-empty");
-              const tbody = document.getElementById("tbody-servicos");
-              const token = localStorage.getItem("token");
-
-              loading.style.display = "block";
-              feedback.style.display = "none";
-              empty.style.display = "none";
-              tbody.innerHTML = "";
-
-              // Destroi a instância anterior do DataTables antes de recarregar
-              if ($.fn.DataTable.isDataTable('#table-servicos')) {
-                  $('#table-servicos').DataTable().destroy();
-              }
-
-
-              if (!token) {
-                  feedback.textContent = "Autenticação necessária para carregar serviços.";
-                  feedback.style.display = "block";
-                  loading.style.display = "none";
-                  return;
-              }
-
-              try {
-                  // --- Requisição GET para o endpoint de listar serviços do admin ---
-                  // Este endpoint deve retornar todos os serviços (pedidos), populando cliente e prestador
-                  // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
-                  const response = await fetch("https://wyn-backend.onrender.com/admin/servicos", {
-                      headers: { 'Authorization': `Bearer ${token}` }
-                  });
-
-                  if (!response.ok) {
-                       const errorText = await response.text();
-                       console.error("Erro HTTP ao buscar serviços:", response.status, errorText);
-                       throw new Error(errorText || `Erro HTTP: ${response.status}`);
-                  }
-
-                  const servicos = await response.json();
-                  console.log("Serviços (pedidos) carregados:", servicos);
-
-                  if (servicos.length === 0) {
-                      empty.style.display = 'block';
-                  } else {
-                      servicos.forEach(servico => {
-                          const row = document.createElement("tr");
-                           // Mapeia o status do backend para um texto mais amigável
-                           const statusTexto = statusMapPrestador[servico.status] || servico.status || 'Desconhecido';
-                           // Formata a data e o valor
-                           const dataPedidoFormatada = servico.data_solicitacao ? new Date(servico.data_solicitacao).toLocaleDateString('pt-BR') : 'Não informada';
-                           const valorFormatado = servico.valor_servico !== undefined && servico.valor_servico !== null ? `R$ ${servico.valor_servico.toFixed(2).replace('.', ',')}` : 'Não definido';
-
-
-                          row.innerHTML = `
-                              <td>${servico._id.substring(0, 6)}...</td> <td>${servico.usuario_id?.nome || 'Cliente Desconhecido'}</td> <td>${servico.prestador_id?.nome || 'Prestador Não Atribuído'}</td> <td>${servico.tipo_servico || 'Não informado'}</td>
-                              <td>${statusTexto}</td>
-                              <td>${dataPedidoFormatada}</td>
-                              <td>${valorFormatado}</td>
-                              <td>
-                                  <div class="table-actions">
-                                       <a href="#" data-id="${servico._id}" class="btn btn-sm btn-info view-servico-admin" data-toggle="modal" data-target="#detalhesServicoAdminModal">Ver Detalhes</a>
-                                      <a href="#" data-id="${servico._id}" class="btn btn-sm btn-danger delete-servico-admin">Deletar</a>
-                                  </div>
-                              </td>
-                          `;
-                          tbody.appendChild(row);
-                      });
-                       // Inicializa DataTables para a tabela de serviços
-                       $('#table-servicos').DataTable({
-                            "destroy": true, // Permite reinicializar o DataTable
-                            "responsive": true
-                       });
-                  }
-
-              } catch (error) {
-                  console.error("Erro ao carregar serviços:", error);
-                  feedback.textContent = `Erro ao carregar serviços: ${error.message || 'Verifique a conexão.'}`;
-                  feedback.style.display = "block";
-                  empty.style.display = 'none';
-              } finally {
-                  loading.style.display = "none";
-              }
-         }
-
-         // Função para carregar dados dos Serviços Oferecidos (Catálogo) - Manter como estava
-         async function carregarServicosOferecidos() {
-              const loading = document.getElementById("servicos-oferecidos-loading");
-              const feedback = document.getElementById("servicos-oferecidos-feedback");
-              const empty = document.getElementById("servicos-oferecidos-empty");
-              const tbody = document.getElementById("tbody-servicos-oferecidos");
-              const token = localStorage.getItem("token");
-
-              loading.style.display = "block";
-              feedback.style.display = "none";
-              empty.style.display = "none";
-              tbody.innerHTML = "";
-
-              // Destroi a instância anterior do DataTables antes de recarregar
-              if ($.fn.DataTable.isDataTable('#table-servicos-oferecidos')) {
-                  $('#table-servicos-oferecidos').DataTable().destroy();
-              }
-
-
-              if (!token) {
-                  feedback.textContent = "Autenticação necessária para carregar o catálogo de serviços.";
-                  feedback.style.display = "block";
-                  loading.style.display = "none";
-                  return;
-              }
-
-              try {
-                  // --- Requisição GET para o endpoint de listar serviços oferecidos do admin ---
-                  // Este endpoint deve retornar todos os serviços oferecidos, populando o prestador
-                  // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
-                  const response = await fetch("https://wyn-backend.onrender.com/admin/servicos-oferecidos", {
-                      headers: { 'Authorization': `Bearer ${token}` }
-                  });
-
-                  if (!response.ok) {
-                       const errorText = await response.text();
-                       console.error("Erro HTTP ao buscar catálogo de serviços:", response.status, errorText);
-                       throw new Error(errorText || `Erro HTTP: ${response.status}`);
-                  }
-
-                  const servicos = await response.json();
-                  console.log("Catálogo de serviços carregado:", servicos);
-
-                  if (servicos.length === 0) {
-                      empty.style.display = 'block';
-                  } else {
-                      servicos.forEach(servico => {
-                          const row = document.createElement("tr");
-                           // Formata a faixa de preço e as categorias
-                           const faixaPreco = (servico.faixa_preco_min !== undefined && servico.faixa_preco_min !== null && servico.faixa_preco_max !== undefined && servico.faixa_preco_max !== null)
-                                ? `R$ ${servico.faixa_preco_min.toFixed(2).replace('.', ',')} a R$ ${servico.faixa_preco_max.toFixed(2).replace('.', ',')}`
-                                : 'Não informada';
-                           const categorias = servico.categorias && servico.categorias.length > 0 ? servico.categorias.join(', ') : 'Nenhuma';
-
-                          row.innerHTML = `
-                              <td>${servico.nome || 'Não informado'}</td>
-                              <td>${servico.prestador_id?.nome || 'Prestador Não Atribuído'}</td> <td>${servico.descricao || 'Sem descrição'}</td>
-                              <td>${faixaPreco}</td>
-                              <td>${categorias}</td>
-                              <td>
-                                  <div class="table-actions">
-                                      <a href="#" data-id="${servico._id}" class="btn btn-sm btn-primary edit-servico-oferecido" data-toggle="modal" data-target="#servicoOferecidoModal">Editar</a>
-                                      <a href="#" data-id="${servico._id}" class="btn btn-sm btn-danger delete-servico-oferecido">Deletar</a>
-                                  </div>
-                              </td>
-                          `;
-                          tbody.appendChild(row);
-                      });
-                       // Inicializa DataTables para a tabela de serviços oferecidos
-                       $('#table-servicos-oferecidos').DataTable({
-                            "destroy": true, // Permite reinicializar o DataTable
-                            "responsive": true
-                       });
-                  }
-
-              } catch (error) {
-                  console.error("Erro ao carregar catálogo de serviços:", error);
-                  feedback.textContent = `Erro ao carregar catálogo de serviços: ${error.message || 'Verifique a conexão.'}`;
-                  feedback.style.display = "block";
-                  empty.style.display = 'none';
-              } finally {
-                  loading.style.display = "none";
-              }
-         }
-
-         // Função para carregar dados das Avaliações - Manter como estava
-         async function carregarAvaliacoes() {
-              const loading = document.getElementById("avaliacoes-loading");
-              const feedback = document.getElementById("avaliacoes-feedback");
-              const empty = document.getElementById("avaliacoes-empty");
-              const tbody = document.getElementById("tbody-avaliacoes");
-              const token = localStorage.getItem("token");
-
-              loading.style.display = "block";
-              feedback.style.display = "none";
-              empty.style.display = "none";
-              tbody.innerHTML = "";
-
-              // Destroi a instância anterior do DataTables antes de recarregar
-              if ($.fn.DataTable.isDataTable('#table-avaliacoes')) {
-                  $('#table-avaliacoes').DataTable().destroy();
-              }
-
-
-              if (!token) {
-                  feedback.textContent = "Autenticação necessária para carregar avaliações.";
-                  feedback.style.display = "block";
-                  loading.style.display = "none";
-                  return;
-              }
-
-              try {
-                  // --- Requisição GET para o endpoint de listar avaliações do admin ---
-                  // Este endpoint deve retornar todas as avaliações, populando cliente, prestador e serviço
-                  // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
-                  const response = await fetch("https://wyn-backend.onrender.com/admin/avaliacoes", {
-                      headers: { 'Authorization': `Bearer ${token}` }
-                  });
-
-                  if (!response.ok) {
-                       const errorText = await response.text();
-                       console.error("Erro HTTP ao buscar avaliações:", response.status, errorText);
-                       throw new Error(errorText || `Erro HTTP: ${response.status}`);
-                  }
-
-                  const avaliacoes = await response.json();
-                  console.log("Avaliações carregadas:", avaliacoes);
-
-                  if (avaliacoes.length === 0) {
-                      empty.style.display = 'block';
-                  } else {
-                      avaliacoes.forEach(avaliacao => {
-                          const row = document.createElement("tr");
-                           // Formata a data
-                           const dataAvaliacaoFormatada = avaliacao.data_avaliacao ? new Date(avaliacao.data_avaliacao).toLocaleDateString('pt-BR') : 'Não informada';
-
-                          row.innerHTML = `
-                              <td>${avaliacao._id.substring(0, 6)}...</td> <td>${avaliacao.pedido_servico_id?.tipo_servico || 'Serviço Desconhecido'}</td> <td>${avaliacao.cliente_id?.nome || 'Cliente Desconhecido'}</td> <td>${avaliacao.prestador_id?.nome || 'Prestador Desconhecido'}</td> <td>${avaliacao.nota !== undefined && avaliacao.nota !== null ? `${avaliacao.nota}/5` : 'Não avaliado'}</td>
-                              <td>${avaliacao.comentario || 'Sem comentário'}</td>
-                              <td>${dataAvaliacaoFormatada}</td>
-                              <td>
-                                  <div class="table-actions">
-                                      <a href="#" data-id="${avaliacao._id}" class="btn btn-sm btn-danger delete-avaliacao">Deletar</a>
-                                  </div>
-                              </td>
-                          `;
-                          tbody.appendChild(row);
-                      });
-                       // Inicializa DataTables para a tabela de avaliações
-                       $('#table-avaliacoes').DataTable({
-                            "destroy": true, // Permite reinicializar o DataTable
-                            "responsive": true
-                       });
-                  }
-
-              } catch (error) {
-                  console.error("Erro ao carregar avaliações:", error);
-                  feedback.textContent = `Erro ao carregar avaliações: ${error.message || 'Verifique a conexão.'}`;
-                  feedback.style.display = "block";
-                  empty.style.display = 'none';
-              } finally {
-                  loading.style.display = "none";
-              }
-         }
-
-
-        // --- Funções para Manipulação de Dados (Adicionar, Editar, Deletar) ---
-        // Estas funções lidam com a submissão de formulários modais e chamam os endpoints do backend
-
-        // Listener para o formulário de Usuário (Adicionar/Editar)
-        document.getElementById('usuarioForm').addEventListener('submit', async (event) => {
-            event.preventDefault(); // Previne o recarregamento da página
-            const id = document.getElementById('usuarioId').value; // Pega o ID (vazio para adicionar, preenchido para editar)
-            const nome = document.getElementById('usuarioNome').value;
-            const email = document.getElementById('usuarioEmail').value;
-            const telefone = document.getElementById('usuarioTelefone').value;
-            const senha = document.getElementById('usuarioSenha').value; // Apenas para adicionar ou mudar senha (se implementado)
-            const fotoPerfilInput = document.getElementById('usuarioFotoPerfil');
-            const fotoPerfilFile = fotoPerfilInput.files[0]; // Pega o arquivo de foto selecionado
-            const isAdmin = document.getElementById('usuarioIsAdmin').checked; // Pega o valor do checkbox isAdmin
-
+        // Carrega a lista de prestadores e preenche a tabela
+        async function carregarPrestadores() {
+            const loading = document.getElementById("prestadores-loading");
+            const feedback = document.getElementById("prestadores-feedback");
+            const empty = document.getElementById("prestadores-empty");
+            const tbody = document.getElementById("tbody-prestadores");
             const token = localStorage.getItem("token");
-             if (!token) {
-                  showToast("Autenticação necessária.", 'danger');
-                  return;
-             }
 
-             // Cria um objeto FormData para enviar dados, incluindo arquivos
-             const formData = new FormData();
-             formData.append('nome', nome);
-             formData.append('email', email);
-             if (telefone) formData.append('telefone', telefone);
-             // Adiciona a senha apenas se estiver adicionando um novo usuário (ID vazio) ou se o campo de senha foi preenchido na edição
-             if (senha && (!id || senha.trim() !== '')) { // Verifica se há senha E (é adição OU senha não está vazia na edição)
-                 formData.append('senha', senha);
-             }
-             if (fotoPerfilFile) formData.append('foto_perfil', fotoPerfilFile);
-             formData.append('isAdmin', isAdmin); // Adiciona a flag isAdmin ao FormData
+            loading.style.display = "block";
+            feedback.style.display = "none";
+            empty.style.display = "none";
+            tbody.innerHTML = "";
 
+            // Destroi a instância anterior do DataTables antes de recarregar
+            if ($.fn.DataTable.isDataTable('#table-prestadores')) {
+                $('#table-prestadores').DataTable().destroy();
+            }
 
-            // Define o método e a URL da requisição com base se é adição ou edição
-            const method = id ? 'PUT' : 'POST';
-            // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
-            const url = id ? `https://wyn-backend.onrender.com/admin/usuarios/${id}` : 'https://wyn-backend.onrender.com/admin/usuarios';
+            if (!token) {
+                feedback.textContent = "Autenticação necessária para carregar prestadores.";
+                feedback.style.display = "block";
+                loading.style.display = "none";
+                return;
+            }
 
             try {
-                 // --- Requisição para o endpoint de adicionar/atualizar usuário do admin ---
-                 const response = await fetch(url, {
-                     method: method,
-                      // Ao usar FormData, o navegador define o Content-Type correto (multipart/form-data)
-                      // Não precisamos definir 'Content-Type': 'application/json' aqui
-                     headers: { 'Authorization': `Bearer ${token}` }, // Inclui o token de autenticação
-                     body: formData // Envia o FormData no corpo da requisição
-                 });
-
-                const result = await response.json(); // Parseia a resposta JSON
+                // --- Requisição GET para o endpoint de listar prestadores do admin ---
+                // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+                const response = await fetch("https://wyn-backend.onrender.com/admin/prestadores", {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
 
                 if (!response.ok) {
-                    // Exibe mensagem de erro do backend ou uma mensagem padrão
-                    showToast(result.message || `Erro ao ${id ? 'atualizar' : 'adicionar'} usuário.`, 'danger');
-                    console.error(`Erro ao ${id ? 'atualizar' : 'adicionar'} usuário:`, result);
+                    const errorText = await response.text();
+                    console.error("Erro HTTP ao buscar prestadores:", response.status, errorText);
+                    throw new Error(errorText || `Erro HTTP: ${response.status}`);
+                }
+
+                const prestadores = await response.json();
+                console.log("Prestadores carregados:", prestadores);
+                allPrestadores = prestadores; // Armazena a lista de prestadores para usar no modal de serviço oferecido
+
+                if (prestadores.length === 0) {
+                    empty.style.display = 'block';
                 } else {
-                    // Exibe mensagem de sucesso
-                    showToast(result.message || `Usuário ${id ? 'atualizado' : 'adicionado'} com sucesso!`, 'success');
-                    $('#usuarioModal').modal('hide'); // Fecha o modal
-                    carregarUsuarios(); // Recarrega a lista de usuários na tabela
-                    carregarContadoresAdmin(); // Atualiza os contadores no dashboard
+                    prestadores.forEach(prestador => {
+                        const row = document.createElement("tr");
+                        // --- URL BASE ATUALIZADA PARA O BACKEND NO RENDER ---
+                        const fotoUrl = prestador.foto_perfil ? `https://wyn-backend.onrender.com/${prestador.foto_perfil.replace(/\\/g, '/')}` : 'vendors/images/photo4.jpg';
+
+                        row.innerHTML = `
+                            <td>${prestador.nome || 'Nome não informado'}</td>
+                            <td>${prestador.email || 'Email não informado'}</td>
+                            <td>${prestador.telefone || 'Não informado'}</td>
+                            <td>
+                                <img src="${fotoUrl}" width="40" height="40" style="border-radius: 50%; object-fit: cover;" alt="Foto de Perfil" onerror="this.onerror=null;this.src='vendors/images/photo4.jpg';"/>
+                            </td>
+                            <td>
+                                <div class="table-actions">
+                                    <a href="#" data-id="${prestador._id}" class="btn btn-sm btn-primary edit-prestador" data-toggle="modal" data-target="#prestadorModal">Editar</a>
+                                    <a href="#" data-id="${prestador._id}" class="btn btn-sm btn-danger delete-prestador">Deletar</a>
+                                </div>
+                            </td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+
+                    // Inicializa DataTables para a tabela de prestadores
+                    $('#table-prestadores').DataTable({
+                        "destroy": true, // Permite reinicializar o DataTable
+                        "responsive": true
+                    });
                 }
             } catch (error) {
-                console.error(`Erro ao ${id ? 'atualizar' : 'adicionar'} usuário:`, error);
-                showToast(error.message || `Erro ao ${id ? 'atualizar' : 'adicionar'} usuário.`, 'danger');
+                console.error("Erro ao carregar prestadores:", error);
+                feedback.textContent = `Erro ao carregar prestadores: ${error.message || 'Verifique a conexão.'}`;
+                feedback.style.display = "block";
+                empty.style.display = 'none';
+            } finally {
+                loading.style.display = "none";
+            }
+        }
+
+        // Função para carregar dados dos Serviços (Pedidos dos Clientes) - Manter como estava
+        async function carregarServicos() {
+            const loading = document.getElementById("servicos-loading");
+            const feedback = document.getElementById("servicos-feedback");
+            const empty = document.getElementById("servicos-empty");
+            const tbody = document.getElementById("tbody-servicos");
+            const token = localStorage.getItem("token");
+
+            loading.style.display = "block";
+            feedback.style.display = "none";
+            empty.style.display = "none";
+            tbody.innerHTML = "";
+
+            // Destroi a instância anterior do DataTables antes de recarregar
+            if ($.fn.DataTable.isDataTable('#table-servicos')) {
+                $('#table-servicos').DataTable().destroy();
+            }
+
+            if (!token) {
+                feedback.textContent = "Autenticação necessária para carregar serviços.";
+                feedback.style.display = "block";
+                loading.style.display = "none";
+                return;
+            }
+
+            try {
+                // --- Requisição GET para o endpoint de listar serviços do admin ---
+                // Este endpoint deve retornar todos os serviços (pedidos), populando cliente e prestador
+                // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+                const response = await fetch("https://wyn-backend.onrender.com/admin/servicos", {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error("Erro HTTP ao buscar serviços:", response.status, errorText);
+                    throw new Error(errorText || `Erro HTTP: ${response.status}`);
+                }
+
+                const servicos = await response.json();
+                console.log("Serviços (pedidos) carregados:", servicos);
+
+                if (servicos.length === 0) {
+                    empty.style.display = 'block';
+                } else {
+                    servicos.forEach(servico => {
+                        const row = document.createElement("tr");
+                        // Mapeia o status do backend para um texto mais amigável
+                        const statusTexto = statusMapPrestador[servico.status] || servico.status || 'Desconhecido';
+                        // Formata a data e o valor
+                        const dataPedidoFormatada = servico.data_solicitacao ? new Date(servico.data_solicitacao).toLocaleDateString('pt-BR') : 'Não informada';
+                        const valorFormatado = servico.valor_servico !== undefined && servico.valor_servico !== null ? `R$ ${servico.valor_servico.toFixed(2).replace('.', ',')}` : 'Não definido';
+
+                        row.innerHTML = `
+                            <td>${servico._id.substring(0, 6)}...</td>
+                            <td>${servico.usuario_id?.nome || 'Cliente Desconhecido'}</td>
+                            <td>${servico.prestador_id?.nome || 'Prestador Não Atribuído'}</td>
+                            <td>${servico.tipo_servico || 'Não informado'}</td>
+                            <td>${statusTexto}</td>
+                            <td>${dataPedidoFormatada}</td>
+                            <td>${valorFormatado}</td>
+                            <td>
+                                <div class="table-actions">
+                                    <a href="#" data-id="${servico._id}" class="btn btn-sm btn-info view-servico-admin" data-toggle="modal" data-target="#detalhesServicoAdminModal">Ver Detalhes</a>
+                                    <a href="#" data-id="${servico._id}" class="btn btn-sm btn-danger delete-servico-admin">Deletar</a>
+                                </div>
+                            </td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+
+                    // Inicializa DataTables para a tabela de serviços
+                    $('#table-servicos').DataTable({
+                        "destroy": true, // Permite reinicializar o DataTable
+                        "responsive": true
+                    });
+                }
+            } catch (error) {
+                console.error("Erro ao carregar serviços:", error);
+                feedback.textContent = `Erro ao carregar serviços: ${error.message || 'Verifique a conexão.'}`;
+                feedback.style.display = "block";
+                empty.style.display = 'none';
+            } finally {
+                loading.style.display = "none";
+            }
+        }
+
+        // Função para carregar dados dos Serviços Oferecidos (Catálogo) - Manter como estava
+        async function carregarServicosOferecidos() {
+            const loading = document.getElementById("servicos-oferecidos-loading");
+            const feedback = document.getElementById("servicos-oferecidos-feedback");
+            const empty = document.getElementById("servicos-oferecidos-empty");
+            const tbody = document.getElementById("tbody-servicos-oferecidos");
+            const token = localStorage.getItem("token");
+
+            loading.style.display = "block";
+            feedback.style.display = "none";
+            empty.style.display = "none";
+            tbody.innerHTML = "";
+
+            // Destroi a instância anterior do DataTables antes de recarregar
+            if ($.fn.DataTable.isDataTable('#table-servicos-oferecidos')) {
+                $('#table-servicos-oferecidos').DataTable().destroy();
+            }
+
+            if (!token) {
+                feedback.textContent = "Autenticação necessária para carregar o catálogo de serviços.";
+                feedback.style.display = "block";
+                loading.style.display = "none";
+                return;
+            }
+
+            try {
+                // --- Requisição GET para o endpoint de listar serviços oferecidos do admin ---
+                // Este endpoint deve retornar todos os serviços oferecidos, populando o prestador
+                // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+                const response = await fetch("https://wyn-backend.onrender.com/admin/servicos-oferecidos", {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error("Erro HTTP ao buscar catálogo de serviços:", response.status, errorText);
+                    throw new Error(errorText || `Erro HTTP: ${response.status}`);
+                }
+
+                const servicos = await response.json();
+                console.log("Catálogo de serviços carregado:", servicos);
+
+                if (servicos.length === 0) {
+                    empty.style.display = 'block';
+                } else {
+                    servicos.forEach(servico => {
+                        const row = document.createElement("tr");
+                        // Formata a faixa de preço e as categorias
+                        const faixaPreco = (servico.faixa_preco_min !== undefined && servico.faixa_preco_min !== null && servico.faixa_preco_max !== undefined && servico.faixa_preco_max !== null) ? `R$ ${servico.faixa_preco_min.toFixed(2).replace('.', ',')} a R$ ${servico.faixa_preco_max.toFixed(2).replace('.', ',')}` : 'Não informada';
+                        const categorias = servico.categorias && servico.categorias.length > 0 ? servico.categorias.join(', ') : 'Nenhuma';
+
+                        row.innerHTML = `
+                            <td>${servico.nome || 'Não informado'}</td>
+                            <td>${servico.prestador_id?.nome || 'Prestador Não Atribuído'}</td>
+                            <td>${servico.descricao || 'Sem descrição'}</td>
+                            <td>${faixaPreco}</td>
+                            <td>${categorias}</td>
+                            <td>
+                                <div class="table-actions">
+                                    <a href="#" data-id="${servico._id}" class="btn btn-sm btn-primary edit-servico-oferecido" data-toggle="modal" data-target="#servicoOferecidoModal">Editar</a>
+                                    <a href="#" data-id="${servico._id}" class="btn btn-sm btn-danger delete-servico-oferecido">Deletar</a>
+                                </div>
+                            </td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+
+                    // Inicializa DataTables para a tabela de serviços oferecidos
+                    $('#table-servicos-oferecidos').DataTable({
+                        "destroy": true,
+                        "responsive": true
+                    });
+                }
+            } catch (error) {
+                console.error("Erro ao carregar catálogo de serviços oferecidos:", error);
+                feedback.textContent = `Erro ao carregar catálogo de serviços: ${error.message || 'Verifique a conexão.'}`;
+                feedback.style.display = "block";
+                empty.style.display = 'none';
+            } finally {
+                loading.style.display = "none";
+            }
+        }
+
+        // Função para carregar dados das Avaliações - Manter como estava
+        async function carregarAvaliacoes() {
+            const loading = document.getElementById("avaliacoes-loading");
+            const feedback = document.getElementById("avaliacoes-feedback");
+            const empty = document.getElementById("avaliacoes-empty");
+            const tbody = document.getElementById("tbody-avaliacoes");
+            const token = localStorage.getItem("token");
+
+            loading.style.display = "block";
+            feedback.style.display = "none";
+            empty.style.display = "none";
+            tbody.innerHTML = "";
+
+            // Destroi a instância anterior do DataTables antes de recarregar
+            if ($.fn.DataTable.isDataTable('#table-avaliacoes')) {
+                $('#table-avaliacoes').DataTable().destroy();
+            }
+
+            if (!token) {
+                feedback.textContent = "Autenticação necessária para carregar avaliações.";
+                feedback.style.display = "block";
+                loading.style.display = "none";
+                return;
+            }
+
+            try {
+                // --- Requisição GET para o endpoint de listar avaliações do admin ---
+                // Este endpoint deve retornar todas as avaliações, populando cliente e prestador
+                // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+                const response = await fetch("https://wyn-backend.onrender.com/admin/avaliacoes", {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error("Erro HTTP ao buscar avaliações:", response.status, errorText);
+                    throw new Error(errorText || `Erro HTTP: ${response.status}`);
+                }
+
+                const avaliacoes = await response.json();
+                console.log("Avaliações carregadas:", avaliacoes);
+
+                if (avaliacoes.length === 0) {
+                    empty.style.display = 'block';
+                } else {
+                    avaliacoes.forEach(avaliacao => {
+                        const row = document.createElement("tr");
+                        const dataAvaliacaoFormatada = avaliacao.data_avaliacao ? new Date(avaliacao.data_avaliacao).toLocaleDateString('pt-BR') : 'Não informada';
+
+                        row.innerHTML = `
+                            <td>${avaliacao._id.substring(0, 6)}...</td>
+                            <td>${avaliacao.pedido_servico_id?.tipo_servico || 'Serviço Desconhecido'}</td>
+                            <td>${avaliacao.cliente_id?.nome || 'Cliente Desconhecido'}</td>
+                            <td>${avaliacao.prestador_id?.nome || 'Prestador Desconhecido'}</td>
+                            <td>${avaliacao.nota}</td>
+                            <td>${avaliacao.comentario || 'Sem comentário'}</td>
+                            <td>${dataAvaliacaoFormatada}</td>
+                            <td>
+                                <div class="table-actions">
+                                    <a href="#" data-id="${avaliacao._id}" class="btn btn-sm btn-danger delete-avaliacao">Deletar</a>
+                                </div>
+                            </td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+
+                    // Inicializa DataTables para a tabela de avaliações
+                    $('#table-avaliacoes').DataTable({
+                        "destroy": true,
+                        "responsive": true
+                    });
+                }
+            } catch (error) {
+                console.error("Erro ao carregar avaliações:", error);
+                feedback.textContent = `Erro ao carregar avaliações: ${error.message || 'Verifique a conexão.'}`;
+                feedback.style.display = "block";
+                empty.style.display = 'none';
+            } finally {
+                loading.style.display = "none";
+            }
+        }
+
+
+        // --- Funções para Modais e Formulários de Edição/Criação ---
+
+        // Event listener para o botão "Adicionar Novo Usuário"
+        document.getElementById('btn-add-usuario').addEventListener('click', () => {
+            // Limpa o formulário e define o título para "Adicionar Usuário"
+            document.getElementById('usuarioForm').reset();
+            document.getElementById('usuarioId').value = '';
+            document.getElementById('usuarioModalLabel').textContent = 'Adicionar Novo Usuário';
+            document.getElementById('usuarioSenhaGroup').style.display = 'block'; // Senha é obrigatória ao adicionar
+            document.getElementById('usuarioSenha').setAttribute('required', 'required');
+            document.getElementById('usuarioIsAdminGroup').style.display = 'block'; // Permite definir isAdmin ao adicionar
+
+            // Abre o modal
+            $('#usuarioModal').modal('show');
+        });
+
+        // Event listener para o botão "Editar Usuário" (delegado para o tbody)
+        document.getElementById('tbody-usuarios').addEventListener('click', async (event) => {
+            if (event.target.classList.contains('edit-usuario')) {
+                event.preventDefault();
+                const userId = event.target.dataset.id;
+                const token = localStorage.getItem('token');
+
+                if (!token) {
+                    showToast("Autenticação necessária para editar usuário.", 'danger');
+                    return;
+                }
+
+                try {
+                    // --- Requisição GET para obter detalhes do usuário específico (ADMIN) ---
+                    // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+                    const response = await fetch(`https://wyn-backend.onrender.com/admin/usuarios/${userId}`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        throw new Error(errorText || `Erro HTTP: ${response.status}`);
+                    }
+
+                    const usuario = await response.json();
+                    console.log("Detalhes do usuário para edição:", usuario);
+
+                    // Preenche o formulário do modal com os dados do usuário
+                    document.getElementById('usuarioId').value = usuario._id;
+                    document.getElementById('usuarioNome').value = usuario.nome || '';
+                    document.getElementById('usuarioEmail').value = usuario.email || '';
+                    document.getElementById('usuarioTelefone').value = usuario.telefone || '';
+                    document.getElementById('usuarioModalLabel').textContent = 'Editar Usuário';
+                    document.getElementById('usuarioSenhaGroup').style.display = 'none'; // Senha não é editada diretamente aqui
+                    document.getElementById('usuarioSenha').removeAttribute('required');
+                    document.getElementById('usuarioIsAdmin').checked = usuario.isAdmin || false; // Define o checkbox
+                    document.getElementById('usuarioIsAdminGroup').style.display = 'block'; // Mostra o checkbox para edição
+
+                    // Abre o modal
+                    $('#usuarioModal').modal('show');
+
+                } catch (error) {
+                    console.error("Erro ao carregar detalhes do usuário para edição:", error);
+                    showToast(`Erro ao carregar detalhes do usuário: ${error.message || 'Verifique a conexão.'}`, 'danger');
+                }
             }
         });
 
-         // Listener para a tabela de Usuários (usando delegação de evento para botões Editar e Deletar)
-         document.getElementById('tbody-usuarios').addEventListener('click', async (event) => {
-             const target = event.target; // O elemento que foi clicado
+        // Event listener para o formulário de Usuário (salvar)
+        document.getElementById('usuarioForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const userId = document.getElementById('usuarioId').value;
+            const nome = document.getElementById('usuarioNome').value;
+            const email = document.getElementById('usuarioEmail').value;
+            const telefone = document.getElementById('usuarioTelefone').value;
+            const senha = document.getElementById('usuarioSenha').value; // Apenas se for um novo usuário
+            const isAdmin = document.getElementById('usuarioIsAdmin').checked; // Pega o valor do checkbox
+            const fotoPerfilInput = document.getElementById('usuarioFotoPerfil');
+            const fotoPerfilFile = fotoPerfilInput.files[0];
 
-             // Verifica se o clique foi no botão "Deletar"
-             if (target.classList.contains('delete-usuario')) {
-                 event.preventDefault(); // Previne a ação padrão do link
-                 const usuarioId = target.dataset.id; // Pega o ID do usuário do atributo data-id
+            const token = localStorage.getItem('token');
+            if (!token) {
+                showToast("Autenticação necessária para salvar usuário.", 'danger');
+                return;
+            }
 
-                 if (!usuarioId) {
-                      showToast("ID de usuário não encontrado.", 'danger');
-                      return;
-                 }
+            const formData = new FormData();
+            formData.append('nome', nome);
+            formData.append('email', email);
+            formData.append('telefone', telefone);
+            formData.append('isAdmin', isAdmin); // Adiciona o status de admin ao FormData
 
-                 // Pede confirmação antes de deletar
-                 if (!confirm("Tem certeza que deseja deletar este usuário? Esta ação não pode ser desfeita.")) {
-                      return;
-                 }
+            if (userId === '') { // Novo usuário (POST)
+                formData.append('senha', senha);
+                if (fotoPerfilFile) {
+                    formData.append('foto_perfil', fotoPerfilFile);
+                }
+            } else { // Edição de usuário existente (PUT)
+                if (fotoPerfilFile) {
+                    formData.append('foto_perfil', fotoPerfilFile);
+                }
+                // Não adiciona a senha ao FormData para edição, pois ela é tratada separadamente
+            }
 
-                 const token = localStorage.getItem("token");
-                  if (!token) {
-                       showToast("Autenticação necessária.", 'danger');
-                       return;
-                  }
+            try {
+                let response;
+                if (userId === '') { // Criar novo usuário
+                    // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+                    response = await fetch('https://wyn-backend.onrender.com/admin/usuarios', {
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${token}` },
+                        body: formData // FormData não precisa de 'Content-Type'
+                    });
+                } else { // Atualizar usuário existente
+                    // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+                    response = await fetch(`https://wyn-backend.onrender.com/admin/usuarios/${userId}`, {
+                        method: 'PUT',
+                        headers: { 'Authorization': `Bearer ${token}` },
+                        body: formData // FormData não precisa de 'Content-Type'
+                    });
+                }
 
-                 try {
-                      // --- Requisição DELETE para o endpoint de deletar usuário do admin ---
-                      // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
-                      const response = await fetch(`https://wyn-backend.onrender.com/admin/usuarios/${usuarioId}`, {
-                          method: 'DELETE',
-                           headers: { 'Authorization': `Bearer ${token}` } // Inclui o token
-                      });
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Erro ao salvar usuário.');
+                }
 
-                      const result = await response.json(); // Parseia a resposta
+                const result = await response.json();
+                showToast(result.message, 'success');
+                $('#usuarioModal').modal('hide'); // Fecha o modal
+                carregarUsuarios(); // Recarrega a tabela de usuários
+            } catch (error) {
+                console.error("Erro ao salvar usuário:", error);
+                showToast(`Erro ao salvar usuário: ${error.message || 'Verifique os dados.'}`, 'danger');
+            }
+        });
 
-                     if (!response.ok) {
-                         showToast(result.message || "Erro ao deletar usuário.", 'danger');
-                         console.error("Erro ao deletar usuário:", result);
-                     } else {
-                         showToast(result.message || "Usuário deletado com sucesso!", 'success');
-                         carregarUsuarios(); // Recarrega a lista de usuários
-                         carregarContadoresAdmin(); // Atualiza contadores
-                     }
+        // Event listener para o botão "Deletar Usuário" (delegado para o tbody)
+        document.getElementById('tbody-usuarios').addEventListener('click', async (event) => {
+            if (event.target.classList.contains('delete-usuario')) {
+                event.preventDefault();
+                const userId = event.target.dataset.id;
+                const token = localStorage.getItem('token');
 
-                 } catch (error) {
-                     console.error("Erro ao deletar usuário:", error);
-                     showToast(error.message || "Erro ao deletar usuário.", 'danger');
-                 }
-             }
-              // Verifica se o clique foi no botão "Editar"
-              if (target.classList.contains('edit-usuario')) {
-                   event.preventDefault(); // Previne a ação padrão do link
-                   const usuarioId = target.dataset.id; // Pega o ID do usuário
-                   carregarDadosUsuarioParaModal(usuarioId); // Chama a função para carregar dados no modal de edição
-              }
-         });
+                if (!confirm('Tem certeza que deseja deletar este usuário? Esta ação é irreversível e pode afetar serviços associados.')) {
+                    return; // Cancela a exclusão se o admin não confirmar
+                }
 
-         // Função para carregar dados de um usuário específico no modal de edição
-         async function carregarDadosUsuarioParaModal(usuarioId) {
-              const token = localStorage.getItem("token");
-              if (!token) {
-                   showToast("Autenticação necessária.", 'danger');
-                   return;
-              }
-
-              try {
-                   // --- Requisição GET para obter detalhes de um usuário específico (admin) ---
-                   // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
-                   const response = await fetch(`https://wyn-backend.onrender.com/admin/usuarios/${usuarioId}`, {
-                       headers: { 'Authorization': `Bearer ${token}` }
-                   });
-
-                   if (!response.ok) {
-                        const errorText = await response.text();
-                        console.error("Erro HTTP ao buscar dados do usuário para edição:", response.status, errorText);
-                        throw new Error(errorText || `Erro HTTP: ${response.status}`);
-                   }
-
-                   const usuario = await response.json(); // Parseia a resposta
-                   console.log("Dados do usuário para edição carregados:", usuario);
-
-                   // Preenche os campos do modal com os dados do usuário
-                   document.getElementById('usuarioId').value = usuario._id; // Preenche o campo hidden com o ID
-                   document.getElementById('usuarioNome').value = usuario.nome;
-                   document.getElementById('usuarioEmail').value = usuario.email;
-                   document.getElementById('usuarioTelefone').value = usuario.telefone || '';
-                   // Esconde o campo de senha na edição, pois a senha não é editada diretamente aqui
-                   // O backend deve ter uma rota separada ou lógica para mudança de senha, ou aceitar um campo de senha opcional no PUT
-                   document.getElementById('usuarioSenhaGroup').style.display = 'none';
-                   // Preenche o checkbox isAdmin
-                   document.getElementById('usuarioIsAdmin').checked = usuario.isAdmin || false; // Define como false se não existir
-                   document.getElementById('usuarioModalLabel').textContent = 'Editar Usuário'; // Atualiza o título do modal
-
-                   // A foto de perfil no modal é apenas para UPLOAD de uma nova foto.
-                   // A foto atual não é exibida no modal padrão do Bootstrap.
-
-              } catch (error) {
-                  console.error("Erro ao carregar dados do usuário para edição:", error);
-                  showToast(`Erro ao carregar dados do usuário: ${error.message || 'Verifique a conexão.'}`, 'danger');
-                   $('#usuarioModal').modal('hide'); // Fecha o modal em caso de erro
-              }
-         }
-
-
-         // Listener para o formulário de Prestador (Adicionar/Editar) - Similar ao de Usuário
-         document.getElementById('prestadorForm').addEventListener('submit', async (event) => {
-             event.preventDefault();
-             const id = document.getElementById('prestadorId').value;
-             const nome = document.getElementById('prestadorNome').value;
-             const email = document.getElementById('prestadorEmail').value;
-             const telefone = document.getElementById('prestadorTelefone').value;
-             const senha = document.getElementById('prestadorSenha').value;
-             const fotoPerfilInput = document.getElementById('prestadorFotoPerfil');
-             const fotoPerfilFile = fotoPerfilInput.files[0];
-             // Campos específicos de prestador
-             const especialidades = document.getElementById('prestadorEspecialidades').value.split(',').map(e => e.trim()).filter(e => e); // Converte string para array
-             const areaAtuacao = document.getElementById('prestadorAreaAtuacao').value;
-             const disponibilidade = document.getElementById('prestadorDisponibilidade').value;
-
-
-             const token = localStorage.getItem("token");
-              if (!token) {
-                   showToast("Autenticação necessária.", 'danger');
-                   return;
-              }
-
-              const formData = new FormData();
-              formData.append('nome', nome);
-              formData.append('email', email);
-              if (telefone) formData.append('telefone', telefone);
-              // Adiciona a senha apenas se estiver adicionando ou se o campo foi preenchido na edição
-              if (senha && (!id || senha.trim() !== '')) {
-                  formData.append('senha', senha);
-              }
-              if (fotoPerfilFile) formData.append('foto_perfil', fotoPerfilFile);
-              // Adiciona campos específicos de prestador ao FormData
-              formData.append('especialidades', JSON.stringify(especialidades)); // Envia array como string JSON
-              if (areaAtuacao) formData.append('area_atuacao', areaAtuacao);
-              if (disponibilidade) formData.append('disponibilidade', disponibilidade);
-
-
-             const method = id ? 'PUT' : 'POST';
-             // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
-             const url = id ? `https://wyn-backend.onrender.com/admin/prestadores/${id}` : 'https://wyn-backend.onrender.com/admin/prestadores';
-
-             try {
-                  // --- Requisição para o endpoint de adicionar/atualizar prestador do admin ---
-                  const response = await fetch(url, {
-                      method: method,
-                      headers: { 'Authorization': `Bearer ${token}` }, // Inclui o token
-                      body: formData // Envia FormData
-                  });
-
-                 const result = await response.json();
-
-                 if (!response.ok) {
-                     showToast(result.message || `Erro ao ${id ? 'atualizar' : 'adicionar'} prestador.`, 'danger');
-                     console.error(`Erro ao ${id ? 'atualizar' : 'adicionar'} prestador:`, result);
-                 } else {
-                     showToast(result.message || `Prestador ${id ? 'atualizado' : 'adicionado'} com sucesso!`, 'success');
-                     $('#prestadorModal').modal('hide');
-                     carregarPrestadores(); // Recarrega a lista de prestadores
-                     carregarContadoresAdmin(); // Atualiza contadores
-                 }
-             } catch (error) {
-                 console.error(`Erro ao ${id ? 'atualizar' : 'adicionar'} prestador:`, error);
-                 showToast(error.message || `Erro ao ${id ? 'atualizar' : 'adicionar'} prestador.`, 'danger');
-             }
-         });
-
-          // Listener para a tabela de Prestadores (usando delegação de evento)
-          document.getElementById('tbody-prestadores').addEventListener('click', async (event) => {
-              const target = event.target;
-              // Verifica se o clique foi no botão "Deletar"
-              if (target.classList.contains('delete-prestador')) {
-                  event.preventDefault();
-                  const prestadorId = target.dataset.id;
-
-                  if (!prestadorId) {
-                       showToast("ID de prestador não encontrado.", 'danger');
-                       return;
-                  }
-
-                  // Pede confirmação
-                  if (!confirm("Tem certeza que deseja deletar este prestador? Esta ação pode impactar serviços relacionados e não pode ser desfeita.")) {
-                       return;
-                  }
-
-                  const token = localStorage.getItem("token");
-                   if (!token) {
-                        showToast("Autenticação necessária.", 'danger');
-                        return;
-                   }
-
-                  try {
-                       // --- Requisição DELETE para o endpoint de deletar prestador do admin ---
-                       // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
-                       const response = await fetch(`https://wyn-backend.onrender.com/admin/prestadores/${prestadorId}`, {
-                           method: 'DELETE',
-                            headers: { 'Authorization': `Bearer ${token}` }
-                       });
-
-                       const result = await response.json();
-
-                      if (!response.ok) {
-                          showToast(result.message || "Erro ao deletar prestador.", 'danger');
-                          console.error("Erro ao deletar prestador:", result);
-                      } else {
-                          showToast(result.message || "Prestador deletado com sucesso!", 'success');
-                          carregarPrestadores(); // Recarrega a lista
-                          carregarContadoresAdmin(); // Atualiza contadores
-                      }
-
-                  } catch (error) {
-                      console.error("Erro ao deletar prestador:", error);
-                      showToast(error.message || "Erro ao deletar prestador.", 'danger');
-                  }
-              }
-               // Verifica se o clique foi no botão "Editar"
-               if (target.classList.contains('edit-prestador')) {
-                    event.preventDefault();
-                    const prestadorId = target.dataset.id;
-                    carregarDadosPrestadorParaModal(prestadorId); // Chama função para carregar dados no modal
-               }
-          });
-
-          // Função para carregar dados de um prestador específico no modal de edição
-          async function carregarDadosPrestadorParaModal(prestadorId) {
-               const token = localStorage.getItem("token");
-               if (!token) {
-                    showToast("Autenticação necessária.", 'danger');
+                if (!token) {
+                    showToast("Autenticação necessária para deletar usuário.", 'danger');
                     return;
-               }
+                }
 
-               try {
-                    // --- Requisição GET para obter detalhes de um prestador específico (admin) ---
+                try {
+                    // --- Requisição DELETE para o endpoint de deletar usuário (ADMIN) ---
+                    // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+                    const response = await fetch(`https://wyn-backend.onrender.com/admin/usuarios/${userId}`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.message || 'Erro ao deletar usuário.');
+                    }
+
+                    const result = await response.json();
+                    showToast(result.message, 'success');
+                    carregarUsuarios(); // Recarrega a tabela de usuários
+                } catch (error) {
+                    console.error("Erro ao deletar usuário:", error);
+                    showToast(`Erro ao deletar usuário: ${error.message || 'Verifique a conexão.'}`, 'danger');
+                }
+            }
+        });
+
+
+        // Event listener para o botão "Adicionar Novo Prestador"
+        document.getElementById('btn-add-prestador').addEventListener('click', () => {
+            document.getElementById('prestadorForm').reset();
+            document.getElementById('prestadorId').value = '';
+            document.getElementById('prestadorModalLabel').textContent = 'Adicionar Novo Prestador';
+            document.getElementById('prestadorSenhaGroup').style.display = 'block'; // Senha é obrigatória ao adicionar
+            document.getElementById('prestadorSenha').setAttribute('required', 'required');
+            $('#prestadorModal').modal('show');
+        });
+
+        // Event listener para o botão "Editar Prestador" (delegado para o tbody)
+        document.getElementById('tbody-prestadores').addEventListener('click', async (event) => {
+            if (event.target.classList.contains('edit-prestador')) {
+                event.preventDefault();
+                const prestadorId = event.target.dataset.id;
+                const token = localStorage.getItem('token');
+
+                if (!token) {
+                    showToast("Autenticação necessária para editar prestador.", 'danger');
+                    return;
+                }
+
+                try {
+                    // --- Requisição GET para obter detalhes do prestador específico (ADMIN) ---
                     // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
                     const response = await fetch(`https://wyn-backend.onrender.com/admin/prestadores/${prestadorId}`, {
                         headers: { 'Authorization': `Bearer ${token}` }
                     });
 
                     if (!response.ok) {
-                         const errorText = await response.text();
-                         console.error("Erro HTTP ao buscar dados do prestador para edição:", response.status, errorText);
-                         throw new Error(errorText || `Erro HTTP: ${response.status}`);
+                        const errorText = await response.text();
+                        throw new Error(errorText || `Erro HTTP: ${response.status}`);
                     }
 
                     const prestador = await response.json();
-                    console.log("Dados do prestador para edição carregados:", prestador);
+                    console.log("Detalhes do prestador para edição:", prestador);
 
-                    // Preenche os campos do modal
                     document.getElementById('prestadorId').value = prestador._id;
-                    document.getElementById('prestadorNome').value = prestador.nome;
-                    document.getElementById('prestadorEmail').value = prestador.email;
+                    document.getElementById('prestadorNome').value = prestador.nome || '';
+                    document.getElementById('prestadorEmail').value = prestador.email || '';
                     document.getElementById('prestadorTelefone').value = prestador.telefone || '';
-                    // Esconde o campo de senha na edição
-                    document.getElementById('prestadorSenhaGroup').style.display = 'none';
-                    // Preenche campos específicos de prestador
-                    document.getElementById('prestadorEspecialidades').value = prestador.especialidades ? prestador.especialidades.join(', ') : '';
-                    document.getElementById('prestadorAreaAtuacao').value = prestador.area_atuacao || '';
-                    document.getElementById('prestadorDisponibilidade').value = prestador.disponibilidade || '';
-
                     document.getElementById('prestadorModalLabel').textContent = 'Editar Prestador';
-
-               } catch (error) {
-                   console.error("Erro ao carregar dados do prestador para edição:", error);
-                   showToast(`Erro ao carregar dados do prestador: ${error.message || 'Verifique a conexão.'}`, 'danger');
-                    $('#prestadorModal').modal('hide'); // Fecha o modal em caso de erro
-               }
-          }
-
-
-          // Listener para a tabela de Serviços (Pedidos) (usando delegação de evento) - Manter como estava
-          document.getElementById('tbody-servicos').addEventListener('click', async (event) => {
-              const target = event.target;
-              // Verifica se o clique foi no botão "Deletar"
-              if (target.classList.contains('delete-servico-admin')) {
-                  event.preventDefault();
-                  const servicoId = target.dataset.id;
-
-                  if (!servicoId) {
-                       showToast("ID de serviço não encontrado.", 'danger');
-                       return;
-                  }
-
-                  // Pede confirmação
-                  if (!confirm("Tem certeza que deseja deletar este serviço (pedido)? Isso removerá todas as informações relacionadas (mensagens, comprovantes, avaliação) e não pode ser desfeito.")) {
-                       return;
-                  }
-
-                  const token = localStorage.getItem("token");
-                   if (!token) {
-                        showToast("Autenticação necessária.", 'danger');
-                        return;
-                   }
-
-                  try {
-                       // --- Requisição DELETE para o endpoint de deletar serviço (pedido) do admin ---
-                       // Note: No seu backend, a rota /deletar-servico/:id já tem a verificação de admin
-                       // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
-                       const response = await fetch(`https://wyn-backend.onrender.com/admin/servicos/${servicoId}`, {
-                           method: 'DELETE',
-                            headers: { 'Authorization': `Bearer ${token}` }
-                       });
-
-                       const result = await response.json();
-
-                      if (!response.ok) {
-                          showToast(result.message || "Erro ao deletar serviço.", 'danger');
-                          console.error("Erro ao deletar serviço:", result);
-                      } else {
-                          showToast(result.message || "Serviço deletado com sucesso!", 'success');
-                          carregarServicos(); // Recarrega a lista
-                          carregarContadoresAdmin(); // Atualiza contadores
-                      }
-
-                  } catch (error) {
-                      console.error("Erro ao deletar serviço:", error);
-                      showToast(error.message || "Erro ao deletar serviço.", 'danger');
-                  }
-              }
-               // Verifica se o clique foi no botão "Ver Detalhes"
-               if (target.classList.contains('view-servico-admin')) {
-                    event.preventDefault();
-                    const servicoId = target.dataset.id;
-                    carregarDetalhesServicoAdmin(servicoId); // Chama função para carregar detalhes no modal
-               }
-          });
-
-          // Função para carregar e exibir detalhes do serviço (pedido) no modal de admin - Manter como estava
-          async function carregarDetalhesServicoAdmin(serviceId) {
-              const detalhesContent = document.getElementById("detalhesServicoAdminContent");
-              const modalTitle = document.getElementById("detalhesServicoAdminModalLabel");
-              detalhesContent.innerHTML = 'Carregando detalhes...'; // Limpa e mostra loading inicial
-              modalTitle.textContent = 'Detalhes do Serviço (Pedido)'; // Título padrão do modal
-
-              const token = localStorage.getItem("token");
-
-              if (!token) {
-                  detalhesContent.innerHTML = '<p style="color: red;">Autenticação necessária para ver detalhes.</p>';
-                  return;
-              }
-
-              try {
-                  // --- Requisição GET para obter detalhes de um serviço específico (admin) ---
-                  // Este endpoint deve retornar os detalhes completos de um serviço (pedido) para o admin
-                  // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
-                  const response = await fetch(`https://wyn-backend.onrender.com/admin/servicos/${serviceId}`, {
-                      headers: { 'Authorization': `Bearer ${token}` }
-                  });
-
-                  if (!response.ok) {
-                       const errorText = await response.text();
-                       console.error("Erro HTTP ao buscar detalhes do serviço (admin):", response.status, errorText);
-                       throw new Error(errorText || `Erro HTTP: ${response.status}`);
-                  }
-
-                  const servico = await response.json(); // Espera um objeto de serviço com populados
-                  console.log("Detalhes do serviço (admin) carregados:", servico);
-
-                  // Preenche a área de conteúdo do modal com os detalhes do serviço
-                  modalTitle.textContent = `Detalhes do Serviço (Pedido) #${servico._id.substring(0, 6)}`; // Atualiza o título com o ID
-                  detalhesContent.innerHTML = `
-                      <p><strong>ID do Pedido:</strong> ${servico._id}</p>
-                      <p><strong>Cliente:</strong> ${servico.usuario_id?.nome || 'Não informado'} (ID: ${servico.usuario_id?._id || 'N/A'})</p>
-                      <p><strong>Prestador:</strong> ${servico.prestador_id?.nome || 'Não Atribuído'} (ID: ${servico.prestador_id?._id || 'N/A'})</p>
-                      <p><strong>Tipo de Serviço:</strong> ${servico.tipo_servico || 'Não informado'}</p>
-                      <p><strong>Descrição:</strong> ${servico.descricao_servico || 'Sem descrição'}</p>
-                      <p><strong>Endereço:</strong> ${servico.endereco_servico || 'Não informado'}</p>
-                      <p><strong>Urgente:</strong> ${servico.urgente ? 'Sim' : 'Não'}</p>
-                      <p><strong>Data da Solicitação:</strong> ${servico.data_solicitacao ? new Date(servico.data_solicitacao).toLocaleString('pt-BR') : 'Não informada'}</p>
-                      <p><strong>Data Preferencial:</strong> ${servico.data_servico_preferencial ? new Date(servico.data_servico_preferencial).toLocaleDateString('pt-BR') : 'Não informada'}</p>
-                      <p><strong>Horário Preferencial:</strong> ${servico.hora_servico_preferencial || 'Não informado'}</p>
-                      <p><strong>Notas Adicionais:</strong> ${servico.notas_adicionais || 'Nenhuma'}</p>
-                      <p><strong>Status:</strong> ${statusMapPrestador[servico.status] || servico.status}</p>
-                      <p><strong>Valor Acordado:</strong> ${servico.valor_servico !== undefined && servico.valor_servico !== null ? `R$ ${servico.valor_servico.toFixed(2).replace('.', ',')}` : 'Não definido'}</p>
-                      ${servico.payment_link ? `<p><strong>Link de Pagamento:</strong> <a href="${servico.payment_link}" target="_blank">${servico.payment_link}</a></p>` : ''}
-                      ${servico.data_aceite ? `<p><strong>Data de Aceite pelo Prestador:</strong> ${new Date(servico.data_aceite).toLocaleString('pt-BR')}</p>` : ''}
-                      ${servico.data_conclusao ? `<p><strong>Data de Conclusão pelo Prestador:</strong> ${new Date(servico.data_conclusao).toLocaleString('pt-BR')}</p>` : ''}
-                      <p><strong>Serviço Oferecido (Catálogo):</strong> ${servico.servico_oferecido_id?.nome || 'Não associado'} (ID: ${servico.servico_oferecido_id?._id || 'N/A'})</p>
-
-                      ${servico.comprovantes_url && servico.comprovantes_url.length > 0 ?
-                          `<p><strong>Comprovantes:</strong></p>
-                           <ul>
-                               ${servico.comprovantes_url.map(url => `<li><a href="${url}" target="_blank">${url.split('/').pop()}</a></li>`).join('')}
-                           </ul>`
-                          : '<p><strong>Comprovantes:</strong> Nenhum.</p>'}
-                       ${servico.avaliacao_cliente ? `<p><strong>Avaliação do Cliente:</strong> ${servico.avaliacao_cliente} estrelas</p>` : '<p><strong>Avaliação do Cliente:</strong> Nenhuma.</p>'}
-                       ${servico.comentario_cliente ? `<p><strong>Comentário do Cliente:</strong> ${servico.comentario_cliente}</p>` : ''}
-                  `;
+                    document.getElementById('prestadorSenhaGroup').style.display = 'none'; // Senha não é editada diretamente aqui
+                    document.getElementById('prestadorSenha').removeAttribute('required');
+                    // Campos adicionais para prestador (se existirem no seu modelo e backend)
+                    // document.getElementById('prestadorEspecialidades').value = prestador.especialidades?.join(', ') || '';
+                    // document.getElementById('prestadorAreaAtuacao').value = prestador.area_atuacao || '';
+                    // document.getElementById('prestadorDisponibilidade').value = prestador.disponibilidade || '';
 
 
-              } catch (error) {
-                  console.error("Erro ao carregar detalhes do serviço (admin):", error);
-                  // Exibe mensagem de erro no conteúdo do modal
-                  detalhesContent.innerHTML = `<p style="color: red;">Erro ao carregar detalhes: ${error.message || 'Verifique a conexão.'}</p>`;
-                  modalTitle.textContent = 'Erro ao Carregar Detalhes';
-              }
-          }
+                    $('#prestadorModal').modal('show');
 
-
-          // Listener para o formulário de Serviço Oferecido (Catálogo) (Adicionar/Editar) - Manter como estava
-         document.getElementById('servicoOferecidoForm').addEventListener('submit', async (event) => {
-              event.preventDefault();
-              const id = document.getElementById('servicoOferecidoId').value;
-              const prestadorId = document.getElementById('servicoOferecidoPrestador').value;
-              const nome = document.getElementById('servicoOferecidoNome').value;
-              const descricao = document.getElementById('servicoOferecidoDescricao').value;
-              const precoMin = document.getElementById('servicoOferecidoPrecoMin').value;
-              const precoMax = document.getElementById('servicoOferecidoPrecoMax').value;
-              const categoriasStr = document.getElementById('servicoOferecidoCategorias').value;
-              // Converte a string de categorias separadas por vírgula em um array
-              const categorias = categoriasStr ? categoriasStr.split(',').map(cat => cat.trim()).filter(cat => cat) : [];
-
-
-              const token = localStorage.getItem("token");
-               if (!token) {
-                    showToast("Autenticação necessária.", 'danger');
-                    return;
-               }
-
-               // Cria o objeto com os dados do serviço oferecido
-               const servicoData = {
-                   prestador_id: prestadorId,
-                   nome: nome,
-                   descricao: descricao,
-                   faixa_preco_min: precoMin ? parseFloat(precoMin) : null, // Converte para número, usa null se vazio
-                   faixa_preco_max: precoMax ? parseFloat(precoMax) : null, // Converte para número, usa null se vazio
-                   categorias: categorias
-               };
-
-
-              // Define o método e a URL da requisição
-              const method = id ? 'PUT' : 'POST';
-              // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
-              const url = id ? `https://wyn-backend.onrender.com/admin/servicos-oferecidos/${id}` : 'https://wyn-backend.onrender.com/admin/servicos-oferecidos';
-
-              try {
-                   // --- Requisição para o endpoint de adicionar/atualizar serviço oferecido do admin ---
-                   const response = await fetch(url, {
-                       method: method,
-                       headers: {
-                           'Content-Type': 'application/json', // Envia JSON no corpo
-                           'Authorization': `Bearer ${token}`
-                       },
-                       body: JSON.stringify(servicoData) // Converte o objeto para JSON
-                   });
-
-                  const result = await response.json();
-
-                  if (!response.ok) {
-                      showToast(result.message || `Erro ao ${id ? 'atualizar' : 'adicionar'} serviço no catálogo.`, 'danger');
-                      console.error(`Erro ao ${id ? 'atualizar' : 'adicionar'} serviço no catálogo:`, result);
-                  } else {
-                      showToast(result.message || `Serviço no catálogo ${id ? 'atualizado' : 'adicionado'} com sucesso!`, 'success');
-                      $('#servicoOferecidoModal').modal('hide');
-                      carregarServicosOferecidos(); // Recarrega a lista do catálogo
-                      carregarContadoresAdmin(); // Atualiza contadores (se aplicável)
-                  }
-              } catch (error) {
-                  console.error(`Erro ao ${id ? 'atualizar' : 'adicionar'} serviço no catálogo:`, error);
-                  showToast(error.message || `Erro ao ${id ? 'atualizar' : 'adicionar'} serviço no catálogo.`, 'danger');
-              }
-          });
-
-           // Listener para a tabela de Serviços Oferecidos (Catálogo) (usando delegação de evento) - Manter como estava
-           document.getElementById('tbody-servicos-oferecidos').addEventListener('click', async (event) => {
-               const target = event.target;
-               // Verifica se o clique foi no botão "Deletar"
-               if (target.classList.contains('delete-servico-oferecido')) {
-                   event.preventDefault();
-                   const servicoId = target.dataset.id;
-
-                   if (!servicoId) {
-                        showToast("ID de serviço não encontrado.", 'danger');
-                        return;
-                   }
-
-                   // Pede confirmação
-                   if (!confirm("Tem certeza que deseja deletar este serviço do catálogo? Isso pode impactar pedidos existentes e não pode ser desfeito.")) {
-                        return;
-                   }
-
-                   const token = localStorage.getItem("token");
-                    if (!token) {
-                         showToast("Autenticação necessária.", 'danger');
-                         return;
-                    }
-
-                   try {
-                        // --- Requisição DELETE para o endpoint de deletar serviço oferecido do admin ---
-                        // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
-                        const response = await fetch(`https://wyn-backend.onrender.com/admin/servicos-oferecidos/${servicoId}`, {
-                            method: 'DELETE',
-                             headers: { 'Authorization': `Bearer ${token}` }
-                        });
-
-                        const result = await response.json();
-
-                       if (!response.ok) {
-                           showToast(result.message || "Erro ao deletar serviço do catálogo.", 'danger');
-                           console.error("Erro ao deletar serviço do catálogo:", result);
-                       } else {
-                           showToast(result.message || "Serviço do catálogo deletado com sucesso!", 'success');
-                           carregarServicosOferecidos(); // Recarrega a lista
-                           carregarContadoresAdmin(); // Atualiza contadores (se aplicável)
-                       }
-
-                   } catch (error) {
-                       console.error("Erro ao deletar serviço do catálogo:", error);
-                       showToast(error.message || "Erro ao deletar serviço do catálogo.", 'danger');
-                   }
-               }
-                // Verifica se o clique foi no botão "Editar"
-                if (target.classList.contains('edit-servico-oferecido')) {
-                     event.preventDefault();
-                     const servicoId = target.dataset.id;
-                     carregarDadosServicoOferecidoParaModal(servicoId); // Chama função para carregar dados no modal
+                } catch (error) {
+                    console.error("Erro ao carregar detalhes do prestador para edição:", error);
+                    showToast(`Erro ao carregar detalhes do prestador: ${error.message || 'Verifique a conexão.'}`, 'danger');
                 }
-           });
+            }
+        });
 
-           // Função para carregar dados de um serviço oferecido específico no modal de edição - Manter como estava
-           async function carregarDadosServicoOferecidoParaModal(servicoId) {
-                const token = localStorage.getItem("token");
+        // Event listener para o formulário de Prestador (salvar)
+        document.getElementById('prestadorForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const prestadorId = document.getElementById('prestadorId').value;
+            const nome = document.getElementById('prestadorNome').value;
+            const email = document.getElementById('prestadorEmail').value;
+            const telefone = document.getElementById('prestadorTelefone').value;
+            const senha = document.getElementById('prestadorSenha').value; // Apenas se for um novo prestador
+            const fotoPerfilInput = document.getElementById('prestadorFotoPerfil');
+            const fotoPerfilFile = fotoPerfilInput.files[0];
+
+            const token = localStorage.getItem('token');
+            if (!token) {
+                showToast("Autenticação necessária para salvar prestador.", 'danger');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('nome', nome);
+            formData.append('email', email);
+            formData.append('telefone', telefone);
+            // Adicionar campos adicionais do prestador ao formData, se existirem
+            // formData.append('especialidades', document.getElementById('prestadorEspecialidades').value);
+            // formData.append('area_atuacao', document.getElementById('prestadorAreaAtuacao').value);
+            // formData.append('disponibilidade', document.getElementById('prestadorDisponibilidade').value);
+
+
+            if (prestadorId === '') { // Novo prestador (POST)
+                formData.append('senha', senha);
+                if (fotoPerfilFile) {
+                    formData.append('foto_perfil', fotoPerfilFile);
+                }
+            } else { // Edição de prestador existente (PUT)
+                if (fotoPerfilFile) {
+                    formData.append('foto_perfil', fotoPerfilFile);
+                }
+            }
+
+            try {
+                let response;
+                if (prestadorId === '') { // Criar novo prestador
+                    // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+                    response = await fetch('https://wyn-backend.onrender.com/admin/prestadores', {
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${token}` },
+                        body: formData
+                    });
+                } else { // Atualizar prestador existente
+                    // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+                    response = await fetch(`https://wyn-backend.onrender.com/admin/prestadores/${prestadorId}`, {
+                        method: 'PUT',
+                        headers: { 'Authorization': `Bearer ${token}` },
+                        body: formData
+                    });
+                }
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Erro ao salvar prestador.');
+                }
+
+                const result = await response.json();
+                showToast(result.message, 'success');
+                $('#prestadorModal').modal('hide');
+                carregarPrestadores(); // Recarrega a tabela de prestadores
+            } catch (error) {
+                console.error("Erro ao salvar prestador:", error);
+                showToast(`Erro ao salvar prestador: ${error.message || 'Verifique os dados.'}`, 'danger');
+            }
+        });
+
+        // Event listener para o botão "Deletar Prestador" (delegado para o tbody)
+        document.getElementById('tbody-prestadores').addEventListener('click', async (event) => {
+            if (event.target.classList.contains('delete-prestador')) {
+                event.preventDefault();
+                const prestadorId = event.target.dataset.id;
+                const token = localStorage.getItem('token');
+
+                if (!confirm('Tem certeza que deseja deletar este prestador? Esta ação é irreversível e pode afetar serviços e catálogo associados.')) {
+                    return;
+                }
+
                 if (!token) {
-                     showToast("Autenticação necessária.", 'danger');
-                     return;
+                    showToast("Autenticação necessária para deletar prestador.", 'danger');
+                    return;
                 }
 
                 try {
-                     // --- Requisição GET para obter detalhes de um serviço oferecido específico (admin) ---
-                     // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
-                     const response = await fetch(`https://wyn-backend.onrender.com/admin/servicos-oferecidos/${servicoId}`, {
-                         headers: { 'Authorization': `Bearer ${token}` }
-                     });
+                    // --- Requisição DELETE para o endpoint de deletar prestador (ADMIN) ---
+                    // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+                    const response = await fetch(`https://wyn-backend.onrender.com/admin/prestadores/${prestadorId}`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
 
-                     if (!response.ok) {
-                          const errorText = await response.text();
-                          console.error("Erro HTTP ao buscar dados do serviço oferecido para edição:", response.status, errorText);
-                          throw new Error(errorText || `Erro HTTP: ${response.status}`);
-                     }
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.message || 'Erro ao deletar prestador.');
+                    }
 
-                     const servico = await response.json();
-                     console.log("Dados do serviço oferecido para edição carregados:", servico);
+                    const result = await response.json();
+                    showToast(result.message, 'success');
+                    carregarPrestadores(); // Recarrega a tabela de prestadores
+                    carregarServicosOferecidos(); // Recarrega o catálogo, pois serviços podem ter sido desassociados
+                    carregarServicos(); // Recarrega serviços, pois pedidos podem ter sido desassociados
+                } catch (error) {
+                    console.error("Erro ao deletar prestador:", error);
+                    showToast(`Erro ao deletar prestador: ${error.message || 'Verifique a conexão.'}`, 'danger');
+                }
+            }
+        });
 
-                     // Preenche os campos do modal
-                     document.getElementById('servicoOferecidoId').value = servico._id;
-                     // Popula o dropdown de prestadores antes de selecionar o correto
-                     await popularDropdownPrestadores();
-                     document.getElementById('servicoOferecidoPrestador').value = servico.prestador_id; // Seleciona o prestador no dropdown
-                     document.getElementById('servicoOferecidoNome').value = servico.nome;
-                     document.getElementById('servicoOferecidoDescricao').value = servico.descricao || '';
-                     document.getElementById('servicoOferecidoPrecoMin').value = servico.faixa_preco_min !== undefined && servico.faixa_preco_min !== null ? servico.faixa_preco_min : '';
-                     document.getElementById('servicoOferecidoPrecoMax').value = servico.faixa_preco_max !== undefined && servico.faixa_preco_max !== null ? servico.faixa_preco_max : '';
-                     document.getElementById('servicoOferecidoCategorias').value = servico.categorias ? servico.categorias.join(', ') : '';
-                     document.getElementById('servicoOferecidoModalLabel').textContent = 'Editar Serviço no Catálogo';
+
+        // Event listener para o botão "Adicionar Novo Serviço no Catálogo"
+        document.getElementById('btn-add-servico-oferecido').addEventListener('click', () => {
+            document.getElementById('servicoOferecidoForm').reset();
+            document.getElementById('servicoOferecidoId').value = '';
+            document.getElementById('servicoOferecidoModalLabel').textContent = 'Adicionar Novo Serviço no Catálogo';
+            populatePrestadorDropdown(); // Popula o dropdown de prestadores
+            $('#servicoOferecidoModal').modal('show');
+        });
+
+        // Função para popular o dropdown de prestadores no modal de serviço oferecido
+        function populatePrestadorDropdown() {
+            const dropdown = document.getElementById('servicoOferecidoPrestador');
+            dropdown.innerHTML = '<option value="">Selecione um Prestador</option>'; // Opção padrão
+
+            if (allPrestadores && allPrestadores.length > 0) {
+                allPrestadores.forEach(prestador => {
+                    const option = document.createElement('option');
+                    option.value = prestador._id;
+                    option.textContent = prestador.nome;
+                    dropdown.appendChild(option);
+                });
+            }
+        }
+
+        // Event listener para o botão "Editar Serviço no Catálogo" (delegado para o tbody)
+        document.getElementById('tbody-servicos-oferecidos').addEventListener('click', async (event) => {
+            if (event.target.classList.contains('edit-servico-oferecido')) {
+                event.preventDefault();
+                const servicoId = event.target.dataset.id;
+                const token = localStorage.getItem('token');
+
+                if (!token) {
+                    showToast("Autenticação necessária para editar serviço do catálogo.", 'danger');
+                    return;
+                }
+
+                try {
+                    // --- Requisição GET para obter detalhes do serviço oferecido específico (ADMIN) ---
+                    // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+                    const response = await fetch(`https://wyn-backend.onrender.com/admin/servicos-oferecidos/${servicoId}`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        throw new Error(errorText || `Erro HTTP: ${response.status}`);
+                    }
+
+                    const servico = await response.json();
+                    console.log("Detalhes do serviço oferecido para edição:", servico);
+
+                    document.getElementById('servicoOferecidoId').value = servico._id;
+                    document.getElementById('servicoOferecidoNome').value = servico.nome || '';
+                    document.getElementById('servicoOferecidoDescricao').value = servico.descricao || '';
+                    document.getElementById('servicoOferecidoPrecoMin').value = servico.faixa_preco_min !== null ? servico.faixa_preco_min : '';
+                    document.getElementById('servicoOferecidoPrecoMax').value = servico.faixa_preco_max !== null ? servico.faixa_preco_max : '';
+                    document.getElementById('servicoOferecidoCategorias').value = servico.categorias?.join(', ') || '';
+                    document.getElementById('servicoOferecidoModalLabel').textContent = 'Editar Serviço no Catálogo';
+
+                    populatePrestadorDropdown(); // Popula o dropdown antes de selecionar
+                    if (servico.prestador_id) {
+                        document.getElementById('servicoOferecidoPrestador').value = servico.prestador_id;
+                    }
+
+                    $('#servicoOferecidoModal').modal('show');
 
                 } catch (error) {
-                    console.error("Erro ao carregar dados do serviço oferecido para edição:", error);
-                    showToast(`Erro ao carregar dados do serviço: ${error.message || 'Verifique a conexão.'}`, 'danger');
-                     $('#servicoOferecidoModal').modal('hide'); // Fecha o modal em caso de erro
+                    console.error("Erro ao carregar detalhes do serviço oferecido para edição:", error);
+                    showToast(`Erro ao carregar detalhes do serviço do catálogo: ${error.message || 'Verifique a conexão.'}`, 'danger');
                 }
-           }
+            }
+        });
 
+        // Event listener para o formulário de Serviço Oferecido (salvar)
+        document.getElementById('servicoOferecidoForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const servicoId = document.getElementById('servicoOferecidoId').value;
+            const prestadorId = document.getElementById('servicoOferecidoPrestador').value;
+            const nome = document.getElementById('servicoOferecidoNome').value;
+            const descricao = document.getElementById('servicoOferecidoDescricao').value;
+            const faixa_preco_min = document.getElementById('servicoOferecidoPrecoMin').value;
+            const faixa_preco_max = document.getElementById('servicoOferecidoPrecoMax').value;
+            const categorias = document.getElementById('servicoOferecidoCategorias').value.split(',').map(cat => cat.trim()).filter(cat => cat !== '');
 
-           // Listener para a tabela de Avaliações (usando delegação de evento) - Manter como estava
-            document.getElementById('tbody-avaliacoes').addEventListener('click', async (event) => {
-                const target = event.target;
-                // Verifica se o clique foi no botão "Deletar"
-                if (target.classList.contains('delete-avaliacao')) {
-                    event.preventDefault();
-                    const avaliacaoId = target.dataset.id;
+            const token = localStorage.getItem('token');
+            if (!token) {
+                showToast("Autenticação necessária para salvar serviço do catálogo.", 'danger');
+                return;
+            }
 
-                    if (!avaliacaoId) {
-                         showToast("ID de avaliação não encontrado.", 'danger');
-                         return;
-                    }
+            const data = {
+                prestador_id: prestadorId,
+                nome,
+                descricao,
+                faixa_preco_min: faixa_preco_min ? parseFloat(faixa_preco_min) : null,
+                faixa_preco_max: faixa_preco_max ? parseFloat(faixa_preco_max) : null,
+                categorias
+            };
 
-                    // Pede confirmação
-                    if (!confirm("Tem certeza que deseja deletar esta avaliação?")) {
-                         return;
-                    }
-
-                    const token = localStorage.getItem("token");
-                     if (!token) {
-                          showToast("Autenticação necessária.", 'danger');
-                          return;
-                     }
-
-                    try {
-                         // --- Requisição DELETE para o endpoint de deletar avaliação do admin ---
-                         // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
-                         const response = await fetch(`https://wyn-backend.onrender.com/admin/avaliacoes/${avaliacaoId}`, {
-                             method: 'DELETE',
-                              headers: { 'Authorization': `Bearer ${token}` }
-                         });
-
-                         const result = await response.json();
-
-                        if (!response.ok) {
-                            showToast(result.message || "Erro ao deletar avaliação.", 'danger');
-                            console.error("Erro ao deletar avaliação:", result);
-                        } else {
-                            showToast(result.message || "Avaliação deletada com sucesso!", 'success');
-                            carregarAvaliacoes(); // Recarrega a lista de avaliações
-                            carregarContadoresAdmin(); // Atualiza contadores
-                        }
-
-                    } catch (error) {
-                        console.error("Erro ao deletar avaliação:", error);
-                        showToast(error.message || "Erro ao deletar avaliação.", 'danger');
-                    }
+            try {
+                let response;
+                if (servicoId === '') { // Criar novo serviço oferecido
+                    // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+                    response = await fetch('https://wyn-backend.onrender.com/admin/servicos-oferecidos', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify(data)
+                    });
+                } else { // Atualizar serviço oferecido existente
+                    // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+                    response = await fetch(`https://wyn-backend.onrender.com/admin/servicos-oferecidos/${servicoId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify(data)
+                    });
                 }
-            });
 
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Erro ao salvar serviço no catálogo.');
+                }
 
-        // --- Listeners para os botões do menu lateral ---
-        // Adiciona listeners de clique aos links do menu lateral para chamar showSection()
-        document.getElementById('menu-usuarios').addEventListener('click', (e) => {
-            e.preventDefault(); // Previne a navegação padrão do link
-            showSection('usuarios'); // Chama a função para mostrar a seção de usuários
-        });
-        document.getElementById('menu-prestadores').addEventListener('click', (e) => {
-             e.preventDefault();
-             showSection('prestadores'); // Mostra a seção de prestadores
-        });
-         document.getElementById('menu-servicos').addEventListener('click', (e) => {
-              e.preventDefault();
-              showSection('servicos'); // Mostra a seção de serviços (pedidos)
-         });
-         document.getElementById('menu-servicos-oferecidos').addEventListener('click', (e) => {
-              e.preventDefault();
-              showSection('servicos-oferecidos'); // Mostra a seção do catálogo
-         });
-         document.getElementById('menu-avaliacoes').addEventListener('click', (e) => {
-              e.preventDefault();
-              showSection('avaliacoes'); // Mostra a seção de avaliações
-         });
-
-
-        // --- Listeners para botões de Adicionar (abrir modais) ---
-        document.getElementById('btn-add-usuario').addEventListener('click', () => {
-             // Limpa o formulário do modal de usuário e configura para adição
-             document.getElementById('usuarioForm').reset();
-             document.getElementById('usuarioId').value = ''; // Limpa o ID para indicar adição
-             document.getElementById('usuarioSenhaGroup').style.display = 'block'; // Mostra o campo de senha para adicionar
-             document.getElementById('usuarioIsAdmin').checked = false; // Desmarca o checkbox isAdmin por padrão
-             document.getElementById('usuarioModalLabel').textContent = 'Adicionar Novo Usuário'; // Atualiza o título do modal
-             $('#usuarioModal').modal('show'); // Abre o modal
+                const result = await response.json();
+                showToast(result.message, 'success');
+                $('#servicoOferecidoModal').modal('hide');
+                carregarServicosOferecidos(); // Recarrega a tabela
+            } catch (error) {
+                console.error("Erro ao salvar serviço oferecido:", error);
+                showToast(`Erro ao salvar serviço no catálogo: ${error.message || 'Verifique os dados.'}`, 'danger');
+            }
         });
 
-        document.getElementById('btn-add-prestador').addEventListener('click', () => {
-             // Limpa o formulário do modal de prestador e configura para adição
-             document.getElementById('prestadorForm').reset();
-             document.getElementById('prestadorId').value = ''; // Limpa o ID
-             document.getElementById('prestadorSenhaGroup').style.display = 'block'; // Mostra o campo de senha
-             document.getElementById('prestadorModalLabel').textContent = 'Adicionar Novo Prestador'; // Atualiza o título
-             $('#prestadorModal').modal('show'); // Abre o modal
+        // Event listener para o botão "Deletar Serviço no Catálogo" (delegado para o tbody)
+        document.getElementById('tbody-servicos-oferecidos').addEventListener('click', async (event) => {
+            if (event.target.classList.contains('delete-servico-oferecido')) {
+                event.preventDefault();
+                const servicoId = event.target.dataset.id;
+                const token = localStorage.getItem('token');
+
+                if (!confirm('Tem certeza que deseja deletar este serviço do catálogo? Esta ação é irreversível.')) {
+                    return;
+                }
+
+                if (!token) {
+                    showToast("Autenticação necessária para deletar serviço do catálogo.", 'danger');
+                    return;
+                }
+
+                try {
+                    // --- Requisição DELETE para o endpoint de deletar serviço oferecido (ADMIN) ---
+                    // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+                    const response = await fetch(`https://wyn-backend.onrender.com/admin/servicos-oferecidos/${servicoId}`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.message || 'Erro ao deletar serviço do catálogo.');
+                    }
+
+                    const result = await response.json();
+                    showToast(result.message, 'success');
+                    carregarServicosOferecidos(); // Recarrega a tabela
+                } catch (error) {
+                    console.error("Erro ao deletar serviço oferecido:", error);
+                    showToast(`Erro ao deletar serviço do catálogo: ${error.message || 'Verifique a conexão.'}`, 'danger');
+                }
+            }
         });
 
-         document.getElementById('btn-add-servico-oferecido').addEventListener('click', async () => {
-              // Limpa o formulário do modal de serviço oferecido e configura para adição
-              document.getElementById('servicoOferecidoForm').reset();
-              document.getElementById('servicoOferecidoId').value = ''; // Limpa o ID
-              document.getElementById('servicoOferecidoModalLabel').textContent = 'Adicionar Novo Serviço no Catálogo'; // Atualiza o título
 
-              // Popula o dropdown de prestadores antes de abrir o modal
-              await popularDropdownPrestadores();
+        // Event listener para o botão "Ver Detalhes do Serviço (Pedido)" (delegado para o tbody)
+        document.getElementById('tbody-servicos').addEventListener('click', async (event) => {
+            if (event.target.classList.contains('view-servico-admin')) {
+                event.preventDefault();
+                const serviceId = event.target.dataset.id;
+                const token = localStorage.getItem('token');
+                const modalBody = document.getElementById('detalhesServicoAdminContent');
+                modalBody.innerHTML = 'Carregando detalhes...'; // Mensagem de carregamento
 
-              $('#servicoOferecidoModal').modal('show'); // Abre o modal
-         });
+                if (!token) {
+                    showToast("Autenticação necessária para ver detalhes do serviço.", 'danger');
+                    return;
+                }
 
-         // Função para popular o dropdown de prestadores no modal de serviço oferecido
-         async function popularDropdownPrestadores() {
-              const dropdown = document.getElementById('servicoOferecidoPrestador');
-              dropdown.innerHTML = '<option value="">Selecione um Prestador</option>'; // Adiciona opção padrão
+                try {
+                    // --- Requisição GET para obter detalhes do serviço específico (ADMIN) ---
+                    // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+                    const response = await fetch(`https://wyn-backend.onrender.com/admin/servicos/${serviceId}`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
 
-              // Reutiliza a lista de prestadores carregada anteriormente, se disponível
-              if (allPrestadores.length === 0) {
-                   // Se a lista não estiver no cache, busca do backend
-                   const token = localStorage.getItem("token");
-                   if (!token) {
-                        console.warn("Não foi possível popular dropdown de prestadores: Token ausente.");
-                        return;
-                   }
-                   try {
-                       // Busca a lista de prestadores do endpoint admin
-                       // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
-                       const response = await fetch("https://wyn-backend.onrender.com/admin/prestadores", {
-                           headers: { 'Authorization': `Bearer ${token}` }
-                       });
-                        if (response.ok) {
-                             allPrestadores = await response.json(); // Armazena a lista
-                        } else {
-                             console.error("Erro ao carregar prestadores para dropdown:", response.status);
-                             showToast("Erro ao carregar lista de prestadores.", 'danger');
-                             return;
-                        }
-                   } catch (error) {
-                        console.error("Erro ao carregar prestadores para dropdown:", error);
-                        showToast("Erro ao carregar lista de prestadores.", 'danger');
-                        return;
-                   }
-              }
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        throw new Error(errorText || `Erro HTTP: ${response.status}`);
+                    }
 
-              // Adiciona cada prestador à lista do dropdown
-              allPrestadores.forEach(prestador => {
-                   const option = document.createElement('option');
-                   option.value = prestador._id; // O valor da opção é o ID do prestador
-                   option.textContent = prestador.nome; // O texto exibido é o nome do prestador
-                   dropdown.appendChild(option);
-              });
-         }
+                    const servico = await response.json();
+                    console.log("Detalhes do serviço para admin:", servico);
+
+                    // Mapeamento de status para texto amigável (reutilizado do prestador)
+                    const statusMap = {
+                         'aguardando_aceite_prestador': 'Aguardando Aceite',
+                         'aguardando_pagamento_cliente': 'Aguardando Pagamento',
+                         'aguardando_confirmacao_pagamento': 'Pagamento em Processamento',
+                         'aceito_pelo_prestador': 'Em Andamento',
+                         'recusado_pelo_prestador': 'Recusado',
+                         'concluido_pelo_prestador': 'Concluído',
+                         'avaliado_pelo_cliente': 'Avaliado',
+                         'cancelado': 'Cancelado'
+                    };
+
+                    const statusTexto = statusMap[servico.status] || servico.status || 'Desconhecido';
+                    const dataSolicitacao = servico.data_solicitacao ? new Date(servico.data_solicitacao).toLocaleDateString('pt-BR') : 'Não informada';
+                    const dataAceite = servico.data_aceite ? new Date(servico.data_aceite).toLocaleDateString('pt-BR') : 'Não aceito';
+                    const dataConclusao = servico.data_conclusao ? new Date(servico.data_conclusao).toLocaleDateString('pt-BR') : 'Não concluído';
+                    const valorFormatado = servico.valor_servico !== undefined && servico.valor_servico !== null ? `R$ ${servico.valor_servico.toFixed(2).replace('.', ',')}` : 'Não definido';
+                    const dataServicoPreferencial = servico.data_servico_preferencial ? new Date(servico.data_servico_preferencial).toLocaleDateString('pt-BR') : 'Não informada';
 
 
-        // Função de Logout
-        document.getElementById('logout-link').addEventListener('click', (e) => {
-            e.preventDefault(); // Previne a navegação padrão
-            localStorage.removeItem('token'); // Remove o token do localStorage
-            localStorage.removeItem('admin'); // Remove o cache do admin
-            window.location.href = 'login-admin.html'; // Redireciona para a tela de login de admin
+                    let comprovantesHtml = '';
+                    if (servico.comprovantes_url && servico.comprovantes_url.length > 0) {
+                        comprovantesHtml = `
+                            <h6>Comprovantes:</h6>
+                            <div class="row">
+                        `;
+                        servico.comprovantes_url.forEach(url => {
+                            // Verifica se é imagem ou PDF para renderizar corretamente
+                            const isImage = /\.(jpeg|jpg|png|gif|bmp|webp)$/i.test(url);
+                            comprovantesHtml += `
+                                <div class="col-md-4 mb-3">
+                                    <a href="${url}" target="_blank">
+                                        ${isImage ? `<img src="${url}" class="img-fluid rounded" alt="Comprovante" onerror="this.onerror=null;this.src='https://placehold.co/150x100?text=Erro';" />` : `<i class="icon-copy fa fa-file-pdf-o" aria-hidden="true" style="font-size: 80px; color: red;"></i><br/>Ver PDF`}
+                                    </a>
+                                </div>
+                            `;
+                        });
+                        comprovantesHtml += `</div>`;
+                    } else {
+                        comprovantesHtml = '<p>Nenhum comprovante enviado.</p>';
+                    }
+
+
+                    modalBody.innerHTML = `
+                        <p><strong>ID do Pedido:</strong> ${servico._id}</p>
+                        <p><strong>Cliente:</strong> ${servico.nome_cliente || 'Desconhecido'} (${servico.usuario_id?.email || 'Email não informado'})</p>
+                        <p><strong>Prestador Atribuído:</strong> ${servico.nome_prestador || 'Não Atribuído'} (${servico.prestador_id?.email || 'Email não informado'})</p>
+                        <p><strong>Tipo de Serviço:</strong> ${servico.tipo_servico || 'Não informado'}</p>
+                        <p><strong>Descrição:</strong> ${servico.descricao_servico || 'Sem descrição'}</p>
+                        <p><strong>Endereço do Serviço:</strong> ${servico.endereco_servico || 'Não informado'}</p>
+                        <p><strong>Notas Adicionais:</strong> ${servico.notas_adicionais || 'Nenhuma'}</p>
+                        <p><strong>Urgente:</strong> ${servico.urgente ? 'Sim' : 'Não'}</p>
+                        <p><strong>Status:</strong> ${statusTexto}</p>
+                        <p><strong>Valor Acordado:</strong> ${valorFormatado}</p>
+                        <p><strong>Data da Solicitação:</strong> ${dataSolicitacao}</p>
+                        <p><strong>Data Preferencial do Serviço:</strong> ${dataServicoPreferencial}</p>
+                        <p><strong>Hora Preferencial do Serviço:</strong> ${servico.hora_servico_preferencial || 'Não informada'}</p>
+                        <p><strong>Data de Aceite:</strong> ${dataAceite}</p>
+                        <p><strong>Data de Conclusão:</strong> ${dataConclusao}</p>
+                        ${servico.payment_link ? `<p><strong>Link de Pagamento:</strong> <a href="${servico.payment_link}" target="_blank">Abrir Link</a></p>` : ''}
+                        ${servico.avaliacao_cliente !== null ? `<p><strong>Avaliação do Cliente:</strong> ${servico.avaliacao_cliente} estrelas</p>` : ''}
+                        ${servico.comentario_cliente ? `<p><strong>Comentário do Cliente:</strong> ${servico.comentario_cliente}</p>` : ''}
+                        <hr>
+                        ${comprovantesHtml}
+                    `;
+
+                    $('#detalhesServicoAdminModal').modal('show');
+
+                } catch (error) {
+                    console.error("Erro ao carregar detalhes do serviço para admin:", error);
+                    modalBody.innerHTML = `<p class="text-danger">Erro ao carregar detalhes do serviço: ${error.message || 'Verifique a conexão.'}</p>`;
+                    showToast(`Erro ao carregar detalhes do serviço: ${error.message || 'Verifique a conexão.'}`, 'danger');
+                }
+            }
+        });
+
+        // Event listener para o botão "Deletar Serviço (Pedido)" (delegado para o tbody)
+        document.getElementById('tbody-servicos').addEventListener('click', async (event) => {
+            if (event.target.classList.contains('delete-servico-admin')) {
+                event.preventDefault();
+                const serviceId = event.target.dataset.id;
+                const token = localStorage.getItem('token');
+
+                if (!confirm('Tem certeza que deseja deletar este serviço (pedido)? Esta ação é irreversível e deletará todos os dados associados.')) {
+                    return;
+                }
+
+                if (!token) {
+                    showToast("Autenticação necessária para deletar serviço.", 'danger');
+                    return;
+                }
+
+                try {
+                    // --- Requisição DELETE para o endpoint de deletar serviço (ADMIN) ---
+                    // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+                    const response = await fetch(`https://wyn-backend.onrender.com/admin/servicos/${serviceId}`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.message || 'Erro ao deletar serviço.');
+                    }
+
+                    const result = await response.json();
+                    showToast(result.message, 'success');
+                    carregarServicos(); // Recarrega a tabela de serviços
+                } catch (error) {
+                    console.error("Erro ao deletar serviço:", error);
+                    showToast(`Erro ao deletar serviço: ${error.message || 'Verifique a conexão.'}`, 'danger');
+                }
+            }
+        });
+
+
+        // Event listener para o botão "Deletar Avaliação" (delegado para o tbody)
+        document.getElementById('tbody-avaliacoes').addEventListener('click', async (event) => {
+            if (event.target.classList.contains('delete-avaliacao')) {
+                event.preventDefault();
+                const avaliacaoId = event.target.dataset.id;
+                const token = localStorage.getItem('token');
+
+                if (!confirm('Tem certeza que deseja deletar esta avaliação? Esta ação é irreversível.')) {
+                    return;
+                }
+
+                if (!token) {
+                    showToast("Autenticação necessária para deletar avaliação.", 'danger');
+                    return;
+                }
+
+                try {
+                    // --- Requisição DELETE para o endpoint de deletar avaliação (ADMIN) ---
+                    // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+                    const response = await fetch(`https://wyn-backend.onrender.com/admin/avaliacoes/${avaliacaoId}`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.message || 'Erro ao deletar avaliação.');
+                    }
+
+                    const result = await response.json();
+                    showToast(result.message, 'success');
+                    carregarAvaliacoes(); // Recarrega a tabela de avaliações
+                } catch (error) {
+                    console.error("Erro ao deletar avaliação:", error);
+                    showToast(`Erro ao deletar avaliação: ${error.message || 'Verifique a conexão.'}`, 'danger');
+                }
+            }
         });
 
 
@@ -2475,11 +2395,44 @@
         };
 
 
-        // Chama a função carregarPerfilAdmin ao carregar o conteúdo do DOM
-        // Esta é a função que inicia todo o processo ao abrir a página
-        document.addEventListener("DOMContentLoaded", () => {
-            carregarPerfilAdmin();
+        // Chamar carregarPerfilAdmin ao carregar a página
+        document.addEventListener("DOMContentLoaded", carregarPerfilAdmin);
+
+        // Event listeners para os links do menu lateral
+        document.getElementById('menu-usuarios').addEventListener('click', (e) => {
+            e.preventDefault();
+            showSection('usuarios');
         });
+        document.getElementById('menu-prestadores').addEventListener('click', (e) => {
+            e.preventDefault();
+            showSection('prestadores');
+        });
+        document.getElementById('menu-servicos').addEventListener('click', (e) => {
+            e.preventDefault();
+            showSection('servicos');
+        });
+        document.getElementById('menu-servicos-oferecidos').addEventListener('click', (e) => {
+            e.preventDefault();
+            showSection('servicos-oferecidos');
+        });
+        document.getElementById('menu-avaliacoes').addEventListener('click', (e) => {
+            e.preventDefault();
+            showSection('avaliacoes');
+        });
+        // Listener para o link do Dashboard (visão geral)
+        document.querySelector('.sidebar-menu a[href="admin-dashboard.html"]').addEventListener('click', (e) => {
+            e.preventDefault();
+            showSection('overview');
+        });
+
+        // Função de Logout
+        document.getElementById('logout-link').addEventListener('click', (e) => {
+            e.preventDefault(); // Previne a navegação padrão
+            localStorage.removeItem('token'); // Remove o token do localStorage
+            localStorage.removeItem('admin'); // Remove o cache do admin
+            window.location.href = 'login-admin.html'; // Redireciona para a tela de login de admin
+        });
+
     </script>
 
 </body>
