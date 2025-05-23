@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title>WYN - Meu Perfil (Prestador)</title>
+	<link
+		rel="apple-touch-icon"
+		sizes="180x180"
+		href="/w/1.png"
+	/>
+	<link
+		rel="icon"
+		type="image/png"
+		sizes="32x32"
+		href="/w/1.png"
+	/>
+	<link
+		rel="icon"
+		type="image/png"
+		sizes="16x16"
+		href="/w/1.png"
+	/>
+
+	<meta
+		name="viewport"
+		content="width=device-width, initial-scale=1, maximum-scale=1"
+	/>
+
+	<link
+		href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+		rel="stylesheet"
+	/>
+	<link rel="stylesheet" type="text/css" href="vendors/styles/core.css" />
+	<link
+		rel="stylesheet"
+		type="text/css"
+		href="vendors/styles/icon-font.min.css"
+	/>
+	<link
+		rel="stylesheet"
+		type="text/css"
+		href="src/plugins/datatables/css/dataTables.bootstrap4.min.css"
+	/>
+	<link
+		rel="stylesheet"
+		type="text/css"
+		href="src/plugins/datatables/css/responsive.bootstrap4.min.css"
+	/>
+	<link rel="stylesheet" type="text/css" href="vendors/styles/style.css" />
+
+    <style>
+        /* Estilos básicos para a foto de perfil */
+        .profile-picture {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%; /* Torna a imagem circular */
+            object-fit: cover; /* Garante que a imagem cubra o espaço sem distorcer */
+            margin-bottom: 20px;
+            border: 3px solid #007bff; /* Adiciona uma borda */
+        }
+        .profile-info p {
+            margin-bottom: 10px;
+        }
+        /* Estilo para o botão de salvar */
+        .save-profile-btn {
+            margin-top: 20px;
+        }
+    </style>
+
+	<script
+		async
+		src="https://www.googletagmanager.com/gtag/js?id=G-GBZ3SGGX85"
+	></script>
+	<script
+		async
+		src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2973766580778258"
+		crossorigin="anonymous"
+	></script>
+	<script>
+		window.dataLayer = window.dataLayer || [];
+		function gtag() {
+			dataLayer.push(arguments);
+		}
+		gtag("js", new Date());
+
+		gtag("config", "G-GBZ3SGGX85");
+	</script>
+	<script>
+		(function (w, d, s, l, i) {
+			w[l] = w[l] || [];
+			w[l].push({ "gtm.start": new Date().getTime(), event: "gtm.js" });
+			var f = d.getElementsByTagName(s)[0],
+				j = d.createElement(s),
+				dl = l != "dataLayer" ? "&l=" + l : "";
+			j.async = true;
+			j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
+			f.parentNode.insertBefore(j, f);
+		})(window, document, "script", "dataLayer", "GTM-NXZMQSS");
+	</script>
+</head>
+<body>
+	<div class="pre-loader">
+		<div class="pre-loader-box">
+			<div class="loader-logo">
+				<img src="w.png" alt="" />
+			</div>
+			<div class="loader-progress" id="progress_div">
+				<div class="bar" id="bar1"></div>
+			</div>
+			<div class="percent" id="percent1">0%</div>
+			<div class="loading-text">Carregando...</div>
+		</div>
+	</div>
+
+	<div class="header">
+		<div class="header-left">
+			<div class="menu-icon bi bi-list"></div>
+			<div
+				class="search-toggle-icon bi bi-search"
+				data-toggle="header_search"
+			></div>
+			<div class="header-search">
+				<form>
+					<div class="form-group mb-0">
+						<i class="dw dw-search2 search-icon"></i>
+						<input
+							type="text"
+							class="form-control search-input"
+							placeholder="Search Here"
+						/>
+						<div class="dropdown">
+							<a
+								class="dropdown-toggle no-arrow"
+								href="#"
+								role="button"
+								data-toggle="dropdown"
+							>
+								<i class="ion-arrow-down-c"></i>
+							</a>
+							<div class="dropdown-menu dropdown-menu-right">
+								<div class="form-group row">
+									<label class="col-sm-12 col-md-2 col-form-label"
+										>De</label
+									>
+									<div class="col-sm-12 col-md-10">
+										<input
+											class="form-control form-control-sm form-control-line"
+											type="text"
+										/>
+									</div>
+								</div>
+								<div class="form-group row">
+									<label class="col-sm-12 col-md-2 col-form-label">Para</label>
+									<div class="col-sm-12 col-md-10">
+										<input
+											class="form-control form-control-sm form-control-line"
+											type="text"
+										/>
+									</div>
+								</div>
+								<div class="form-group row">
+									<label class="col-sm-12 col-md-2 col-form-label"
+										>Sujeito</label
+									>
+									<div class="col-sm-12 col-md-10">
+										<input
+											class="form-control form-control-sm form-control-line"
+											type="text"
+										/>
+									</div>
+								</div>
+								<div class="text-right">
+									<button class="btn btn-primary">Pesquisar</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+		<div class="header-right">
+			<div class="dashboard-setting user-notification">
+				<div class="dropdown">
+					<a
+						class="dropdown-toggle no-arrow"
+						href="javascript:;"
+						data-toggle="right-sidebar"
+					>
+						<i class="dw dw-settings2"></i>
+					</a>
+				</div>
+			</div>
+
+			<div class="user-info-dropdown">
+				<div class="dropdown">
+					<a
+						class="dropdown-toggle"
+						href="#"
+						role="button"
+						data-toggle="dropdown"
+					>
+						<span class="user-icon">
+							<img src="vendors/images/photo4.jpg" id="user-profile-pic-header" alt="" />
+						</span>
+						<span class="user-name" id="user-name-header">Carregando...</span>
+					</a>
+					<div
+						class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list"
+					>
+						<a class="dropdown-item" href="prestador-profile.html"
+							><i class="dw dw-user1"></i> Perfil</a
+						>
+						<a class="dropdown-item" href="prestador-profile.html"
+							><i class="dw dw-settings2"></i>Configurações</a
+						>
+						<a class="dropdown-item" href="faq.html"
+							><i class="dw dw-help"></i> Ajuda</a
+						>
+						<a class="dropdown-item" href="#" id="logout-link"
+							><i class="dw dw-logout"></i> Sair</a
+						>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="right-sidebar">
+		<div class="sidebar-title">
+			<h3 class="weight-600 font-16 text-blue">
+				Configuração de Layout
+				<span class="btn-block font-weight-400 font-12"
+					>Personalização</span
+				>
+			</h3>
+			<div class="close-sidebar" data-toggle="right-sidebar-close">
+				<i class="icon-copy ion-close-round"></i>
+			</div>
+		</div>
+		<div class="right-sidebar-body customscroll">
+			<div class="right-sidebar-body-content">
+				<h4 class="weight-600 font-18 pb-10">Fundo</h4>
+				<div class="sidebar-btn-group pb-30 mb-10">
+					<a
+						href="javascript:void(0);"
+						class="btn btn-outline-primary header-white active"
+						>Claro</a
+					>
+					<a
+						href="javascript:void(0);"
+						class="btn btn-outline-primary header-dark"
+						>Escuro</a
+					>
+				</div>
+
+				<h4 class="weight-600 font-18 pb-10">Menu Lateral</h4>
+				<div class="sidebar-btn-group pb-30 mb-10">
+					<a
+						href="javascript:void(0);"
+						class="btn btn-outline-primary sidebar-light"
+						>Claro</a
+					>
+					<a
+						href="javascript:void(0);"
+						class="btn btn-outline-primary sidebar-dark active"
+						>Escuro</a
+					>
+				</div>
+
+				<h4 class="weight-600 font-18 pb-10">Icone Dropdown</h4>
+				<div class="sidebar-radio-group pb-10 mb-10">
+					<div class="custom-control custom-radio custom-control-inline">
+						<input
+							type="radio"
+							id="sidebaricon-1"
+							name="menu-dropdown-icon"
+							class="custom-control-input"
+							value="icon-style-1"
+							checked=""
+						/>
+						<label class="custom-control-label" for="sidebaricon-1"
+							><i class="fa fa-angle-down"></i
+						></label>
+					</div>
+					<div class="custom-control custom-radio custom-control-inline">
+						<input
+							type="radio"
+							id="sidebaricon-2"
+							name="menu-dropdown-icon"
+							class="custom-control-input"
+							value="icon-style-2"
+						/>
+						<label class="custom-control-label" for="sidebaricon-2"
+							><i class="ion-plus-round"></i
+						></label>
+					</div>
+					<div class="custom-control custom-radio custom-control-inline">
+						<input
+							type="radio"
+							id="sidebariconlist-3"
+							name="menu-list-icon"
+							class="custom-control-input"
+							value="icon-list-style-3"
+						/>
+						<label class="custom-control-label" for="sidebariconlist-3"
+							><i class="fa fa-angle-double-right"></i
+						></label>
+					</div>
+				</div>
+
+				<h4 class="weight-600 font-18 pb-10">Icones do Menu</h4>
+				<div class="sidebar-radio-group pb-30 mb-10">
+					<div class="custom-control custom-radio custom-control-inline">
+						<input
+							type="radio"
+							id="sidebariconlist-1"
+							name="menu-list-icon"
+							class="custom-control-input"
+							value="icon-list-style-1"
+							checked=""
+						/>
+						<label class="custom-control-label" for="sidebariconlist-1"
+							><i class="ion-minus-round"></i
+						></label>
+					</div>
+					<div class="custom-control custom-radio custom-control-inline">
+						<input
+							type="radio"
+							id="sidebariconlist-2"
+							name="menu-list-icon"
+							class="custom-control-input"
+							value="icon-list-style-2"
+						/>
+						<label class="custom-control-label" for="sidebariconlist-2"
+							><i class="fa fa-circle-o" aria-hidden="true"></i
+						></label>
+					</div>
+					<div class="custom-control custom-radio custom-control-inline">
+						<input
+							type="radio"
+							id="sidebariconlist-3"
+							name="menu-list-icon"
+							class="custom-control-input"
+							value="icon-list-style-3"
+						/>
+						<label class="custom-control-label" for="sidebariconlist-3"
+							><i class="dw dw-check"></i
+						></label>
+					</div>
+					<div class="custom-control custom-radio custom-control-inline">
+						<input
+							type="radio"
+							id="sidebariconlist-4"
+							name="menu-list-icon"
+							class="custom-control-input"
+							value="icon-list-style-4"
+							checked=""
+						/>
+						<label class="custom-control-label" for="sidebariconlist-4"
+							><i class="icon-copy dw dw-next-2"></i
+						></label>
+					</div>
+					<div class="custom-control custom-radio custom-control-inline">
+						<input
+							type="radio"
+							id="sidebariconlist-5"
+							name="menu-list-icon"
+							class="custom-control-input"
+							value="icon-list-style-5"
+						/>
+						<label class="custom-control-label" for="sidebariconlist-5"
+							><i class="dw dw-fast-forward-1"></i
+						></label>
+					</div>
+					<div class="custom-control custom-radio custom-control-inline">
+						<input
+							type="radio"
+							id="sidebariconlist-6"
+							name="menu-list-icon"
+							class="custom-control-input"
+							value="icon-list-style-6"
+						/>
+						<label class="custom-control-label" for="sidebariconlist-6"
+							><i class="dw dw-next"></i
+						></label>
+					</div>
+				</div>
+
+				<div class="reset-options pt-30 text-center">
+					<button class="btn btn-danger" id="reset-settings">
+						Resetar Configurações
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+    <div class="left-side-bar">
+		<div class="brand-logo">
+			<a href="index.html"> <img src="w (1).png" alt="" class="dark-logo" />
+				<img
+					src="w (1).png"
+					alt=""
+					class="light-logo"
+				/>
+			</a>
+			<div class="close-sidebar" data-toggle="left-sidebar-close">
+				<i class="ion-close-round"></i>
+			</div>
+		</div>
+		<div class="menu-block customscroll">
+			<div class="sidebar-menu">
+				<ul id="accordion-menu">
+					<li>
+						<a href="index.html" class="dropdown-toggle no-arrow active"> <span class="micon bi bi-house"></span
+							><span class="mtext">Dashboard</span>
+						</a>
+					</li>
+					<li>
+						<a href="prestador-solicitacoes.html" class="dropdown-toggle no-arrow"> <span class="micon bi bi-textarea-resize"></span
+							><span class="mtext">Solicitações Pendentes</span>
+						</a>
+					</li>
+					<li>
+						<a href="prestador-meus-servicos.html" class="dropdown-toggle no-arrow"> <span class="micon bi bi-check-circle"></span
+							><span class="mtext">Meus Serviços Aceitos</span>
+						</a>
+					</li>
+					<li>
+						<a href="prestador-historico.html" class="dropdown-toggle no-arrow"> <span class="micon bi bi-clock-history"></span
+							><span class="mtext">Histórico de Serviços</span>
+						</a>
+					</li>
+					<li>
+						<a href="prestador-avaliacoes.html" class="dropdown-toggle no-arrow"> <span class="micon bi bi-star-fill"></span
+							><span class="mtext">Minhas Avaliações</span>
+						</a>
+					</li>
+                    <li>
+                        <a href="prestador-gerenciar-servicos.html" class="dropdown-toggle no-arrow"> <span class="micon bi bi-gear"></span>
+                            <span class="mtext">Gerenciar Serviços</span>
+                        </a>
+                    </li>
+                     <li>
+                        <a href="prestador-minha-disponibilidade.html" class="dropdown-toggle no-arrow"> <span class="micon bi bi-calendar-week"></span>
+                            <span class="mtext">Minha Disponibilidade</span>
+                        </a>
+                    </li>
+                     <li>
+                        <a href="chat-list.html" class="dropdown-toggle no-arrow"> <span class="micon bi bi-chat-dots"></span>
+                            <span class="mtext">Chat de Serviços</span>
+                        </a>
+                    </li>
+					<li class="dropdown">
+						<a href="javascript:;" class="dropdown-toggle">
+							<span class="micon bi bi-file-pdf"></span
+							><span class="mtext">Documentação</span>
+						</a>
+						<ul class="submenu">
+							<li><a href="/Tela Inicial copy/Termos e Condições.docx">Termos e Condições</a></li>
+						</ul>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+
+	<div class="mobile-menu-overlay"></div>
+
+	<div class="main-container">
+		<div class="xs-pd-20-10 pd-ltr-20">
+			<div class="page-header">
+				<div class="row">
+					<div class="col-md-12 col-sm-12">
+						<div class="title">
+							<h4 id="profile-title">Meu Perfil (Prestador)</h4>
+						</div>
+						<nav aria-label="breadcrumb" role="navigation">
+							<ol class="breadcrumb">
+								<li class="breadcrumb-item">
+									<a href="index.html" id="dashboard-link">Dashboard</a>
+								</li>
+								<li class="breadcrumb-item active" aria-current="page">
+									Perfil
+								</li>
+							</ol>
+						</nav>
+					</div>
+				</div>
+			</div>
+
+			<div class="pd-20 card-box mb-30">
+				<div class="row">
+					<div class="col-md-4 col-sm-12 text-center">
+						<img src="vendors/images/photo4.jpg" id="profile-picture" class="profile-picture" alt="Foto de Perfil" />
+                         <div class="mt-2">
+                             <input type="file" id="upload-profile-pic" accept="image/*" style="display: none;">
+                             <button class="btn btn-primary btn-sm" id="change-profile-pic-btn">Alterar Foto</button>
+                         </div>
+					</div>
+					<div class="col-md-8 col-sm-12 profile-info">
+						<h5 class="mb-20" id="profile-name">Carregando Nome...</h5>
+						<p><strong>Tipo de Perfil:</strong> <span id="profile-type">Prestador</span></p>
+						<p><strong>Email:</strong> <span id="profile-email">Carregando...</span></p>
+						<p><strong>Telefone:</strong> <span id="profile-phone">Carregando...</span></p>
+                        <p><strong>Especialidades:</strong> <span id="profile-specialties">Carregando...</span></p>
+                        <p><strong>Área de Atuação:</strong> <span id="profile-area">Carregando...</span></p>
+                        <p><strong>Disponibilidade:</strong> <span id="profile-availability">Carregando...</span></p>
+                        <div class="mt-30 text-right">
+                            <button class="btn btn-info" id="edit-profile-btn">Editar Perfil</button>
+                        </div>
+                    </div>
+				</div>
+            </div>
+
+            <div class="modal fade" id="editProfileModal" tabindex="-1" role="dialog" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="editProfileModalLabel">Editar Perfil do Prestador</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="editProfileForm">
+                                <div class="form-group">
+                                    <label for="editName">Nome</label>
+                                    <input type="text" class="form-control" id="editName" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="editEmail">Email</label>
+                                    <input type="email" class="form-control" id="editEmail" disabled> </div>
+                                <div class="form-group">
+                                    <label for="editPhone">Telefone</label>
+                                    <input type="text" class="form-control" id="editPhone">
+                                </div>
+                                <div class="form-group">
+                                    <label for="editSpecialties">Especialidades (separadas por vírgula)</label>
+                                    <input type="text" class="form-control" id="editSpecialties" placeholder="Ex: Eletricista, Encanador">
+                                </div>
+                                <div class="form-group">
+                                    <label for="editArea">Área de Atuação</label>
+                                    <input type="text" class="form-control" id="editArea" placeholder="Ex: São Paulo - SP">
+                                </div>
+                                <div class="form-group">
+                                    <label for="editAvailability">Disponibilidade</label>
+                                    <input type="text" class="form-control" id="editAvailability" placeholder="Ex: Segunda a Sexta, 8h-18h">
+                                </div>
+                                <button type="submit" class="btn btn-primary save-profile-btn">Salvar Alterações</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+			<div class="footer-wrap pd-20 mb-20 card-box">
+				Plataforma WYN-TECH
+			</div>
+		</div>
+	</div>
+
+	<script src="vendors/scripts/core.js"></script>
+	<script src="vendors/scripts/script.min.js"></script>
+	<script src="vendors/scripts/process.js"></script>
+	<script src="vendors/scripts/layout-settings.js"></script>
+	<script src="src/plugins/datatables/js/jquery.dataTables.min.js"></script>
+	<script src="src/plugins/datatables/js/dataTables.bootstrap4.min.js"></script>
+	<script src="src/plugins/datatables/js/responsive.bootstrap4.min.js"></script>
+
+	<noscript>
+		<iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NXZMQSS" height="0" width="0" style="display: none; visibility: hidden"></iframe>
+	</noscript>
+
+	<script>
+		let loggedInPrestador = null; // Variável para armazenar os dados do prestador logado
+
+        // Obter a URL base do backend do ambiente (se definida) ou usar localhost para desenvolvimento
+        const BACKEND_BASE_URL = 'https://wyn-backend.onrender.com'; // Sua URL do Render
+
+		async function loadPrestadorProfile() {
+			const token = localStorage.getItem('token');
+			const prestadorCache = localStorage.getItem('prestador');
+
+			const userNameHeaderSpan = document.getElementById("user-name-header");
+            const userProfilePicHeaderImg = document.getElementById("user-profile-pic-header");
+            const profilePictureImg = document.getElementById("profile-picture");
+            const profileNameEl = document.getElementById("profile-name");
+            const profileEmailEl = document.getElementById("profile-email");
+            const profilePhoneEl = document.getElementById("profile-phone");
+            const profileSpecialtiesEl = document.getElementById("profile-specialties");
+            const profileAreaEl = document.getElementById("profile-area");
+            const profileAvailabilityEl = document.getElementById("profile-availability");
+            const dashboardLink = document.getElementById("dashboard-link");
+
+
+			if (!token || !prestadorCache) {
+				console.warn("Prestador não autenticado. Redirecionando para login.");
+				window.location.href = "login prestador.html"; // Redireciona para o login de prestador
+				return;
+			}
+
+            // Tenta usar os dados do cache primeiro para exibição rápida
+            loggedInPrestador = JSON.parse(prestadorCache);
+            if (userNameHeaderSpan) userNameHeaderSpan.textContent = loggedInPrestador.nome || 'Prestador';
+            if (userProfilePicHeaderImg && loggedInPrestador.foto_perfil_url) {
+                userProfilePicHeaderImg.src = loggedInPrestador.foto_perfil_url;
+                userProfilePicHeaderImg.onerror = function() { this.onerror = null; this.src = "vendors/images/photo4.jpg"; };
+            } else if (userProfilePicHeaderImg) {
+                userProfilePicHeaderImg.src = "vendors/images/photo4.jpg"; // Imagem padrão prestador
+            }
+            if (profilePictureImg && loggedInPrestador.foto_perfil_url) {
+                profilePictureImg.src = loggedInPrestador.foto_perfil_url;
+                profilePictureImg.onerror = function() { this.onerror = null; this.src = "vendors/images/photo4.jpg"; };
+            } else if (profilePictureImg) {
+                profilePictureImg.src = "vendors/images/photo4.jpg"; // Imagem padrão prestador
+            }
+            if (profileNameEl) profileNameEl.textContent = loggedInPrestador.nome || 'Nome não informado';
+            if (profileEmailEl) profileEmailEl.textContent = loggedInPrestador.email || 'Email não informado';
+            if (profilePhoneEl) profilePhoneEl.textContent = loggedInPrestador.telefone || 'Telefone não informado';
+            if (profileSpecialtiesEl) profileSpecialtiesEl.textContent = loggedInPrestador.especialidades?.join(', ') || 'Não informadas';
+            if (profileAreaEl) profileAreaEl.textContent = loggedInPrestador.area_atuacao || 'Não informada';
+            if (profileAvailabilityEl) profileAvailabilityEl.textContent = loggedInPrestador.disponibilidade || 'Não informada';
+            if (dashboardLink) dashboardLink.href = 'index.html'; // Link para dashboard prestador
+
+
+			try {
+				// Chamada ao backend para validar o token e obter dados completos e atualizados
+				const res = await fetch(`${BACKEND_BASE_URL}/perfil`, {
+					headers: { 'Authorization': 'Bearer ' + token }
+				});
+
+				const resClone = res.clone(); // Clonar para ler o body se der erro de JSON
+
+				if (!res.ok) {
+					if (res.status === 401 || res.status === 403) {
+						console.error("Token inválido ou expirado. Redirecionando para login.");
+						console.error("Sua sessão expirou. Por favor, faça login novamente.");
+						window.location.href = "login prestador.html";
+						return;
+					}
+					throw new Error(`Erro HTTP ao buscar perfil: ${res.status}`);
+				}
+
+				let data = {};
+				try {
+					data = await res.json();
+				} catch(jsonError) {
+					console.error("Erro ao parsear JSON do perfil:", await resClone.text());
+					throw new Error("Resposta de perfil inválida.");
+				}
+
+                // Verifica se o tipo de usuário retornado é realmente um prestador
+                if (data.tipo !== 'prestador' || !data.prestador?._id) {
+                    console.error("Token válido, mas não corresponde a um prestador. Redirecionando para login geral.");
+                    window.location.href = "login.html"; // Redireciona para login geral se não for prestador
+                    return;
+                }
+
+                // Atualiza a variável global com os dados frescos do backend
+                loggedInPrestador = data.prestador;
+
+                // Atualiza a interface com os dados retornados pelo backend
+                if (userNameHeaderSpan) userNameHeaderSpan.textContent = loggedInPrestador.nome || 'Prestador';
+                if (profileNameEl) profileNameEl.textContent = loggedInPrestador.nome || 'Nome não informado';
+                if (profileEmailEl) profileEmailEl.textContent = loggedInPrestador.email || 'Email não informado';
+                if (profilePhoneEl) profilePhoneEl.textContent = loggedInPrestador.telefone || 'Telefone não informado';
+                if (profileSpecialtiesEl) profileSpecialtiesEl.textContent = loggedInPrestador.especialidades?.join(', ') || 'Não informadas';
+                if (profileAreaEl) profileAreaEl.textContent = loggedInPrestador.area_atuacao || 'Não informada';
+                if (profileAvailabilityEl) profileAvailabilityEl.textContent = loggedInPrestador.disponibilidade || 'Não informada';
+
+                // Atualiza a foto de perfil com a URL retornada pelo backend
+                if (userProfilePicHeaderImg && loggedInPrestador.foto_perfil_url) {
+                    userProfilePicHeaderImg.src = loggedInPrestador.foto_perfil_url;
+                    userProfilePicHeaderImg.onerror = function() { this.onerror = null; this.src = "vendors/images/photo4.jpg"; };
+                } else if (userProfilePicHeaderImg) {
+                    userProfilePicHeaderImg.src = "vendors/images/photo4.jpg"; // Imagem padrão prestador
+                }
+                if (profilePictureImg && loggedInPrestador.foto_perfil_url) {
+                    profilePictureImg.src = loggedInPrestador.foto_perfil_url;
+                    profilePictureImg.onerror = function() { this.onerror = null; this.src = "vendors/images/photo4.jpg"; };
+                } else if (profilePictureImg) {
+                    profilePictureImg.src = "vendors/images/photo4.jpg"; // Imagem padrão prestador
+                }
+
+				console.log("Perfil do prestador carregado do backend:", loggedInPrestador);
+
+			} catch (err) {
+				console.error('Erro ao carregar perfil do prestador:', err);
+				console.error('Ocorreu um erro ao carregar informações do perfil.');
+                 // Se a chamada falhou, manter os dados do cache (se existirem) ou exibir mensagem de erro
+                 if (!loggedInPrestador) { // Se nem o cache foi populado
+                      if (profileNameEl) profileNameEl.textContent = 'Erro ao carregar nome';
+                      if (profileEmailEl) profileEmailEl.textContent = 'Erro ao carregar email';
+                      if (profilePhoneEl) profilePhoneEl.textContent = 'Erro ao carregar telefone';
+                      if (profileSpecialtiesEl) profileSpecialtiesEl.textContent = 'Erro ao carregar especialidades';
+                      if (profileAreaEl) profileAreaEl.textContent = 'Erro ao carregar área';
+                      if (profileAvailabilityEl) profileAvailabilityEl.textContent = 'Erro ao carregar disponibilidade';
+                      if (profilePictureImg) profilePictureImg.src = "vendors/images/photo-error.jpg"; // Imagem de erro
+                 }
+			}
+		}
+
+        // Listener para o botão "Alterar Foto"
+        document.getElementById('change-profile-pic-btn').addEventListener('click', () => {
+             document.getElementById('upload-profile-pic').click(); // Simula o clique no input de arquivo
+        });
+
+        // Listener para quando um arquivo é selecionado no input de arquivo
+        document.getElementById('upload-profile-pic').addEventListener('change', async (event) => {
+             const file = event.target.files[0]; // Pega o primeiro arquivo selecionado
+
+             if (!file) {
+                  return; // Sai se nenhum arquivo foi selecionado
+             }
+
+             const token = localStorage.getItem('token');
+             if (!token) {
+                  console.error('Sua sessão expirou. Faça login novamente para alterar a foto.');
+                  window.location.href = 'login prestador.html';
+                  return;
+             }
+
+             const formData = new FormData();
+             formData.append('foto_perfil', file); // 'foto_perfil' deve corresponder ao nome esperado no backend (upload.single('foto_perfil'))
+
+             // Desabilita o botão e indica que está enviando
+             const changeButton = document.getElementById('change-profile-pic-btn');
+             changeButton.disabled = true;
+             changeButton.textContent = 'Enviando...';
+
+             try {
+                  // Endpoint para upload de foto de perfil (assumindo que o backend diferencia por token)
+                  const response = await fetch(`${BACKEND_BASE_URL}/upload-foto-perfil`, {
+                       method: 'POST',
+                       headers: {
+                            // Não defina 'Content-Type' manualmente com FormData
+                           'Authorization': `Bearer ${token}`
+                       },
+                       body: formData
+                  });
+
+                  const result = await response.json();
+
+                  if (!response.ok) {
+                       console.error(result.message || 'Erro ao fazer upload da foto.');
+                       console.error('Erro no upload:', result);
+                  } else {
+                       console.log('Foto de perfil atualizada com sucesso!');
+                       console.log('Upload bem-sucedido:', result);
+
+                       // Atualiza a imagem na UI com a nova URL retornada pelo backend
+                       const newPhotoUrl = result.foto_perfil_url; // O backend deve retornar a nova URL
+                       if (newPhotoUrl) {
+                           document.getElementById('profile-picture').src = newPhotoUrl;
+                           document.getElementById('user-profile-pic-header').src = newPhotoUrl; // Atualiza também no header
+                           // Atualiza o cache local com a nova URL
+                           if (loggedInPrestador) {
+                                loggedInPrestador.foto_perfil_url = newPhotoUrl;
+                                localStorage.setItem('prestador', JSON.stringify(loggedInPrestador));
+                           }
+                       } else {
+                           console.warn("Backend não retornou a URL da nova foto.");
+                       }
+                  }
+
+             } catch (error) {
+                  console.error("Erro ao enviar foto:", error);
+                  console.error("Erro ao enviar foto: " + (error.message || "Verifique sua conexão."));
+             } finally {
+                  // Reabilita o botão e restaura o texto
+                  changeButton.disabled = false;
+                  changeButton.textContent = 'Alterar Foto';
+                  // Limpa o input de arquivo para permitir o upload do mesmo arquivo novamente, se necessário
+                  event.target.value = '';
+             }
+        });
+
+        // Listener para o botão "Editar Perfil" (abre o modal)
+        document.getElementById('edit-profile-btn').addEventListener('click', () => {
+            // Preenche o formulário do modal com os dados atuais do prestador
+            if (loggedInPrestador) {
+                document.getElementById('editName').value = loggedInPrestador.nome || '';
+                document.getElementById('editEmail').value = loggedInPrestador.email || '';
+                document.getElementById('editPhone').value = loggedInPrestador.telefone || '';
+                document.getElementById('editSpecialties').value = loggedInPrestador.especialidades?.join(', ') || '';
+                document.getElementById('editArea').value = loggedInPrestador.area_atuacao || '';
+                document.getElementById('editAvailability').value = loggedInPrestador.disponibilidade || '';
+            }
+            $('#editProfileModal').modal('show'); // Abre o modal
+        });
+
+        // Listener para o formulário de edição de perfil (salvar alterações)
+        document.getElementById('editProfileForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const token = localStorage.getItem('token');
+            if (!token) {
+                console.error('Sua sessão expirou. Faça login novamente para salvar alterações.');
+                window.location.href = 'login prestador.html';
+                return;
+            }
+
+            const updatedData = {
+                nome: document.getElementById('editName').value,
+                telefone: document.getElementById('editPhone').value,
+                especialidades: document.getElementById('editSpecialties').value.split(',').map(s => s.trim()).filter(s => s !== ''),
+                area_atuacao: document.getElementById('editArea').value,
+                disponibilidade: document.getElementById('editAvailability').value
+            };
+
+            try {
+                // Endpoint para atualizar o perfil do prestador
+                const response = await fetch(`${BACKEND_BASE_URL}/perfil-prestador`, { // Assumindo este endpoint no backend
+                    method: 'PUT', // Ou PATCH
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(updatedData)
+                });
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    console.error(result.message || 'Erro ao atualizar perfil.');
+                    alert('Erro ao atualizar perfil: ' + (result.message || 'Verifique seus dados.'));
+                } else {
+                    console.log('Perfil atualizado com sucesso!', result);
+                    alert('Perfil atualizado com sucesso!');
+                    $('#editProfileModal').modal('hide'); // Fecha o modal
+
+                    // Atualiza o cache local e recarrega a página para refletir as mudanças
+                    localStorage.setItem('prestador', JSON.stringify(result.prestador)); // Backend deve retornar o prestador atualizado
+                    loadPrestadorProfile(); // Recarrega os dados na página
+                }
+
+            } catch (error) {
+                console.error("Erro ao salvar perfil:", error);
+                alert("Erro ao salvar perfil: " + (error.message || "Verifique sua conexão."));
+            }
+        });
+
+
+		// Função de Logout (adaptada para limpar cache de prestador)
+		document.getElementById('logout-link').addEventListener('click', (e) => {
+			e.preventDefault();
+			localStorage.removeItem('token');
+			localStorage.removeItem('prestador'); // Remove o cache específico do prestador
+			window.location.href = 'login prestador.html'; // Redireciona para a página de login do prestador
+		});
+
+
+		// Chamar loadPrestadorProfile ao carregar a página
+		document.addEventListener("DOMContentLoaded", loadPrestadorProfile);
+
+	</script>
+
+</body>
+</html>
