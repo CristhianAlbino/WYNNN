@@ -1,11 +1,15 @@
 document.addEventListener("DOMContentLoaded", function() {
     console.log("DOMContentLoaded: Página totalmente carregada e parseada.");
 
-    // --- Configuração da URL Base da API ---
-    // Certifique-se de que esta URL corresponde à URL do seu backend (onde o index.js está rodando)
-    const API_BASE_URL = 'http://localhost:3000'; // Ou a URL do seu deploy (ex: https://your-backend-app.com)
-    // --- Fim Configuração da URL Base da API ---
+    // --- Configuração da URL do Backend ---
+    // IMPORTANTE: Substitua 'YOUR_RENDER_BACKEND_URL_HERE' pela URL real do seu backend no Render.
+    // Exemplo: const BACKEND_URL = 'https://seu-app-backend.onrender.com';
+    const BACKEND_URL = 'https://wyn-backend.onrender.com'; // <--- ATUALIZADO AQUI!
 
+    if (BACKEND_URL === 'YOUR_RENDER_BACKEND_URL_HERE' || !BACKEND_URL) {
+        console.error("ERRO: A URL do backend não foi configurada em script.js. Por favor, atualize a constante BACKEND_URL.");
+        // Você pode exibir uma mensagem de erro amigável para o usuário aqui, se desejar.
+    }
 
     // --- Lógica da Tela de Carregamento ---
     const loadingTime = 2000; // 2 segundos
@@ -71,50 +75,63 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         });
     } else {
-        console.warn("Elemento #theme-switcher-icon não encontrado. A funcionalidade de alternar tema pode não funcionar.");
+        console.warn("Elemento #theme-switcher-icon não encontrado.");
     }
 
-    // --- Lógica do Chatbot ---
+    // --- Lógica do Chatbot de IA ---
     const chatMessages = document.getElementById('chat-messages');
     const userInput = document.getElementById('user-input');
     const sendButton = document.getElementById('send-button');
     const loadingIndicator = document.getElementById('loading-indicator');
 
-    let chatHistory = []; // Histórico do chat para enviar à API
+    let chatHistory = [{
+        role: "model",
+        parts: [{
+            text: "Olá! Como posso ajudar você hoje?"
+        }]
+    }]; // Inicia com a mensagem do bot
 
-    function addMessage(sender, message) {
+    function addMessage(sender, text) {
         const messageElement = document.createElement('div');
-        messageElement.classList.add('chat-message', sender);
-        messageElement.textContent = message;
+        messageElement.classList.add('message', `${sender}-message`);
+        const paragraphElement = document.createElement('p');
+        paragraphElement.textContent = text;
+        messageElement.appendChild(paragraphElement);
         chatMessages.appendChild(messageElement);
         chatMessages.scrollTop = chatMessages.scrollHeight; // Rola para a última mensagem
     }
 
     async function sendMessageToAI() {
-        const userMessage = userInput.value.trim();
-        if (userMessage === '') return;
+        const message = userInput.value.trim();
+        if (message === '') return;
 
-        addMessage('user', userMessage);
-        chatHistory.push({ role: "user", parts: [{ text: userMessage }] });
+        addMessage('user', message);
+        chatHistory.push({
+            role: "user",
+            parts: [{
+                text: message
+            }]
+        });
         userInput.value = ''; // Limpa o input
 
         loadingIndicator.classList.remove('hidden'); // Mostra o indicador de carregamento
         sendButton.disabled = true; // Desabilita o botão de enviar
 
         try {
-            // CORREÇÃO AQUI: Usando a variável API_BASE_URL para a chamada fetch
-            const response = await fetch(`${API_BASE_URL}/api/chat`, {
+            // Usa a URL completa do backend
+            const response = await fetch(`${BACKEND_URL}/api/chat`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}` // Adiciona o token de autenticação
                 },
-                body: JSON.stringify({ chatHistory })
+                body: JSON.stringify({
+                    chatHistory: chatHistory
+                })
             });
 
             const result = await response.json();
 
-            if (response.ok) { // Verifica se a resposta do backend foi bem-sucedida
+            if (response.ok && result.aiResponse) { // Verifica se a resposta do backend foi bem-sucedida
                 addMessage('bot', result.aiResponse);
                 chatHistory.push({
                     role: "model",
