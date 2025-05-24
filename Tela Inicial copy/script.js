@@ -84,12 +84,25 @@ document.addEventListener("DOMContentLoaded", function() {
     const sendButton = document.getElementById('send-button');
     const loadingIndicator = document.getElementById('loading-indicator');
 
-    let chatHistory = [{
-        role: "model",
-        parts: [{
-            text: "Olá! Como posso ajudar você hoje?"
-        }]
-    }]; // Inicia com a mensagem do bot
+    // Histórico do chat para enviar à API, incluindo a instrução de sistema
+    let chatHistory = [
+        {
+            role: "user",
+            parts: [{
+                text: "Você é um assistente de IA para a plataforma WYN. A WYN é uma plataforma que conecta clientes que precisam de serviços com profissionais qualificados e verificados. A plataforma oferece segurança, rapidez e qualidade nos serviços. Os serviços incluem eletricista, encanador, pintor, ar condicionado, jardinagem, pedreiro, personal trainer, aulas de música, fotografia, entre outros. Nosso objetivo é simplificar a vida dos usuários e prestadores, oferecendo uma solução completa para encontrar e oferecer serviços. Responda apenas sobre a plataforma WYN e seus serviços."
+            }]
+        },
+        {
+            role: "model",
+            parts: [{
+                text: "Olá! Como posso ajudar você hoje?"
+            }]
+        }
+    ];
+
+    // Adiciona a mensagem inicial do bot ao carregar a página
+    addMessage('bot', "Olá! Como posso ajudar você hoje?");
+
 
     function addMessage(sender, text) {
         const messageElement = document.createElement('div');
