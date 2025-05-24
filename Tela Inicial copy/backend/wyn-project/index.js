@@ -1927,7 +1927,8 @@ app.post('/api/gemini/generate-description', authMiddlewareUsuarioOuPrestador, a
 
     try {
         const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-        const prompt = `Com base na seguinte solicitação do usuário, gere uma descrição detalhada do serviço que ele precisa, incluindo possíveis subtarefas, ferramentas ou materiais comuns, e considerações importantes. O tone deve ser profissional e informativo. Responda apenas com a descrição detalhada. Solicitação: "${userInput}"`;
+        // PROMPT LAPIDADO: Mais conciso e focado na descrição do serviço
+        const prompt = `Com base na seguinte solicitação do usuário, gere uma descrição concisa e detalhada do serviço que ele precisa. O tone deve ser profissional e informativo. Responda apenas com a descrição detalhada, focando no problema a ser resolvido e no resultado esperado, sem ser um manual de instruções para o prestador. Solicitação: "${userInput}"`;
 
         const result = await model.generateContent(prompt);
         const response = await result.response;
