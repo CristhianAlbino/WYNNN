@@ -260,6 +260,210 @@
                  margin-right: 10px;
              }
 
+            /* Estilos para o Chatbox Flutuante */
+            #chat-toggle-button {
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background-color: var(#e05e0a);/* Laranja do WYN */
+                color: var(--text-light);
+                border: none;
+                border-radius: 50%; /* Botão redondo */
+                width: 60px;
+                height: 60px;
+                font-size: 2rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                z-index: 1000; /* Garante que fique acima de outros elementos */
+                transition: background-color 0.3s ease, transform 0.3s ease;
+            }
+
+            #chat-toggle-button:hover {
+                background-color: #e05e0a; /* Laranja mais escuro no hover */
+                transform: scale(1.05);
+            }
+
+            #chat-container {
+                position: fixed;
+                bottom: 90px; /* Acima do botão de toggle */
+                right: 20px;
+                width: 350px;
+                height: 450px;
+                background-color: var(--card-background); /* Fundo do card */
+                border: 1px solid var(--border-color);
+                border-radius: 12px;
+                box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+                display: flex;
+                flex-direction: column;
+                overflow: hidden;
+                z-index: 999;
+                transition: all 0.3s ease-in-out;
+                transform: translateY(100%); /* Começa escondido */
+                opacity: 0;
+                visibility: hidden;
+            }
+
+            #chat-container.open {
+                transform: translateY(0);
+                opacity: 1;
+                visibility: visible;
+            }
+
+            /* Modo escuro para o chatbox */
+            body.dark-mode #chat-container {
+                background-color: var(--dark-card-background);
+                border-color: var(--dark-border-color);
+                color: var(--dark-card-text-color);
+            }
+
+            #chat-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 12px 15px;
+                background-color: var(--primary-color);
+                color: var(--text-light);
+                border-top-left-radius: 10px;
+                border-top-right-radius: 10px;
+                font-weight: 600;
+                font-size: 1.1rem;
+            }
+
+            #chat-header button {
+                background: none;
+                border: none;
+                color: var(--text-light);
+                font-size: 1.5rem;
+                cursor: pointer;
+                transition: transform 0.2s ease;
+            }
+
+            #chat-header button:hover {
+                transform: scale(1.1);
+            }
+
+            #chat-messages {
+                flex-grow: 1;
+                padding: 15px;
+                overflow-y: auto;
+                background-color: var(--background-color); /* Fundo claro para mensagens */
+                color: var(--text-color);
+                line-height: 1.5;
+                word-wrap: break-word; /* Garante que o texto quebre */
+            }
+
+            body.dark-mode #chat-messages {
+                background-color: var(--dark-background-color);
+                color: var(--dark-text-color);
+            }
+
+            .message {
+                margin-bottom: 10px;
+                padding: 8px 12px;
+                border-radius: 8px;
+                max-width: 80%;
+            }
+
+            .message.user {
+                background-color: #e0f7fa; /* Azul claro para mensagens do usuário */
+                color: #004d40;
+                align-self: flex-end; /* Alinha à direita */
+                margin-left: auto;
+            }
+
+            body.dark-mode .message.user {
+                background-color: #3f51b5; /* Azul mais escuro para o modo escuro */
+                color: #ffffff;
+            }
+
+            .message.bot {
+                background-color: #f1f8e9; /* Verde claro para mensagens do bot */
+                color: #33691e;
+                align-self: flex-start; /* Alinha à esquerda */
+                margin-right: auto;
+            }
+
+            body.dark-mode .message.bot {
+                background-color: #4caf50; /* Verde mais escuro para o modo escuro */
+                color: #ffffff;
+            }
+
+            #chat-input-area {
+                display: flex;
+                padding: 10px 15px;
+                border-top: 1px solid var(--border-color);
+                background-color: var(--card-background);
+            }
+
+            body.dark-mode #chat-input-area {
+                border-top-color: var(--dark-border-color);
+                background-color: var(--dark-card-background);
+            }
+
+            #chat-input {
+                flex-grow: 1;
+                padding: 10px;
+                border: 1px solid var(--border-color);
+                border-radius: 8px;
+                margin-right: 10px;
+                font-size: 1rem;
+                background-color: var(--background-color);
+                color: var(--text-color);
+            }
+
+            body.dark-mode #chat-input {
+                background-color: var(--dark-background-color);
+                border-color: var(--dark-border-color);
+                color: var(--dark-text-color);
+            }
+
+            #chat-send-button {
+                background-color: var(--primary-color);
+                color: var(--text-light);
+                border: none;
+                border-radius: 8px;
+                padding: 10px 15px;
+                font-size: 1rem;
+                cursor: pointer;
+                transition: background-color 0.3s ease;
+            }
+
+            #chat-send-button:hover {
+                background-color: #e05e0a;
+            }
+
+            #chat-loading-indicator {
+                text-align: center;
+                padding: 5px;
+                font-size: 0.9rem;
+                color: #666;
+                display: none; /* Inicialmente oculto */
+            }
+
+            body.dark-mode #chat-loading-indicator {
+                color: #bbb;
+            }
+
+            /* Responsividade para telas menores */
+            @media (max-width: 768px) {
+                #chat-container {
+                    width: 90%; /* Ocupa mais largura em telas pequenas */
+                    height: 70vh; /* Altura relativa à viewport */
+                    right: 5%;
+                    bottom: 90px;
+                }
+
+                #chat-toggle-button {
+                    width: 50px;
+                    height: 50px;
+                    font-size: 1.8rem;
+                    bottom: 15px;
+                    right: 15px;
+                }
+            }
 		</style>
 
 
@@ -2016,6 +2220,265 @@
 
 		</script>
 
+<button id="chat-toggle-button" title="Abrir Chat com IA">
+    <i class="dw dw-chat"></i>
+</button>
 
-	</body>
+<div id="chat-container">
+    <div id="chat-header">
+        Chat com IA
+        <button id="chat-close-button"><i class="dw dw-cancel"></i></button>
+    </div>
+    <div id="chat-messages">
+        <div class="message bot">Olá! Como posso ajudar você hoje?</div>
+    </div>
+    <div id="chat-loading-indicator" style="display: none;">Digitando...</div>
+    <div id="chat-input-area">
+        <input type="text" id="chat-input" placeholder="Digite sua mensagem..." />
+        <button id="chat-send-button">Enviar</button>
+    </div>
+</div>
+
+<script>
+    // --- Lógica do Chatbot IA ---
+    const chatToggleButton = document.getElementById('chat-toggle-button');
+    const chatContainer = document.getElementById('chat-container');
+    const chatCloseButton = document.getElementById('chat-close-button');
+    const chatMessages = document.getElementById('chat-messages');
+    const chatInput = document.getElementById('chat-input');
+    const chatSendButton = document.getElementById('chat-send-button');
+    const chatLoadingIndicator = document.getElementById('chat-loading-indicator');
+
+  let chatHistory = [
+    {
+        role: "user",
+        parts: [{
+            text: `Você é um assistente de IA dedicado à plataforma WYN. Seu principal objetivo é fornecer informações precisas e úteis sobre o funcionamento da WYN, seus serviços, processos de usuário e prestador, e quaisquer outras funcionalidades relevantes. Responda sempre com foco na WYN e seus ecossistema.
+
+1. O que é a WYN? LEMBRANDO QUE VOCÊ ESTÁ FALANDO COM O PRESTADOR NESTE MOMENTO ENTÃO PERSONALIZE A RESPOSTA PARA O PRESTADOR: E SEMPRE PASSE INFORMAÇÕES RESUMIDAS NUNCA PASSE DE 3 OU 4 LINHAS
+A WYN é uma plataforma digital inovadora que atua como uma ponte eficiente e segura, conectando clientes que necessitam de uma vasta gama de serviços a profissionais qualificados e verificados.
+
+Nosso Propósito: Simplificar a vida de usuários e prestadores, oferecendo uma solução completa para encontrar e oferecer serviços com agilidade, segurança e garantia de qualidade.
+
+2. Papéis na Plataforma:
+Cliente (Usuário): Indivíduo que busca e contrata serviços.
+
+Prestador (Profissional): Indivíduo ou empresa que oferece e executa serviços.
+
+Administrador (Admin): Responsável pela gestão e moderação da plataforma.
+
+3. Processos Internos e Funcionalidades:
+3.1. Cadastro (Registro de Novas Contas):
+
+Clientes: Podem se cadastrar fornecendo informações básicas (nome, e-mail, senha).
+
+Prestadores: O cadastro é mais detalhado, exigindo informações de contato, tipos de serviço oferecidos, área de atuação e, crucialmente, passa por um processo de verificação para garantir a qualificação e segurança. Podem incluir foto de perfil.
+
+3.2. Login (Acesso à Plataforma):
+
+Clientes e Prestadores: Acessam suas contas usando e-mail e senha.
+
+Administradores: Possuem uma tela de login separada (login-admin.html) e credenciais específicas para acessar o dashboard administrativo.
+
+3.3. Fazer Pedido/Solicitar Serviço (Fluxo do Cliente):
+
+Busca: O cliente pesquisa por um tipo de serviço (ex: "Eletricista") na página inicial ou na seção de serviços.
+
+Seleção: O cliente pode visualizar profissionais disponíveis e/ou solicitar um serviço específico.
+
+Detalhes da Solicitação: O cliente preenche um formulário com detalhes do serviço desejado (endereço, urgência, notas adicionais, data e hora preferenciais).
+
+Envio: A solicitação é enviada para os prestadores qualificados na área.
+
+Aceite/Recusa do Prestador: Um prestador pode aceitar a solicitação, propondo um valor, ou recusá-la.
+
+3.4. Pagamento (Fluxo do Cliente):
+
+Integração Mercado Pago: Após um prestador aceitar uma solicitação e propor um valor, o cliente é direcionado para uma página de pagamento pendente.
+
+Geração de Link de Pagamento: A plataforma gera um link de pagamento via Mercado Pago.
+
+Status Pendente: O serviço entra em status de "aguardando_pagamento_cliente" ou "aguardando_confirmacao_pagamento" enquanto o pagamento é processado.
+
+Confirmação: Após a confirmação do pagamento pelo Mercado Pago, o status do serviço é atualizado para "aceito_pelo_prestador" ou "em andamento".
+
+3.5. Gerenciamento de Serviços (Fluxo do Prestador):
+
+Dashboard do Prestador: O prestador tem acesso a um dashboard (index.html) que mostra:
+
+Solicitações Pendentes: Novas solicitações de serviço que ele pode aceitar ou recusar.
+
+Meus Serviços Aceitos/Em Andamento: Serviços que ele aceitou e estão aguardando pagamento do cliente ou já estão em andamento.
+
+Histórico de Serviços: Serviços concluídos ou cancelados.
+
+Minhas Avaliações: Feedback recebido dos clientes.
+
+Gerenciar Serviços: Onde o prestador pode adicionar ou editar os tipos de serviços que oferece.
+
+Minha Disponibilidade: Para gerenciar seus horários.
+
+Ações sobre Solicitações: O prestador pode "Aceitar" (propondo um valor) ou "Recusar" uma solicitação pendente.
+
+Conclusão do Serviço: Após a execução, o prestador marca o serviço como "concluido_pelo_prestador".
+
+3.6. Avaliações (Feedback do Cliente):
+
+Após a conclusão de um serviço, o cliente pode avaliar o prestador, dando estrelas e deixando comentários. Isso contribui para a reputação do prestador na plataforma.
+
+3.7. Notificações:
+
+Sininho de Notificações: Clientes e prestadores recebem notificações em um ícone de sino no cabeçalho.
+
+Tipos de Notificações:
+
+Novas solicitações de serviço (para prestadores).
+
+Atualizações de status de serviço (pagamento confirmado, serviço aceito/recusado, concluído).
+
+Novas mensagens de chat.
+
+Novas avaliações recebidas.
+
+Contador: O ícone do sino exibe um contador de notificações não lidas.
+
+Detalhes: O dropdown do sino mostra um resumo da notificação (ex: "Nova solicitação de serviço", "Pagamento confirmado"). Clicar na notificação marca-a como lida e pode redirecionar para a página relevante (ex: detalhes do serviço, sala de chat).
+
+3.8. Perfil do Usuário/Prestador:
+
+Ambos os tipos de usuários podem acessar e atualizar suas informações de perfil, incluindo foto de perfil.
+
+3.9. Chat de Serviços:
+
+A plataforma oferece uma funcionalidade de chat para comunicação direta entre clientes e prestadores sobre os serviços.
+
+4. Categorias de Serviços:
+Atualmente Ativas: Eletricista.
+
+Em Breve: Encanador, Pintor, Ar Condicionado, Jardinagem, Pedreiro, Limpeza.
+
+Em Expansão: Outras categorias como Personal Trainer, Aulas de Música, Fotografia, etc. (A IA deve indicar que estas estão em fase de expansão e podem não estar listadas em todas as interfaces como "Em Breve" explícito, mas fazem parte do plano de crescimento).
+
+Lembretes para a IA:
+
+Sempre que perguntado sobre um serviço "Em Breve", mencione que a WYN está trabalhando para disponibilizá-lo e convide o usuário a se cadastrar para receber notificações.
+
+Mantenha um tom profissional, prestativo e claro. E SEMPRE PASSE INFORMAÇÕES RESUMIDAS, diretas e objetivas. evite fazer um textão para o usuário.
+
+Evite jargões técnicos desnecessários, a menos que o usuário solicite.
+
+Se a pergunta for fora do escopo da WYN, informe educadamente que sua função é apenas sobre a plataforma WYN.`
+        }]
+    },
+        {
+            role: "model",
+            parts: [{
+                text: "Olá! Como posso ajudar você hoje?"
+            }]
+        }
+    ];
+
+    // Adiciona a mensagem inicial do bot ao carregar a página
+    addMessage('bot', "Olá! Como posso ajudar você hoje?")
+    // Função para adicionar mensagens ao chat
+    function addMessage(sender, text) {
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('message', sender);
+        messageElement.textContent = text;
+        chatMessages.appendChild(messageElement);
+        chatMessages.scrollTop = chatMessages.scrollHeight; // Rola para a última mensagem
+    }
+
+    // Função para enviar mensagem para a IA
+    async function sendMessageToAI() {
+        const userMessage = chatInput.value.trim();
+        if (userMessage === '') return;
+
+        addMessage('user', userMessage);
+        chatHistory.push({ role: "user", parts: [{ text: userMessage }] });
+        chatInput.value = ''; // Limpa o input
+
+        chatSendButton.disabled = true; // Desabilita o botão
+        chatInput.disabled = true; // Desabilita o input
+        chatLoadingIndicator.style.display = 'block'; // Mostra o indicador de carregamento
+        chatMessages.scrollTop = chatMessages.scrollHeight; // Rola para baixo para ver o indicador
+
+        try {
+            // URL do seu backend para o endpoint do chatbot
+            const apiUrl = `https://wyn-backend.onrender.com/api/chat`; // <-- URL ATUALIZADA PARA O BACKEND NO RENDER
+
+            const payload = {
+                chatHistory: chatHistory
+            };
+
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const result = await response.json();
+
+            if (response.ok && result.aiResponse) {
+                addMessage('bot', result.aiResponse);
+                chatHistory.push({ role: "model", parts: [{ text: result.aiResponse }] });
+            } else {
+                addMessage('bot', result.message || 'Desculpe, não consegui gerar uma resposta. Tente novamente.');
+                console.error('Estrutura de resposta inesperada da API Gemini:', result);
+            }
+        } catch (error) {
+            console.error('Erro ao chamar a API Gemini:', error);
+            addMessage('bot', 'Ocorreu um erro ao conectar com a IA. Por favor, tente novamente mais tarde.');
+        } finally {
+            chatLoadingIndicator.style.display = 'none'; // Esconde o indicador de carregamento
+            chatSendButton.disabled = false; // Habilita o botão de enviar
+            chatInput.disabled = false; // Habilita o input
+            chatInput.focus(); // Coloca o foco de volta no input
+            chatMessages.scrollTop = chatMessages.scrollHeight; // Rola para a última mensagem novamente
+        }
+    }
+
+    // Event listener para o botão de toggle (abrir/fechar chat)
+    if (chatToggleButton) {
+        chatToggleButton.addEventListener('click', () => {
+            chatContainer.classList.toggle('open');
+            if (chatContainer.classList.contains('open')) {
+                chatInput.focus(); // Foca no input quando abre
+            }
+        });
+    } else {
+        console.warn("Elemento #chat-toggle-button não encontrado.");
+    }
+
+    // Event listener para o botão de fechar o chat
+    if (chatCloseButton) {
+        chatCloseButton.addEventListener('click', () => {
+            chatContainer.classList.remove('open');
+        });
+    } else {
+        console.warn("Elemento #chat-close-button não encontrado.");
+    }
+
+    // Event listener para o botão de enviar mensagem
+    if (chatSendButton) {
+        chatSendButton.addEventListener('click', sendMessageToAI);
+    } else {
+        console.warn("Elemento #chat-send-button não encontrado.");
+    }
+
+    // Event listener para a tecla Enter no campo de input
+    if (chatInput) {
+        chatInput.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                sendMessageToAI();
+            }
+        });
+    } else {
+        console.warn("Elemento #chat-input não encontrado.");
+    }
+</script>
+
+</body>
 </html>
