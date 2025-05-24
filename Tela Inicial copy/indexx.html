@@ -542,28 +542,28 @@
                      <div id="customers-testimonials" class="owl-carousel">
                          <div class="item">
                              <div class="shadow-effect">
-                                 <img class="img-circle" src="/w/pessoa.png" alt="Foto de Perfil Genérica">
+                                 <img class="img-circle" src="https://placehold.co/100x100/E0E0E0/333333?text=Cliente+1" alt="Foto de Perfil Genérica">
                                  <p>"Consegui contratar um eletricista em minutos pelo WYN! O processo foi rápido, e o serviço, impecável. Muito prático!"</p>
                              </div>
                              <div class="testimonial-name">Mariana S. ⭐️⭐️⭐️⭐️⭐️</div>
                          </div>
                          <div class="item">
                              <div class="shadow-effect">
-                                  <img class="img-circle" src="/w/pessoa.png" alt="Foto de Perfil Genérica">
+                                  <img class="img-circle" src="https://placehold.co/100x100/E0E0E0/333333?text=Cliente+2" alt="Foto de Perfil Genérica">
                                  <p>"Usei para encontrar um Encanador para minha casa. Ótima experiência! Só poderia ter mais opções de pagamento."</p>
                              </div>
                              <div class="testimonial-name">Rafael L. ⭐️⭐️⭐️⭐️</div>
                          </div>
                          <div class="item">
                              <div class="shadow-effect">
-                                  <img class="img-circle" src="/w/pessoa.png" alt="Foto de Perfil Genérica">
+                                  <img class="img-circle" src="https://placehold.co/100x100/E0E0E0/333333?text=Cliente+3" alt="Foto de Perfil Genérica">
                                  <p>"Primeira vez usando o WYN, e foi ótimo! Consegui uma diarista de confiança rapidamente. Super fácil e ágil!"</p>
                              </div>
                              <div class="testimonial-name">Thiago R. ⭐️⭐️⭐️⭐️</div>
                          </div>
                          <div class="item">
                              <div class="shadow-effect">
-                                  <img class="img-circle" src="/w/pessoa.png" alt="Foto de Perfil Genérica">
+                                  <img class="img-circle" src="https://placehold.co/100x100/E0E0E0/333333?text=Cliente+4" alt="Foto de Perfil Genérica">
                                  <p>"Plataforma muito útil! Fiz o agendamento com um pintor em segundos e deu tudo certo. Recomendo demais!"</p>
                              </div>
                              <div class="testimonial-name">Clara F. ⭐️⭐️⭐️⭐️⭐️</div>
@@ -596,19 +596,19 @@
                         <p class="bio">gestor.</p>
                     </div>
                     <div class="team-member-card">
-                        <img src="Matheus.jpeg" alt="Foto do CTO">
+                        <img src="https://placehold.co/120x120/E0E0E0/333333?text=Matheus" alt="Foto do CTO">
                         <h3>Matheus Henrique</h3>
                         <p class="role">Scrum Master</p>
                         <p class="bio">Ficou responsável pela organização de documentação e organização de reuniões de progresso, organizador na distribuição de tarefas individuais dos demais membros e ajustes as suas funções..</p>
                     </div>
                     <div class="team-member-card">
-                        <img src="cristhian.jpeg" alt="Foto do CMO">
+                        <img src="https://placehold.co/120x120/E0E0E0/333333?text=Cristhian" alt="Foto do CMO">
                         <h3>Cristhian Albino</h3>
                         <p class="role">Dev Full Stack</p>
                         <p class="bio">Criou e manteve tanto o front-end quanto o back-end do WYN. Integrando essas duas partes para garantir que o sistema funcione de ponta a ponta. Implementou melhorias e garantindo a boa experiência do usuário e a eficiência do sistema</p>
                     </div>
                     <div class="team-member-card">
-                        <img src="Jonathan.jpeg" alt="Foto do Gerente de Suporte">
+                        <img src="https://placehold.co/120x120/E0E0E0/333333?text=Jonathan" alt="Foto do Gerente de Suporte">
                         <h3>Jonathan Lensk</h3>
                         <p class="role">Tester/Analista de Suporte</p>
                         <p class="bio">Responsável por testar funcionalidades do sistema, identificar e reportar bugs.
@@ -616,7 +616,7 @@ Oferece suporte técnico aos usuários, solucionando problemas e dúvidas.
 Garante a qualidade e estabilidade da aplicação.</p>
                     </div>
                     <div class="team-member-card">
-                        <img src="gustavo.jpeg" alt="Foto do Gerente de Suporte">
+                        <img src="https://placehold.co/120x120/E0E0E0/333333?text=Gustavo" alt="Foto do Gerente de Suporte">
                         <h3>Gustavo Santos</h3>
                         <p class="role">Designer e Mobile</p>
                         <p class="bio">Designer e desenvolvedor do app mobile WYN. Criou as interfaces no Figma, com foco na usabilidade e consistência visual da aplicação. Desenvolveu o app mobile em Java, focando na experiência do usuário e nas principais funcionalidades do serviço.</p>
@@ -721,6 +721,38 @@ Garante a qualidade e estabilidade da aplicação.</p>
             </div>
         </footer>
     </div>
+
+    <div class="chatbot-container">
+        <button id="chatbot-toggle-btn" class="chatbot-toggle-btn">
+            <i class='bx bxs-chat'></i>
+        </button>
+        <div id="chatbot-box" class="chatbot-box hidden">
+            <div class="chatbot-header">
+                <h3>WYN Chatbot - FAQ</h3>
+                <button id="chatbot-close-btn" class="close-btn"><i class='bx bx-x'></i></button>
+            </div>
+            <div class="chatbot-messages" id="chatbot-messages">
+                <div class="message bot-message">Olá! Sou o assistente da WYN. Como posso te ajudar hoje?</div>
+                <div class="message bot-message">Aqui estão algumas perguntas frequentes:</div>
+                <div class="message bot-message option-list">
+                    <ul>
+                        <li><a href="#" data-question="como-funciona">1. Como funciona a WYN?</a></li>
+                        <li><a href="#" data-question="cadastrar-prestador">2. Como me cadastro como prestador?</a></li>
+                        <li><a href="#" data-question="seguranca">3. A WYN é segura?</a></li>
+                        <li><a href="#" data-question="custo-servico">4. Quanto custa usar a WYN?</a></li>
+                        <li><a href="#" data-question="contato">5. Como entro em contato com o suporte?</a></li>
+                        <li><a href="#" data-question="falar-humano">6. Posso falar com um atendente?</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="chatbot-input">
+                <input type="text" id="user-input" placeholder="Digite sua pergunta...">
+                <button id="send-btn"><i class='bx bx-send'></i></button>
+            </div>
+        </div>
+    </div>
+
+
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.1.1/owl.carousel.min.js"></script>
     <script>

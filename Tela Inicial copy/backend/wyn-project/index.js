@@ -526,6 +526,19 @@ const authMiddlewareUsuario = (req, res, next) => {
      });
 };
 
+// NOVO MIDDLEWARE: Permite tanto 'usuario' quanto 'prestador'
+const authMiddlewareUsuarioOuPrestador = (req, res, next) => {
+    authMiddleware(req, res, () => {
+        if (req.user && (req.user.tipo === 'usuario' || req.user.tipo === 'prestador')) {
+            next();
+        } else {
+            console.warn("[AUTH] Acesso negado: Necessário perfil de usuário ou prestador.");
+            res.status(403).json({ message: 'Acesso negado. Necessário perfil de usuário ou prestador.' });
+        }
+    });
+};
+
+
 const isServiceParticipant = async (req, res, next) => {
     const serviceId = req.params.serviceId || req.body.serviceId;
 
@@ -1571,7 +1584,7 @@ app.post('/upload-foto-perfil', authMiddleware, uploadProfilePicture, async (req
             // Exclui o arquivo temporário
             const filePath = path.join(__dirname, fotoPerfil.path);
             fs.unlink(filePath, (err) => {
-                if (err) console.error(`[BACKEND] Erro ao excluir arquivo temporário ${filePath}:`, err);
+                if (err) console.error(`[BACKEND] Erro ao excluir arquivo temporário ${filePath} após usuário não encontrado:`, err);
             });
             return res.status(404).json({ message: 'Usuário ou Prestador não encontrado.' });
         }
@@ -1858,7 +1871,8 @@ app.put('/api/notifications/:id/mark-as-read', authMiddleware, async (req, res, 
 // --- NOVOS ENDPOINTS PARA INTEGRAÇÃO COM GEMINI API ---
 
 // Endpoint para gerar descrição detalhada usando Gemini API
-app.post('/api/gemini/generate-description', authMiddlewareUsuario, async (req, res) => {
+// ALTERADO: Agora permite acesso para 'usuario' e 'prestador'
+app.post('/api/gemini/generate-description', authMiddlewareUsuarioOuPrestador, async (req, res) => {
     console.log('[BACKEND] Recebida requisição POST /api/gemini/generate-description');
     const { userInput } = req.body;
 
@@ -2248,7 +2262,7 @@ app.post('/reset-password', async (req, res, next) => {
              user = await Prestador.findOne({
                  resetPasswordToken: token,
                  resetPasswordExpires: { $gt: Date.now() }
-             });
+             }); // <-- CORREÇÃO AQUI: Fechamento do parêntese para Prestador.findOne
              userType = 'prestador';
              if (!user) {
                  console.warn('[BACKEND] Reset Password: Token de redefinição inválido ou expirado.');
@@ -3242,7 +3256,7 @@ app.put('/admin/prestadores/:id', adminAuthMiddleware, uploadProfilePicture, asy
 // Rota para deletar um prestador (ADMIN)
 app.delete('/admin/prestadores/:id', adminAuthMiddleware, async (req, res, next) => {
     try {
-        console.log(`[BACKEND] ADMIN: Recebida requisição DELETE /admin/prestadores/${req.params.id}`);
+        console.log(`[BACKEND] Recebida requisição DELETE /admin/prestadores/${req.params.id}`);
         const { id } = req.params;
 
         if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -3580,7 +3594,7 @@ app.put('/admin/servicos-oferecidos/:id', adminAuthMiddleware, async (req, res, 
 // Rota para deletar um serviço oferecido (catálogo) (ADMIN)
 app.delete('/admin/servicos-oferecidos/:id', adminAuthMiddleware, async (req, res, next) => {
     try {
-        console.log(`[BACKEND] ADMIN: Recebida requisição DELETE /admin/servicos-oferecidos/${req.params.id}`);
+        console.log(`[BACKEND] Recebida requisição DELETE /admin/servicos-oferecidos/${req.params.id}`);
         const { id } = req.params;
 
         if (!mongoose.Types.ObjectId.isValid(id)) {
