@@ -41,6 +41,8 @@ const transporter = nodemailer.createTransport({
 // --- Fim Configuração Nodemailer ---
 
 // --- Configuração da Gemini API ---
+// Certifique-se de que a variável de ambiente GEMINI_API_KEY está definida no seu arquivo .env
+// e que a chave tem as permissões corretas para acessar a Gemini API.
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY; // Acessa a chave de API do ambiente
 const genAI = GEMINI_API_KEY ? new GoogleGenerativeAI(GEMINI_API_KEY) : null;
 // --- Fim Configuração da Gemini API ---
@@ -136,7 +138,7 @@ const uploadServiceComprovations = multer({
         fileSize: 1024 * 1024 * 5 // Limite de 5MB por arquivo de comprovação
     },
     fileFilter: serviceComprovationFilter
-}).array('comprovacaoImagem', 5); // O nome do campo no formulário HTML será 'comprovacaoImagem', permite até 5 arquivos
+}).array('comprovacaoImagem', 5);
 
 
 // --- Modelos ---
@@ -1616,7 +1618,7 @@ app.post('/upload-foto-perfil', authMiddleware, uploadProfilePicture, async (req
         if (fotoPerfil) {
             const filePath = path.join(__dirname, fotoPerfil.path);
             fs.unlink(filePath, (err) => {
-                if (err) console.error(`[BACKEND] Erro ao excluir arquivo temporário ${filePath} após erro no banco de dados:`, err);
+                if (err) console.error(`[BACKEND] Erro ao excluir arquivo temporário ${filePath}:`, err);
             });
         }
         next(error);
@@ -1869,6 +1871,44 @@ app.put('/api/notifications/:id/mark-as-read', authMiddleware, async (req, res, 
 // --- FIM NOVOS ENDPOINTS PARA NOTIFICAÇÕES ---
 
 // --- NOVOS ENDPOINTS PARA INTEGRAÇÃO COM GEMINI API ---
+
+// Endpoint para o chatbot principal
+// REMOVIDO: authMiddlewareUsuarioOuPrestador para permitir acesso sem autenticação
+app.post('/api/chat', async (req, res) => {
+    console.log('[BACKEND] Recebida requisição POST /api/chat');
+    const { chatHistory } = req.body;
+
+    if (!GEMINI_API_KEY || !genAI) {
+        console.error("[BACKEND] Erro: GEMINI_API_KEY não configurada no servidor.");
+        return res.status(500).json({ message: "Erro na IA: Chave da API não configurada no servidor. Contate o suporte." });
+    }
+
+    if (!chatHistory || !Array.isArray(chatHistory) || chatHistory.length === 0) {
+        return res.status(400).json({ message: "Histórico do chat inválido ou vazio." });
+    }
+
+    try {
+        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+        const result = await model.generateContent({ contents: chatHistory });
+        const response = await result.response;
+        const text = response.text();
+
+        console.log("[BACKEND] Resposta do chatbot gerada pela IA com sucesso.");
+        res.status(200).json({ aiResponse: text });
+
+    } catch (error) {
+        console.error("[BACKEND] Erro ao chamar Gemini API para o chatbot:", error);
+        // Tente extrair uma mensagem de erro mais específica da API Gemini se disponível
+        let errorMessage = "Erro ao processar sua mensagem com a IA. Tente novamente.";
+        if (error.response && error.response.data && error.response.data.error && error.response.data.error.message) {
+            errorMessage = error.response.data.error.message;
+        } else if (error.message) {
+            errorMessage = error.message;
+        }
+        res.status(500).json({ message: errorMessage });
+    }
+});
+
 
 // Endpoint para gerar descrição detalhada usando Gemini API
 // ALTERADO: Agora permite acesso para 'usuario' e 'prestador'
@@ -2222,7 +2262,7 @@ app.post('/forgot-password', async (req, res, next) => {
             subject: 'WYN - Redefinição de Senha',
             text: `Você está recebendo este email porque você (ou alguém) solicitou a redefinição da senha da sua conta.\n\n`
                   + `Por favor, clique no link a seguir, ou cole-o no seu navegador para completar o processo:\n\n`
-                  + `${resetUrl}\n\n`
+                  + `${resetUrl}\n\n` // CORREÇÃO AQUI: Removido o backtick extra
                   + `Se você não solicitou isso, por favor ignore este email e sua senha permanecerá inalterada.\n`
                   + `Este link expirará em 1 hora.`
         };
@@ -2916,7 +2956,7 @@ app.post('/admin/usuarios', adminAuthMiddleware, uploadProfilePicture, async (re
 
 // Rota para atualizar um usuário existente (ADMIN)
 app.put('/admin/usuarios/:id', adminAuthMiddleware, uploadProfilePicture, async (req, res, next) => {
-    console.log(`[BACKEND] ADMIN: Recebida requisição PUT /admin/usuarios/${req.params.id}`);
+    console.log(`[BACKEND] Recebida requisição PUT /admin/usuarios/${req.params.id}`);
     const { id } = req.params;
     const updateData = req.body;
     const fotoPerfil = req.file;
@@ -3004,7 +3044,7 @@ app.put('/admin/usuarios/:id', adminAuthMiddleware, uploadProfilePicture, async 
 // Rota para deletar um usuário (ADMIN)
 app.delete('/admin/usuarios/:id', adminAuthMiddleware, async (req, res, next) => {
     try {
-        console.log(`[BACKEND] ADMIN: Recebida requisição DELETE /admin/usuarios/${req.params.id}`);
+        console.log(`[BACKEND] Recebida requisição DELETE /admin/usuarios/${req.params.id}`);
         const { id } = req.params;
 
         if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -3158,7 +3198,7 @@ app.post('/admin/prestadores', adminAuthMiddleware, uploadProfilePicture, async 
               const filePath = path.join(__dirname, fotoPerfil.path);
               fs.unlink(filePath, (err) => {
                   if (err) console.error(`[BACKEND] Erro ao excluir arquivo temporário ${filePath} após erro no banco de dados:`, err);
-              });
+               });
          }
          if (error.code === 11000) {
               return res.status(400).json({ message: 'Email já cadastrado.' });
@@ -3169,7 +3209,7 @@ app.post('/admin/prestadores', adminAuthMiddleware, uploadProfilePicture, async 
 
 // Rota para atualizar um prestador existente (ADMIN)
 app.put('/admin/prestadores/:id', adminAuthMiddleware, uploadProfilePicture, async (req, res, next) => {
-    console.log(`[BACKEND] ADMIN: Recebida requisição PUT /admin/prestadores/${req.params.id}`);
+    console.log(`[BACKEND] Recebida requisição PUT /admin/prestadores/${req.params.id}`);
     const { id } = req.params;
     const updateData = req.body;
     const fotoPerfil = req.file;
@@ -3399,7 +3439,7 @@ app.get('/admin/servicos/:id', adminAuthMiddleware, async (req, res, next) => {
 
 // Rota para atualizar um serviço (pedido) existente (ADMIN)
 app.put('/admin/servicos/:id', adminAuthMiddleware, async (req, res, next) => {
-    console.log(`[BACKEND] ADMIN: Recebida requisição PUT /admin/servicos/${req.params.id}`);
+    console.log(`[BACKEND] Recebida requisição PUT /admin/servicos/${req.params.id}`);
     const { id } = req.params;
     const updateData = req.body;
 
@@ -3766,13 +3806,13 @@ app.use((err, req, res, next) => {
         if (req.file) {
              const filePath = path.join(__dirname, req.file.path);
              fs.unlink(filePath, (unlinkErr) => {
-                if (unlinkErr) console.error(`[BACKEND] Erro ao excluir arquivo temporário ${filePath} após erro do Multer:`, unlinkErr);
+                if (unlinkErr) console.error(`[BACKEND] Erro ao excluir arquivo temporário ${filePath}:`, unlinkErr);
              });
         } else if (req.files && req.files.length > 0) {
              req.files.forEach(file => {
                   const filePath = path.join(__dirname, file.path);
                   fs.unlink(filePath, (unlinkErr) => {
-                     if (unlinkErr) console.error(`[BACKEND] Erro ao excluir arquivo temporário ${filePath} após erro do Multer:`, unlinkErr);
+                     if (unlinkErr) console.error(`[BACKEND] Erro ao excluir arquivo temporário ${filePath}:`, unlinkErr);
                   });
              });
         }
