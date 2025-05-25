@@ -47,6 +47,8 @@
 			href="src/plugins/datatables/css/responsive.bootstrap4.min.css"
 		/>
 		<link rel="stylesheet" type="text/css" href="vendors/styles/style.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" xintegrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0x0Ugau/r+PRGFNfN/P1M2k/L/W84b36d0K7+v7z/z0q0+A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
 
         <style>
             /* Adiciona estilo para a foto de perfil no header */
@@ -81,6 +83,174 @@
              .action-card h5 {
                  margin-bottom: 0;
              }
+
+            /* Estilos para o Chatbot Box */
+            #chat-container {
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                width: 350px;
+                height: 450px;
+                background-color: #fff;
+                border-radius: 15px;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+                display: flex;
+                flex-direction: column;
+                overflow: hidden;
+                z-index: 1000; /* Garante que esteja acima de outros elementos */
+                transform: translateX(400px); /* Esconde o chat inicialmente */
+                transition: transform 0.3s ease-in-out;
+            }
+
+            #chat-container.open {
+                transform: translateX(0); /* Mostra o chat */
+            }
+
+            #chat-header {
+                background-color: #007bff; /* Cor do cabeçalho */
+                color: white;
+                padding: 15px;
+                font-size: 1.1em;
+                font-weight: bold;
+                border-top-left-radius: 15px;
+                border-top-right-radius: 15px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            #chat-close-button {
+                background: none;
+                border: none;
+                color: white;
+                font-size: 1.2em;
+                cursor: pointer;
+                padding: 5px;
+                border-radius: 50%;
+                transition: background-color 0.2s;
+            }
+
+            #chat-close-button:hover {
+                background-color: rgba(255, 255, 255, 0.2);
+            }
+
+            #chat-messages {
+                flex-grow: 1;
+                padding: 15px;
+                overflow-y: auto;
+                background-color: #f9f9f9;
+                border-bottom: 1px solid #eee;
+            }
+
+            .message {
+                margin-bottom: 10px;
+                padding: 8px 12px;
+                border-radius: 10px;
+                max-width: 80%;
+            }
+
+            .message.user {
+                background-color: #e0f7fa; /* Azul claro para mensagens do usuário */
+                align-self: flex-end;
+                margin-left: auto;
+            }
+
+            .message.bot {
+                background-color: #e8f5e9; /* Verde claro para mensagens do bot */
+                align-self: flex-start;
+                margin-right: auto;
+            }
+
+            #chat-loading-indicator {
+                padding: 10px 15px;
+                font-style: italic;
+                color: #555;
+                text-align: center;
+                background-color: #f1f1f1;
+            }
+
+            #chat-input-area {
+                display: flex;
+                padding: 15px;
+                border-top: 1px solid #eee;
+            }
+
+            #chat-input {
+                flex-grow: 1;
+                border: 1px solid #ddd;
+                border-radius: 20px;
+                padding: 10px 15px;
+                margin-right: 10px;
+                font-size: 0.9em;
+            }
+
+            #chat-send-button {
+                background-color: #28a745; /* Verde para o botão de enviar */
+                color: white;
+                border: none;
+                border-radius: 20px;
+                padding: 10px 15px;
+                cursor: pointer;
+                transition: background-color 0.2s;
+            }
+
+            #chat-send-button:hover {
+                background-color: #218838;
+            }
+
+            /* Botão flutuante para abrir o chat */
+            #chat-toggle-button {
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background-color: #007bff; /* Azul */
+                color: white;
+                border: none;
+                border-radius: 50%;
+                width: 60px;
+                height: 60px;
+                font-size: 2em;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                cursor: pointer;
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+                z-index: 1001; /* Acima do chat container */
+                transition: transform 0.3s ease-in-out;
+            }
+
+            #chat-toggle-button:hover {
+                transform: scale(1.05);
+            }
+
+            /* Esconde o botão de toggle quando o chat está aberto */
+            #chat-container.open + #chat-toggle-button {
+                display: none;
+            }
+
+            /* Media queries para responsividade */
+            @media (max-width: 768px) {
+                #chat-container {
+                    width: 90%;
+                    height: 80%;
+                    bottom: 5%;
+                    right: 5%;
+                    transform: translateX(100vw); /* Esconde para a direita na tela pequena */
+                }
+
+                #chat-container.open {
+                    transform: translateX(0);
+                }
+
+                #chat-toggle-button {
+                    width: 50px;
+                    height: 50px;
+                    font-size: 1.8em;
+                    bottom: 15px;
+                    right: 15px;
+                }
+            }
+
         </style>
 
 		<script
@@ -452,6 +622,12 @@
                             </a>
                         </li>
                          <li>
+							<a href="avaliar-prestador.html" class="dropdown-toggle no-arrow">
+                                <span class="micon bi bi-star-fill"></span>
+                                <span class="mtext">Avaliar Prestadores</span>
+                            </a>
+                        </li>
+                         <li>
 							<a href="profile.html" class="dropdown-toggle no-arrow">
                                 <span class="micon bi bi-person"></span>
                                 <span class="mtext">Meu Perfil</span>
@@ -665,7 +841,8 @@
 								 if (!res.ok) {
 									 if (res.status === 401 || res.status === 403) {
 										 console.error("Token inválido ou expirado. Redirecionando para login.");
-										 alert("Sua sessão expirou. Por favor, faça login novamente.");
+										 // Substituído alert por showToast
+                                         showToast("Sua sessão expirou. Por favor, faça login novamente.", 'danger');
 										 window.location.href = "login.html";
 										 return;
 									 }
@@ -686,7 +863,8 @@
 								// Verifique se o perfil retornado é de um usuário cliente
 								 if (data.tipo !== 'usuario' || !data.usuario?._id) {
 									  console.error("Token válido, mas não corresponde a um usuário cliente.");
-									  alert("Acesso negado para este tipo de usuário.");
+									  // Substituído alert por showToast
+                                      showToast("Acesso negado para este tipo de usuário.", 'danger');
 									  window.location.href = "login-prestador.html"; // Redireciona para login do prestador se for prestador
 									  return;
 								 }
@@ -723,9 +901,11 @@
 								console.error('Erro ao carregar perfil do usuário:', err);
 								 // Se já tentou parsear do cache e deu erro, alertar. Senão, talvez o erro já tenha sido alertado no redirect.
 								 if (usuarioLogado) { // Se usuarioLogado foi populado do cache mas a chamada falhou
-									 alert('Erro ao validar sessão do usuário. Pode haver problemas na conexão.');
+									 // Substituído alert por showToast
+                                     showToast('Erro ao validar sessão do usuário. Pode haver problemas na conexão.', 'danger');
 								 } else { // Se nem o cache existia ou deu erro no parse
-									 alert('Ocorreu um erro ao carregar informações do usuário.');
+									 // Substituído alert por showToast
+                                     showToast('Ocorreu um erro ao carregar informações do usuário.', 'danger');
 								 }
 								// Não redireciona aqui se o redirect já aconteceu acima
 							}
@@ -742,6 +922,41 @@
                              }
 							 window.location.href = 'login.html'; // Redireciona para a página de login do usuário
 						});
+
+                        // Função para exibir toast notifications (copiada do catalogo.html)
+                        function showToast(message, type = 'success') {
+                            const toastContainer = document.getElementById('toastContainer');
+                            if (!toastContainer) {
+                                console.error("[DASHBOARD] Toast container não encontrado!");
+                                return;
+                            }
+
+                            const toastElement = document.createElement('div');
+                            toastElement.classList.add('toast');
+                            toastElement.setAttribute('role', 'alert');
+                            toastElement.setAttribute('aria-live', 'assertive');
+                            toastElement.setAttribute('aria-atomic', 'true');
+                            toastElement.setAttribute('data-delay', '5000');
+
+                            toastElement.innerHTML = `
+                                <div class="toast-header ${type === 'success' ? 'bg-success text-white' : type === 'danger' ? 'bg-danger text-white' : 'bg-info text-white'}">
+                                    <strong class="mr-auto">${type === 'success' ? 'Sucesso' : type === 'danger' ? 'Erro' : 'Informação'}</strong>
+                                    <small>Agora</small>
+                                    <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="toast-body">
+                                    ${message}
+                                </div>
+                            `;
+
+                            toastContainer.appendChild(toastElement);
+                            $(toastElement).toast('show');
+                            $(toastElement).on('hidden.bs.toast', function () {
+                                $(this).remove();
+                            });
+                        }
 
 
 						// Mapeamento de status do backend para texto amigável
@@ -785,7 +1000,8 @@
 
 								if (!responseServicos.ok) {
 									 if (responseServicos.status === 401 || responseServicos.status === 403) {
-										  alert("Sua sessão expirou ou você não tem permissão. Faça login novamente.");
+										  // Substituído alert por showToast
+                                          showToast("Sua sessão expirou ou você não tem permissão. Faça login novamente.", 'danger');
 										  window.location.href = "login.html"; // Redireciona para login do usuário
 										  return;
 									 }
@@ -963,7 +1179,11 @@
 				style="display: none; visibility: hidden"
 			></iframe
 		></noscript>
-<div id="chat-container">
+<button id="chat-toggle-button">
+    <i class="fa-solid fa-comments"></i>
+</button>
+
+<div id="toastContainer"></div> <div id="chat-container">
     <div id="chat-header">
         Chat com IA
         <button id="chat-close-button"><i class="dw dw-cancel"></i></button>
@@ -979,7 +1199,44 @@
 </div>
 
 <script>
+    // Função para exibir toast notifications (copiada do catalogo.html para garantir que funcione aqui)
+    function showToast(message, type = 'success') {
+        const toastContainer = document.getElementById('toastContainer');
+        if (!toastContainer) {
+            console.error("[DASHBOARD] Toast container não encontrado!");
+            return;
+        }
+
+        const toastElement = document.createElement('div');
+        toastElement.classList.add('toast');
+        toastElement.setAttribute('role', 'alert');
+        toastElement.setAttribute('aria-live', 'assertive');
+        toastElement.setAttribute('aria-atomic', 'true');
+        toastElement.setAttribute('data-delay', '5000');
+
+        toastElement.innerHTML = `
+            <div class="toast-header ${type === 'success' ? 'bg-success text-white' : type === 'danger' ? 'bg-danger text-white' : 'bg-info text-white'}">
+                <strong class="mr-auto">${type === 'success' ? 'Sucesso' : type === 'danger' ? 'Erro' : 'Informação'}</strong>
+                <small>Agora</small>
+                <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="toast-body">
+                ${message}
+            </div>
+        `;
+
+        toastContainer.appendChild(toastElement);
+        $(toastElement).toast('show');
+        $(toastElement).on('hidden.bs.toast', function () {
+            $(this).remove();
+        });
+    }
+
     // --- Lógica do Chatbot IA ---
+    // Certifique-se de que o elemento chat-toggle-button está no HTML antes de tentar acessá-lo.
+    // Ele foi movido para fora do script para ser um elemento HTML visível.
     const chatToggleButton = document.getElementById('chat-toggle-button');
     const chatContainer = document.getElementById('chat-container');
     const chatCloseButton = document.getElementById('chat-close-button');
@@ -988,11 +1245,11 @@
     const chatSendButton = document.getElementById('chat-send-button');
     const chatLoadingIndicator = document.getElementById('chat-loading-indicator');
 
-  let chatHistory = [
-    {
-        role: "user",
-        parts: [{
-            text: `Você é um assistente de IA decicadoà plataforma WYN. Seu principal objetivo é fornecer informações precisas e úteis sobre o funcionamento da WYN, seus serviços, processos de usuário e prestador, e quaisquer outras funcionalidades relevantes. Responda sempre com foco na WYN e seus ecossistema.
+    let chatHistory = [
+        {
+            role: "user",
+            parts: [{
+                text: `Você é um assistente de IA decicadoà plataforma WYN. Seu principal objetivo é fornecer informações precisas e úteis sobre o funcionamento da WYN, seus serviços, processos de usuário e prestador, e quaisquer outras funcionalidades relevantes. Responda sempre com foco na WYN e seus ecossistema.
 
 1. O que é a WYN? LEMBRANDO QUE NESTE MOMENTO VOCÊ ESTA FALANDO COM O CLIENTE, NA TELA DO CLIENTE: SEMPRE INFORMAÇÕES RESUMIDAS, NUNCA PASSANDO DE 3 OU 4 LINHAS
 A WYN é uma plataforma digital inovadora que atua como uma ponte eficiente e segura, conectando clientes que necessitam de uma vasta gama de serviços a profissionais qualificados e verificados.
@@ -1107,8 +1364,8 @@ Mantenha um tom profissional, prestativo e claro. E SEMPRE PASSE INFORMAÇÕES R
 Evite jargões técnicos desnecessários, a menos que o usuário solicite.
 
 Se a pergunta for fora do escopo da WYN, informe educadamente que sua função é apenas sobre a plataforma WYN.`
-        }]
-    },
+            }]
+        },
         {
             role: "model",
             parts: [{
@@ -1118,7 +1375,7 @@ Se a pergunta for fora do escopo da WYN, informe educadamente que sua função �
     ];
 
     // Adiciona a mensagem inicial do bot ao carregar a página
-    addMessage('bot', "Olá! Como posso ajudar você hoje?")
+    // Removido: addMessage('bot', "Olá! Como posso ajudar você hoje?") // Já está no HTML inicial do chat
     // Função para adicionar mensagens ao chat
     function addMessage(sender, text) {
         const messageElement = document.createElement('div');
@@ -1180,6 +1437,7 @@ Se a pergunta for fora do escopo da WYN, informe educadamente que sua função �
     }
 
     // Event listener para o botão de toggle (abrir/fechar chat)
+    // Verifique se o elemento existe antes de adicionar o listener
     if (chatToggleButton) {
         chatToggleButton.addEventListener('click', () => {
             chatContainer.classList.toggle('open');
@@ -1188,8 +1446,9 @@ Se a pergunta for fora do escopo da WYN, informe educadamente que sua função �
             }
         });
     } else {
-        console.warn("Elemento #chat-toggle-button não encontrado.");
+        console.warn("Elemento #chat-toggle-button não encontrado. Verifique se o botão flutuante está no HTML.");
     }
+
 
     // Event listener para o botão de fechar o chat
     if (chatCloseButton) {
