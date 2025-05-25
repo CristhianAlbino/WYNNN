@@ -949,8 +949,8 @@
                 if (data.tipo !== 'usuario' || !data.usuario?._id || !data.usuario?.isAdmin) {
                     console.error("Token válido, mas não corresponde a um administrador.");
                     showToast("Acesso negado. Esta área é apenas para administradores.", 'danger');
-                    // Redireciona para uma página de erro ou login geral se não for admin
-                     setTimeout(() => { window.location.href = "login.html"; }, 3000); // Redireciona para login geral
+                    // Redireciona para a página de login de admin
+                     setTimeout(() => { window.location.href = "login-admin.html"; }, 3000); // Redireciona para login-admin.html
                     return;
                 }
 
