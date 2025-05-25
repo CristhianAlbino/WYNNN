@@ -54,6 +54,8 @@
 				box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 				transition: transform 0.2s ease-in-out;
                 cursor: pointer; /* Indica que é clicável */
+                display: flex; /* Adicionado para alinhar conteúdo verticalmente */
+                flex-direction: column; /* Conteúdo em coluna */
 			}
 
 			.service-card:hover {
@@ -61,28 +63,37 @@
 				box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 			}
 
-			/* Estilo para a imagem do serviço */
-			.service-card img {
-				max-width: 100%;
-				height: 150px; /* Altura fixa para consistência */
-				object-fit: cover; /* Garante que a imagem cubra a área sem distorcer */
-				border-radius: 4px;
-				margin-bottom: 15px;
-			}
-
-			/* Novo estilo para o placeholder de ícone do serviço */
-            .service-placeholder-icon-wrapper {
+			.service-card .service-image-wrapper {
                 width: 100%;
-                height: 150px; /* Mesma altura da imagem */
+                height: 150px; /* Altura fixa para consistência */
                 display: flex;
-                justify-content: center;
                 align-items: center;
-                background-color: #f8f8f8; /* Fundo cinza bem claro */
+                justify-content: center;
                 border-radius: 4px;
                 margin-bottom: 15px;
-                color: #b0b0b0; /* Cinza claro para o ícone */
-                font-size: 4em; /* Ícone maior */
-                border: 1px dashed #e0e0e0; /* Borda tracejada sutil */
+                background-color: #f0f0f0; /* Fundo para o placeholder */
+                overflow: hidden; /* Garante que a imagem não vaze */
+            }
+
+			.service-card .service-image-wrapper img {
+				max-width: 100%;
+				height: 100%;
+				object-fit: cover; /* Garante que a imagem cubra a área sem distorcer */
+				border-radius: 4px;
+				margin-bottom: 0; /* Remove margin-bottom herdado */
+			}
+
+            /* Estilo para o ícone de placeholder de serviço */
+            .service-placeholder-icon-wrapper {
+                width: 100%;
+                height: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background-color: #e9ecef; /* Cor de fundo suave */
+                border-radius: 4px;
+                color: #6c757d; /* Cor do ícone */
+                font-size: 3rem; /* Tamanho do ícone */
             }
 
 
@@ -97,6 +108,7 @@
 				font-size: 14px;
 				color: #555;
 				margin-bottom: 5px;
+                flex-grow: 1; /* Permite que a descrição ocupe o espaço disponível */
 			}
 
             .service-card .price {
@@ -122,18 +134,6 @@
                  object-fit: cover;
                  margin-right: 8px;
                  margin-bottom: 0; /* Remove margin-bottom herdado */
-            }
-
-            /* Estilos para as estrelas de avaliação */
-            .rating-stars {
-                color: #ffc107; /* Cor amarela para estrelas */
-                font-size: 1.1em; /* Tamanho das estrelas */
-                margin-left: 5px;
-            }
-            .rating-text {
-                font-size: 0.9em;
-                color: #6c757d;
-                margin-left: 5px;
             }
 
 
@@ -219,6 +219,173 @@
              .toast-header.bg-danger { background-color: #dc3545 !important; color: white !important; }
              .toast-header.bg-info { background-color: #17a2b8 !important; color: white !important; }
 
+
+             /* Estilos para o Chatbox Flutuante */
+            #chat-toggle-button {
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background-color: #007bff; /* Azul */
+                color: white;
+                border: none;
+                border-radius: 50%;
+                width: 60px;
+                height: 60px;
+                font-size: 2em;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                cursor: pointer;
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+                z-index: 1001; /* Acima do chat container */
+                transition: transform 0.3s ease-in-out;
+            }
+
+            #chat-toggle-button:hover {
+                transform: scale(1.05);
+            }
+
+            /* Esconde o botão de toggle quando o chat está aberto */
+            #chat-container.open + #chat-toggle-button {
+                display: none;
+            }
+
+            /* Container do Chatbot */
+            #chat-container {
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                width: 350px;
+                height: 450px;
+                background-color: #fff;
+                border-radius: 15px;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+                display: flex;
+                flex-direction: column;
+                overflow: hidden;
+                z-index: 1000; /* Garante que esteja acima de outros elementos */
+                transform: translateX(400px); /* Esconde o chat inicialmente */
+                transition: transform 0.3s ease-in-out;
+            }
+
+            #chat-container.open {
+                transform: translateX(0); /* Mostra o chat */
+            }
+
+            #chat-header {
+                background-color: #007bff; /* Cor do cabeçalho */
+                color: white;
+                padding: 15px;
+                font-size: 1.1em;
+                font-weight: bold;
+                border-top-left-radius: 15px;
+                border-top-right-radius: 15px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            #chat-close-button {
+                background: none;
+                border: none;
+                color: white;
+                font-size: 1.2em;
+                cursor: pointer;
+                padding: 5px;
+                border-radius: 50%;
+                transition: background-color 0.2s;
+            }
+
+            #chat-close-button:hover {
+                background-color: rgba(255, 255, 255, 0.2);
+            }
+
+            #chat-messages {
+                flex-grow: 1;
+                padding: 15px;
+                overflow-y: auto;
+                background-color: #f9f9f9;
+                border-bottom: 1px solid #eee;
+            }
+
+            .message {
+                margin-bottom: 10px;
+                padding: 8px 12px;
+                border-radius: 10px;
+                max-width: 80%;
+            }
+
+            .message.user {
+                background-color: #e0f7fa; /* Azul claro para mensagens do usuário */
+                align-self: flex-end;
+                margin-left: auto;
+            }
+
+            .message.bot {
+                background-color: #e8f5e9; /* Verde claro para mensagens do bot */
+                align-self: flex-start;
+                margin-right: auto;
+            }
+
+            #chat-loading-indicator {
+                padding: 10px 15px;
+                font-style: italic;
+                color: #555;
+                text-align: center;
+                background-color: #f1f1f1;
+            }
+
+            #chat-input-area {
+                display: flex;
+                padding: 15px;
+                border-top: 1px solid #eee;
+            }
+
+            #chat-input {
+                flex-grow: 1;
+                border: 1px solid #ddd;
+                border-radius: 20px;
+                padding: 10px 15px;
+                margin-right: 10px;
+                font-size: 0.9em;
+            }
+
+            #chat-send-button {
+                background-color: #28a745; /* Verde para o botão de enviar */
+                color: white;
+                border: none;
+                border-radius: 20px;
+                padding: 10px 15px;
+                cursor: pointer;
+                transition: background-color 0.2s;
+            }
+
+            #chat-send-button:hover {
+                background-color: #218838;
+            }
+
+            /* Media queries para responsividade */
+            @media (max-width: 768px) {
+                #chat-container {
+                    width: 90%;
+                    height: 80%;
+                    bottom: 5%;
+                    right: 5%;
+                    transform: translateX(100vw); /* Esconde para a direita na tela pequena */
+                }
+
+                #chat-container.open {
+                    transform: translateX(0);
+                }
+
+                #chat-toggle-button {
+                    width: 50px;
+                    height: 50px;
+                    font-size: 1.8em;
+                    bottom: 15px;
+                    right: 15px;
+                }
+            }
 
 		</style>
 
@@ -738,8 +905,46 @@
               // Intervalo para o polling de mensagens de chat não lidas
              let unreadChatPollingInterval = null; // DECLARADA AQUI APENAS UMA VEZ
 
-            // REMOVIDO: const GEMINI_API_KEY = typeof __gemini_api_key !== 'undefined' ? __gemini_api_key : '';
-            // REMOVIDO: const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
+            // Constante para o tamanho máximo da descrição no card
+            const MAX_DESCRIPTION_LENGTH = 150;
+
+            // Função para truncar texto
+            function truncateText(text, maxLength) {
+                if (!text) return '';
+                if (text.length <= maxLength) return text;
+                return text.substring(0, maxLength) + '...';
+            }
+
+            // Função para gerar o HTML da imagem do serviço com fallback
+            function getServiceImageHtml(service) {
+                let imageUrl = '';
+                // Prioriza foto_servico_url se existir
+                if (service.foto_servico_url && service.foto_servico_url.trim() !== '') {
+                    imageUrl = service.foto_servico_url;
+                } else if (service.foto_perfil_prestador_url && service.foto_perfil_prestador_url.trim() !== '') {
+                    // Caso contrário, usa a foto de perfil do prestador
+                    imageUrl = service.foto_perfil_prestador_url;
+                }
+
+                if (imageUrl) {
+                    // Se houver uma URL de imagem, cria a tag <img> com um fallback JavaScript
+                    return `
+                        <div class="service-image-wrapper">
+                            <img src="${imageUrl}" alt="${service.nome || 'Serviço sem Nome'}"
+                                 onerror="this.onerror=null; this.parentNode.innerHTML = '<div class=\\'service-placeholder-icon-wrapper\\'><i class=\\'fa-solid fa-screwdriver-wrench\\'></i></div>';" />
+                        </div>
+                    `;
+                } else {
+                    // Se não houver URL de imagem, exibe o ícone de placeholder
+                    return `
+                        <div class="service-image-wrapper">
+                            <div class="service-placeholder-icon-wrapper">
+                                <i class="fa-solid fa-screwdriver-wrench"></i>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
 
 
             // Função para exibir toast notifications (copiada de outras telas)
@@ -944,7 +1149,7 @@
                      const data = await response.json();
                      const unreadCount = data.total || 0;
 
-                     if (unreadCountElementSidebar) { // Corrigido o nome da variável aqui
+                     if (unreadCountElementSidebar) {
                          if (unreadCount > 0) {
                              unreadCountElementSidebar.textContent = unreadCount;
                              unreadCountElementSidebar.style.display = 'inline';
@@ -956,7 +1161,7 @@
                  } catch (error) {
                      console.error("[CATALOGO] Erro ao carregar contagem de mensagens não lidas (cliente):", error);
                      if (unreadChatPollingInterval) clearInterval(unreadChatPollingInterval);
-                     if (unreadCountElementSidebar) unreadCountElementSidebar.style.display = 'none'; // Corrigido o nome da variável aqui
+                     if (unreadCountElementSidebar) unreadCountElementElementSidebar.style.display = 'none';
                  }
             }
 
@@ -981,7 +1186,7 @@
                      unreadChatPollingInterval = null;
                      console.log("[CATALOGO] Polling de mensagens não lidas parado.");
                  }
-            }
+             }
 
 
             // Função para carregar os serviços do catálogo do backend
@@ -1066,24 +1271,6 @@
                 }
             }
 
-            // Função auxiliar para gerar estrelas HTML
-            function generateStarRating(averageRating) {
-                let starsHtml = '';
-                const fullStars = Math.floor(averageRating);
-                const hasHalfStar = averageRating % 1 !== 0;
-
-                for (let i = 0; i < fullStars; i++) {
-                    starsHtml += '<i class="fa-solid fa-star"></i>';
-                }
-                if (hasHalfStar) {
-                    starsHtml += '<i class="fa-solid fa-star-half-stroke"></i>';
-                }
-                for (let i = 0; i < (5 - fullStars - (hasHalfStar ? 1 : 0)); i++) {
-                    starsHtml += '<i class="fa-regular fa-star"></i>';
-                }
-                return starsHtml;
-            }
-
 
             // Função para popular a lista de serviços na UI (agora com um ID de container dinâmico)
             function populateCatalog(servicesToDisplay, containerId) {
@@ -1111,32 +1298,21 @@
                                     ? `R$ ${servico.faixa_preco_min.toFixed(2).replace('.', ',')} - R$ ${servico.faixa_preco_max.toFixed(2).replace('.', ',')}`
                                     : (servico.faixa_preco_min !== undefined ? `A partir de R$ ${servico.faixa_preco_min.toFixed(2).replace('.', ',')}` : 'Preço a combinar');
 
-                        // Gera as estrelas de avaliação
-                        const mediaAvaliacoes = servico.media_avaliacoes_prestador || 0;
-                        const totalAvaliacoes = servico.total_avaliacoes_prestador || 0;
-                        const starRatingHtml = generateStarRating(mediaAvaliacoes);
-                        const ratingText = totalAvaliacoes > 0 ? `(${mediaAvaliacoes.toFixed(1)} de 5 - ${totalAvaliacoes} avaliações)` : '(Sem avaliações)';
+                        // Usa a função getServiceImageHtml para a imagem
+                        const serviceImageHtml = getServiceImageHtml(servico);
+                        // Trunca a descrição
+                        const truncatedDescription = truncateText(servico.descricao, MAX_DESCRIPTION_LENGTH);
 
-                        // Conteúdo da imagem principal do serviço
-                        let serviceMainImageHtml = '';
-                        if (servico.foto_perfil_prestador_url) { // Usando a foto do prestador como imagem principal do serviço, se disponível
-                            serviceMainImageHtml = `<img src="${servico.foto_perfil_prestador_url}" alt="${servico.nome || 'Serviço sem Nome'}" onerror="this.onerror=null;this.src='vendors/images/photo1.jpg';"/>`;
-                        } else {
-                            // Se não houver imagem, exibe um ícone de placeholder limpo
-                            serviceMainImageHtml = `<div class="service-placeholder-icon-wrapper"><i class="fa-solid fa-screwdriver-wrench"></i></div>`;
-                        }
 
                         serviceCard.innerHTML = `
                             <div class="service-card">
-                                ${serviceMainImageHtml}
+                                ${serviceImageHtml}
                                 <h5>${servico.nome || 'Serviço sem Nome'}</h5>
-                                <p>${servico.descricao || 'Sem descrição.'}</p>
+                                <p>${truncatedDescription || 'Sem descrição.'}</p>
                                 <p class="price">Faixa de Preço: ${precoTexto}</p>
                                 <div class="provider-info">
                                      ${servico.foto_perfil_prestador_url ? `<img src="${servico.foto_perfil_prestador_url}" alt="Foto de Perfil do Prestador" onerror="this.onerror=null;this.src='vendors/images/photo4.jpg';"/>` : `<img src="vendors/images/photo4.jpg" alt="Foto de Perfil Padrão"/>`}
                                      <span>Prestador: ${servico.nome_prestador || 'Desconhecido'}</span>
-                                     <span class="rating-stars">${starRatingHtml}</span>
-                                     <span class="rating-text">${ratingText}</span>
                                 </div>
                             </div>
                         `;
@@ -1324,7 +1500,7 @@
                 console.log("[CATALOGO] Abrindo modal de solicitação para o serviço:", service);
                 document.getElementById('modal-service-name').textContent = service.nome || 'Serviço';
                 document.getElementById('modal-provider-name').textContent = service.nome_prestador || 'Desconhecido';
-                document.getElementById('modal-service-description').textContent = service.descricao || 'Sem descrição.';
+                document.getElementById('modal-service-description').textContent = service.descricao || 'N/A';
 
                 const precoTexto = (service.faixa_preco_min !== undefined && service.faixa_preco_max !== undefined)
                                     ? `R$ ${service.faixa_preco_min.toFixed(2).replace('.', ',')} - R$ ${service.faixa_preco_max.toFixed(2).replace('.', ',')}`
@@ -1344,7 +1520,7 @@
                 document.getElementById('notas-adicionais').value = '';
                 document.getElementById('servico-urgente').checked = false;
 
-                // Esconde mensagens de loading/feedback da IA
+                // Esconde o loading da IA
                 document.getElementById('ai-description-loading').style.display = 'none';
 
 
@@ -1354,13 +1530,13 @@
 
             // Listener para o botão "Gerar Descrição Detalhada (IA)"
             document.getElementById('generate-description-ai-btn').addEventListener('click', async () => {
-                const userInput = document.getElementById('user-service-request').value;
+                const userInput = document.getElementById('user-service-request').value.trim();
                 const aiDescriptionField = document.getElementById('ai-generated-description');
                 const aiLoading = document.getElementById('ai-description-loading');
                 const token = localStorage.getItem('token');
 
-                if (!userInput.trim()) {
-                    showToast("Por favor, digite sua solicitação antes de gerar a descrição.", 'danger');
+                if (!userInput) {
+                    showToast("Por favor, digite sua solicitação antes de gerar a descrição.", 'info');
                     return;
                 }
                 if (!token) {
@@ -1373,28 +1549,30 @@
                 aiDescriptionField.disabled = true; // Desabilita enquanto gera
 
                 try {
+                    console.log("[CATALOGO] Chamando backend para gerar descrição detalhada com IA...");
                     const response = await fetch("https://wyn-backend.onrender.com/api/gemini/generate-description", {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
                             'Authorization': `Bearer ${token}`
                         },
-                        body: JSON.stringify({ userInput })
+                        body: JSON.stringify({ userInput: userInput })
                     });
 
                     if (response.ok) {
                         const data = await response.json();
                         aiDescriptionField.value = data.generatedText;
-                        showToast("Descrição gerada por IA com sucesso!", 'success');
+                        showToast("Descrição gerada com sucesso pela IA!", 'success');
                     } else {
                         const errorData = await response.json();
-                        aiDescriptionField.value = 'Erro ao gerar descrição.';
-                        showToast(`Erro na IA: ${errorData.message || 'Tente novamente.'}`, 'danger');
+                        console.error("[CATALOGO] Erro HTTP na resposta da IA para descrição:", response.status, errorData);
+                        aiDescriptionField.value = 'Erro ao gerar descrição. Tente novamente.';
+                        showToast(`Erro na IA: ${errorData.message || 'Não foi possível gerar a descrição.'}`, 'danger');
                     }
                 } catch (error) {
-                    console.error("[CATALOGO] Erro ao chamar API Gemini para gerar descrição:", error);
-                    aiDescriptionField.value = 'Erro de conexão ao gerar descrição.';
-                    showToast("Erro de conexão ao gerar descrição. Verifique sua internet.", 'danger');
+                    console.error("[CATALOGO] Erro ao chamar backend para gerar descrição com IA:", error);
+                    aiDescriptionField.value = 'Erro de conexão ao gerar descrição. Verifique sua rede.';
+                    showToast("Erro de conexão ao usar a IA. Tente novamente.", 'danger');
                 } finally {
                     aiLoading.style.display = 'none';
                     aiDescriptionField.disabled = false; // Habilita novamente
@@ -1404,39 +1582,35 @@
 
             // Listener para o formulário de solicitação
             document.getElementById('solicitation-form').addEventListener('submit', async (e) => {
-                e.preventDefault();
-
-                const submitBtn = document.getElementById('submit-btn');
-                submitBtn.disabled = true;
-                submitBtn.textContent = 'Enviando...';
+                e.preventDefault(); // Impede o envio padrão do formulário
 
                 const servicoOferecidoId = document.getElementById('solicitacao-servico-oferecido-id').value;
                 const prestadorId = document.getElementById('solicitacao-prestador-id').value;
                 const dataPreferencial = document.getElementById('data-preferencial').value;
                 const horaPreferencial = document.getElementById('hora-preferencial').value;
-                const enderecoServico = document.getElementById('endereco-servico').value;
-                const notasAdicionais = document.getElementById('notas-adicionais').value;
+                const enderecoServico = document.getElementById('endereco-servico').value.trim();
+                const notasAdicionais = document.getElementById('notas-adicionais').value.trim();
                 const urgente = document.getElementById('servico-urgente').checked;
-                const aiGeneratedDescription = document.getElementById('ai-generated-description').value; // Pega a descrição gerada/editada
+                const aiGeneratedDescription = document.getElementById('ai-generated-description').value.trim(); // Pega a descrição da IA, que pode ter sido editada
+
+                // Validação básica do formulário
+                if (!servicoOferecidoId || !prestadorId || !dataPreferencial || !enderecoServico) {
+                    showToast("Por favor, preencha todos os campos obrigatórios (Serviço, Prestador, Data e Endereço).", 'danger');
+                    return;
+                }
 
                 const token = localStorage.getItem('token');
-
                 if (!token) {
                     showToast("Você precisa estar logado para solicitar um serviço.", 'danger');
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = 'Enviar Solicitação';
                     return;
                 }
 
-                // Validação básica dos campos obrigatórios
-                if (!servicoOferecidoId || !prestadorId || !dataPreferencial || !enderecoServico) {
-                    showToast("Por favor, preencha todos os campos obrigatórios (Serviço, Prestador, Data, Endereço).", 'danger');
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = 'Enviar Solicitação';
-                    return;
-                }
+                const submitBtn = document.getElementById('submit-btn');
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Enviando...';
 
                 try {
+                    console.log("[CATALOGO] Enviando solicitação de serviço para o backend...");
                     const response = await fetch("https://wyn-backend.onrender.com/solicitar-servico", {
                         method: 'POST',
                         headers: {
@@ -1449,27 +1623,47 @@
                             data_servico_preferencial: dataPreferencial,
                             hora_servico_preferencial: horaPreferencial,
                             endereco_servico: enderecoServico,
-                            notas_adicionais: aiGeneratedDescription + (notasAdicionais ? `\n\nNotas adicionais do cliente: ${notasAdicionais}` : ''), // Combina as descrições
+                            notas_adicionais: aiGeneratedDescription || notasAdicionais, // Prioriza a descrição da IA se existir
                             urgente: urgente
                         })
                     });
 
-                    const data = await response.json();
-
                     if (response.ok) {
-                        showToast(data.message || "Solicitação enviada com sucesso!", 'success');
+                        const data = await response.json();
+                        console.log("[CATALOGO] Solicitação enviada com sucesso:", data);
+                        showToast("Solicitação de serviço enviada com sucesso! O prestador será notificado.", 'success');
                         $('#solicitationModal').modal('hide'); // Fecha o modal
                         carregarServicosCatalogo(); // Recarrega o catálogo para refletir possíveis mudanças
                     } else {
-                        showToast(data.message || "Erro ao enviar solicitação.", 'danger');
+                        const errorData = await response.json();
+                        console.error("[CATALOGO] Erro ao enviar solicitação:", response.status, errorData);
+                        showToast(`Erro ao solicitar serviço: ${errorData.message || 'Tente novamente.'}`, 'danger');
                     }
                 } catch (error) {
-                    console.error("[CATALOGO] Erro ao enviar solicitação:", error);
-                    showToast("Erro de conexão ao enviar solicitação. Tente novamente.", 'danger');
+                    console.error("[CATALOGO] Erro de conexão ao enviar solicitação:", error);
+                    showToast("Erro de conexão ao solicitar serviço. Verifique sua rede.", 'danger');
                 } finally {
                     submitBtn.disabled = false;
                     submitBtn.textContent = 'Enviar Solicitação';
                 }
+            });
+
+
+            // Listener para o campo de busca
+            document.getElementById("service-search-input").addEventListener("keyup", (event) => {
+                // Apenas filtra se o usuário pressionar Enter ou se o campo tiver mais de 2 caracteres
+                if (event.key === 'Enter' || document.getElementById("service-search-input").value.length > 2) {
+                    filterServices();
+                } else if (document.getElementById("service-search-input").value.length === 0) {
+                    // Se o campo de busca estiver vazio, exibe todos os serviços novamente
+                    populateCatalog(allServices, 'service-list');
+                }
+            });
+
+            // Listener para o botão "Aplicar Filtros"
+            document.getElementById("apply-filters-btn").addEventListener("click", (e) => {
+                e.preventDefault(); // Previne o comportamento padrão do botão de formulário
+                filterServices();
             });
 
 
@@ -1508,14 +1702,268 @@
                  pararPollingMensagensNaoLidas();
              });
 
-            // Adiciona listeners para os campos de filtro e botão
-            document.getElementById("service-search-input").addEventListener("input", filterServices);
-            document.getElementById("filter-provider").addEventListener("input", filterServices);
-            document.getElementById("filter-category").addEventListener("input", filterServices);
-            document.getElementById("apply-filters-btn").addEventListener("click", filterServices);
 
 		</script>
 
+<button id="chat-toggle-button">
+    <i class="fa-solid fa-comments"></i>
+</button>
+
+<div id="chat-container">
+    <div id="chat-header">
+        Chat com IA
+        <button id="chat-close-button"><i class="dw dw-cancel"></i></button>
+    </div>
+    <div id="chat-messages">
+        <div class="message bot">Olá! Como posso ajudar você hoje?</div>
+    </div>
+    <div id="chat-loading-indicator" style="display: none;">Digitando...</div>
+    <div id="chat-input-area">
+        <input type="text" id="chat-input" placeholder="Digite sua mensagem..." />
+        <button id="chat-send-button">Enviar</button>
+    </div>
+</div>
+
+<script>
+    // --- Lógica do Chatbot IA ---
+    const chatToggleButton = document.getElementById('chat-toggle-button');
+    const chatContainer = document.getElementById('chat-container');
+    const chatCloseButton = document.getElementById('chat-close-button');
+    const chatMessages = document.getElementById('chat-messages');
+    const chatInput = document.getElementById('chat-input');
+    const chatSendButton = document.getElementById('chat-send-button');
+    const chatLoadingIndicator = document.getElementById('chat-loading-indicator');
+
+    let chatHistory = [
+        {
+            role: "user",
+            parts: [{
+                text: `Você é um assistente de IA decicadoà plataforma WYN. Seu principal objetivo é fornecer informações precisas e úteis sobre o funcionamento da WYN, seus serviços, processos de usuário e prestador, e quaisquer outras funcionalidades relevantes. Responda sempre com foco na WYN e seus ecossistema.
+
+1. O que é a WYN? LEMBRANDO QUE NESTE MOMENTO VOCÊ ESTA FALANDO COM O CLIENTE, NA TELA DO CLIENTE: SEMPRE INFORMAÇÕES RESUMIDAS, NUNCA PASSANDO DE 3 OU 4 LINHAS
+A WYN é uma plataforma digital inovadora que atua como uma ponte eficiente e segura, conectando clientes que necessitam de uma vasta gama de serviços a profissionais qualificados e verificados.
+
+Nosso Propósito: Simplificar a vida de usuários e prestadores, oferecendo uma solução completa para encontrar e oferecer serviços com agilidade, segurança e garantia de qualidade.
+
+2. Papéis na Plataforma:
+Cliente (Usuário): Indivíduo que busca e contrata serviços.
+
+Prestador (Profissional): Indivíduo ou empresa que oferece e executa serviços.
+
+Administrador (Admin): Responsável pela gestão e moderação da plataforma.
+
+3. Processos Internos e Funcionalidades:
+3.1. Cadastro (Registro de Novas Contas):
+
+Clientes: Podem se cadastrar fornecendo informações básicas (nome, e-mail, senha).
+
+Prestadores: O cadastro é mais detalhado, exigindo informações de contato, tipos de serviço oferecidos, área de atuação e, crucialmente, passa por um processo de verificação para garantir a qualificação e segurança. Podem incluir foto de perfil.
+
+3.2. Login (Acesso à Plataforma):
+
+Clientes e Prestadores: Acessam suas contas usando e-mail e senha.
+
+Administradores: Possuem uma tela de login separada (login-admin.html) e credenciais específicas para acessar o dashboard administrativo.
+
+3.3. Fazer Pedido/Solicitar Serviço (Fluxo do Cliente):
+
+Busca: O cliente pesquisa por um tipo de serviço (ex: "Eletricista") na página inicial ou na seção de serviços.
+
+Seleção: O cliente pode visualizar profissionais disponíveis e/ou solicitar um serviço específico.
+
+Detalhes da Solicitação: O cliente preenche um formulário com detalhes do serviço desejado (endereço, urgência, notas adicionais, data e hora preferenciais).
+
+Envio: A solicitação é enviada para os prestadores qualificados na área.
+
+Aceite/Recusa do Prestador: Um prestador pode aceitar a solicitação, propondo um valor, ou recusá-la.
+
+3.4. Pagamento (Fluxo do Cliente):
+
+Integração Mercado Pago: Após um prestador aceitar uma solicitação e propor um valor, o cliente é direcionado para uma página de pagamento pendente.
+
+Geração de Link de Pagamento: A plataforma gera um link de pagamento via Mercado Pago.
+
+Status Pendente: O serviço entra em status de "aguardando_pagamento_cliente" ou "aguardando_confirmacao_pagamento" enquanto o pagamento é processado.
+
+Confirmação: Após a confirmação do pagamento pelo Mercado Pago, o status do serviço é atualizado para "aceito_pelo_prestador" ou "em andamento".
+
+3.5. Gerenciamento de Serviços (Fluxo do Prestador):
+
+Dashboard do Prestador: O prestador tem acesso a um dashboard (index.html) que mostra:
+
+Solicitações Pendentes: Novas solicitações de serviço que ele pode aceitar ou recusar.
+
+Meus Serviços Aceitos/Em Andamento: Serviços que ele aceitou e estão aguardando pagamento do cliente ou já estão em andamento.
+
+Histórico de Serviços: Serviços concluídos ou cancelados.
+
+Minhas Avaliações: Feedback recebido dos clientes.
+
+Gerenciar Serviços: Onde o prestador pode adicionar ou editar os tipos de serviços que oferece.
+
+Minha Disponibilidade: Para gerenciar seus horários.
+
+Ações sobre Solicitações: O prestador pode "Aceitar" (propondo um valor) ou "Recusar" uma solicitação pendente.
+
+Conclusão do Serviço: Após a execução, o prestador marca o serviço como "concluido_pelo_prestador".
+
+3.6. Avaliações (Feedback do Cliente):
+
+Após a conclusão de um serviço, o cliente pode avaliar o prestador, dando estrelas e deixando comentários. Isso contribui para a reputação do prestador na plataforma.
+
+3.7. Notificações:
+
+Sininho de Notificações: Clientes e prestadores recebem notificações em um ícone de sino no cabeçalho.
+
+Tipos de Notificações:
+
+Novas solicitações de serviço (para prestadores).
+
+Atualizações de status de serviço (pagamento confirmado, serviço aceito/recusado, concluído).
+
+Novas mensagens de chat.
+
+Novas avaliações recebidas.
+
+Contador: O ícone do sino exibe um contador de notificações não lidas.
+
+Detalhes: O dropdown do sino mostra um resumo da notificação (ex: "Nova solicitação de serviço", "Pagamento confirmado"). Clicar na notificação marca-a como lida e pode redirecionar para a página relevante (ex: detalhes do serviço, sala de chat).
+
+3.8. Perfil do Usuário/Prestador:
+
+Ambos os tipos de usuários podem acessar e atualizar suas informações de perfil, incluindo foto de perfil.
+
+3.9. Chat de Serviços:
+
+A plataforma oferece uma funcionalidade de chat para comunicação direta entre clientes e prestadores sobre os serviços.
+
+4. Categorias de Serviços:
+Atualmente Ativas: Eletricista.
+
+Em Breve: Encanador, Pintor, Ar Condicionado, Jardinagem, Pedreiro, Limpeza.
+
+Em Expansão: Outras categorias como Personal Trainer, Aulas de Música, Fotografia, etc. (A IA deve indicar que estas estão em fase de expansão e podem não estar listadas em todas as interfaces como "Em Breve" explícito, mas fazem parte do plano de crescimento).
+
+Lembretes para a IA:
+
+Sempre que perguntado sobre um serviço "Em Breve", mencione que a WYN está trabalhando para disponibilizá-lo e convide o usuário a se cadastrar para receber notificações.
+
+Mantenha um tone profissional, prestativo e claro. E SEMPRE PASSE INFORMAÇÕES RESUMIDAS, diretas e objetivas. evite fazer um textão para o usuário.
+
+Evite jargões técnicos desnecessários, a menos que o usuário solicite.
+
+Se a pergunta for fora do escopo da WYN, informe educadamente que sua função é apenas sobre a plataforma WYN.`
+            }]
+        },
+        {
+            role: "model",
+            parts: [{
+                text: "Olá! Como posso ajudar você hoje?"
+            }]
+        }
+    ];
+
+    // Adiciona a mensagem inicial do bot ao carregar a página
+    // Removido: addMessage('bot', "Olá! Como posso ajudar você hoje?") // Já está no HTML inicial do chat
+    // Função para adicionar mensagens ao chat
+    function addMessage(sender, text) {
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('message', sender);
+        messageElement.textContent = text;
+        chatMessages.appendChild(messageElement);
+        chatMessages.scrollTop = chatMessages.scrollHeight; // Rola para a última mensagem
+    }
+
+    // Função para enviar mensagem para a IA
+    async function sendMessageToAI() {
+        const userMessage = chatInput.value.trim();
+        if (userMessage === '') return;
+
+        addMessage('user', userMessage);
+        chatHistory.push({ role: "user", parts: [{ text: userMessage }] });
+        chatInput.value = ''; // Limpa o input
+
+        chatSendButton.disabled = true; // Desabilita o botão
+        chatInput.disabled = true; // Desabilita o input
+        chatLoadingIndicator.style.display = 'block'; // Mostra o indicador de carregamento
+        chatMessages.scrollTop = chatMessages.scrollHeight; // Rola para baixo para ver o indicador
+
+        try {
+            // URL do seu backend para o endpoint do chatbot
+            const apiUrl = `https://wyn-backend.onrender.com/api/chat`; // <-- URL ATUALIZADA PARA O BACKEND NO RENDER
+
+            const payload = {
+                chatHistory: chatHistory
+            };
+
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const result = await response.json();
+
+            if (response.ok && result.aiResponse) {
+                addMessage('bot', result.aiResponse);
+                chatHistory.push({ role: "model", parts: [{ text: result.aiResponse }] });
+            } else {
+                addMessage('bot', result.message || 'Desculpe, não consegui gerar uma resposta. Tente novamente.');
+                console.error('Estrutura de resposta inesperada da API Gemini:', result);
+            }
+        } catch (error) {
+            console.error('Erro ao chamar a API Gemini:', error);
+            addMessage('bot', 'Ocorreu um erro ao conectar com a IA. Por favor, tente novamente mais tarde.');
+        } finally {
+            chatLoadingIndicator.style.display = 'none'; // Esconde o indicador de carregamento
+            chatSendButton.disabled = false; // Habilita o botão de enviar
+            chatInput.disabled = false; // Habilita o input
+            chatInput.focus(); // Coloca o foco de volta no input
+            chatMessages.scrollTop = chatMessages.scrollHeight; // Rola para a última mensagem novamente
+        }
+    }
+
+    // Event listener para o botão de toggle (abrir/fechar chat)
+    if (chatToggleButton) {
+        chatToggleButton.addEventListener('click', () => {
+            chatContainer.classList.toggle('open');
+            if (chatContainer.classList.contains('open')) {
+                chatInput.focus(); // Foca no input quando abre
+            }
+        });
+    } else {
+        console.warn("Elemento #chat-toggle-button não encontrado.");
+    }
+
+    // Event listener para o botão de fechar o chat
+    if (chatCloseButton) {
+        chatCloseButton.addEventListener('click', () => {
+            chatContainer.classList.remove('open');
+        });
+    } else {
+        console.warn("Elemento #chat-close-button não encontrado.");
+    }
+
+    // Event listener para o botão de enviar mensagem
+    if (chatSendButton) {
+        chatSendButton.addEventListener('click', sendMessageToAI);
+    } else {
+        console.warn("Elemento #chat-send-button não encontrado.");
+    }
+
+    // Event listener para a tecla Enter no campo de input
+    if (chatInput) {
+        chatInput.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                sendMessageToAI();
+            }
+        });
+    } else {
+        console.warn("Elemento #chat-input não encontrado.");
+    }
+</script>
 
 	</body>
 </html>
