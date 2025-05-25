@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WYN - Cadastro Prestador</title>
+
+    <link rel="apple-touch-icon" sizes="180x180" href="/w/1.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/w/1.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/w/1.png">
+
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="vendors/styles/core.css" />
+    <link rel="stylesheet" type="text/css" href="vendors/styles/style.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: var(--background-color); /* Uses theme variable */
+            transition: background-color 0.3s ease;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 20px; /* Adds padding for small screens */
+            box-sizing: border-box; /* Ensures padding does not cause overflow */
+        }
+
+        .register-container {
+            background-color: var(--card-background); /* Uses theme variable */
+            border: 1px solid var(--border-color); /* Uses theme variable */
+            border-radius: 12px;
+            box-shadow: 0 4px 15px var(--shadow-color); /* Uses theme variable */
+            padding: 40px;
+            width: 100%;
+            max-width: 500px; /* Wider for more fields */
+            text-align: center;
+            transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        body.dark-mode .register-container {
+            background-color: var(--dark-card-background);
+            border-color: var(--dark-border-color);
+            box-shadow: 0 4px 15px var(--dark-shadow-color);
+        }
+
+        .register-container img {
+            width: 80px;
+            margin-bottom: 25px;
+        }
+
+        .register-container h2 {
+            color: var(--text-color); /* Uses theme variable */
+            margin-bottom: 30px;
+            font-weight: 700;
+            transition: color 0.3s ease;
+        }
+
+        body.dark-mode .register-container h2 {
+            color: var(--dark-text-color);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-color); /* Uses theme variable */
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        body.dark-mode .form-group label {
+            color: var(--dark-text-color);
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="email"],
+        .form-group input[type="password"],
+        .form-group input[type="number"],
+        .form-group select,
+        .form-group textarea,
+        .form-group input[type="file"] { /* Added file input type */
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border-color); /* Uses theme variable */
+            border-radius: 8px;
+            font-size: 1rem;
+            background-color: var(--background-color); /* Uses theme variable */
+            color: var(--text-color); /* Uses theme variable */
+            transition: border-color 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+        }
+
+        body.dark-mode .form-group input,
+        body.dark-mode .form-group select,
+        body.dark-mode .form-group textarea {
+            background-color: var(--dark-background-color);
+            border-color: var(--dark-border-color);
+            color: var(--dark-text-color);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(255, 108, 15, 0.2);
+        }
+
+        .btn-register {
+            width: 100%;
+            padding: 12px 20px;
+            background-color: var(--primary-color); /* WYN Orange */
+            color: var(--text-light);
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            margin-top: 15px;
+        }
+
+        .btn-register:hover {
+            background-color: #e05e0a; /* Darker orange on hover */
+            transform: translateY(-2px);
+        }
+
+        .links {
+            margin-top: 25px;
+            font-size: 0.95rem;
+        }
+
+        .links a {
+            color: var(--link-color); /* Uses theme variable */
+            text-decoration: none;
+            margin: 0 10px;
+            transition: color 0.3s ease;
+        }
+
+        .links a:hover {
+            color: var(--link-hover-color); /* Uses theme variable */
+            text-decoration: underline;
+        }
+
+        body.dark-mode .links a {
+            color: var(--dark-link-color);
+        }
+
+        body.dark-mode .links a:hover {
+            color: var(--dark-link-hover-color);
+        }
+
+        .theme-switcher-container {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+
+        .theme-switcher-container i {
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: var(--text-color); /* Theme icon color */
+            transition: color 0.3s ease;
+        }
+
+        body.dark-mode .theme-switcher-container i {
+            color: var(--dark-text-color);
+        }
+
+        /* Styles for loading screen */
+        .pre-loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #ffffff; /* White background for pre-loader */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            flex-direction: column;
+            opacity: 1;
+            transition: opacity 0.5s ease-out;
+        }
+
+        .pre-loader-box {
+            text-align: center;
+        }
+
+        .loader-logo img {
+            width: 100px;
+            margin-bottom: 20px;
+        }
+
+        .loader-progress {
+            width: 200px;
+            height: 10px;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .loader-progress .bar {
+            height: 100%;
+            width: 0%;
+            background-color: var(--primary-color);
+            border-radius: 5px;
+            transition: width 0.5s ease-in-out;
+        }
+
+        .percent {
+            font-size: 1rem;
+            color: #555;
+            margin-bottom: 15px;
+        }
+
+        .loading-text {
+            font-size: 1.1rem;
+            color: #333;
+        }
+
+        /* Feedback messages */
+        .message-feedback {
+            font-size: 0.9rem;
+            margin-top: 10px;
+            display: none; /* Hidden by default */
+        }
+        .message-feedback.error {
+            color: #dc3545; /* Red color for error */
+        }
+        .message-feedback.success {
+            color: #28a745; /* Green color for success */
+        }
+    </style>
+</head>
+<body>
+    <div class="pre-loader" id="loading-screen">
+        <div class="pre-loader-box">
+            <div class="loader-logo">
+                <img src="w.png" alt="WYN Logo" />
+            </div>
+            <div class="loader-progress" id="progress_div">
+                <div class="bar" id="bar1"></div>
+            </div>
+            <div class="percent" id="percent1">0%</div>
+            <div class="loading-text">Carregando...</div>
+        </div>
+    </div>
+
+    <div class="theme-switcher-container">
+        <i class='bx bx-moon' id="theme-switcher-icon"></i>
+    </div>
+
+    <div class="register-container">
+        <img src="w.png" alt="WYN Logo">
+        <h2>Cadastre-se como Prestador</h2>
+
+        <form id="register-prestador-form">
+            <div class="form-group">
+                <label for="name">Nome Completo</label>
+                <input type="text" id="name" placeholder="Seu nome" name="nome" required>
+            </div>
+            <div class="form-group">
+                <label for="phone">Telefone (Opcional)</label>
+                <input type="tel" id="phone" placeholder="(XX) XXXXX-XXXX" name="telefone">
+            </div>
+            <div class="form-group">
+                <label for="email">E-mail</label>
+                <input type="email" id="email" placeholder="seuemail@exemplo.com" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Senha</label>
+                <input type="password" id="password" placeholder="********" name="senha" required>
+            </div>
+            <div class="form-group">
+                <label for="confirm-password">Confirmar Senha</label>
+                <input type="password" id="confirm-password" placeholder="********" required>
+            </div>
+            <div class="form-group">
+                <label for="service-type">Tipo de Serviço Principal</label>
+                <select id="service-type" name="tipo_servico" required>
+                    <option value="">Selecione um serviço</option>
+                    <option value="Eletricista">Eletricista</option>
+                    <option value="Encanador">Encanador</option>
+                    <option value="Pintor">Pintor</option>
+                    <option value="Ar Condicionado">Ar Condicionado</option>
+                    <option value="Jardinagem">Jardinagem</option>
+                    <option value="Pedreiro">Pedreiro</option>
+                    <option value="Limpeza">Limpeza</option>
+                    </select>
+            </div>
+            <div class="form-group">
+                <label for="min-price">Faixa de Preço Mínima (R$)</label>
+                <input type="number" id="min-price" placeholder="Ex: 50.00" step="0.01" min="0" name="faixa_preco_min" required>
+            </div>
+            <div class="form-group">
+                <label for="max-price">Faixa de Preço Máxima (R$)</label>
+                <input type="number" id="max-price" placeholder="Ex: 500.00" step="0.01" min="0" name="faixa_preco_max" required>
+            </div>
+            <div class="form-group">
+                <label for="area-atuacao">Área de Atuação (Cidades/Bairros, separados por vírgula)</label>
+                <textarea id="area-atuacao" rows="3" placeholder="Ex: São Paulo, Campinas, Sorocaba" name="area_atuacao" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="profile_picture">Foto de Perfil (Opcional)</label>
+                <input type="file" id="profile_picture" name="foto_perfil" accept="image/*">
+            </div>
+            <p class="message-feedback error" id="register-error-message" style="display: none;">Mensagem de erro aqui.</p>
+            <p class="message-feedback success" id="register-success-message" style="display: none;">Cadastro realizado com sucesso!</p>
+            <button type="submit" class="btn-register" id="btnCadastrarPrestador">Cadastrar</button>
+        </form>
+
+        <div class="links">
+            Já tem uma conta? <a href="login prestador.html">Faça Login</a>
+        </div>
+    </div>
+
+    <script src="vendors/scripts/core.js"></script>
+    <script src="vendors/scripts/script.min.js"></script>
+    <script src="vendors/scripts/process.js"></script>
+    <script src="vendors/scripts/layout-settings.js"></script>
+    <script src="script.js"></script> <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const registerForm = document.getElementById('register-prestador-form');
+            const nameInput = document.getElementById('name');
+            const phoneInput = document.getElementById('phone');
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+            const confirmPasswordInput = document.getElementById('confirm-password');
+            const serviceTypeInput = document.getElementById('service-type');
+            const minPriceInput = document.getElementById('min-price');
+            const maxPriceInput = document.getElementById('max-price');
+            const areaAtuacaoInput = document.getElementById('area-atuacao');
+            const profilePictureInput = document.getElementById('profile_picture');
+            const errorMessage = document.getElementById('register-error-message');
+            const successMessage = document.getElementById('register-success-message');
+            const loadingScreen = document.getElementById("loading-screen");
+            const btnCadastrarPrestador = document.getElementById('btnCadastrarPrestador');
+
+            // --- Loading Screen Logic ---
+            const loadingTime = 1000; // 1 second
+
+            setTimeout(function() {
+                if (loadingScreen) {
+                    loadingScreen.style.transition = 'opacity 0.5s ease-out';
+                    loadingScreen.style.opacity = '0';
+                    loadingScreen.addEventListener('transitionend', () => {
+                        loadingScreen.style.display = "none";
+                    });
+                }
+            }, loadingTime);
+
+            // Function to display feedback messages
+            function showMessage(element, message, type) {
+                errorMessage.style.display = 'none';
+                successMessage.style.display = 'none';
+
+                element.textContent = message;
+                element.classList.remove('error', 'success');
+                element.classList.add(type);
+                element.style.display = 'block';
+            }
+
+            // Event listener for the registration form
+            if (registerForm) {
+                registerForm.addEventListener('submit', async function(event) {
+                    event.preventDefault();
+
+                    showMessage(errorMessage, '', 'error'); // Clears previous messages
+                    showMessage(successMessage, '', 'success');
+
+                    const nome = nameInput.value.trim();
+                    const telefone = phoneInput.value.trim();
+                    const email = emailInput.value.trim();
+                    const senha = passwordInput.value.trim();
+                    const confirmarSenha = confirmPasswordInput.value.trim();
+                    const tipo_servico = serviceTypeInput.value;
+                    const faixa_preco_min = parseFloat(minPriceInput.value);
+                    const faixa_preco_max = parseFloat(maxPriceInput.value);
+                    const area_atuacao = areaAtuacaoInput.value.trim();
+
+                    if (!nome || !email || !senha || !confirmarSenha || !tipo_servico || isNaN(faixa_preco_min) || isNaN(faixa_preco_max) || !area_atuacao) {
+                        showMessage(errorMessage, 'Por favor, preencha todos os campos corretamente.', 'error');
+                        return;
+                    }
+
+                    if (senha !== confirmarSenha) {
+                        showMessage(errorMessage, 'As senhas não coincidem.', 'error');
+                        return;
+                    }
+
+                    if (senha.length < 6) {
+                        showMessage(errorMessage, 'A senha deve ter no mínimo 6 caracteres.', 'error');
+                        return;
+                    }
+
+                    if (faixa_preco_min < 0 || faixa_preco_max < 0 || faixa_preco_min > faixa_preco_max) {
+                        showMessage(errorMessage, 'A faixa de preço mínima deve ser menor ou igual à máxima e ambas devem ser positivas.', 'error');
+                        return;
+                    }
+
+                    btnCadastrarPrestador.disabled = true; // Disables button
+                    btnCadastrarPrestador.textContent = 'Cadastrando...';
+
+                    const formData = new FormData();
+                    formData.append('nome', nome);
+                    formData.append('telefone', telefone);
+                    formData.append('email', email);
+                    formData.append('senha', senha);
+                    formData.append('tipo_servico', tipo_servico);
+                    formData.append('faixa_preco_min', faixa_preco_min);
+                    formData.append('faixa_preco_max', faixa_preco_max);
+                    formData.append('area_atuacao', area_atuacao.split(',').map(s => s.trim()).join(',')); // Send as comma-separated string
+
+                    if (profilePictureInput.files && profilePictureInput.files[0]) {
+                        formData.append('foto_perfil', profilePictureInput.files[0]);
+                    }
+
+                    try {
+                        // --- UPDATED URL FOR BACKEND ON RENDER ---
+                        const response = await fetch('https://wyn-backend.onrender.com/cadastrar-prestador', {
+                            method: 'POST',
+                            body: formData // FormData handles Content-Type automatically
+                        });
+
+                        const data = await response.json();
+
+                        if (response.ok) {
+                            showMessage(successMessage, data.message || 'Cadastro de prestador realizado com sucesso! Você será redirecionado para o login.', 'success');
+                            registerForm.reset(); // Clears the form on success
+                            setTimeout(() => {
+                                window.location.href = 'login-prestador.html'; // Redirects to provider login screen
+                            }, 3000);
+                        } else {
+                            showMessage(errorMessage, data.message || 'Erro ao cadastrar prestador. Tente novamente.', 'error');
+                            console.error('Provider registration error:', data.message);
+                        }
+                    } catch (error) {
+                        console.error('Provider registration request error:', error);
+                        showMessage(errorMessage, 'Não foi possível conectar ao servidor. Tente novamente mais tarde.', 'error');
+                    } finally {
+                        btnCadastrarPrestador.disabled = false; // Re-enables button
+                        btnCadastrarPrestador.textContent = 'Cadastrar';
+                    }
+                });
+            } else {
+                console.warn("Elemento #register-prestador-form não encontrado.");
+            }
+        });
+    </script>
+</body>
+</html>

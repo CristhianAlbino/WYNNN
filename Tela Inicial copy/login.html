@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WYN - Login</title>
+
+    <link rel="apple-touch-icon" sizes="180x180" href="/w/1.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/w/1.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/w/1.png">
+
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="vendors/styles/core.css" />
+    <link rel="stylesheet" type="text/css" href="vendors/styles/style.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: var(--background-color); /* Usa a variável do tema */
+            transition: background-color 0.3s ease;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 20px; /* Adiciona padding para telas pequenas */
+            box-sizing: border-box; /* Garante que padding não cause overflow */
+            position: relative; /* Necessário para posicionar o botão de voltar e o switcher de tema */
+            padding-top: 60px; /* Adiciona padding para evitar sobreposição com possível header fixo */
+        }
+
+        .login-container {
+            background-color: var(--card-background); /* Usa a variável do tema */
+            border: 1px solid var(--border-color); /* Usa a variável do tema */
+            border-radius: 12px;
+            box-shadow: 0 4px 15px var(--shadow-color); /* Usa a variável do tema */
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+            z-index: 1; /* Garante que o container esteja acima de outros elementos */
+        }
+
+        body.dark-mode .login-container {
+            background-color: var(--dark-card-background);
+            border-color: var(--dark-border-color);
+            box-shadow: 0 4px 15px var(--dark-shadow-color);
+        }
+
+        .login-container img {
+            width: 80px;
+            margin-bottom: 25px;
+        }
+
+        .login-container h2 {
+            color: var(--text-color); /* Usa a variável do tema */
+            margin-bottom: 30px;
+            font-weight: 700;
+            transition: color 0.3s ease;
+        }
+
+        body.dark-mode .login-container h2 {
+            color: var(--dark-text-color);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-color); /* Usa a variável do tema */
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        body.dark-mode .form-group label {
+            color: var(--dark-text-color);
+        }
+
+        .form-group input[type="email"],
+        .form-group input[type="password"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border-color); /* Usa a variável do tema */
+            border-radius: 8px;
+            font-size: 1rem;
+            background-color: var(--background-color); /* Usa a variável do tema */
+            color: var(--text-color); /* Usa a variável do tema */
+            transition: border-color 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+        }
+
+        body.dark-mode .form-group input {
+            background-color: var(--dark-background-color);
+            border-color: var(--dark-border-color);
+            color: var(--dark-text-color);
+        }
+
+        .form-group input:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(255, 108, 15, 0.2);
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 12px 20px;
+            background-color: var(--primary-color); /* Laranja do WYN */
+            color: var(--text-light);
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            margin-top: 15px;
+        }
+
+        .btn-login:hover {
+            background-color: #e05e0a; /* Laranja mais escuro no hover */
+            transform: translateY(-2px);
+        }
+
+        .links {
+            margin-top: 25px;
+            font-size: 0.95rem;
+        }
+
+        .links a {
+            color: var(--link-color); /* Usa a variável do tema */
+            text-decoration: none;
+            margin: 0 10px;
+            transition: color 0.3s ease;
+        }
+
+        .links a:hover {
+            color: var(--link-hover-color); /* Usa a variável do tema */
+            text-decoration: underline;
+        }
+
+        body.dark-mode .links a {
+            color: var(--dark-link-color);
+        }
+
+        body.dark-mode .links a:hover {
+            color: var(--dark-link-hover-color);
+        }
+
+        .theme-switcher-container {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 10; /* Garante que o switcher esteja acima de tudo */
+        }
+
+        .theme-switcher-container i {
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: var(--text-color); /* Cor do ícone do tema */
+            transition: color 0.3s ease;
+        }
+
+        body.dark-mode .theme-switcher-container i {
+            color: var(--dark-text-color);
+        }
+
+        .back-button-container {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 10;
+        }
+
+        .back-button-container a {
+            font-size: 1.1rem;
+            color: var(--link-color);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: color 0.3s ease;
+        }
+
+        .back-button-container a:hover {
+            color: var(--link-hover-color);
+        }
+
+        body.dark-mode .back-button-container a {
+            color: var(--dark-link-color);
+        }
+
+        body.dark-mode .back-button-container a:hover {
+            color: var(--dark-link-hover-color);
+        }
+
+
+        /* Estilos para a tela de carregamento */
+        .pre-loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #ffffff; /* Fundo branco para o pre-loader */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            flex-direction: column;
+            opacity: 1;
+            transition: opacity 0.5s ease-out;
+        }
+
+        .pre-loader-box {
+            text-align: center;
+        }
+
+        .loader-logo img {
+            width: 100px;
+            margin-bottom: 20px;
+        }
+
+        .loader-progress {
+            width: 200px;
+            height: 10px;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .loader-progress .bar {
+            height: 100%;
+            width: 0%;
+            background-color: var(--primary-color);
+            border-radius: 5px;
+            transition: width 0.5s ease-in-out;
+        }
+
+        .percent {
+            font-size: 1rem;
+            color: #555;
+            margin-bottom: 15px;
+        }
+
+        .loading-text {
+            font-size: 1.1rem;
+            color: #333;
+        }
+
+        /* Mensagens de erro */
+        .error-message {
+            color: #dc3545; /* Cor vermelha para erro */
+            font-size: 0.9rem;
+            margin-top: 10px;
+            display: none; /* Oculto por padrão */
+        }
+    </style>
+</head>
+<body>
+    <div class="pre-loader" id="loading-screen">
+        <div class="pre-loader-box">
+            <div class="loader-logo">
+                <img src="w.png" alt="WYN Logo" />
+            </div>
+            <div class="loader-progress" id="progress_div">
+                <div class="bar" id="bar1"></div>
+            </div>
+            <div class="percent" id="percent1">0%</div>
+            <div class="loading-text">Carregando...</div>
+        </div>
+    </div>
+
+    <div class="back-button-container">
+        <a href="javascript:history.back()">
+            <i class='bx bx-arrow-back'></i> Voltar
+        </a>
+    </div>
+
+    <div class="theme-switcher-container">
+        <i class='bx bx-moon' id="theme-switcher-icon"></i>
+    </div>
+
+    <div class="login-container">
+        <img src="w.png" alt="WYN Logo">
+        <h2>Entrar na Plataforma WYN</h2>
+
+        <form id="login-form">
+            <div class="form-group">
+                <label for="email">E-mail</label>
+                <input type="email" id="email" placeholder="seuemail@exemplo.com" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Senha</label>
+                <input type="password" id="password" placeholder="********" required>
+            </div>
+            <p class="error-message" id="login-error-message" style="display: none;">Mensagem de erro aqui.</p>
+            <button type="submit" class="btn-login">Entrar</button>
+        </form>
+
+        <div class="links">
+            <a href="forgot-password.html">Esqueci minha senha</a> |
+            <a href="register-client.html">Cadastrar-se como Cliente</a> |
+            <a href="login-prestador.html">Login Prestador</a>
+        </div>
+    </div>
+
+    <script src="vendors/scripts/core.js"></script>
+    <script src="vendors/scripts/script.min.js"></script>
+    <script src="vendors/scripts/process.js"></script>
+    <script src="vendors/scripts/layout-settings.js"></script>
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const loginForm = document.getElementById('login-form');
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+            const errorMessage = document.getElementById('login-error-message');
+            const loadingScreen = document.getElementById("loading-screen");
+
+            // --- Lógica da Tela de Carregamento (adaptada para login) ---
+            const loadingTime = 1000; // 1 segundo para uma tela de login mais rápida
+
+            setTimeout(function() {
+                if (loadingScreen) {
+                    loadingScreen.style.transition = 'opacity 0.5s ease-out';
+                    loadingScreen.style.opacity = '0';
+                    loadingScreen.addEventListener('transitionend', () => {
+                        loadingScreen.style.display = "none";
+                    });
+                }
+            }, loadingTime);
+
+            // Função para exibir mensagens de erro
+            function showErrorMessage(message) {
+                errorMessage.textContent = message;
+                errorMessage.style.display = 'block';
+            }
+
+            // Função para ocultar mensagens de erro
+            function hideErrorMessage() {
+                errorMessage.style.display = 'none';
+            }
+
+            // Event listener para o formulário de login
+            if (loginForm) {
+                loginForm.addEventListener('submit', async function(event) {
+                    event.preventDefault(); // Previne o envio padrão do formulário
+
+                    hideErrorMessage(); // Oculta qualquer mensagem de erro anterior
+
+                    const email = emailInput.value.trim();
+                    const senha = passwordInput.value.trim(); // Renomeado para 'senha' para corresponder ao backend
+
+                    if (!email || !senha) {
+                        showErrorMessage('Por favor, preencha todos os campos.');
+                        return;
+                    }
+
+                    try {
+                        // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+                        const response = await fetch('https://wyn-backend.onrender.com/login', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ email, senha }) // Enviando 'senha'
+                        });
+
+                        const data = await response.json();
+
+                        if (response.ok) {
+                            // Login bem-sucedido
+                            localStorage.setItem('token', data.token); // Salva o token
+                            
+                            // Salva os dados do usuário/prestador no localStorage
+                            if (data.tipo === 'usuario') {
+                                localStorage.setItem('usuario', JSON.stringify(data.usuario));
+                                window.location.href = 'indexx.html'; // Redireciona para o dashboard do cliente
+                            } else if (data.tipo === 'prestador') {
+                                // Se um prestador tentar logar aqui, redireciona para a tela de login de prestador
+                                showErrorMessage('Credenciais inválidas para cliente. Por favor, use o Login Prestador.');
+                                console.error('Tentativa de login de prestador na tela de login de cliente.');
+                                // Opcional: window.location.href = 'login-prestador.html';
+                            } else {
+                                showErrorMessage('Tipo de usuário desconhecido.');
+                                console.error('Tipo de usuário desconhecido:', data.tipo);
+                            }
+                        } else {
+                            // Erro no login
+                            showErrorMessage(data.message || 'Erro ao fazer login. Verifique suas credenciais.');
+                            console.error('Erro de login:', data.message);
+                        }
+                    } catch (error) {
+                        console.error('Erro na requisição de login:', error);
+                        showErrorMessage('Não foi possível conectar ao servidor. Tente novamente mais tarde.');
+                    }
+                });
+            } else {
+                console.warn("Elemento #login-form não encontrado.");
+            }
+
+            // --- Lógica de Alternância de Tema (movida para cá) ---
+            const themeSwitcher = document.getElementById('theme-switcher-icon');
+            const body = document.body;
+            const currentTheme = localStorage.getItem('theme');
+
+            // Aplica o tema salvo ao carregar a página
+            if (currentTheme && currentTheme !== 'light-mode') {
+                body.classList.add(currentTheme);
+                if (currentTheme === 'dark-mode') {
+                    themeSwitcher.classList.replace('bx-moon', 'bx-sun');
+                }
+            } else {
+                body.classList.remove('dark-mode');
+                themeSwitcher.classList.replace('bx-sun', 'bx-moon');
+            }
+
+            // Adiciona listener para o clique no ícone de alternar tema
+            if (themeSwitcher) {
+                themeSwitcher.addEventListener('click', () => {
+                    body.classList.toggle('dark-mode');
+                    if (body.classList.contains('dark-mode')) {
+                        localStorage.setItem('theme', 'dark-mode');
+                        themeSwitcher.classList.replace('bx-moon', 'bx-sun');
+                    } else {
+                        localStorage.setItem('theme', 'light-mode');
+                        themeSwitcher.classList.replace('bx-sun', 'bx-moon');
+                    }
+                });
+            } else {
+                console.warn("Elemento #theme-switcher-icon não encontrado.");
+            }
+        });
+    </script>
+</body>
+</html>
