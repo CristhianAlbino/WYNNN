@@ -964,7 +964,7 @@
                      unreadChatPollingInterval = null;
                      console.log("[CATALOGO] Polling de mensagens não lidas parado.");
                  }
-             }
+            }
 
 
             // Função para carregar os serviços do catálogo do backend
@@ -1103,7 +1103,7 @@
 
                         serviceCard.innerHTML = `
                             <div class="service-card">
-                                <img src="${servico.foto_perfil_prestador_url || 'https://placehold.co/600x400/1b00ff/ffffff?text=Servi%C3%A7o'}" alt="${servico.nome || 'Serviço sem Nome'}" onerror="this.onerror=null;this.src='https://placehold.co/600x400/1b00ff/ffffff?text=Servi%C3%A7o';"/>
+                                <img src="${servico.foto_perfil_prestador_url || 'https://placehold.co/600x400/dddddd/333333?text=Servi%C3%A7o'}" alt="${servico.nome || 'Serviço sem Nome'}" onerror="this.onerror=null;this.src='vendors/images/photo1.jpg';"/>
                                 <h5>${servico.nome || 'Serviço sem Nome'}</h5>
                                 <p>${servico.descricao || 'Sem descrição.'}</p>
                                 <p class="price">Faixa de Preço: ${precoTexto}</p>
