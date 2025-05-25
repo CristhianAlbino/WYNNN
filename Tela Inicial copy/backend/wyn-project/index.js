@@ -2508,20 +2508,50 @@ app.delete('/prestador/servicos-oferecidos/:id', authMiddlewarePrestador, async 
 app.get('/servicos-catalogo', authMiddlewareUsuario, async (req, res, next) => {
     try {
         console.log('[BACKEND] Recebida requisição GET /servicos-catalogo para usuário:', req.user.id);
-        // Busca todos os serviços oferecidos e popula os dados básicos do prestador
+
+        // 1. Buscar todos os serviços oferecidos e popular os dados básicos do prestador
         const servicosCatalogo = await ServicoOferecido.find({})
             .populate('prestador_id', 'nome foto_perfil'); // Popula nome e foto de perfil do prestador
 
-         // Formata a resposta para incluir a URL completa da foto de perfil do prestador
-         const formattedServicos = servicosCatalogo.map(servico => ({
-              ...servico.toObject(),
-              nome_prestador: servico.prestador_id ? servico.prestador_id.nome : 'Prestador Desconhecido',
-              foto_perfil_prestador_url: (servico.prestador_id && servico.prestador_id.foto_perfil)
-                                        ? `${BACKEND_BASE_URL}/${servico.prestador_id.foto_perfil.replace(/\\/g, '/')}`
-                                        : null // URL da foto do prestador ou null
-         }));
+        // 2. Calcular a média de avaliações para CADA prestador
+        // Agrupa as avaliações por prestador_id e calcula a média da nota
+        const avaliacoesPorPrestador = await Avaliacao.aggregate([
+            {
+                $group: {
+                    _id: "$prestador_id", // Agrupa pelo ID do prestador
+                    mediaAvaliacoes: { $avg: "$nota" }, // Calcula a média das notas
+                    totalAvaliacoes: { $sum: 1 } // Conta o total de avaliações
+                }
+            }
+        ]);
 
-        console.log(`[BACKEND] Encontrados ${formattedServicos.length} serviços para o catálogo.`);
+        // Converte o array de avaliações para um mapa para fácil acesso (prestador_id -> dados de avaliação)
+        const avaliacoesMap = new Map();
+        avaliacoesPorPrestador.forEach(item => {
+            avaliacoesMap.set(item._id.toString(), {
+                media: item.mediaAvaliacoes,
+                total: item.totalAvaliacoes
+            });
+        });
+
+        // 3. Formatar a resposta para incluir a URL completa da foto de perfil do prestador
+        // e a média de avaliações
+        const formattedServicos = servicosCatalogo.map(servico => {
+            const prestadorId = servico.prestador_id ? servico.prestador_id._id.toString() : null;
+            const avaliacaoDoPrestador = prestadorId ? avaliacoesMap.get(prestadorId) : null;
+
+            return {
+                ...servico.toObject(),
+                nome_prestador: servico.prestador_id ? servico.prestador_id.nome : 'Prestador Desconhecido',
+                foto_perfil_prestador_url: (servico.prestador_id && servico.prestador_id.foto_perfil)
+                                            ? `${BACKEND_BASE_URL}/${servico.prestador_id.foto_perfil.replace(/\\/g, '/')}`
+                                            : null, // URL da foto do prestador ou null
+                media_avaliacoes_prestador: avaliacaoDoPrestador ? avaliacaoDoPrestador.media : 0, // Média de avaliações
+                total_avaliacoes_prestador: avaliacaoDoPrestador ? avaliacaoDoPrestador.total : 0 // Total de avaliações
+            };
+        });
+
+        console.log(`[BACKEND] Encontrados ${formattedServicos.length} serviços para o catálogo (com avaliações).`);
         res.status(200).json(formattedServicos);
 
     } catch (error) {

@@ -40,6 +40,7 @@
 		<link rel="stylesheet" type="text/css" href="vendors/styles/style.css" />
 		<link rel="stylesheet" type="text/css" href="catalogo.css" />
 		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" xintegrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0x0Ugau/r+PRGFNfN/P1M2k/L/W84b36d0K7+v7z/z0q0+A5z2/w0q0+A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
 
 		<style>
@@ -104,6 +105,18 @@
                  object-fit: cover;
                  margin-right: 8px;
                  margin-bottom: 0; /* Remove margin-bottom herdado */
+            }
+
+            /* Estilos para as estrelas de avaliação */
+            .rating-stars {
+                color: #ffc107; /* Cor amarela para estrelas */
+                font-size: 1.1em; /* Tamanho das estrelas */
+                margin-left: 5px;
+            }
+            .rating-text {
+                font-size: 0.9em;
+                color: #6c757d;
+                margin-left: 5px;
             }
 
 
@@ -914,7 +927,7 @@
                      const data = await response.json();
                      const unreadCount = data.total || 0;
 
-                     if (unreadCountElementSidebar) {
+                     if (unreadCountElementSidebar) { // Corrigido o nome da variável aqui
                          if (unreadCount > 0) {
                              unreadCountElementSidebar.textContent = unreadCount;
                              unreadCountElementSidebar.style.display = 'inline';
@@ -926,7 +939,7 @@
                  } catch (error) {
                      console.error("[CATALOGO] Erro ao carregar contagem de mensagens não lidas (cliente):", error);
                      if (unreadChatPollingInterval) clearInterval(unreadChatPollingInterval);
-                     if (unreadCountElementSidebar) unreadCountElementElementSidebar.style.display = 'none';
+                     if (unreadCountElementSidebar) unreadCountElementSidebar.style.display = 'none'; // Corrigido o nome da variável aqui
                  }
             }
 
@@ -1036,6 +1049,24 @@
                 }
             }
 
+            // Função auxiliar para gerar estrelas HTML
+            function generateStarRating(averageRating) {
+                let starsHtml = '';
+                const fullStars = Math.floor(averageRating);
+                const hasHalfStar = averageRating % 1 !== 0;
+
+                for (let i = 0; i < fullStars; i++) {
+                    starsHtml += '<i class="fa-solid fa-star"></i>';
+                }
+                if (hasHalfStar) {
+                    starsHtml += '<i class="fa-solid fa-star-half-stroke"></i>';
+                }
+                for (let i = 0; i < (5 - fullStars - (hasHalfStar ? 1 : 0)); i++) {
+                    starsHtml += '<i class="fa-regular fa-star"></i>';
+                }
+                return starsHtml;
+            }
+
 
             // Função para popular a lista de serviços na UI (agora com um ID de container dinâmico)
             function populateCatalog(servicesToDisplay, containerId) {
@@ -1063,6 +1094,13 @@
                                     ? `R$ ${servico.faixa_preco_min.toFixed(2).replace('.', ',')} - R$ ${servico.faixa_preco_max.toFixed(2).replace('.', ',')}`
                                     : (servico.faixa_preco_min !== undefined ? `A partir de R$ ${servico.faixa_preco_min.toFixed(2).replace('.', ',')}` : 'Preço a combinar');
 
+                        // Gera as estrelas de avaliação
+                        const mediaAvaliacoes = servico.media_avaliacoes_prestador || 0;
+                        const totalAvaliacoes = servico.total_avaliacoes_prestador || 0;
+                        const starRatingHtml = generateStarRating(mediaAvaliacoes);
+                        const ratingText = totalAvaliacoes > 0 ? `(${mediaAvaliacoes.toFixed(1)} de 5 - ${totalAvaliacoes} avaliações)` : '(Sem avaliações)';
+
+
                         serviceCard.innerHTML = `
                             <div class="service-card">
                                 <img src="${servico.foto_perfil_prestador_url || 'https://placehold.co/600x400/1b00ff/ffffff?text=Servi%C3%A7o'}" alt="${servico.nome || 'Serviço sem Nome'}" onerror="this.onerror=null;this.src='https://placehold.co/600x400/1b00ff/ffffff?text=Servi%C3%A7o';"/>
@@ -1072,6 +1110,8 @@
                                 <div class="provider-info">
                                      ${servico.foto_perfil_prestador_url ? `<img src="${servico.foto_perfil_prestador_url}" alt="Foto de Perfil do Prestador" onerror="this.onerror=null;this.src='vendors/images/photo4.jpg';"/>` : `<img src="vendors/images/photo4.jpg" alt="Foto de Perfil Padrão"/>`}
                                      <span>Prestador: ${servico.nome_prestador || 'Desconhecido'}</span>
+                                     <span class="rating-stars">${starRatingHtml}</span>
+                                     <span class="rating-text">${ratingText}</span>
                                 </div>
                             </div>
                         `;
@@ -1259,7 +1299,7 @@
                 console.log("[CATALOGO] Abrindo modal de solicitação para o serviço:", service);
                 document.getElementById('modal-service-name').textContent = service.nome || 'Serviço';
                 document.getElementById('modal-provider-name').textContent = service.nome_prestador || 'Desconhecido';
-                document.getElementById('modal-service-description').textContent = service.descricao || 'N/A';
+                document.getElementById('modal-service-description').textContent = service.descricao || 'Sem descrição.';
 
                 const precoTexto = (service.faixa_preco_min !== undefined && service.faixa_preco_max !== undefined)
                                     ? `R$ ${service.faixa_preco_min.toFixed(2).replace('.', ',')} - R$ ${service.faixa_preco_max.toFixed(2).replace('.', ',')}`
@@ -1279,7 +1319,7 @@
                 document.getElementById('notas-adicionais').value = '';
                 document.getElementById('servico-urgente').checked = false;
 
-                // Esconde o loading da IA
+                // Esconde mensagens de loading/feedback da IA
                 document.getElementById('ai-description-loading').style.display = 'none';
 
 
@@ -1289,13 +1329,13 @@
 
             // Listener para o botão "Gerar Descrição Detalhada (IA)"
             document.getElementById('generate-description-ai-btn').addEventListener('click', async () => {
-                const userInput = document.getElementById('user-service-request').value.trim();
+                const userInput = document.getElementById('user-service-request').value;
                 const aiDescriptionField = document.getElementById('ai-generated-description');
                 const aiLoading = document.getElementById('ai-description-loading');
                 const token = localStorage.getItem('token');
 
-                if (!userInput) {
-                    showToast("Por favor, digite sua solicitação antes de gerar a descrição.", 'info');
+                if (!userInput.trim()) {
+                    showToast("Por favor, digite sua solicitação antes de gerar a descrição.", 'danger');
                     return;
                 }
                 if (!token) {
@@ -1308,30 +1348,28 @@
                 aiDescriptionField.disabled = true; // Desabilita enquanto gera
 
                 try {
-                    console.log("[CATALOGO] Chamando backend para gerar descrição detalhada com IA...");
                     const response = await fetch("https://wyn-backend.onrender.com/api/gemini/generate-description", {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
                             'Authorization': `Bearer ${token}`
                         },
-                        body: JSON.stringify({ userInput: userInput })
+                        body: JSON.stringify({ userInput })
                     });
 
                     if (response.ok) {
                         const data = await response.json();
                         aiDescriptionField.value = data.generatedText;
-                        showToast("Descrição gerada com sucesso pela IA!", 'success');
+                        showToast("Descrição gerada por IA com sucesso!", 'success');
                     } else {
                         const errorData = await response.json();
-                        console.error("[CATALOGO] Erro HTTP na resposta da IA para descrição:", response.status, errorData);
-                        aiDescriptionField.value = 'Erro ao gerar descrição. Tente novamente.';
-                        showToast(`Erro na IA: ${errorData.message || 'Não foi possível gerar a descrição.'}`, 'danger');
+                        aiDescriptionField.value = 'Erro ao gerar descrição.';
+                        showToast(`Erro na IA: ${errorData.message || 'Tente novamente.'}`, 'danger');
                     }
                 } catch (error) {
-                    console.error("[CATALOGO] Erro ao chamar backend para gerar descrição com IA:", error);
-                    aiDescriptionField.value = 'Erro de conexão ao gerar descrição. Verifique sua rede.';
-                    showToast("Erro de conexão ao usar a IA. Tente novamente.", 'danger');
+                    console.error("[CATALOGO] Erro ao chamar API Gemini para gerar descrição:", error);
+                    aiDescriptionField.value = 'Erro de conexão ao gerar descrição.';
+                    showToast("Erro de conexão ao gerar descrição. Verifique sua internet.", 'danger');
                 } finally {
                     aiLoading.style.display = 'none';
                     aiDescriptionField.disabled = false; // Habilita novamente
@@ -1341,35 +1379,39 @@
 
             // Listener para o formulário de solicitação
             document.getElementById('solicitation-form').addEventListener('submit', async (e) => {
-                e.preventDefault(); // Impede o envio padrão do formulário
-
-                const servicoOferecidoId = document.getElementById('solicitacao-servico-oferecido-id').value;
-                const prestadorId = document.getElementById('solicitacao-prestador-id').value;
-                const dataPreferencial = document.getElementById('data-preferencial').value;
-                const horaPreferencial = document.getElementById('hora-preferencial').value;
-                const enderecoServico = document.getElementById('endereco-servico').value.trim();
-                const notasAdicionais = document.getElementById('notas-adicionais').value.trim();
-                const urgente = document.getElementById('servico-urgente').checked;
-                const aiGeneratedDescription = document.getElementById('ai-generated-description').value.trim(); // Pega a descrição da IA, que pode ter sido editada
-
-                // Validação básica do formulário
-                if (!servicoOferecidoId || !prestadorId || !dataPreferencial || !enderecoServico) {
-                    showToast("Por favor, preencha todos os campos obrigatórios (Serviço, Prestador, Data e Endereço).", 'danger');
-                    return;
-                }
-
-                const token = localStorage.getItem('token');
-                if (!token) {
-                    showToast("Você precisa estar logado para solicitar um serviço.", 'danger');
-                    return;
-                }
+                e.preventDefault();
 
                 const submitBtn = document.getElementById('submit-btn');
                 submitBtn.disabled = true;
                 submitBtn.textContent = 'Enviando...';
 
+                const servicoOferecidoId = document.getElementById('solicitacao-servico-oferecido-id').value;
+                const prestadorId = document.getElementById('solicitacao-prestador-id').value;
+                const dataPreferencial = document.getElementById('data-preferencial').value;
+                const horaPreferencial = document.getElementById('hora-preferencial').value;
+                const enderecoServico = document.getElementById('endereco-servico').value;
+                const notasAdicionais = document.getElementById('notas-adicionais').value;
+                const urgente = document.getElementById('servico-urgente').checked;
+                const aiGeneratedDescription = document.getElementById('ai-generated-description').value; // Pega a descrição gerada/editada
+
+                const token = localStorage.getItem('token');
+
+                if (!token) {
+                    showToast("Você precisa estar logado para solicitar um serviço.", 'danger');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Enviar Solicitação';
+                    return;
+                }
+
+                // Validação básica dos campos obrigatórios
+                if (!servicoOferecidoId || !prestadorId || !dataPreferencial || !enderecoServico) {
+                    showToast("Por favor, preencha todos os campos obrigatórios (Serviço, Prestador, Data, Endereço).", 'danger');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Enviar Solicitação';
+                    return;
+                }
+
                 try {
-                    console.log("[CATALOGO] Enviando solicitação de serviço para o backend...");
                     const response = await fetch("https://wyn-backend.onrender.com/solicitar-servico", {
                         method: 'POST',
                         headers: {
@@ -1382,47 +1424,27 @@
                             data_servico_preferencial: dataPreferencial,
                             hora_servico_preferencial: horaPreferencial,
                             endereco_servico: enderecoServico,
-                            notas_adicionais: aiGeneratedDescription || notasAdicionais, // Prioriza a descrição da IA se existir
+                            notas_adicionais: aiGeneratedDescription + (notasAdicionais ? `\n\nNotas adicionais do cliente: ${notasAdicionais}` : ''), // Combina as descrições
                             urgente: urgente
                         })
                     });
 
+                    const data = await response.json();
+
                     if (response.ok) {
-                        const data = await response.json();
-                        console.log("[CATALOGO] Solicitação enviada com sucesso:", data);
-                        showToast("Solicitação de serviço enviada com sucesso! O prestador será notificado.", 'success');
+                        showToast(data.message || "Solicitação enviada com sucesso!", 'success');
                         $('#solicitationModal').modal('hide'); // Fecha o modal
                         carregarServicosCatalogo(); // Recarrega o catálogo para refletir possíveis mudanças
                     } else {
-                        const errorData = await response.json();
-                        console.error("[CATALOGO] Erro ao enviar solicitação:", response.status, errorData);
-                        showToast(`Erro ao solicitar serviço: ${errorData.message || 'Tente novamente.'}`, 'danger');
+                        showToast(data.message || "Erro ao enviar solicitação.", 'danger');
                     }
                 } catch (error) {
-                    console.error("[CATALOGO] Erro de conexão ao enviar solicitação:", error);
-                    showToast("Erro de conexão ao solicitar serviço. Verifique sua rede.", 'danger');
+                    console.error("[CATALOGO] Erro ao enviar solicitação:", error);
+                    showToast("Erro de conexão ao enviar solicitação. Tente novamente.", 'danger');
                 } finally {
                     submitBtn.disabled = false;
                     submitBtn.textContent = 'Enviar Solicitação';
                 }
-            });
-
-
-            // Listener para o campo de busca
-            document.getElementById("service-search-input").addEventListener("keyup", (event) => {
-                // Apenas filtra se o usuário pressionar Enter ou se o campo tiver mais de 2 caracteres
-                if (event.key === 'Enter' || document.getElementById("service-search-input").value.length > 2) {
-                    filterServices();
-                } else if (document.getElementById("service-search-input").value.length === 0) {
-                    // Se o campo de busca estiver vazio, exibe todos os serviços novamente
-                    populateCatalog(allServices, 'service-list');
-                }
-            });
-
-            // Listener para o botão "Aplicar Filtros"
-            document.getElementById("apply-filters-btn").addEventListener("click", (e) => {
-                e.preventDefault(); // Previne o comportamento padrão do botão de formulário
-                filterServices();
             });
 
 
@@ -1461,6 +1483,11 @@
                  pararPollingMensagensNaoLidas();
              });
 
+            // Adiciona listeners para os campos de filtro e botão
+            document.getElementById("service-search-input").addEventListener("input", filterServices);
+            document.getElementById("filter-provider").addEventListener("input", filterServices);
+            document.getElementById("filter-category").addEventListener("input", filterServices);
+            document.getElementById("apply-filters-btn").addEventListener("click", filterServices);
 
 		</script>
 
