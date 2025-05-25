@@ -1452,6 +1452,9 @@ app.get('/perfil', authMiddleware, async (req, res, next) => {
             }
              // Usa BACKEND_BASE_URL para construir a URL completa da foto
              const fotoPerfilUrl = usuario.foto_perfil ? `${BACKEND_BASE_URL}/${usuario.foto_perfil.replace(/\\/g, '/')}` : null;
+            // --- NOVO CONSOLE.LOG PARA DEPURAR ---
+            console.log(`[BACKEND] Perfil do usuário ${req.user.id} encontrado. isAdmin: ${usuario.isAdmin}`);
+            // --- FIM NOVO CONSOLE.LOG ---
             res.status(200).json({ usuario: { ...usuario.toObject(), foto_perfil_url: fotoPerfilUrl }, tipo: 'usuario' });
         } else if (req.user.tipo === 'prestador') {
              const prestador = await Prestador.findById(req.user.id).select('_id nome email telefone foto_perfil especialidades area_atuacao disponibilidade'); // Adicionado campos específicos do prestador
@@ -1461,6 +1464,7 @@ app.get('/perfil', authMiddleware, async (req, res, next) => {
              }
              // Usa BACKEND_BASE_URL para construir a URL completa da foto
              const fotoPerfilUrl = prestador.foto_perfil ? `${BACKEND_BASE_URL}/${prestador.foto_perfil.replace(/\\/g, '/')}` : null;
+             console.log(`[BACKEND] Perfil do prestador ${req.user.id} encontrado.`);
              res.status(200).json({ prestador: { ...prestador.toObject(), foto_perfil_url: fotoPerfilUrl }, tipo: 'prestador' });
         } else {
             console.warn(`[BACKEND] Perfil: Tipo de usuário no token desconhecido: ${req.user.tipo}`);
@@ -3037,7 +3041,12 @@ app.put('/admin/usuarios/:id', adminAuthMiddleware, uploadProfilePicture, async 
         if (value.nome !== undefined) usuario.nome = value.nome;
         if (value.email !== undefined) usuario.email = value.email;
         if (value.telefone !== undefined) usuario.telefone = value.telefone;
-        // if (value.isAdmin !== undefined) usuario.isAdmin = value.isAdmin; // Permite admin mudar status de admin
+        // --- NOVO CONSOLE.LOG PARA DEPURAR ---
+        console.log(`[BACKEND] ADMIN: Valor de isAdmin recebido para atualização: ${updateData.isAdmin}`);
+        // --- FIM NOVO CONSOLE.LOG ---
+        if (updateData.isAdmin !== undefined) { // Verifique se a propriedade isAdmin foi enviada
+             usuario.isAdmin = updateData.isAdmin === 'true' || updateData.isAdmin === true; // Converte para boolean
+        }
 
         // Lida com o upload da nova foto de perfil
         if (fotoPerfil) {
