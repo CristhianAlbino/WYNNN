@@ -49,6 +49,8 @@
 		<link rel="stylesheet" type="text/css" href="vendors/styles/style.css" />
 
 		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" xintegrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0x0Ugau/r+PRGFNfN/P1M2k/L/W84b36d0K7+v7z/z0q0+A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
 
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -265,8 +267,8 @@
                 position: fixed;
                 bottom: 20px;
                 right: 20px;
-                background-color: var(#e05e0a);/* Laranja do WYN */
-                color: var(--text-light);
+                background-color: #e05e0a; /* Laranja do WYN */
+                color: white;
                 border: none;
                 border-radius: 50%; /* Botão redondo */
                 width: 60px;
@@ -282,7 +284,7 @@
             }
 
             #chat-toggle-button:hover {
-                background-color: #e05e0a; /* Laranja mais escuro no hover */
+                background-color: #c95209; /* Laranja mais escuro no hover */
                 transform: scale(1.05);
             }
 
@@ -292,8 +294,8 @@
                 right: 20px;
                 width: 350px;
                 height: 450px;
-                background-color: var(--card-background); /* Fundo do card */
-                border: 1px solid var(--border-color);
+                background-color: #fff; /* Fundo do card */
+                border: 1px solid #eee;
                 border-radius: 12px;
                 box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
                 display: flex;
@@ -301,22 +303,22 @@
                 overflow: hidden;
                 z-index: 999;
                 transition: all 0.3s ease-in-out;
-                transform: translateY(100%); /* Começa escondido */
+                transform: translateX(400px); /* Começa escondido */
                 opacity: 0;
                 visibility: hidden;
             }
 
             #chat-container.open {
-                transform: translateY(0);
+                transform: translateX(0);
                 opacity: 1;
                 visibility: visible;
             }
 
             /* Modo escuro para o chatbox */
             body.dark-mode #chat-container {
-                background-color: var(--dark-card-background);
-                border-color: var(--dark-border-color);
-                color: var(--dark-card-text-color);
+                background-color: #343a40; /* Cor de fundo escura */
+                border-color: #444;
+                color: #f8f9fa;
             }
 
             #chat-header {
@@ -324,8 +326,8 @@
                 justify-content: space-between;
                 align-items: center;
                 padding: 12px 15px;
-                background-color: var(--primary-color);
-                color: var(--text-light);
+                background-color: #007bff; /* Cor do cabeçalho */
+                color: white;
                 border-top-left-radius: 10px;
                 border-top-right-radius: 10px;
                 font-weight: 600;
@@ -335,7 +337,7 @@
             #chat-header button {
                 background: none;
                 border: none;
-                color: var(--text-light);
+                color: white;
                 font-size: 1.5rem;
                 cursor: pointer;
                 transition: transform 0.2s ease;
@@ -349,15 +351,15 @@
                 flex-grow: 1;
                 padding: 15px;
                 overflow-y: auto;
-                background-color: var(--background-color); /* Fundo claro para mensagens */
-                color: var(--text-color);
+                background-color: #f9f9f9; /* Fundo claro para mensagens */
+                color: #333;
                 line-height: 1.5;
                 word-wrap: break-word; /* Garante que o texto quebre */
             }
 
             body.dark-mode #chat-messages {
-                background-color: var(--dark-background-color);
-                color: var(--dark-text-color);
+                background-color: #495057; /* Fundo escuro para mensagens */
+                color: #f8f9fa;
             }
 
             .message {
@@ -394,35 +396,35 @@
             #chat-input-area {
                 display: flex;
                 padding: 10px 15px;
-                border-top: 1px solid var(--border-color);
-                background-color: var(--card-background);
+                border-top: 1px solid #eee;
+                background-color: #fff;
             }
 
             body.dark-mode #chat-input-area {
-                border-top-color: var(--dark-border-color);
-                background-color: var(--dark-card-background);
+                border-top-color: #444;
+                background-color: #343a40;
             }
 
             #chat-input {
                 flex-grow: 1;
                 padding: 10px;
-                border: 1px solid var(--border-color);
+                border: 1px solid #ddd;
                 border-radius: 8px;
                 margin-right: 10px;
                 font-size: 1rem;
-                background-color: var(--background-color);
-                color: var(--text-color);
+                background-color: #fff;
+                color: #333;
             }
 
             body.dark-mode #chat-input {
-                background-color: var(--dark-background-color);
-                border-color: var(--dark-border-color);
-                color: var(--dark-text-color);
+                background-color: #495057;
+                border-color: #444;
+                color: #f8f9fa;
             }
 
             #chat-send-button {
-                background-color: var(--primary-color);
-                color: var(--text-light);
+                background-color: #28a745;
+                color: white;
                 border: none;
                 border-radius: 8px;
                 padding: 10px 15px;
@@ -432,7 +434,7 @@
             }
 
             #chat-send-button:hover {
-                background-color: #e05e0a;
+                background-color: #218838;
             }
 
             #chat-loading-indicator {
@@ -2221,7 +2223,7 @@
 		</script>
 
 <button id="chat-toggle-button" title="Abrir Chat com IA">
-    <i class="dw dw-chat"></i>
+    <i class="fa-solid fa-comments"></i>
 </button>
 
 <div id="chat-container">
@@ -2379,7 +2381,7 @@ Se a pergunta for fora do escopo da WYN, informe educadamente que sua função �
     ];
 
     // Adiciona a mensagem inicial do bot ao carregar a página
-    addMessage('bot', "Olá! Como posso ajudar você hoje?")
+    // Removido: addMessage('bot', "Olá! Como posso ajudar você hoje?") // Já está no HTML inicial do chat
     // Função para adicionar mensagens ao chat
     function addMessage(sender, text) {
         const messageElement = document.createElement('div');
@@ -2441,6 +2443,7 @@ Se a pergunta for fora do escopo da WYN, informe educadamente que sua função �
     }
 
     // Event listener para o botão de toggle (abrir/fechar chat)
+    // Verifique se o elemento existe antes de adicionar o listener
     if (chatToggleButton) {
         chatToggleButton.addEventListener('click', () => {
             chatContainer.classList.toggle('open');
@@ -2449,8 +2452,9 @@ Se a pergunta for fora do escopo da WYN, informe educadamente que sua função �
             }
         });
     } else {
-        console.warn("Elemento #chat-toggle-button não encontrado.");
+        console.warn("Elemento #chat-toggle-button não encontrado. Verifique se o botão flutuante está no HTML.");
     }
+
 
     // Event listener para o botão de fechar o chat
     if (chatCloseButton) {
