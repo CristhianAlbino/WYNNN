@@ -1,433 +1,480 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WYN - Login Prestador</title>
-
-    <link rel="apple-touch-icon" sizes="180x180" href="/w/1.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/w/1.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/w/1.png">
-
-    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="vendors/styles/core.css" />
-    <link rel="stylesheet" type="text/css" href="vendors/styles/style.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
-    <style>
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background-color: var(--background-color); /* Usa a variável do tema */
-            transition: background-color 0.3s ease;
-            font-family: 'Inter', sans-serif;
-            margin: 0;
-            padding: 20px; /* Adiciona padding para telas pequenas */
-            box-sizing: border-box; /* Garante que padding não cause overflow */
-            position: relative; /* Necessário para posicionar o botão de voltar e o switcher de tema */
-            padding-top: 60px; /* Adiciona padding para evitar sobreposição com possível header fixo */
-        }
-
-        .login-container {
-            background-color: var(--card-background); /* Usa a variável do tema */
-            border: 1px solid var(--border-color); /* Usa a variável do tema */
-            border-radius: 12px;
-            box-shadow: 0 4px 15px var(--shadow-color); /* Usa a variável do tema */
-            padding: 40px;
-            width: 100%;
-            max-width: 400px;
-            text-align: center;
-            transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
-            z-index: 1; /* Garante que o container esteja acima de outros elementos */
-        }
-
-        body.dark-mode .login-container {
-            background-color: var(--dark-card-background);
-            border-color: var(--dark-border-color);
-            box-shadow: 0 4px 15px var(--dark-shadow-color);
-        }
-
-        .login-container img {
-            width: 80px;
-            margin-bottom: 25px;
-        }
-
-        .login-container h2 {
-            color: var(--text-color); /* Usa a variável do tema */
-            margin-bottom: 30px;
-            font-weight: 700;
-            transition: color 0.3s ease;
-        }
-
-        body.dark-mode .login-container h2 {
-            color: var(--dark-text-color);
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-            text-align: left;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: var(--text-color); /* Usa a variável do tema */
-            font-weight: 500;
-            transition: color 0.3s ease;
-        }
-
-        body.dark-mode .form-group label {
-            color: var(--dark-text-color);
-        }
-
-        .form-group input[type="email"],
-        .form-group input[type="password"] {
-            width: 100%;
-            padding: 12px 15px;
-            border: 1px solid var(--border-color); /* Usa a variável do tema */
-            border-radius: 8px;
-            font-size: 1rem;
-            background-color: var(--background-color); /* Usa a variável do tema */
-            color: var(--text-color); /* Usa a variável do tema */
-            transition: border-color 0.3s ease, background-color 0.3s ease, color 0.3s ease;
-        }
-
-        body.dark-mode .form-group input {
-            background-color: var(--dark-background-color);
-            border-color: var(--dark-border-color);
-            color: var(--dark-text-color);
-        }
-
-        .form-group input:focus {
-            border-color: var(--primary-color);
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(255, 108, 15, 0.2);
-        }
-
-        .btn-login {
-            width: 100%;
-            padding: 12px 20px;
-            background-color: var(--primary-color); /* Laranja do WYN */
-            color: var(--text-light);
-            border: none;
-            border-radius: 8px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-            margin-top: 15px;
-        }
-
-        .btn-login:hover {
-            background-color: #e05e0a; /* Laranja mais escuro no hover */
-            transform: translateY(-2px);
-        }
-
-        .links {
-            margin-top: 25px;
-            font-size: 0.95rem;
-        }
-
-        .links a {
-            color: var(--link-color); /* Usa a variável do tema */
-            text-decoration: none;
-            margin: 0 10px;
-            transition: color 0.3s ease;
-        }
-
-        .links a:hover {
-            color: var(--link-hover-color); /* Usa a variável do tema */
-            text-decoration: underline;
-        }
-
-        body.dark-mode .links a {
-            color: var(--dark-link-color);
-        }
-
-        body.dark-mode .links a:hover {
-            color: var(--dark-link-hover-color);
-        }
-
-        .theme-switcher-container {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            z-index: 10;
-        }
-
-        .theme-switcher-container i {
-            font-size: 1.8rem;
-            cursor: pointer;
-            color: var(--text-color); /* Cor do ícone do tema */
-            transition: color 0.3s ease;
-        }
-
-        body.dark-mode .theme-switcher-container i {
-            color: var(--dark-text-color);
-        }
-
-        .back-button-container {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            z-index: 10;
-        }
-
-        .back-button-container a {
-            font-size: 1.1rem;
-            color: var(--link-color);
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            transition: color 0.3s ease;
-        }
-
-        .back-button-container a:hover {
-            color: var(--link-hover-color);
-        }
-
-        body.dark-mode .back-button-container a {
-            color: var(--dark-link-color);
-        }
-
-        body.dark-mode .back-button-container a:hover {
-            color: var(--dark-link-hover-color);
-        }
-
-        /* Estilos para a tela de carregamento */
-        .pre-loader {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: #ffffff; /* Fundo branco para o pre-loader */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            flex-direction: column;
-            opacity: 1;
-            transition: opacity 0.5s ease-out;
-        }
-
-        .pre-loader-box {
-            text-align: center;
-        }
-
-        .loader-logo img {
-            width: 100px;
-            margin-bottom: 20px;
-        }
-
-        .loader-progress {
-            width: 200px;
-            height: 10px;
-            background-color: #e0e0e0;
-            border-radius: 5px;
-            overflow: hidden;
-            margin-bottom: 10px;
-        }
-
-        .loader-progress .bar {
-            height: 100%;
-            width: 0%;
-            background-color: var(--primary-color);
-            border-radius: 5px;
-            transition: width 0.5s ease-in-out;
-        }
-
-        .percent {
-            font-size: 1rem;
-            color: #555;
-            margin-bottom: 15px;
-        }
-
-        .loading-text {
-            font-size: 1.1rem;
-            color: #333;
-        }
-
-        /* Mensagens de erro */
-        .error-message {
-            color: #dc3545; /* Cor vermelha para erro */
-            font-size: 0.9rem;
-            margin-top: 10px;
-            display: none; /* Oculto por padrão */
-        }
-    </style>
+    <link rel="apple-touch-icon" sizes="180x180" href="/w/1.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/w/1.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/w/1.png" />
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v2.1.9/css/unicons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="login.css">
 </head>
 <body>
-    <div class="pre-loader" id="loading-screen">
-        <div class="pre-loader-box">
-            <div class="loader-logo">
-                <img src="w.png" alt="WYN Logo" />
+    <header>
+        <nav>
+            <a href="https://bright-douhua-66bc14.netlify.app/" class="Logo">WYN</a>
+        </nav>
+    </header>
+
+    <div class="section">
+        <div class="container">
+            <div class="row full-height justify-content-center">
+                <div class="col-12 text-center align-self-center py-5">
+                    <div class="section pb-5 pt-5 pt-sm-2 text-center">
+                        <h6 class="#"><span>Login Prestador </span><span>Cadastre-se Prestador</span></h6>
+                        <input class="checkbox" type="checkbox" id="reg-log" name="reg-log" />
+                        <label for="reg-log"></label>
+                        <div class="card-3d-wrap mx-auto">
+                            <div class="card-3d-wrapper">
+                                <div class="card-front">
+                                    <div class="center-wrap">
+                                        <div class="section text-center">
+                                            <h4 class="mb-4 pb-3">Login Prestador</h4>
+                                            <div class="form-group">
+                                                <input type="email" class="form-style" placeholder="Email Prestador" name="emailPrestador" required>
+                                                <i class="input-icon uil uil-at"></i>
+                                            </div>
+                                            <div class="form-group mt-2">
+                                                <input type="password" class="form-style" placeholder="Senha Prestador" name="senhaPrestador" required>
+                                                <i class="input-icon uil uil-lock-alt"></i>
+                                            </div>
+                                            <button class="btn mt-4" id="btnLoginPrestador">Login</button>
+                                             <p class="mb-0 mt-4 text-center"><a href="forgot-password.html" class="link">Esqueceu sua senha?</a></p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="card-back">
+                                    <div class="center-wrap">
+                                        <div class="section text-center">
+                                            <h4 class="mb-3 pb-3">Cadastre-se Prestador</h4>
+                                            <form id="formCadastroPrestador">
+                                                <div class="form-group">
+                                                    <input type="text" class="form-style" placeholder="Nome Completo Prestador" name="nomePrestador" required>
+                                                    <i class="input-icon uil uil-user"></i>
+                                                </div>
+                                                <div class="form-group mt-2">
+                                                    <input type="text" class="form-style" placeholder="CPF (somente n\u00fameros)" name="cpfPrestador" required pattern="\d{11}" title="CPF deve conter 11 d\u00edgitos num\u00e9ricos">
+                                                    <i class="input-icon uil uil-postcard"></i>
+                                                </div>
+                                                <div class="form-group mt-2">
+                                                    <label for="dataNascimentoPrestador" class="form-label" style="color: #c4c3ca; text-align: left; display: block;">Data de Nascimento</label>
+                                                    <input type="date" class="form-style" id="dataNascimentoPrestador" name="dataNascimentoPrestador" required>
+                                                </div>
+                                                <div class="form-group mt-2">
+                                                    <input type="tel" class="form-style" placeholder="Telefone (ex: 11987654321)" name="telefonePrestador" required pattern="[0-9]{10,11}" title="Telefone deve conter 10 ou 11 d\u00edgitos num\u00e9ricos">
+                                                    <i class="input-icon uil uil-phone"></i>
+                                                </div>
+                                                <div class="form-group mt-2">
+                                                    <input type="email" class="form-style" placeholder="Email Prestador" name="emailCadastroPrestador" required>
+                                                    <i class="input-icon uil uil-at"></i>
+                                                </div>
+                                                <div class="form-group mt-2">
+                                                    <input type="password" class="form-style" placeholder="Senha Prestador" name="senhaCadastroPrestador" required>
+                                                    <i class="input-icon uil uil-lock-alt"></i>
+                                                </div>
+
+                                                <h5 class="mb-2 mt-4 pb-1" style="color: #ff9900;">Endere\u00e7o</h5>
+                                                <div class="form-group mt-2">
+                                                    <input type="text" class="form-style" placeholder="CEP" name="cepPrestador" required pattern="\d{8}" title="CEP deve conter 8 d\u00edgitos num\u00e9ricos">
+                                                    <i class="input-icon uil uil-map-marker"></i>
+                                                </div>
+                                                <div class="form-group mt-2">
+                                                    <input type="text" class="form-style" placeholder="Rua" name="ruaPrestador" required>
+                                                    <i class="input-icon uil uil-map-marker-alt"></i>
+                                                </div>
+                                                <div class="form-group mt-2">
+                                                    <input type="text" class="form-style" placeholder="N\u00famero" name="numeroEnderecoPrestador" required>
+                                                    <i class="input-icon uil uil-location-pin-alt"></i>
+                                                </div>
+                                                <div class="form-group mt-2">
+                                                    <input type="text" class="form-style" placeholder="Bairro" name="bairroPrestador" required>
+                                                    <i class="input-icon uil uil-compass"></i>
+                                                </div>
+                                                <div class="form-group mt-2">
+                                                    <input type="text" class="form-style" placeholder="Cidade" name="cidadePrestador" required>
+                                                    <i class="input-icon uil uil-city"></i>
+                                                </div>
+                                                <div class="form-group mt-2">
+                                                    <input type="text" class="form-style" placeholder="Estado (UF)" name="estadoPrestador" required maxlength="2">
+                                                    <i class="input-icon uil uil-globe"></i>
+                                                </div>
+
+                                                <h5 class="mb-2 mt-4 pb-1" style="color: #ff9900;">Documentos e Fotos</h5>
+                                                <div class="form-group mt-2 text-left">
+                                                    <label for="foto_perfil_prestador" class="form-label" style="color: #c4c3ca;">Foto de Perfil (Opcional)</label>
+                                                    <input type="file" class="form-control-file" id="foto_perfil_prestador" name="foto_perfil" accept="image/*">
+                                                </div>
+                                                <div class="form-group mt-2 text-left">
+                                                    <label for="foto_selfie_documento" class="form-label" style="color: #c4c3ca;">Foto do Rosto com Documento em M\u00e3os (Obrigat\u00f3rio)</label>
+                                                    <input type="file" class="form-control-file" id="foto_selfie_documento" name="fotoSelfieDocumento" accept="image/*" required>
+                                                </div>
+                                                <div class="form-group mt-2 text-left">
+                                                    <label for="foto_documento" class="form-label" style="color: #c4c3ca;">Foto do Documento com Foto (RG ou CNH - Obrigat\u00f3rio)</label>
+                                                    <input type="file" class="form-control-file" id="foto_documento" name="fotoDocumento" accept="image/*" required>
+                                                </div>
+
+                                                <h5 class="mb-2 mt-4 pb-1" style="color: #ff9900;">Certifica\u00e7\u00e3o/Curso</h5>
+                                                <div class="form-group mt-2">
+                                                    <input type="text" class="form-style" placeholder="Certifica\u00e7\u00e3o ou Curso na \u00e1rea (Opcional)" name="certificacaoPrestador">
+                                                    <i class="input-icon uil uil-graduation-cap"></i>
+                                                </div>
+
+                                                <h5 class="mb-2 mt-4 pb-1" style="color: #ff9900;">Dados para Recebimento</h5>
+                                                <div class="form-group mt-2 text-left">
+                                                    <label style="color: #c4c3ca;">M\u00e9todo de Recebimento:</label><br>
+                                                    <input type="radio" id="radioContaBancaria" name="tipoRecebimento" value="contaBancaria" checked>
+                                                    <label for="radioContaBancaria" style="color: #c4c3ca; margin-left: 5px;">Conta Banc\u00e1ria</label>
+                                                    <input type="radio" id="radioChavePix" name="tipoRecebimento" value="chavePix" style="margin-left: 20px;">
+                                                    <label for="radioChavePix" style="color: #c4c3ca; margin-left: 5px;">Chave Pix</label>
+                                                </div>
+
+                                                <div id="camposContaBancaria">
+                                                    <div class="form-group mt-2">
+                                                        <input type="text" class="form-style" placeholder="Banco" name="bancoPrestador">
+                                                        <i class="input-icon uil uil-building"></i>
+                                                    </div>
+                                                    <div class="form-group mt-2">
+                                                        <input type="text" class="form-style" placeholder="Ag\u00eancia" name="agenciaPrestador">
+                                                        <i class="input-icon uil uil-money-bill"></i>
+                                                    </div>
+                                                    <div class="form-group mt-2">
+                                                        <input type="text" class="form-style" placeholder="Conta" name="contaPrestador">
+                                                        <i class="input-icon uil uil-credit-card"></i>
+                                                    </div>
+                                                    <div class="form-group mt-2">
+                                                        <input type="text" class="form-style" placeholder="Tipo de Conta (Corrente/Poupan\u00e7a)" name="tipoContaPrestador">
+                                                        <i class="input-icon uil uil-wallet"></i>
+                                                    </div>
+                                                </div>
+
+                                                <div id="camposChavePix" style="display: none;">
+                                                    <div class="form-group mt-2">
+                                                        <select class="form-style" name="tipoChavePixPrestador">
+                                                            <option value="">Selecione o Tipo de Chave Pix</option>
+                                                            <option value="cpf">CPF</option>
+                                                            <option value="cnpj">CNPJ</option>
+                                                            <option value="email">Email</option>
+                                                            <option value="telefone">Telefone</option>
+                                                            <option value="aleatoria">Chave Aleat\u00f3ria</option>
+                                                        </select>
+                                                        <i class="input-icon uil uil-qrcode-scan"></i>
+                                                    </div>
+                                                    <div class="form-group mt-2">
+                                                        <input type="text" class="form-style" placeholder="Chave Pix" name="chavePixPrestador">
+                                                        <i class="input-icon uil uil-key-skeleton"></i>
+                                                    </div>
+                                                </div>
+
+                                                <h5 class="mb-2 mt-4 pb-1" style="color: #ff9900;">Pol\u00edtica de Cancelamento/Reagendamento</h5>
+                                                <div class="form-group mt-2">
+                                                    <select class="form-style" id="politicaCancelamentoTipo" name="politicaCancelamentoTipo" required>
+                                                        <option value="">Selecione a Pol\u00edtica</option>
+                                                        <option value="padrao">Padr\u00e3o da Plataforma</option>
+                                                        <option value="personalizada">Personalizada</option>
+                                                    </select>
+                                                    <i class="input-icon uil uil-file-alt"></i>
+                                                </div>
+                                                <div class="form-group mt-2" id="campoPoliticaPersonalizada" style="display: none;">
+                                                    <textarea class="form-style" placeholder="Descreva sua pol\u00edtica personalizada" name="politicaCancelamentoPersonalizada" rows="4"></textarea>
+                                                </div>
+
+                                                <button type="submit" class="btn mt-4" id="btnCadastrarPrestador">Cadastrar</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="loader-progress" id="progress_div">
-                <div class="bar" id="bar1"></div>
-            </div>
-            <div class="percent" id="percent1">0%</div>
-            <div class="loading-text">Carregando...</div>
         </div>
     </div>
 
-    <div class="back-button-container">
-        <a href="javascript:history.back()">
-            <i class='bx bx-arrow-back'></i> Voltar
-        </a>
-    </div>
-
-    <div class="theme-switcher-container">
-        <i class='bx bx-moon' id="theme-switcher-icon"></i>
-    </div>
-
-    <div class="login-container">
-        <img src="w.png" alt="WYN Logo">
-        <h2>Entrar como Prestador</h2>
-
-        <form id="login-prestador-form">
-            <div class="form-group">
-                <label for="email">E-mail</label>
-                <input type="email" id="email" placeholder="seuemail@exemplo.com" required>
-            </div>
-            <div class="form-group">
-                <label for="password">Senha</label>
-                <input type="password" id="password" placeholder="********" required>
-            </div>
-            <p class="error-message" id="login-error-message" style="display: none;">Mensagem de erro aqui.</p>
-            <button type="submit" class="btn-login">Entrar</button>
-        </form>
-
-        <div class="links">
-            <a href="forgot-password.html">Esqueci minha senha</a> |
-            <a href="register-prestador.html">Cadastrar-se como Prestador</a>
-        </div>
-    </div>
-
-    <script src="vendors/scripts/core.js"></script>
-    <script src="vendors/scripts/script.min.js"></script>
-    <script src="vendors/scripts/process.js"></script>
-    <script src="vendors/scripts/layout-settings.js"></script>
-    
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const loginForm = document.getElementById('login-prestador-form');
-            const emailInput = document.getElementById('email');
-            const passwordInput = document.getElementById('password');
-            const errorMessage = document.getElementById('login-error-message');
-            const loadingScreen = document.getElementById("loading-screen");
+        // Obter a URL base do backend do ambiente (se definida) ou usar localhost para desenvolvimento
+        const BACKEND_BASE_URL = 'https://wyn-backend.onrender.com'; // Sua URL do Render
 
-            // --- Lógica da Tela de Carregamento (adaptada para login) ---
-            const loadingTime = 1000; // 1 segundo para uma tela de login mais rápida
+        // Listener para o Login de Prestador (AJUSTADO)
+        document.getElementById('btnLoginPrestador').addEventListener('click', async (e) => { // Alterado ID
+            e.preventDefault();
+            const email = document.querySelector('input[name="emailPrestador"]').value; // Alterado nome do input
+            const senha = document.querySelector('input[name="senhaPrestador"]').value; // Alterado nome do input
 
-            setTimeout(function() {
-                if (loadingScreen) {
-                    loadingScreen.style.transition = 'opacity 0.5s ease-out';
-                    loadingScreen.style.opacity = '0';
-                    loadingScreen.addEventListener('transitionend', () => {
-                        loadingScreen.style.display = "none";
-                    });
-                }
-            }, loadingTime);
-
-            // Função para exibir mensagens de erro
-            function showErrorMessage(message) {
-                errorMessage.textContent = message;
-                errorMessage.style.display = 'block';
-            }
-
-            // Função para ocultar mensagens de erro
-            function hideErrorMessage() {
-                errorMessage.style.display = 'none';
-            }
-
-            // Event listener para o formulário de login
-            if (loginForm) {
-                loginForm.addEventListener('submit', async function(event) {
-                    event.preventDefault(); // Previne o envio padrão do formulário
-
-                    hideErrorMessage(); // Oculta qualquer mensagem de erro anterior
-
-                    const email = emailInput.value.trim();
-                    const senha = passwordInput.value.trim(); // Renomeado para 'senha' para corresponder ao backend
-
-                    if (!email || !senha) {
-                        showErrorMessage('Por favor, preencha todos os campos.');
-                        return;
-                    }
-
-                    try {
-                        // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
-                        const response = await fetch('https://wyn-backend.onrender.com/login-prestador', { // Usa endpoint específico para login de prestador
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({ email, senha })
-                        });
-
-                        const data = await response.json();
-
-                        if (response.ok) {
-                            // Login bem-sucedido
-                            if (data.tipo === 'prestador') {
-                                localStorage.setItem('token', data.token);
-                                localStorage.setItem('prestador', JSON.stringify(data.prestador));
-                                window.location.href = 'index.html'; // Redireciona para o dashboard do prestador
-                            } else {
-                                showErrorMessage('Credenciais inválidas para prestador.');
-                                console.error('Tentativa de login de cliente na tela de login de prestador.');
-                            }
-                        } else {
-                            // Erro no login
-                            showErrorMessage(data.message || 'Erro ao fazer login. Verifique suas credenciais.');
-                            console.error('Erro de login:', data.message);
-                        }
-                    } catch (error) {
-                        console.error('Erro na requisição de login:', error);
-                        showErrorMessage('Não foi possível conectar ao servidor. Tente novamente mais tarde.');
-                    }
+            try {
+                const response = await fetch(`${BACKEND_BASE_URL}/login-prestador`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, senha })
                 });
-            } else {
-                console.warn("Elemento #login-prestador-form não encontrado.");
-            }
 
-            // --- Lógica de Alternância de Tema (movida para cá) ---
-            const themeSwitcher = document.getElementById('theme-switcher-icon');
-            const body = document.body;
-            const currentTheme = localStorage.getItem('theme');
-
-            // Aplica o tema salvo ao carregar a página
-            if (currentTheme && currentTheme !== 'light-mode') {
-                body.classList.add(currentTheme);
-                if (currentTheme === 'dark-mode') {
-                    themeSwitcher.classList.replace('bx-moon', 'bx-sun');
+                // Clonar a resposta antes de tentar ler o JSON
+                const responseClone = response.clone();
+                let data;
+                try {
+                     data = await response.json();
+                } catch (jsonError) {
+                     const textError = await responseClone.text();
+                     console.error("Erro ao parsear JSON da resposta de login:", textError);
+                     // Lança um erro customizado ou usa uma mensagem padrão
+                     throw new Error(`Resposta inv\u00e1lida do servidor (${response.status}). Detalhes: ${textError.substring(0, 100)}...`);
                 }
-            } else {
-                body.classList.remove('dark-mode');
-                themeSwitcher.classList.replace('bx-sun', 'bx-moon');
-            }
 
-            // Adiciona listener para o clique no ícone de alternar tema
-            if (themeSwitcher) {
-                themeSwitcher.addEventListener('click', () => {
-                    body.classList.toggle('dark-mode');
-                    if (body.classList.contains('dark-mode')) {
-                        localStorage.setItem('theme', 'dark-mode');
-                        themeSwitcher.classList.replace('bx-moon', 'bx-sun');
-                    } else {
-                        localStorage.setItem('theme', 'light-mode');
-                        themeSwitcher.classList.replace('bx-sun', 'bx-moon');
-                    }
-                });
-            } else {
-                console.warn("Elemento #theme-switcher-icon não encontrado.");
+
+                if (response.ok && data.token && data.prestador) { // *** Verifica por 'prestador' nos dados ***
+                    localStorage.setItem("token", data.token);
+                    // *** SALVANDO O OBJETO 'prestador' CORRETO, que agora inclui foto_perfil_url ***
+                    localStorage.setItem("prestador", JSON.stringify(data.prestador));
+
+                    // Substitu\u00eddo alert por console.log para evitar bloqueio em alguns ambientes
+                    console.log(data.message);
+                    // Redireciona para a p\u00e1gina inicial do prestador
+                    window.location.href = "index.html"; // Ajuste o nome da p\u00e1gina se for diferente
+
+                } else {
+                    // Se o backend retornou um erro esperado (ex: 401 Unauthorized)
+                    // Substitu\u00eddo alert por console.error para evitar bloqueio em alguns ambientes
+                    console.error(data.message || "Credenciais inv\u00e1lidas ou erro ao fazer login.");
+                }
+            } catch (error) {
+                console.error("Erro na requisi\u00e7\u00e3o de login:", error);
+                 // Se o erro for a nossa mensagem customizada do parse JSON, mostre-a.
+                 // Caso contr\u00e1rio, mostre uma mensagem de erro de conex\u00e3o.
+                console.error(error.message.startsWith("Resposta inv\u00e1lida") ? error.message : "Erro ao conectar ao servidor de login.");
             }
         });
+
+        // Fun\u00e7\u00e3o para validar se o usu\u00e1rio \u00e9 maior de 18 anos
+        function isAdult(dateString) {
+            const birthDate = new Date(dateString);
+            const today = new Date();
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const m = today.getMonth() - birthDate.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+            return age >= 18;
+        }
+
+        // Listener para o Cadastro de Prestador (AJUSTADO)
+        document.getElementById('formCadastroPrestador').addEventListener('submit', async (e) => { // Alterado ID
+            e.preventDefault();
+            const form = e.target;
+            const btnCadastrar = document.getElementById('btnCadastrarPrestador');
+
+            // Crie um objeto FormData para enviar os dados do formul\u00e1rio, incluindo o arquivo
+            const formData = new FormData();
+
+            // Adiciona os campos de texto manualmente com os NOMES ESPERADOS PELO BACKEND
+            formData.append('nome', form.querySelector('input[name="nomePrestador"]').value);
+            formData.append('cpf', form.querySelector('input[name="cpfPrestador"]').value);
+            formData.append('dataNascimento', form.querySelector('input[name="dataNascimentoPrestador"]').value);
+            formData.append('telefone', form.querySelector('input[name="telefonePrestador"]').value);
+            formData.append('email', form.querySelector('input[name="emailCadastroPrestador"]').value);
+            formData.append('senha', form.querySelector('input[name="senhaCadastroPrestador"]').value);
+
+            // Adiciona campos de endere\u00e7o
+            formData.append('cep', form.querySelector('input[name="cepPrestador"]').value);
+            formData.append('rua', form.querySelector('input[name="ruaPrestador"]').value);
+            formData.append('numeroEndereco', form.querySelector('input[name="numeroEnderecoPrestador"]').value);
+            formData.append('bairro', form.querySelector('input[name="bairroPrestador"]').value);
+            formData.append('cidade', form.querySelector('input[name="cidadePrestador"]').value);
+            formData.append('estado', form.querySelector('input[name="estadoPrestador"]').value);
+
+            // Adiciona certifica\u00e7\u00e3o (opcional)
+            const certificacao = form.querySelector('input[name="certificacaoPrestador"]').value;
+            if (certificacao) {
+                formData.append('certificacao', certificacao);
+            }
+
+            // Adiciona dados de recebimento (conta banc\u00e1ria ou pix)
+            const tipoRecebimento = document.querySelector('input[name="tipoRecebimento"]:checked').value;
+            formData.append('tipoRecebimento', tipoRecebimento);
+
+            if (tipoRecebimento === 'contaBancaria') {
+                formData.append('banco', form.querySelector('input[name="bancoPrestador"]').value);
+                formData.append('agencia', form.querySelector('input[name="agenciaPrestador"]').value);
+                formData.append('conta', form.querySelector('input[name="contaPrestador"]').value);
+                formData.append('tipoConta', form.querySelector('input[name="tipoContaPrestador"]').value);
+            } else if (tipoRecebimento === 'chavePix') {
+                formData.append('tipoChavePix', form.querySelector('select[name="tipoChavePixPrestador"]').value);
+                formData.append('chavePix', form.querySelector('input[name="chavePixPrestador"]').value);
+            }
+
+            // Adiciona pol\u00edtica de cancelamento
+            const politicaCancelamentoTipo = form.querySelector('select[name="politicaCancelamentoTipo"]').value;
+            formData.append('politicaCancelamentoTipo', politicaCancelamentoTipo);
+            if (politicaCancelamentoTipo === 'personalizada') {
+                formData.append('politicaCancelamentoPersonalizada', form.querySelector('textarea[name="politicaCancelamentoPersonalizada"]').value);
+            }
+
+            // Adiciona os arquivos de foto se eles existirem
+            const fotoPerfilInput = form.querySelector('input[name="foto_perfil"]');
+            if (fotoPerfilInput.files && fotoPerfilInput.files[0]) {
+                 formData.append('foto_perfil', fotoPerfilInput.files[0]); // O backend espera 'foto_perfil'
+            }
+
+            const fotoSelfieDocumentoInput = form.querySelector('input[name="fotoSelfieDocumento"]');
+            if (fotoSelfieDocumentoInput.files && fotoSelfieDocumentoInput.files[0]) {
+                formData.append('fotoSelfieDocumento', fotoSelfieDocumentoInput.files[0]);
+            }
+
+            const fotoDocumentoInput = form.querySelector('input[name="fotoDocumento"]');
+            if (fotoDocumentoInput.files && fotoDocumentoInput.files[0]) {
+                formData.append('fotoDocumento', fotoDocumentoInput.files[0]);
+            }
+
+            // Valida\u00e7\u00f5es client-side
+            const dataNascimento = form.querySelector('input[name="dataNascimentoPrestador"]').value;
+            if (!isAdult(dataNascimento)) {
+                console.error("O prestador deve ter 18 anos ou mais.");
+                btnCadastrar.disabled = false;
+                btnCadastrar.textContent = 'Cadastrar';
+                return;
+            }
+
+            const cpf = form.querySelector('input[name="cpfPrestador"]').value;
+            if (!/^\d{11}$/.test(cpf)) {
+                console.error("CPF inv\u00e1lido. Deve conter 11 d\u00edgitos num\u00e9ricos.");
+                btnCadastrar.disabled = false;
+                btnCadastrar.textContent = 'Cadastrar';
+                return;
+            }
+
+            if (!fotoSelfieDocumentoInput.files || !fotoSelfieDocumentoInput.files[0]) {
+                console.error("Por favor, envie a foto do rosto com documento em m\u00e3os.");
+                btnCadastrar.disabled = false;
+                btnCadastrar.textContent = 'Cadastrar';
+                return;
+            }
+            if (!fotoDocumentoInput.files || !fotoDocumentoInput.files[0]) {
+                console.error("Por favor, envie a foto do documento com foto (RG ou CNH).");
+                btnCadastrar.disabled = false;
+                btnCadastrar.textContent = 'Cadastrar';
+                return;
+            }
+
+            btnCadastrar.disabled = true; // Desabilita o bot\u00e3o
+            btnCadastrar.textContent = 'Cadastrando...';
+
+            try {
+                 const response = await fetch(`${BACKEND_BASE_URL}/cadastrar-prestador`, { // Endpoint de CADASTRO DE PRESTADOR
+                     method: 'POST',
+                     // N\u00e3o defina o cabe\u00e7alho 'Content-Type' manualmente ao usar FormData.
+                     // O navegador definir\u00e1 automaticamente como 'multipart/form-data' com o boundary correto.
+                     body: formData // Envia o objeto FormData
+                 });
+
+                 const responseClone = response.clone();
+                 let data;
+                 try {
+                      data = await response.json();
+                 } catch(jsonError) {
+                      const textError = await responseClone.text();
+                      console.error("Erro ao parsear JSON da resposta de cadastro:", textError);
+                      throw new Error(`Resposta inv\u00e1lida do servidor (${response.status}). Detalhes: ${textError.substring(0, 100)}...`);
+                 }
+
+                 console.log(data.message);
+                 if(response.ok) {
+                      form.reset(); // Limpa o formul\u00e1rio em caso de sucesso
+                      // Opcional: Redirecionar para login ap\u00f3s sucesso
+                      // window.location.href = "login-prestador.html"; // Redireciona para login
+                 }
+
+            } catch (error) {
+                 console.error("Erro na requisi\u00e7\u00e3o de cadastro:", error);
+                 console.error(error.message.startsWith("Resposta inv\u00e1lida") ? error.message : "Erro ao conectar ao servidor de cadastro.");
+            } finally {
+                btnCadastrar.disabled = false; // Reabilita o bot\u00e3o
+                btnCadastrar.textContent = 'Cadastrar';
+            }
+        });
+
+        // L\u00f3gica para mostrar/esconder campos de Conta Banc\u00e1ria ou Chave Pix
+        document.addEventListener('DOMContentLoaded', () => {
+            const radioContaBancaria = document.getElementById('radioContaBancaria');
+            const radioChavePix = document.getElementById('radioChavePix');
+            const camposContaBancaria = document.getElementById('camposContaBancaria');
+            const camposChavePix = document.getElementById('camposChavePix');
+
+            function toggleRecebimentoFields() {
+                if (radioContaBancaria.checked) {
+                    camposContaBancaria.style.display = 'block';
+                    camposChavePix.style.display = 'none';
+                } else if (radioChavePix.checked) {
+                    camposContaBancaria.style.display = 'none';
+                    camposChavePix.style.display = 'block';
+                }
+            }
+
+            radioContaBancaria.addEventListener('change', toggleRecebimentoFields);
+            radioChavePix.addEventListener('change', toggleRecebimentoFields);
+
+            // Inicializa a exibi\u00e7\u00e3o correta ao carregar a p\u00e1gina
+            toggleRecebimentoFields();
+
+            // L\u00f3gica para mostrar/esconder campo de Pol\u00edtica Personalizada
+            const politicaCancelamentoTipo = document.getElementById('politicaCancelamentoTipo');
+            const campoPoliticaPersonalizada = document.getElementById('campoPoliticaPersonalizada');
+
+            function togglePoliticaPersonalizada() {
+                if (politicaCancelamentoTipo.value === 'personalizada') {
+                    campoPoliticaPersonalizada.style.display = 'block';
+                } else {
+                    campoPoliticaPersonalizada.style.display = 'none';
+                }
+            }
+
+            politicaCancelamentoTipo.addEventListener('change', togglePoliticaPersonalizada);
+            // Inicializa a exibi\u00e7\u00e3o correta ao carregar a p\u00e1gina
+            togglePoliticaPersonalizada();
+        });
+
+
+         // Se voc\u00ea tem login de USU\u00c1RIO e PRESTADOR na mesma p\u00e1gina, voc\u00ea precisa:
+         // 1. Garantir que os inputs de email/senha tenham nomes diferentes para cada formul\u00e1rio.
+         // 2. Ter dois event listeners separados, um para o bot\u00e3o de login de usu\u00e1rio e outro para o de prestador.
+         // 3. Cada listener deve chamar o endpoint backend correto (/login ou /login-prestador)
+         // 4. Cada listener deve salvar o token e o objeto retornado (usuario ou prestador)
+         //    nas chaves CORRETAS do localStorage ("usuario" ou "prestador").
+
+         // Exemplo de listener para login de USU\u00c1RIO (se voc\u00ea tiver um formul\u00e1rio e bot\u00e3o espec\u00edficos para isso nesta p\u00e1gina)
+         /*
+         document.getElementById('btnLoginUsuario').addEventListener('click', async (e) => {
+              e.preventDefault();
+              const email = document.querySelector('input[name="emailUsuario"]').value; // Nome do input de email de usu\u00e1rio
+              const senha = document.querySelector('input[name="senhaUsuario"]').value; // Nome do input de senha de usu\u00e1rio
+
+              try {
+                  const response = await fetch('https://wyn-backend.onrender.com/login', { // Endpoint de LOGIN DE USU\u00c1RIO // --- URL ATUALIZADA ---
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ email, senha })
+                  });
+
+                  const data = await response.json();
+
+                  if (response.ok && data.token && data.usuario) {
+                      localStorage.setItem("token", data.token);
+                      localStorage.setItem("usuario", JSON.stringify(data.usuario)); // Salva como 'usuario'
+
+                      alert(data.message);
+                      window.location.href = "index.html"; // Redireciona para a p\u00e1gina inicial do USU\u00c1RIO
+                  } else {
+                      alert(data.message || "Credenciais inv\u00e1lidas ou erro ao fazer login.");
+                  }
+              } catch (error) {
+                  console.error(error);
+                  alert("Erro ao conectar ao servidor.");
+              }
+         });
+         */
+
     </script>
+
 </body>
 </html>
