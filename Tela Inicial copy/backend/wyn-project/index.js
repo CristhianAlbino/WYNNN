@@ -140,25 +140,6 @@ const uploadServiceComprovations = multer({
     fileFilter: serviceComprovationFilter
 }).array('comprovacaoImagem', 5);
 
-// NOVA Instância do Multer para cadastro de prestador (múltiplos ficheiros)
-const uploadPrestadorDocuments = multer({
-    storage: storage, // Reutiliza a mesma configuração de armazenamento
-    limits: {
-        fileSize: 1024 * 1024 * 5 // Limite de 5MB por ficheiro para documentos
-    },
-    fileFilter: (req, file, cb) => {
-        const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/bmp', 'image/webp', 'application/pdf']; // Permite imagens e PDFs para documentos
-        if (allowedTypes.includes(file.mimetype)) {
-            cb(null, true);
-        } else {
-            cb(new Error('Tipo de ficheiro não permitido para documentos. Apenas imagens e PDFs são aceites.'), false);
-        }
-    }
-}).fields([ // Lida com múltiplos campos de ficheiro nomeados
-    { name: 'selfie_documento', maxCount: 1 },
-    { name: 'documento_identificacao', maxCount: 1 }
-]);
-
 
 // --- Modelos ---
 const ServicoSchema = new mongoose.Schema({
@@ -213,24 +194,13 @@ const PrestadorSchema = new mongoose.Schema({
     nome: { type: String, required: true },
     email: { type: String, unique: true, required: true },
     senha: { type: String, required: true },
-    cpf: { type: String, required: true, unique: true }, // NOVO
-    data_nascimento: { type: Date, required: true }, // NOVO
-    telefone: { type: String, required: true }, // AGORA OBRIGATÓRIO
-    endereco: { type: String, required: true }, // NOVO
-    foto_perfil: { type: String }, // Caminho relativo no servidor (pode ser opcional se a selfie com documento for a principal)
-    selfie_documento: { type: String, required: true }, // NOVO
-    documento_identificacao: { type: String, required: true }, // NOVO
-    certificacao: { type: String }, // NOVO (Opcional)
-    dados_bancarios: { type: String }, // NOVO (Opcional)
-    chave_pix: { type: String }, // NOVO (Opcional)
-    politica_cancelamento: { type: String, required: true, enum: ['padrao', 'personalizada'] }, // NOVO
-    politica_cancelamento_personalizada: { type: String }, // NOVO (Condicional)
-    tipo_servico: { type: String, required: true }, // Adicionado
-    faixa_preco_min: { type: Number, min: 0, required: true }, // Adicionado
-    faixa_preco_max: { type: Number, min: 0, required: true }, // Adicionado
-    area_atuacao: { type: String, required: true }, // Adicionado
+    telefone: { type: String },
+    foto_perfil: { type: String }, // Caminho relativo no servidor
     resetPasswordToken: { type: String },
     resetPasswordExpires: { type: Date },
+    especialidades: [{ type: String }], // Adicionado para prestador
+    area_atuacao: { type: String }, // Adicionado para prestador
+    disponibilidade: { type: String } // Adicionado para prestador
 });
 const Prestador = mongoose.model('Prestador', PrestadorSchema);
 
@@ -361,64 +331,14 @@ const validateCadastroUsuario = (data) => {
      return schema.validate(data);
 };
 
-// VALIDAÇÃO DE CADASTRO DE PRESTADOR ATUALIZADA
 const validateCadastroPrestador = (data) => {
-    const schema = Joi.object({
-        nome: Joi.string().required(),
-        email: Joi.string().email().required(),
-        senha: Joi.string().min(6).required(),
-        cpf: Joi.string().length(11).pattern(/^\d+$/).required().messages({
-            'string.length': 'O CPF deve ter 11 dígitos.',
-            'string.pattern.base': 'O CPF deve conter apenas números.',
-            'any.required': 'O campo CPF é obrigatório.'
-        }),
-        data_nascimento: Joi.date().required().less('now').custom((value, helpers) => {
-            const age = new Date().getFullYear() - new Date(value).getFullYear();
-            if (age < 18) {
-                return helpers.message('Você deve ter 18 anos ou mais para se cadastrar.');
-            }
-            return value;
-        }).messages({
-            'any.required': 'A data de nascimento é obrigatória.',
-            'date.less': 'A data de nascimento não pode ser no futuro.',
-            'any.custom': 'Você deve ter 18 anos ou mais para se cadastrar.'
-        }),
-        telefone: Joi.string().required().messages({
-            'any.required': 'O telefone é obrigatório.'
-        }),
-        endereco: Joi.string().required().messages({
-            'any.required': 'O endereço é obrigatório.'
-        }),
-        certificacao: Joi.string().allow(null, '').optional(),
-        dados_bancarios: Joi.string().allow(null, '').optional(),
-        chave_pix: Joi.string().allow(null, '').optional(),
-        politica_cancelamento: Joi.string().valid('padrao', 'personalizada').required().messages({
-            'any.required': 'A política de cancelamento é obrigatória.',
-            'any.only': 'A política de cancelamento deve ser "Padrão da Plataforma" ou "Personalizada".'
-        }),
-        politica_cancelamento_personalizada: Joi.string().when('politica_cancelamento', {
-            is: 'personalizada',
-            then: Joi.string().required().messages({
-                'any.required': 'A descrição da política de cancelamento personalizada é obrigatória.'
-            }),
-            otherwise: Joi.string().allow(null, '').optional()
-        }),
-        tipo_servico: Joi.string().required().messages({
-            'any.required': 'O tipo de serviço principal é obrigatório.'
-        }),
-        faixa_preco_min: Joi.number().min(0).required().messages({
-            'any.required': 'A faixa de preço mínima é obrigatória.',
-            'number.min': 'A faixa de preço mínima deve ser um valor positivo.'
-        }),
-        faixa_preco_max: Joi.number().min(Joi.ref('faixa_preco_min')).required().messages({
-            'any.required': 'A faixa de preço máxima é obrigatória.',
-            'number.min': 'A faixa de preço máxima deve ser maior ou igual à faixa de preço mínima.'
-        }),
-        area_atuacao: Joi.string().required().messages({
-            'any.required': 'A área de atuação é obrigatória.'
-        }),
-    });
-    return schema.validate(data);
+     const schema = Joi.object({
+          nome: Joi.string().required(),
+          email: Joi.string().email().required(),
+          senha: Joi.string().min(6).required(),
+          telefone: Joi.string().allow(null, '').optional(),
+     });
+     return schema.validate(data);
 };
 
 const validateMessage = (data) => {
@@ -492,34 +412,12 @@ const validateAdminUsuarioUpdate = (data) => {
     return schema.validate(data);
 };
 
-// VALIDAÇÃO DE ATUALIZAÇÃO DE PRESTADOR PELO ADMIN ATUALIZADA
 const validateAdminPrestadorUpdate = (data) => {
     const schema = Joi.object({
         nome: Joi.string().optional(),
         email: Joi.string().email().optional(),
         telefone: Joi.string().allow(null, '').optional(),
-        cpf: Joi.string().length(11).pattern(/^\d+$/).optional(),
-        data_nascimento: Joi.date().optional().less('now').custom((value, helpers) => {
-            const age = new Date().getFullYear() - new Date(value).getFullYear();
-            if (age < 18) {
-                return helpers.message('Você deve ter 18 anos ou mais para se cadastrar.');
-            }
-            return value;
-        }),
-        endereco: Joi.string().optional(),
-        certificacao: Joi.string().allow(null, '').optional(),
-        dados_bancarios: Joi.string().allow(null, '').optional(),
-        chave_pix: Joi.string().allow(null, '').optional(),
-        politica_cancelamento: Joi.string().valid('padrao', 'personalizada').optional(),
-        politica_cancelamento_personalizada: Joi.string().when('politica_cancelamento', {
-            is: 'personalizada',
-            then: Joi.string().required(),
-            otherwise: Joi.string().allow(null, '').optional()
-        }),
-        tipo_servico: Joi.string().optional(),
-        faixa_preco_min: Joi.number().min(0).optional(),
-        faixa_preco_max: Joi.number().min(Joi.ref('faixa_preco_min')).optional(),
-        area_atuacao: Joi.string().optional()
+        // Senha não é validada aqui
     }).min(1);
     return schema.validate(data);
 };
@@ -574,25 +472,13 @@ const validateUsuarioUpdate = (data) => {
     return schema.validate(data);
 };
 
-// VALIDAÇÃO DE ATUALIZAÇÃO DE PERFIL DO PRESTADOR ATUALIZADA
 const validatePrestadorUpdate = (data) => {
     const schema = Joi.object({
         nome: Joi.string().optional(),
         telefone: Joi.string().allow(null, '').optional(),
-        endereco: Joi.string().optional(),
-        certificacao: Joi.string().allow(null, '').optional(),
-        dados_bancarios: Joi.string().allow(null, '').optional(),
-        chave_pix: Joi.string().allow(null, '').optional(),
-        politica_cancelamento: Joi.string().valid('padrao', 'personalizada').optional(),
-        politica_cancelamento_personalizada: Joi.string().when('politica_cancelamento', {
-            is: 'personalizada',
-            then: Joi.string().required(),
-            otherwise: Joi.string().allow(null, '').optional()
-        }),
-        tipo_servico: Joi.string().optional(),
-        faixa_preco_min: Joi.number().min(0).optional(),
-        faixa_preco_max: Joi.number().min(Joi.ref('faixa_preco_min')).optional(),
-        area_atuacao: Joi.string().optional()
+        especialidades: Joi.array().items(Joi.string()).optional(),
+        area_atuacao: Joi.string().allow(null, '').optional(),
+        disponibilidade: Joi.string().allow(null, '').optional()
     }).min(1); // Pelo menos um campo deve ser fornecido para atualização
     return schema.validate(data);
 };
@@ -1401,137 +1287,62 @@ app.post('/cadastrar', uploadProfilePicture, async (req, res, next) => {
     }
 });
 
-// Cadastro de Prestador (ATUALIZADO PARA NOVOS CAMPOS E MÚLTIPLOS UPLOADS)
-app.post('/cadastrar-prestador', uploadPrestadorDocuments, async (req, res, next) => {
+// Cadastro de Prestador
+app.post('/cadastrar-prestador', uploadProfilePicture, async (req, res, next) => {
     console.log('[BACKEND] Recebida requisição POST /cadastrar-prestador');
-    const {
-        nome,
-        telefone,
-        email,
-        senha,
-        cpf,
-        data_nascimento,
-        endereco,
-        certificacao,
-        dados_bancarios,
-        chave_pix,
-        politica_cancelamento,
-        politica_cancelamento_personalizada,
-        tipo_servico,
-        faixa_preco_min,
-        faixa_preco_max,
-        area_atuacao
-    } = req.body;
+    const { nome, telefone, email, senha } = req.body;
+    const fotoPerfil = req.file;
 
-    const selfieDocumentoFile = req.files && req.files['selfie_documento'] ? req.files['selfie_documento'][0] : null;
-    const idDocumentoFile = req.files && req.files['documento_identificacao'] ? req.files['documento_identificacao'][0] : null;
-
-    // Valida os dados do corpo da requisição com Joi
-    const { error, value } = validateCadastroPrestador({
-        nome,
-        telefone,
-        email,
-        senha,
-        cpf,
-        data_nascimento,
-        endereco,
-        certificacao,
-        dados_bancarios,
-        chave_pix,
-        politica_cancelamento,
-        politica_cancelamento_personalizada,
-        tipo_servico,
-        faixa_preco_min,
-        faixa_preco_max,
-        area_atuacao
-    });
-
+    const { error, value } = validateCadastroPrestador({ nome, telefone, email, senha });
     if (error) {
         console.error("[BACKEND] Erro de validação Joi no cadastro de prestador:", error.details);
-        // Apaga os ficheiros carregados se a validação falhar
-        if (selfieDocumentoFile) {
-            fs.unlink(path.join(__dirname, selfieDocumentoFile.path), (err) => { if (err) console.error(`[BACKEND] Erro ao excluir ficheiro temporário ${selfieDocumentoFile.path}:`, err); });
-        }
-        if (idDocumentoFile) {
-            fs.unlink(path.join(__dirname, idDocumentoFile.path), (err) => { if (err) console.error(`[BACKEND] Erro ao excluir ficheiro temporário ${idDocumentoFile.path}:`, err); });
+        if (fotoPerfil) {
+            const filePath = path.join(__dirname, fotoPerfil.path);
+            fs.unlink(filePath, (err) => {
+                if (err) console.error(`[BACKEND] Erro ao excluir arquivo temporário ${filePath} após erro de validação:`, err);
+            });
         }
         return res.status(400).json({ message: error.details[0].message });
     }
 
-    // Verifica se os ficheiros obrigatórios foram enviados após a validação Joi
-    if (!selfieDocumentoFile || !idDocumentoFile) {
-        console.warn("[BACKEND] Cadastro Prestador: Ficheiros de documento ausentes.");
-        return res.status(400).json({ message: 'Ambas as fotos de documento (selfie com documento e documento de identificação) são obrigatórias.' });
-    }
+     try {
+          const prestadorExistente = await Prestador.findOne({ email: value.email });
+          if (prestadorExistente) {
+               console.warn(`[BACKEND] Tentativa de cadastrar prestador com email duplicado: ${value.email}`);
+               if (fotoPerfil) {
+                    const filePath = path.join(__dirname, fotoPerfil.path);
+                    fs.unlink(filePath, (err) => {
+                       if (err) console.error(`[BACKEND] Erro ao excluir arquivo temporário ${filePath} após email duplicado:`, err);
+                    });
+               }
+               return res.status(400).json({ message: 'Email já cadastrado como prestador.' });
+          }
 
-    try {
-        const prestadorExistente = await Prestador.findOne({ email: value.email });
-        if (prestadorExistente) {
-            console.warn(`[BACKEND] Tentativa de cadastrar prestador com email duplicado: ${value.email}`);
-            // Apaga os ficheiros carregados se o email for duplicado
-            if (selfieDocumentoFile) {
-                fs.unlink(path.join(__dirname, selfieDocumentoFile.path), (err) => { if (err) console.error(`[BACKEND] Erro ao excluir ficheiro temporário ${selfieDocumentoFile.path}:`, err); });
-            }
-            if (idDocumentoFile) {
-                fs.unlink(path.join(__dirname, idDocumentoFile.path), (err) => { if (err) console.error(`[BACKEND] Erro ao excluir ficheiro temporário ${idDocumentoFile.path}:`, err); });
-            }
-            return res.status(400).json({ message: 'Email já cadastrado como prestador.' });
-        }
+          const senhaHash = await bcrypt.hash(value.senha, 10);
+          const novoPrestador = new Prestador({
+               nome: value.nome,
+               email: value.email,
+               senha: senhaHash,
+               telefone: value.telefone,
+               foto_perfil: fotoPerfil ? fotoPerfil.path : null
+            });
+          await novoPrestador.save();
 
-        // Verifica CPF duplicado
-        const cpfExistente = await Prestador.findOne({ cpf: value.cpf });
-        if (cpfExistente) {
-            console.warn(`[BACKEND] Tentativa de cadastrar prestador com CPF duplicado: ${value.cpf}`);
-            // Apaga os ficheiros carregados se o CPF for duplicado
-            if (selfieDocumentoFile) {
-                fs.unlink(path.join(__dirname, selfieDocumentoFile.path), (err) => { if (err) console.error(`[BACKEND] Erro ao excluir ficheiro temporário ${selfieDocumentoFile.path}:`, err); });
-            }
-            if (idDocumentoFile) {
-                fs.unlink(path.join(__dirname, idDocumentoFile.path), (err) => { if (err) console.error(`[BACKEND] Erro ao excluir ficheiro temporário ${idDocumentoFile.path}:`, err); });
-            }
-            return res.status(400).json({ message: 'CPF já cadastrado.' });
-        }
-
-        const senhaHash = await bcrypt.hash(value.senha, 10);
-        const novoPrestador = new Prestador({
-            nome: value.nome,
-            email: value.email,
-            senha: senhaHash,
-            cpf: value.cpf,
-            data_nascimento: value.data_nascimento,
-            telefone: value.telefone,
-            endereco: value.endereco,
-            foto_perfil: null, // Pode ser null ou usar a selfie_documento como foto de perfil principal
-            selfie_documento: selfieDocumentoFile.path,
-            documento_identificacao: idDocumentoFile.path,
-            certificacao: value.certificacao,
-            dados_bancarios: value.dados_bancarios,
-            chave_pix: value.chave_pix,
-            politica_cancelamento: value.politica_cancelamento,
-            politica_cancelamento_personalizada: value.politica_cancelamento_personalizada,
-            tipo_servico: value.tipo_servico,
-            faixa_preco_min: value.faixa_preco_min,
-            faixa_preco_max: value.faixa_preco_max,
-            area_atuacao: value.area_atuacao.split(',').map(s => s.trim()).filter(s => s).join(',') // Garante formato consistente
-        });
-        await novoPrestador.save();
-
-        console.log(`[BACKEND] Prestador registado com sucesso: ${novoPrestador.email}`);
-        res.status(201).json({ message: 'Registo de prestador realizado com sucesso! Faça login.' });
-    } catch (error) {
-        console.error('[BACKEND] Erro ao registar prestador:', error);
-        // Apaga os ficheiros carregados em caso de erro na base de dados
-        if (selfieDocumentoFile) {
-            fs.unlink(path.join(__dirname, selfieDocumentoFile.path), (err) => { if (err) console.error(`[BACKEND] Erro ao excluir ficheiro temporário ${selfieDocumentoFile.path}:`, err); });
-        }
-        if (idDocumentoFile) {
-            fs.unlink(path.join(__dirname, idDocumentoFile.path), (err) => { if (err) console.error(`[BACKEND] Erro ao excluir ficheiro temporário ${idDocumentoFile.path}:`, err); });
-        }
-        if (error.code === 11000) {
-            return res.status(400).json({ message: 'Email ou CPF já registado.' });
-        }
-        next(error);
-    }
+          console.log(`[BACKEND] Prestador cadastrado com sucesso: ${novoPrestador.email}`);
+          res.status(201).json({ message: 'Cadastro de prestador realizado com sucesso! Faça login.' });
+     } catch (error) {
+          console.error('[BACKEND] Erro ao cadastrar prestador:', error);
+          if (fotoPerfil) {
+               const filePath = path.join(__dirname, fotoPerfil.path);
+               fs.unlink(filePath, (err) => {
+                  if (err) console.error(`[BACKEND] Erro ao excluir arquivo temporário ${filePath} após erro no banco de dados:`, err);
+               });
+          }
+           if (error.code === 11000) {
+                return res.status(400).json({ message: 'Email já cadastrado.' });
+           }
+          next(error);
+     }
 });
 
 
@@ -1581,7 +1392,7 @@ app.post('/login', async (req, res, next) => {
     }
 });
 
-// Login de Prestador (ATUALIZADO PARA RETORNAR NOVOS CAMPOS)
+// Login de Prestador
 app.post('/login-prestador', async (req, res, next) => {
     console.log('[BACKEND] Recebida requisição POST /login-prestador');
     const { email, senha } = req.body;
@@ -1614,22 +1425,12 @@ app.post('/login-prestador', async (req, res, next) => {
                  _id: prestador._id,
                  nome: prestador.nome,
                  email: prestador.email,
-                 telefone: prestador.telefone,
-                 cpf: prestador.cpf, // NOVO
-                 data_nascimento: prestador.data_nascimento, // NOVO
-                 endereco: prestador.endereco, // NOVO
-                 certificacao: prestador.certificacao, // NOVO
-                 dados_bancarios: prestador.dados_bancarios, // NOVO
-                 chave_pix: prestador.chave_pix, // NOVO
-                 politica_cancelamento: prestador.politica_cancelamento, // NOVO
-                 politica_cancelamento_personalizada: prestador.politica_cancelamento_personalizada, // NOVO
-                 tipo_servico: prestador.tipo_servico,
-                 faixa_preco_min: prestador.faixa_preco_min,
-                 faixa_preco_max: prestador.faixa_preco_max,
-                 area_atuacao: prestador.area_atuacao,
-                 foto_perfil_url: prestador.foto_perfil ? `${BACKEND_BASE_URL}/${prestador.foto_perfil.replace(/\\/g, '/')}` : null,
-                 selfie_documento_url: prestador.selfie_documento ? `${BACKEND_BASE_URL}/${prestador.selfie_documento.replace(/\\/g, '/')}` : null, // NOVO
-                 documento_identificacao_url: prestador.documento_identificacao ? `${BACKEND_BASE_URL}/${prestador.documento_identificacao.replace(/\\/g, '/')}` : null, // NOVO
+                 telefone: prestador.telefone, // Incluído telefone
+                 especialidades: prestador.especialidades, // Incluído especialidades
+                 area_atuacao: prestador.area_atuacao, // Incluído area_atuacao
+                 disponibilidade: prestador.disponibilidade, // Incluído disponibilidade
+                 // Usa BACKEND_BASE_URL para construir a URL completa da foto
+                 foto_perfil_url: prestador.foto_perfil ? `${BACKEND_BASE_URL}/${prestador.foto_perfil.replace(/\\/g, '/')}` : null
             }
         });
     } catch (error) {
@@ -1639,7 +1440,7 @@ app.post('/login-prestador', async (req, res, next) => {
 });
 
 
-// Perfil do Usuário/Prestador logado (MODIFICADA para incluir isAdmin e novos campos do prestador)
+// Perfil do Usuário/Prestador logado (MODIFICADA para incluir isAdmin)
 app.get('/perfil', authMiddleware, async (req, res, next) => {
     console.log(`[BACKEND] Recebida requisição GET /perfil para usuário ${req.user.id} (${req.user.tipo})`);
     try {
@@ -1656,23 +1457,15 @@ app.get('/perfil', authMiddleware, async (req, res, next) => {
             // --- FIM NOVO CONSOLE.LOG ---
             res.status(200).json({ usuario: { ...usuario.toObject(), foto_perfil_url: fotoPerfilUrl }, tipo: 'usuario' });
         } else if (req.user.tipo === 'prestador') {
-             const prestador = await Prestador.findById(req.user.id).select('_id nome email telefone foto_perfil cpf data_nascimento endereco certificacao dados_bancarios chave_pix politica_cancelamento politica_cancelamento_personalizada tipo_servico faixa_preco_min faixa_preco_max area_atuacao selfie_documento documento_identificacao'); // Adicionado campos específicos do prestador
+             const prestador = await Prestador.findById(req.user.id).select('_id nome email telefone foto_perfil especialidades area_atuacao disponibilidade'); // Adicionado campos específicos do prestador
              if (!prestador) {
                   console.warn(`[BACKEND] Perfil: Prestador ${req.user.id} não encontrado.`);
                   return res.status(404).json({ message: 'Prestador não encontrado.' });
              }
              // Usa BACKEND_BASE_URL para construir a URL completa da foto
              const fotoPerfilUrl = prestador.foto_perfil ? `${BACKEND_BASE_URL}/${prestador.foto_perfil.replace(/\\/g, '/')}` : null;
-             const selfieDocumentoUrl = prestador.selfie_documento ? `${BACKEND_BASE_URL}/${prestador.selfie_documento.replace(/\\/g, '/')}` : null;
-             const documentoIdentificacaoUrl = prestador.documento_identificacao ? `${BACKEND_BASE_URL}/${prestador.documento_identificacao.replace(/\\/g, '/')}` : null;
-
              console.log(`[BACKEND] Perfil do prestador ${req.user.id} encontrado.`);
-             res.status(200).json({ prestador: {
-                ...prestador.toObject(),
-                foto_perfil_url: fotoPerfilUrl,
-                selfie_documento_url: selfieDocumentoUrl,
-                documento_identificacao_url: documentoIdentificacaoUrl
-             }, tipo: 'prestador' });
+             res.status(200).json({ prestador: { ...prestador.toObject(), foto_perfil_url: fotoPerfilUrl }, tipo: 'prestador' });
         } else {
             console.warn(`[BACKEND] Perfil: Tipo de usuário no token desconhecido: ${req.user.tipo}`);
             return res.status(400).json({ message: 'Tipo de usuário no token desconhecido.' });
@@ -1722,23 +1515,10 @@ app.put('/perfil-usuario', authMiddlewareUsuario, async (req, res, next) => {
     }
 });
 
-// --- NOVA ROTA: Atualizar perfil do PRESTADOR logado (ATUALIZADA PARA NOVOS CAMPOS) ---
+// --- NOVA ROTA: Atualizar perfil do PRESTADOR logado ---
 app.put('/perfil-prestador', authMiddlewarePrestador, async (req, res, next) => {
     console.log(`[BACKEND] Recebida requisição PUT /perfil-prestador para prestador ${req.user.id}`);
-    const {
-        nome,
-        telefone,
-        endereco,
-        certificacao,
-        dados_bancarios,
-        chave_pix,
-        politica_cancelamento,
-        politica_cancelamento_personalizada,
-        tipo_servico,
-        faixa_preco_min,
-        faixa_preco_max,
-        area_atuacao
-    } = req.body;
+    const { nome, telefone, especialidades, area_atuacao, disponibilidade } = req.body;
 
     const { error, value } = validatePrestadorUpdate(req.body);
     if (error) {
@@ -1756,30 +1536,15 @@ app.put('/perfil-prestador', authMiddlewarePrestador, async (req, res, next) => 
         // Atualiza os campos permitidos
         if (value.nome !== undefined) prestador.nome = value.nome;
         if (value.telefone !== undefined) prestador.telefone = value.telefone;
-        if (value.endereco !== undefined) prestador.endereco = value.endereco;
-        if (value.certificacao !== undefined) prestador.certificacao = value.certificacao;
-        if (value.dados_bancarios !== undefined) prestador.dados_bancarios = value.dados_bancarios;
-        if (value.chave_pix !== undefined) prestador.chave_pix = value.chave_pix;
-        if (value.politica_cancelamento !== undefined) prestador.politica_cancelamento = value.politica_cancelamento;
-        if (value.politica_cancelamento_personalizada !== undefined) prestador.politica_cancelamento_personalizada = value.politica_cancelamento_personalizada;
-        if (value.tipo_servico !== undefined) prestador.tipo_servico = value.tipo_servico;
-        if (value.faixa_preco_min !== undefined) prestador.faixa_preco_min = value.faixa_preco_min;
-        if (value.faixa_preco_max !== undefined) prestador.faixa_preco_max = value.faixa_preco_max;
-        if (value.area_atuacao !== undefined) prestador.area_atuacao = value.area_atuacao.split(',').map(s => s.trim()).filter(s => s).join(',');
+        if (value.especialidades !== undefined) prestador.especialidades = value.especialidades;
+        if (value.area_atuacao !== undefined) prestador.area_atuacao = value.area_atuacao;
+        if (value.disponibilidade !== undefined) prestador.disponibilidade = value.disponibilidade;
 
         await prestador.save();
 
-        // Retorna o objeto de prestador atualizado, incluindo as URLs das fotos
+        // Retorna o objeto de prestador atualizado, incluindo a URL da foto de perfil
         const fotoPerfilUrl = prestador.foto_perfil ? `${BACKEND_BASE_URL}/${prestador.foto_perfil.replace(/\\/g, '/')}` : null;
-        const selfieDocumentoUrl = prestador.selfie_documento ? `${BACKEND_BASE_URL}/${prestador.selfie_documento.replace(/\\/g, '/')}` : null;
-        const documentoIdentificacaoUrl = prestador.documento_identificacao ? `${BACKEND_BASE_URL}/${prestador.documento_identificacao.replace(/\\/g, '/')}` : null;
-
-        const updatedPrestador = {
-            ...prestador.toObject(),
-            foto_perfil_url: fotoPerfilUrl,
-            selfie_documento_url: selfieDocumentoUrl,
-            documento_identificacao_url: documentoIdentificacaoUrl
-        };
+        const updatedPrestador = { ...prestador.toObject(), foto_perfil_url: fotoPerfilUrl };
         delete updatedPrestador.senha; // Não retorna a senha
 
         console.log(`[BACKEND] Perfil do prestador ${req.user.id} atualizado com sucesso.`);
@@ -1799,8 +1564,8 @@ app.post('/upload-foto-perfil', authMiddleware, uploadProfilePicture, async (req
     const fotoPerfil = req.file;
 
     if (!fotoPerfil) {
-        console.warn('[BACKEND] Upload Foto Perfil: Nenhum ficheiro de foto enviado.');
-        return res.status(400).json({ message: 'Nenhum ficheiro de foto enviado.' });
+        console.warn('[BACKEND] Upload Foto Perfil: Nenhum arquivo de foto enviado.');
+        return res.status(400).json({ message: 'Nenhum arquivo de foto enviado.' });
     }
 
     try {
@@ -1811,10 +1576,10 @@ app.post('/upload-foto-perfil', authMiddleware, uploadProfilePicture, async (req
             userModel = Prestador;
         } else {
             console.warn(`[BACKEND] Upload Foto Perfil: Tipo de usuário no token desconhecido: ${req.user.tipo}`);
-            // Exclui o ficheiro temporário
+            // Exclui o arquivo temporário
             const filePath = path.join(__dirname, fotoPerfil.path);
             fs.unlink(filePath, (err) => {
-                if (err) console.error(`[BACKEND] Erro ao excluir ficheiro temporário ${filePath}:`, err);
+                if (err) console.error(`[BACKEND] Erro ao excluir arquivo temporário ${filePath}:`, err);
             });
             return res.status(400).json({ message: 'Tipo de usuário não suportado para upload de foto de perfil.' });
         }
@@ -1822,10 +1587,10 @@ app.post('/upload-foto-perfil', authMiddleware, uploadProfilePicture, async (req
         const user = await userModel.findById(req.user.id);
         if (!user) {
             console.warn(`[BACKEND] Upload Foto Perfil: Usuário/Prestador ${req.user.id} não encontrado.`);
-            // Exclui o ficheiro temporário
+            // Exclui o arquivo temporário
             const filePath = path.join(__dirname, fotoPerfil.path);
             fs.unlink(filePath, (err) => {
-                if (err) console.error(`[BACKEND] Erro ao excluir ficheiro temporário ${filePath} após usuário não encontrado:`, err);
+                if (err) console.error(`[BACKEND] Erro ao excluir arquivo temporário ${filePath} após usuário não encontrado:`, err);
             });
             return res.status(404).json({ message: 'Usuário ou Prestador não encontrado.' });
         }
@@ -1853,11 +1618,11 @@ app.post('/upload-foto-perfil', authMiddleware, uploadProfilePicture, async (req
 
     } catch (error) {
         console.error('[BACKEND] Erro ao fazer upload da foto de perfil:', error);
-        // Em caso de erro, tenta excluir o ficheiro temporário
+        // Em caso de erro, tenta excluir o arquivo temporário
         if (fotoPerfil) {
             const filePath = path.join(__dirname, fotoPerfil.path);
             fs.unlink(filePath, (err) => {
-                if (err) console.error(`[BACKEND] Erro ao excluir ficheiro temporário ${filePath}:`, err);
+                if (err) console.error(`[BACKEND] Erro ao excluir arquivo temporário ${filePath}:`, err);
             });
         }
         next(error);
@@ -2052,8 +1817,8 @@ app.get('/api/notifications/:userType', authMiddleware, async (req, res, next) =
 
     // Garante que o userType na URL corresponde ao tipo do usuário logado
     if (req.user.tipo !== userType) {
-        console.warn(`[BACKEND] Notificações: Usuário ${req.user.id} (${req.user.tipo}) tentou aceder a notificações de tipo ${userType}.`);
-        return res.status(403).json({ message: 'Você não tem permissão para aceder a este tipo de notificação.' });
+        console.warn(`[BACKEND] Notificações: Usuário ${req.user.id} (${req.user.tipo}) tentou acessar notificações de tipo ${userType}.`);
+        return res.status(403).json({ message: 'Você não tem permissão para acessar este tipo de notificação.' });
     }
 
     try {
@@ -2119,7 +1884,7 @@ app.post('/api/chat', async (req, res) => {
 
     if (!GEMINI_API_KEY || !genAI) {
         console.error("[BACKEND] Erro: GEMINI_API_KEY não configurada no servidor.");
-        return res.status(500).json({ message: "Erro na IA: Chave da API não configurada no servidor. Contacte o suporte." });
+        return res.status(500).json({ message: "Erro na IA: Chave da API não configurada no servidor. Contate o suporte." });
     }
 
     if (!chatHistory || !Array.isArray(chatHistory) || chatHistory.length === 0) {
@@ -2157,7 +1922,7 @@ app.post('/api/gemini/generate-description', authMiddlewareUsuarioOuPrestador, a
 
     if (!GEMINI_API_KEY || !genAI) {
         console.error("[BACKEND] Erro: GEMINI_API_KEY não configurada no servidor.");
-        return res.status(500).json({ message: "Erro na IA: Chave da API não configurada no servidor. Contacte o suporte." });
+        return res.status(500).json({ message: "Erro na IA: Chave da API não configurada no servidor. Contate o suporte." });
     }
 
     if (!userInput || userInput.length < 5) {
@@ -2167,7 +1932,7 @@ app.post('/api/gemini/generate-description', authMiddlewareUsuarioOuPrestador, a
     try {
         const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
         // PROMPT LAPIDADO: Mais conciso e focado na descrição do serviço
-        const prompt = `Com base na seguinte solicitação do utilizador, gere uma descrição concisa e detalhada do serviço que ele precisa. O tom deve ser profissional e informativo. Responda apenas com a descrição detalhada, focando no problema a ser resolvido e no resultado esperado, sem ser um manual de instruções para o prestador. Solicitação: "${userInput}"`;
+        const prompt = `Com base na seguinte solicitação do usuário, gere uma descrição concisa e detalhada do serviço que ele precisa. O tone deve ser profissional e informativo. Responda apenas com a descrição detalhada, focando no problema a ser resolvido e no resultado esperado, sem ser um manual de instruções para o prestador. Solicitação: "${userInput}"`;
 
         const result = await model.generateContent(prompt);
         const response = await result.response;
@@ -2189,7 +1954,7 @@ app.post('/api/gemini/recommendations', authMiddlewareUsuario, async (req, res) 
 
     if (!GEMINI_API_KEY || !genAI) {
         console.error("[BACKEND] Erro: GEMINI_API_KEY não configurada no servidor.");
-        return res.status(500).json({ message: "Erro na IA: Chave da API não configurada no servidor. Contacte o suporte." });
+        return res.status(500).json({ message: "Erro na IA: Chave da API não configurada no servidor. Contate o suporte." });
     }
 
     if (!previousServiceNames || !allServiceNames) {
@@ -2198,7 +1963,7 @@ app.post('/api/gemini/recommendations', authMiddlewareUsuario, async (req, res) 
 
     try {
         const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-        const prompt = `Dado o histórico de serviços que o utilizador solicitou: "${previousServiceNames}", e a lista de todos os serviços disponíveis: "${allServiceNames}", sugira 3 a 5 novos serviços que o utilizador possa ter interesse. Foque em serviços relacionados aos seus interesses passados ou serviços complementares. Forneça apenas os nomes dos serviços recomendados como um array JSON de strings.`;
+        const prompt = `Dado o histórico de serviços que o usuário solicitou: "${previousServiceNames}", e a lista de todos os serviços disponíveis: "${allServiceNames}", sugira 3 a 5 novos serviços que o usuário possa ter interesse. Foque em serviços relacionados aos seus interesses passados ou serviços complementares. Forneça apenas os nomes dos serviços recomendados como um array JSON de strings.`;
 
         const chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
         const payload = {
@@ -2233,7 +1998,7 @@ app.post('/api/gemini/smart-filter', authMiddlewareUsuario, async (req, res) => 
 
     if (!GEMINI_API_KEY || !genAI) {
         console.error("[BACKEND] Erro: GEMINI_API_KEY não configurada no servidor.");
-        return res.status(500).json({ message: "Erro na IA: Chave da API não configurada no servidor. Contacte o suporte." });
+        return res.status(500).json({ message: "Erro na IA: Chave da API não configurada no servidor. Contate o suporte." });
     }
 
     if (!query || query.length < 3) {
@@ -2242,7 +2007,7 @@ app.post('/api/gemini/smart-filter', authMiddlewareUsuario, async (req, res) => 
 
     try {
         const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-        const prompt = `Dada a consulta de busca do utilizador, extraia nomes de serviços relevantes, categorias e nomes de prestadores. Responda no formato JSON com as chaves "service_names", "categories", "provider_names" como arrays de strings. Se nenhum termo específico for encontrado para uma chave, retorne um array vazio. Consulta: "${query}"`;
+        const prompt = `Dada a consulta de busca do usuário, extraia nomes de serviços relevantes, categorias e nomes de prestadores. Responda no formato JSON com as chaves "service_names", "categories", "provider_names" como arrays de strings. Se nenhum termo específico for encontrado para uma chave, retorne um array vazio. Consulta: "${query}"`;
 
         const chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
         const payload = {
@@ -2502,7 +2267,7 @@ app.post('/forgot-password', async (req, res, next) => {
             subject: 'WYN - Redefinição de Senha',
             text: `Você está recebendo este email porque você (ou alguém) solicitou a redefinição da senha da sua conta.\n\n`
                   + `Por favor, clique no link a seguir, ou cole-o no seu navegador para completar o processo:\n\n`
-                  + `${resetUrl}\n\n`
+                  + `${resetUrl}\n\n` // CORREÇÃO AQUI: Removido o backtick extra
                   + `Se você não solicitou isso, por favor ignore este email e sua senha permanecerá inalterada.\n`
                   + `Este link expirará em 1 hora.`
         };
@@ -2542,7 +2307,7 @@ app.post('/reset-password', async (req, res, next) => {
              user = await Prestador.findOne({
                  resetPasswordToken: token,
                  resetPasswordExpires: { $gt: Date.now() }
-             });
+             }); // <-- CORREÇÃO AQUI: Fechamento do parêntese para Prestador.findOne
              userType = 'prestador';
              if (!user) {
                  console.warn('[BACKEND] Reset Password: Token de redefinição inválido ou expirado.');
@@ -2561,7 +2326,7 @@ app.post('/reset-password', async (req, res, next) => {
             from: process.env.EMAIL_USER,
             subject: 'Sua senha WYN foi redefinida',
             text: `Olá,\n\nEste email confirma que a senha da sua conta WYN foi redefinida com sucesso.\n\n`
-                  + `Se você não redefiniu sua senha, por favor, entre em contacto connosco imediatamente.`
+                  + `Se você não redefiniu sua senha, por favor, entre em contato conosco imediatamente.`
         };
          await transporter.sendMail(mailOptions);
          console.log(`[BACKEND] Reset Password: Email de confirmação de redefinição enviado para ${user.email}.`);
@@ -2626,7 +2391,7 @@ app.post('/prestador/servicos-oferecidos', authMiddlewarePrestador, async (req, 
          if (error.code === 11000) {
              // Esta verificação de duplicidade pode precisar ser mais sofisticada
              // para verificar se é o mesmo nome DESTE prestador
-             return res.status(400).json({ message: 'Este serviço já parece estar registado.' });
+             return res.status(400).json({ message: 'Este serviço já parece estar cadastrado.' });
          }
         next(error);
     }
@@ -2648,7 +2413,7 @@ app.get('/prestador/servicos-oferecidos/:id', authMiddlewarePrestador, async (re
 
         if (!servico) {
              console.warn(`[BACKEND] Detalhes Serviço Oferecido: Serviço oferecido ${id} não encontrado para o prestador ${prestadorId} ou sem permissão.`);
-            return res.status(404).json({ message: 'Serviço oferecido não encontrado ou você não tem permissão para acedê-lo.' });
+            return res.status(404).json({ message: 'Serviço oferecido não encontrado ou você não tem permissão para acessá-lo.' });
         }
 
         console.log(`[BACKEND] Detalhes do serviço oferecido ${id} encontrados.`);
@@ -2706,7 +2471,7 @@ app.put('/prestador/servicos-oferecidos/:id', authMiddlewarePrestador, async (re
          if (error.code === 11000) {
               // Esta verificação de duplicidade pode precisar ser mais sofisticada
              // para verificar se é o mesmo nome DESTE prestador
-             return res.status(400).json({ message: 'Este serviço já parece estar registado.' });
+             return res.status(400).json({ message: 'Este serviço já parece estar cadastrado.' });
          }
         next(error);
     }
@@ -2728,11 +2493,11 @@ app.delete('/prestador/servicos-oferecidos/:id', authMiddlewarePrestador, async 
 
         if (!servicoDeletado) {
             console.warn(`[BACKEND] Deletar Serviço Oferecido: Serviço oferecido ${id} não encontrado para o prestador ${prestadorId} ou sem permissão.`);
-            return res.status(404).json({ message: 'Serviço oferecido não encontrado ou você não tem permissão para apagá-lo.' });
+            return res.status(404).json({ message: 'Serviço oferecido não encontrado ou você não tem permissão para deletá-lo.' });
         }
 
-        console.log(`[BACKEND] Serviço oferecido ${id} apagado com sucesso.`);
-        res.status(200).json({ message: 'Serviço oferecido apagado com sucesso!' });
+        console.log(`[BACKEND] Serviço oferecido ${id} deletado com sucesso.`);
+        res.status(200).json({ message: 'Serviço oferecido deletado com sucesso!' });
 
     } catch (error) {
         console.error('[BACKEND] Erro ao deletar serviço oferecido:', error);
@@ -2810,8 +2575,8 @@ app.get('/prestador/disponibilidade/:prestadorId', authMiddlewarePrestador, asyn
 
         // Verifica se o ID na URL corresponde ao ID do prestador logado
         if (req.user.id !== prestadorId) {
-            console.warn(`[BACKEND] Disponibilidade: Prestador ${req.user.id} tentou aceder à disponibilidade de outro prestador (${prestadorId}).`);
-            return res.status(403).json({ message: 'Você não tem permissão para aceder à disponibilidade de outro prestador.' });
+            console.warn(`[BACKEND] Disponibilidade: Prestador ${req.user.id} tentou acessar disponibilidade de outro prestador (${prestadorId}).`);
+            return res.status(403).json({ message: 'Você não tem permissão para acessar a disponibilidade de outro prestador.' });
         }
 
         if (!mongoose.Types.ObjectId.isValid(prestadorId)) {
@@ -2993,8 +2758,8 @@ app.delete('/prestador/disponibilidade/:prestadorId/periodo/:periodoId', authMid
 
           // Verifica se os IDs correspondem ao prestador logado
           if (req.user.id !== prestadorId) {
-               console.warn(`[BACKEND] Período Indisponibilidade: Prestador ${req.user.id} tentou apagar período de outro prestador (${prestadorId}).`);
-               return res.status(403).json({ message: 'Você não tem permissão para apagar períodos de indisponibilidade de outro prestador.' });
+               console.warn(`[BACKEND] Período Indisponibilidade: Prestador ${req.user.id} tentou deletar período de outro prestador (${prestadorId}).`);
+               return res.status(403).json({ message: 'Você não tem permissão para deletar períodos de indisponibilidade de outro prestador.' });
           }
 
           if (!mongoose.Types.ObjectId.isValid(prestadorId) || !mongoose.Types.ObjectId.isValid(periodoId)) {
@@ -3020,7 +2785,7 @@ app.delete('/prestador/disponibilidade/:prestadorId/periodo/:periodoId', authMid
 
           await disponibilidade.save();
 
-          console.log(`[BACKEND] Período de indisponibilidade ${periodoId} apagado para o prestador ${prestadorId}.`);
+          console.log(`[BACKEND] Período de indisponibilidade ${periodoId} deletado para o prestador ${prestadorId}.`);
           res.status(200).json({ message: 'Período de indisponibilidade excluído com sucesso!' });
 
      } catch (error) {
@@ -3034,15 +2799,15 @@ app.delete('/prestador/disponibilidade/:prestadorId/periodo/:periodoId', authMid
 
 // --- NOVAS ROTAS PARA O DASHBOARD ADMIN ---
 
-// Rota para contar todos os utilizadores (ADMIN)
+// Rota para contar todos os usuários (ADMIN)
 app.get('/admin/count/usuarios', adminAuthMiddleware, async (req, res, next) => {
     try {
-        console.log('[BACKEND] ADMIN: Contando utilizadores...');
+        console.log('[BACKEND] ADMIN: Contando usuários...');
         const total = await Usuario.countDocuments();
-        console.log(`[BACKEND] ADMIN: Total de utilizadores: ${total}`);
+        console.log(`[BACKEND] ADMIN: Total de usuários: ${total}`);
         res.status(200).json({ total });
     } catch (error) {
-        console.error('[BACKEND] ADMIN: Erro ao contar utilizadores:', error);
+        console.error('[BACKEND] ADMIN: Erro ao contar usuários:', error);
         next(error);
     }
 });
@@ -3124,44 +2889,44 @@ app.get('/admin/stats/servicos-por-status', adminAuthMiddleware, async (req, res
 });
 
 
-// Rota para listar todos os utilizadores (ADMIN)
+// Rota para listar todos os usuários (ADMIN)
 app.get('/admin/usuarios', adminAuthMiddleware, async (req, res, next) => {
     try {
-        console.log('[BACKEND] ADMIN: Listando utilizadores...');
+        console.log('[BACKEND] ADMIN: Listando usuários...');
         // Exclui a senha da resposta
         const usuarios = await Usuario.find({}).select('-senha');
-        console.log(`[BACKEND] ADMIN: Encontrados ${usuarios.length} utilizadores.`);
+        console.log(`[BACKEND] ADMIN: Encontrados ${usuarios.length} usuários.`);
         res.status(200).json(usuarios);
     } catch (error) {
-        console.error('[BACKEND] ADMIN: Erro ao listar utilizadores:', error);
+        console.error('[BACKEND] ADMIN: Erro ao listar usuários:', error);
         next(error);
     }
 });
 
-// Rota para obter detalhes de um utilizador específico (ADMIN)
+// Rota para obter detalhes de um usuário específico (ADMIN)
 app.get('/admin/usuarios/:id', adminAuthMiddleware, async (req, res, next) => {
     try {
-        console.log(`[BACKEND] ADMIN: Buscando detalhes do utilizador ${req.params.id}...`);
+        console.log(`[BACKEND] ADMIN: Buscando detalhes do usuário ${req.params.id}...`);
         const { id } = req.params;
          if (!mongoose.Types.ObjectId.isValid(id)) {
-              console.warn(`[BACKEND] ADMIN: Detalhes Utilizador: ID inválido recebido: ${id}`);
-              return res.status(400).json({ message: 'ID de utilizador inválido.' });
+              console.warn(`[BACKEND] ADMIN: Detalhes Usuário: ID inválido recebido: ${id}`);
+              return res.status(400).json({ message: 'ID de usuário inválido.' });
          }
         // Exclui a senha da resposta
         const usuario = await Usuario.findById(id).select('-senha');
         if (!usuario) {
-            console.warn(`[BACKEND] ADMIN: Utilizador ${id} não encontrado.`);
-            return res.status(404).json({ message: 'Utilizador não encontrado.' });
+            console.warn(`[BACKEND] ADMIN: Usuário ${id} não encontrado.`);
+            return res.status(404).json({ message: 'Usuário não encontrado.' });
         }
-        console.log(`[BACKEND] ADMIN: Detalhes do utilizador ${id} encontrados.`);
+        console.log(`[BACKEND] ADMIN: Detalhes do usuário ${id} encontrados.`);
         res.status(200).json(usuario);
     } catch (error) {
-        console.error('[BACKEND] ADMIN: Erro ao buscar detalhes do utilizador:', error);
+        console.error('[BACKEND] ADMIN: Erro ao buscar detalhes do usuário:', error);
         next(error);
     }
 });
 
-// Rota para criar um novo utilizador (ADMIN)
+// Rota para criar um novo usuário (ADMIN)
 app.post('/admin/usuarios', adminAuthMiddleware, uploadProfilePicture, async (req, res, next) => {
     console.log('[BACKEND] ADMIN: Recebida requisição POST /admin/usuarios');
     const { nome, telefone, email, senha, isAdmin } = req.body; // Admin pode definir isAdmin
@@ -3169,11 +2934,11 @@ app.post('/admin/usuarios', adminAuthMiddleware, uploadProfilePicture, async (re
 
     const { error, value } = validateCadastroUsuario({ nome, telefone, email, senha }); // Reutiliza validação básica
     if (error) {
-        console.error("[BACKEND] ADMIN: Erro de validação Joi ao criar utilizador:", error.details);
+        console.error("[BACKEND] ADMIN: Erro de validação Joi ao criar usuário:", error.details);
          if (fotoPerfil) {
               const filePath = path.join(__dirname, fotoPerfil.path);
               fs.unlink(filePath, (err) => {
-                 if (err) console.error(`[BACKEND] Erro ao excluir ficheiro temporário ${filePath} após erro de validação:`, err);
+                 if (err) console.error(`[BACKEND] Erro ao excluir arquivo temporário ${filePath} após erro de validação:`, err);
               });
          }
         return res.status(400).json({ message: error.details[0].message });
@@ -3182,14 +2947,14 @@ app.post('/admin/usuarios', adminAuthMiddleware, uploadProfilePicture, async (re
     try {
         const usuarioExistente = await Usuario.findOne({ email: value.email });
         if (usuarioExistente) {
-             console.warn(`[BACKEND] ADMIN: Tentativa de criar utilizador com email duplicado: ${value.email}`);
+             console.warn(`[BACKEND] ADMIN: Tentativa de criar usuário com email duplicado: ${value.email}`);
               if (fotoPerfil) {
                    const filePath = path.join(__dirname, fotoPerfil.path);
                    fs.unlink(filePath, (err) => {
-                      if (err) console.error(`[BACKEND] Erro ao excluir ficheiro temporário ${filePath} após email duplicado:`, err);
+                      if (err) console.error(`[BACKEND] Erro ao excluir arquivo temporário ${filePath} após email duplicado:`, err);
                    });
               }
-            return res.status(400).json({ message: 'Email já registado.' });
+            return res.status(400).json({ message: 'Email já cadastrado.' });
         }
 
         const senhaHash = await bcrypt.hash(value.senha, 10);
@@ -3203,28 +2968,28 @@ app.post('/admin/usuarios', adminAuthMiddleware, uploadProfilePicture, async (re
         });
         await novoUsuario.save();
 
-        console.log(`[BACKEND] ADMIN: Utilizador criado com sucesso: ${novoUsuario.email} (Admin: ${novoUsuario.isAdmin})`);
+        console.log(`[BACKEND] ADMIN: Usuário criado com sucesso: ${novoUsuario.email} (Admin: ${novoUsuario.isAdmin})`);
         // Exclui a senha da resposta
         const usuarioCriado = novoUsuario.toObject();
         delete usuarioCriado.senha;
-        res.status(201).json({ message: 'Utilizador criado com sucesso!', usuario: usuarioCriado });
+        res.status(201).json({ message: 'Usuário criado com sucesso!', usuario: usuarioCriado });
 
     } catch (error) {
-        console.error('[BACKEND] ADMIN: Erro ao criar utilizador:', error);
+        console.error('[BACKEND] ADMIN: Erro ao criar usuário:', error);
          if (fotoPerfil) {
               const filePath = path.join(__dirname, fotoPerfil.path);
               fs.unlink(filePath, (err) => {
-                  if (err) console.error(`[BACKEND] Erro ao excluir ficheiro temporário ${filePath} após erro no banco de dados:`, err);
+                  if (err) console.error(`[BACKEND] Erro ao excluir arquivo temporário ${filePath} após erro no banco de dados:`, err);
               });
          }
          if (error.code === 11000) {
-              return res.status(400).json({ message: 'Email já registado.' });
+              return res.status(400).json({ message: 'Email já cadastrado.' });
          }
         next(error);
     }
 });
 
-// Rota para atualizar um utilizador existente (ADMIN)
+// Rota para atualizar um usuário existente (ADMIN)
 app.put('/admin/usuarios/:id', adminAuthMiddleware, uploadProfilePicture, async (req, res, next) => {
     console.log(`[BACKEND] Recebida requisição PUT /admin/usuarios/${req.params.id}`);
     const { id } = req.params;
@@ -3232,14 +2997,14 @@ app.put('/admin/usuarios/:id', adminAuthMiddleware, uploadProfilePicture, async 
     const fotoPerfil = req.file;
 
      if (!mongoose.Types.ObjectId.isValid(id)) {
-          console.warn(`[BACKEND] ADMIN: Atualizar Utilizador: ID inválido recebido: ${id}`);
+          console.warn(`[BACKEND] ADMIN: Atualizar Usuário: ID inválido recebido: ${id}`);
           if (fotoPerfil) {
                const filePath = path.join(__dirname, fotoPerfil.path);
                fs.unlink(filePath, (err) => {
-                  if (err) console.error(`[BACKEND] Erro ao excluir ficheiro temporário ${filePath} após ID inválido:`, err);
+                  if (err) console.error(`[BACKEND] Erro ao excluir arquivo temporário ${filePath} após ID inválido:`, err);
                });
           }
-          return res.status(400).json({ message: 'ID de utilizador inválido.' });
+          return res.status(400).json({ message: 'ID de usuário inválido.' });
      }
 
     // Valida os dados recebidos para atualização (excluindo senha e foto de perfil, que são tratadas separadamente)
@@ -3249,11 +3014,11 @@ app.put('/admin/usuarios/:id', adminAuthMiddleware, uploadProfilePicture, async 
 
     const { error, value } = validateAdminUsuarioUpdate(dataToValidate);
     if (error) {
-        console.error("[BACKEND] ADMIN: Erro de validação Joi ao atualizar utilizador:", error.details);
+        console.error("[BACKEND] ADMIN: Erro de validação Joi ao atualizar usuário:", error.details);
          if (fotoPerfil) {
               const filePath = path.join(__dirname, fotoPerfil.path);
               fs.unlink(filePath, (err) => {
-                 if (err) console.error(`[BACKEND] Erro ao excluir ficheiro temporário ${filePath} após erro de validação:`, err);
+                 if (err) console.error(`[BACKEND] Erro ao excluir arquivo temporário ${filePath} após erro de validação:`, err);
               });
          }
         return res.status(400).json({ message: error.details[0].message });
@@ -3262,14 +3027,14 @@ app.put('/admin/usuarios/:id', adminAuthMiddleware, uploadProfilePicture, async 
     try {
         const usuario = await Usuario.findById(id);
         if (!usuario) {
-            console.warn(`[BACKEND] ADMIN: Utilizador ${id} não encontrado para atualização.`);
+            console.warn(`[BACKEND] ADMIN: Usuário ${id} não encontrado para atualização.`);
              if (fotoPerfil) {
                   const filePath = path.join(__dirname, fotoPerfil.path);
                   fs.unlink(filePath, (err) => {
-                     if (err) console.error(`[BACKEND] Erro ao excluir ficheiro temporário ${filePath} após utilizador não encontrado:`, err);
+                     if (err) console.error(`[BACKEND] Erro ao excluir arquivo temporário ${filePath} após usuário não encontrado:`, err);
                   });
              }
-            return res.status(404).json({ message: 'Utilizador não encontrado.' });
+            return res.status(404).json({ message: 'Usuário não encontrado.' });
         }
 
         // Atualiza os campos permitidos
@@ -3301,61 +3066,61 @@ app.put('/admin/usuarios/:id', adminAuthMiddleware, uploadProfilePicture, async 
 
         await usuario.save();
 
-        console.log(`[BACKEND] ADMIN: Utilizador ${id} atualizado com sucesso.`);
+        console.log(`[BACKEND] ADMIN: Usuário ${id} atualizado com sucesso.`);
          // Exclui a senha da resposta
          const usuarioAtualizado = usuario.toObject();
          delete usuarioAtualizado.senha;
-        res.status(200).json({ message: 'Utilizador atualizado com sucesso!', usuario: usuarioAtualizado });
+        res.status(200).json({ message: 'Usuário atualizado com sucesso!', usuario: usuarioAtualizado });
 
     } catch (error) {
-        console.error('[BACKEND] ADMIN: Erro ao atualizar utilizador:', error);
+        console.error('[BACKEND] ADMIN: Erro ao atualizar usuário:', error);
          if (error.code === 11000) {
-              return res.status(400).json({ message: 'Email já registado.' });
+              return res.status(400).json({ message: 'Email já cadastrado.' });
          }
         next(error);
     }
 });
 
-// Rota para deletar um utilizador (ADMIN)
+// Rota para deletar um usuário (ADMIN)
 app.delete('/admin/usuarios/:id', adminAuthMiddleware, async (req, res, next) => {
     try {
         console.log(`[BACKEND] Recebida requisição DELETE /admin/usuarios/${req.params.id}`);
         const { id } = req.params;
 
         if (!mongoose.Types.ObjectId.isValid(id)) {
-            console.warn(`[BACKEND] ADMIN: Deletar Utilizador: ID inválido recebido: ${id}`);
-            return res.status(400).json({ message: 'ID de utilizador inválido.' });
+            console.warn(`[BACKEND] ADMIN: Deletar Usuário: ID inválido recebido: ${id}`);
+            return res.status(400).json({ message: 'ID de usuário inválido.' });
         }
 
         // --- VERIFICAÇÕES DE SEGURANÇA ADICIONAIS (OPCIONAL) ---
         // Impedir que o admin delete a si mesmo
         if (req.user.id === id) {
-             console.warn(`[BACKEND] ADMIN: Tentativa de auto-exclusão pelo utilizador ${id}.`);
-             return res.status(400).json({ message: 'Você não pode apagar sua própria conta de administrador por aqui.' });
+             console.warn(`[BACKEND] ADMIN: Tentativa de auto-exclusão pelo usuário ${id}.`);
+             return res.status(400).json({ message: 'Você não pode deletar sua própria conta de administrador por aqui.' });
         }
          // Impedir que um admin delete outro admin (se houver múltiplos) - requer lógica mais complexa
 
         const usuarioToDelete = await Usuario.findById(id);
         if (!usuarioToDelete) {
-             console.warn(`[BACKEND] ADMIN: Utilizador ${id} não encontrado para exclusão.`);
-             return res.status(404).json({ message: 'Utilizador não encontrado.' });
+             console.warn(`[BACKEND] ADMIN: Usuário ${id} não encontrado para exclusão.`);
+             return res.status(404).json({ message: 'Usuário não encontrado.' });
         }
 
         // --- Lidar com dependências (serviços, avaliações, mensagens, etc.) ---
-        // Você precisa decidir o que acontece com os dados associados a este utilizador.
+        // Você precisa decidir o que acontece com os dados associados a este usuário.
         // Opções:
         // 1. Deletar em cascata (perigoso, pode perder muitos dados)
         // 2. Desassociar (definir usuario_id para null em serviços, avaliações, etc.)
-        // 3. Marcar como "utilizador apagado" em vez de excluir o documento
+        // 3. Marcar como "usuário deletado" em vez de excluir o documento
 
-        console.log(`[BACKEND] ADMIN: Desassociando serviços do utilizador ${id}...`);
+        console.log(`[BACKEND] ADMIN: Desassociando serviços do usuário ${id}...`);
         // Exemplo: Desassociar serviços
-        await Servico.updateMany({ usuario_id: id }, { usuario_id: null, nome_cliente: '[Utilizador Apagado]', email_cliente: '[Utilizador Apagado]' });
+        await Servico.updateMany({ usuario_id: id }, { usuario_id: null, nome_cliente: '[Usuário Deletado]', email_cliente: '[Usuário Deletado]' });
 
-        console.log(`[BACKEND] ADMIN: Deletando avaliações feitas pelo utilizador ${id}...`);
+        console.log(`[BACKEND] ADMIN: Deletando avaliações feitas pelo usuário ${id}...`);
          await Avaliacao.deleteMany({ cliente_id: id });
 
-        console.log(`[BACKEND] ADMIN: Deletando mensagens enviadas pelo utilizador ${id}...`);
+        console.log(`[BACKEND] ADMIN: Deletando mensagens enviadas pelo usuário ${id}...`);
          await Message.deleteMany({ remetente_id: id, remetente_tipo: 'usuario' });
 
         // Deleta a foto de perfil associada
@@ -3363,21 +3128,21 @@ app.delete('/admin/usuarios/:id', adminAuthMiddleware, async (req, res, next) =>
              const filePath = path.join(__dirname, usuarioToDelete.foto_perfil);
              if (fs.existsSync(filePath)) {
                   fs.unlink(filePath, (err) => {
-                      if (err) console.error(`[BACKEND] Erro ao excluir foto de perfil do utilizador ${id}:`, err);
+                      if (err) console.error(`[BACKEND] Erro ao excluir foto de perfil do usuário ${id}:`, err);
                   });
              } else {
-                  console.warn(`[BACKEND] Foto de perfil do utilizador ${id} não encontrada para exclusão: ${filePath}`);
+                  console.warn(`[BACKEND] Foto de perfil do usuário ${id} não encontrada para exclusão: ${filePath}`);
              }
         }
 
-        console.log(`[BACKEND] ADMIN: Deletando utilizador ${id}...`);
+        console.log(`[BACKEND] ADMIN: Deletando usuário ${id}...`);
         const usuarioDeletado = await Usuario.findByIdAndDelete(id);
 
-        console.log(`[BACKEND] ADMIN: Utilizador ${id} deletado com sucesso.`);
-        res.status(200).json({ message: 'Utilizador deletado com sucesso!' });
+        console.log(`[BACKEND] ADMIN: Usuário ${id} deletado com sucesso.`);
+        res.status(200).json({ message: 'Usuário deletado com sucesso!' });
 
     } catch (error) {
-        console.error('[BACKEND] ADMIN: Erro ao deletar utilizador:', error);
+        console.error('[BACKEND] ADMIN: Erro ao deletar usuário:', error);
         next(error);
     }
 });
@@ -3397,7 +3162,7 @@ app.get('/admin/prestadores', adminAuthMiddleware, async (req, res, next) => {
     }
 });
 
-// Rota para obter detalhes de um prestador específico (ADMIN) (ATUALIZADO PARA NOVOS CAMPOS)
+// Rota para obter detalhes de um prestador específico (ADMIN)
 app.get('/admin/prestadores/:id', adminAuthMiddleware, async (req, res, next) => {
     try {
         console.log(`[BACKEND] ADMIN: Buscando detalhes do prestador ${req.params.id}...`);
@@ -3406,26 +3171,14 @@ app.get('/admin/prestadores/:id', adminAuthMiddleware, async (req, res, next) =>
               console.warn(`[BACKEND] ADMIN: Detalhes Prestador: ID inválido recebido: ${id}`);
               return res.status(400).json({ message: 'ID de prestador inválido.' });
          }
-        // Exclui a senha da resposta e inclui todos os novos campos
+        // Exclui a senha da resposta
         const prestador = await Prestador.findById(id).select('-senha');
         if (!prestador) {
             console.warn(`[BACKEND] ADMIN: Prestador ${id} não encontrado.`);
             return res.status(404).json({ message: 'Prestador não encontrado.' });
         }
-
-        const fotoPerfilUrl = prestador.foto_perfil ? `${BACKEND_BASE_URL}/${prestador.foto_perfil.replace(/\\/g, '/')}` : null;
-        const selfieDocumentoUrl = prestador.selfie_documento ? `${BACKEND_BASE_URL}/${prestador.selfie_documento.replace(/\\/g, '/')}` : null;
-        const documentoIdentificacaoUrl = prestador.documento_identificacao ? `${BACKEND_BASE_URL}/${prestador.documento_identificacao.replace(/\\/g, '/')}` : null;
-
-        const prestadorData = {
-            ...prestador.toObject(),
-            foto_perfil_url: fotoPerfilUrl,
-            selfie_documento_url: selfieDocumentoUrl,
-            documento_identificacao_url: documentoIdentificacaoUrl
-        };
-
         console.log(`[BACKEND] ADMIN: Detalhes do prestador ${id} encontrados.`);
-        res.status(200).json(prestadorData);
+        res.status(200).json(prestador);
     } catch (error) {
         console.error('[BACKEND] ADMIN: Erro ao buscar detalhes do prestador:', error);
         next(error);
@@ -3444,7 +3197,7 @@ app.post('/admin/prestadores', adminAuthMiddleware, uploadProfilePicture, async 
          if (fotoPerfil) {
               const filePath = path.join(__dirname, fotoPerfil.path);
               fs.unlink(filePath, (err) => {
-                 if (err) console.error(`[BACKEND] Erro ao excluir ficheiro temporário ${filePath} após erro de validação:`, err);
+                 if (err) console.error(`[BACKEND] Erro ao excluir arquivo temporário ${filePath} após erro de validação:`, err);
               });
          }
         return res.status(400).json({ message: error.details[0].message });
@@ -3457,10 +3210,10 @@ app.post('/admin/prestadores', adminAuthMiddleware, uploadProfilePicture, async 
               if (fotoPerfil) {
                    const filePath = path.join(__dirname, fotoPerfil.path);
                    fs.unlink(filePath, (err) => {
-                      if (err) console.error(`[BACKEND] Erro ao excluir ficheiro temporário ${filePath} após email duplicado:`, err);
+                      if (err) console.error(`[BACKEND] Erro ao excluir arquivo temporário ${filePath} após email duplicado:`, err);
                    });
               }
-            return res.status(400).json({ message: 'Email já registado.' });
+            return res.status(400).json({ message: 'Email já cadastrado.' });
         }
 
         const senhaHash = await bcrypt.hash(value.senha, 10);
@@ -3484,31 +3237,30 @@ app.post('/admin/prestadores', adminAuthMiddleware, uploadProfilePicture, async 
          if (fotoPerfil) {
               const filePath = path.join(__dirname, fotoPerfil.path);
               fs.unlink(filePath, (err) => {
-                  if (err) console.error(`[BACKEND] Erro ao excluir ficheiro temporário ${filePath} após erro no banco de dados:`, err);
+                  if (err) console.error(`[BACKEND] Erro ao excluir arquivo temporário ${filePath} após erro no banco de dados:`, err);
                });
          }
          if (error.code === 11000) {
-              return res.status(400).json({ message: 'Email já registado.' });
+              return res.status(400).json({ message: 'Email já cadastrado.' });
          }
         next(error);
     }
 });
 
-// Rota para atualizar um prestador existente (ADMIN) (ATUALIZADO PARA NOVOS CAMPOS E MÚLTIPLOS UPLOADS)
-app.put('/admin/prestadores/:id', adminAuthMiddleware, uploadPrestadorDocuments, async (req, res, next) => {
+// Rota para atualizar um prestador existente (ADMIN)
+app.put('/admin/prestadores/:id', adminAuthMiddleware, uploadProfilePicture, async (req, res, next) => {
     console.log(`[BACKEND] Recebida requisição PUT /admin/prestadores/${req.params.id}`);
     const { id } = req.params;
     const updateData = req.body;
-    const selfieDocumentoFile = req.files && req.files['selfie_documento'] ? req.files['selfie_documento'][0] : null;
-    const idDocumentoFile = req.files && req.files['documento_identificacao'] ? req.files['documento_identificacao'][0] : null;
+    const fotoPerfil = req.file;
 
      if (!mongoose.Types.ObjectId.isValid(id)) {
           console.warn(`[BACKEND] ADMIN: Atualizar Prestador: ID inválido recebido: ${id}`);
-          if (selfieDocumentoFile) {
-               fs.unlink(path.join(__dirname, selfieDocumentoFile.path), (err) => { if (err) console.error(`[BACKEND] Erro ao excluir ficheiro temporário ${selfieDocumentoFile.path}:`, err); });
-          }
-          if (idDocumentoFile) {
-               fs.unlink(path.join(__dirname, idDocumentoFile.path), (err) => { if (err) console.error(`[BACKEND] Erro ao excluir ficheiro temporário ${idDocumentoFile.path}:`, err); });
+          if (fotoPerfil) {
+               const filePath = path.join(__dirname, fotoPerfil.path);
+               fs.unlink(filePath, (err) => {
+                  if (err) console.error(`[BACKEND] Erro ao excluir arquivo temporário ${filePath} após ID inválido:`, err);
+               });
           }
           return res.status(400).json({ message: 'ID de prestador inválido.' });
      }
@@ -3516,18 +3268,16 @@ app.put('/admin/prestadores/:id', adminAuthMiddleware, uploadPrestadorDocuments,
     // Valida os dados recebidos para atualização
     const dataToValidate = { ...updateData };
     delete dataToValidate.senha; // Não validar senha aqui
-    // Ficheiros são tratados separadamente, não na validação Joi para o corpo
-    delete dataToValidate.selfie_documento;
-    delete dataToValidate.documento_identificacao;
+    delete dataToValidate.foto_perfil; // Não validar foto de perfil aqui
 
     const { error, value } = validateAdminPrestadorUpdate(dataToValidate);
     if (error) {
         console.error("[BACKEND] ADMIN: Erro de validação Joi ao atualizar prestador:", error.details);
-         if (selfieDocumentoFile) {
-              fs.unlink(path.join(__dirname, selfieDocumentoFile.path), (err) => { if (err) console.error(`[BACKEND] Erro ao excluir ficheiro temporário ${selfieDocumentoFile.path}:`, err); });
-         }
-         if (idDocumentoFile) {
-              fs.unlink(path.join(__dirname, idDocumentoFile.path), (err) => { if (err) console.error(`[BACKEND] Erro ao excluir ficheiro temporário ${idDocumentoFile.path}:`, err); });
+         if (fotoPerfil) {
+              const filePath = path.join(__dirname, fotoPerfil.path);
+              fs.unlink(filePath, (err) => {
+                 if (err) console.error(`[BACKEND] Erro ao excluir arquivo temporário ${filePath} após erro de validação:`, err);
+              });
          }
         return res.status(400).json({ message: error.details[0].message });
     }
@@ -3536,45 +3286,34 @@ app.put('/admin/prestadores/:id', adminAuthMiddleware, uploadPrestadorDocuments,
         const prestador = await Prestador.findById(id);
         if (!prestador) {
             console.warn(`[BACKEND] ADMIN: Prestador ${id} não encontrado para atualização.`);
-             if (selfieDocumentoFile) {
-                  fs.unlink(path.join(__dirname, selfieDocumentoFile.path), (err) => { if (err) console.error(`[BACKEND] Erro ao excluir ficheiro temporário ${selfieDocumentoFile.path}:`, err); });
+             if (fotoPerfil) {
+                  const filePath = path.join(__dirname, fotoPerfil.path);
+                  fs.unlink(filePath, (err) => {
+                     if (err) console.error(`[BACKEND] Erro ao excluir arquivo temporário ${filePath} após prestador não encontrado:`, err);
+                  });
              }
-             if (idDocumentoFile) {
-                  fs.unlink(path.join(__dirname, idDocumentoFile.path), (err) => { if (err) console.error(`[BACKEND] Erro ao excluir ficheiro temporário ${idDocumentoFile.path}:`, err); });
-             }
-             return res.status(404).json({ message: 'Prestador não encontrado.' });
+            return res.status(404).json({ message: 'Prestador não encontrado.' });
         }
 
         // Atualiza os campos permitidos
         if (value.nome !== undefined) prestador.nome = value.nome;
         if (value.email !== undefined) prestador.email = value.email;
         if (value.telefone !== undefined) prestador.telefone = value.telefone;
-        if (value.cpf !== undefined) prestador.cpf = value.cpf;
-        if (value.data_nascimento !== undefined) prestador.data_nascimento = value.data_nascimento;
-        if (value.endereco !== undefined) prestador.endereco = value.endereco;
-        if (value.certificacao !== undefined) prestador.certificacao = value.certificacao;
-        if (value.dados_bancarios !== undefined) prestador.dados_bancarios = value.dados_bancarios;
-        if (value.chave_pix !== undefined) prestador.chave_pix = value.chave_pix;
-        if (value.politica_cancelamento !== undefined) prestador.politica_cancelamento = value.politica_cancelamento;
-        if (value.politica_cancelamento_personalizada !== undefined) prestador.politica_cancelamento_personalizada = value.politica_cancelamento_personalizada;
-        if (value.tipo_servico !== undefined) prestador.tipo_servico = value.tipo_servico;
-        if (value.faixa_preco_min !== undefined) prestador.faixa_preco_min = value.faixa_preco_min;
-        if (value.faixa_preco_max !== undefined) prestador.faixa_preco_max = value.faixa_preco_max;
-        if (value.area_atuacao !== undefined) prestador.area_atuacao = value.area_atuacao.split(',').map(s => s.trim()).filter(s => s).join(',');
 
-
-        // Lida com o upload de novas fotos de selfie e documento de identificação
-        if (selfieDocumentoFile) {
-            if (prestador.selfie_documento) {
-                fs.unlink(path.join(__dirname, prestador.selfie_documento), (err) => { if (err) console.error(`[BACKEND] Erro ao excluir selfie antiga ${prestador.selfie_documento}:`, err); });
-            }
-            prestador.selfie_documento = selfieDocumentoFile.path;
-        }
-        if (idDocumentoFile) {
-            if (prestador.documento_identificacao) {
-                fs.unlink(path.join(__dirname, prestador.documento_identificacao), (err) => { if (err) console.error(`[BACKEND] Erro ao excluir documento de identificação antigo ${prestador.documento_identificacao}:`, err); });
-            }
-            prestador.documento_identificacao = idDocumentoFile.path;
+        // Lida com o upload da nova foto de perfil
+        if (fotoPerfil) {
+             // Se já existe uma foto, tenta deletar a antiga
+             if (prestador.foto_perfil) {
+                  const oldFilePath = path.join(__dirname, prestador.foto_perfil);
+                  if (fs.existsSync(oldFilePath)) {
+                       fs.unlink(oldFilePath, (err) => {
+                           if (err) console.error(`[BACKEND] Erro ao excluir foto de perfil antiga do prestador ${oldFilePath}:`, err);
+                       });
+                  } else {
+                       console.warn(`[BACKEND] Foto de perfil antiga do prestador não encontrada para exclusão: ${oldFilePath}`);
+                  }
+             }
+             prestador.foto_perfil = fotoPerfil.path; // Salva o caminho da nova foto
         }
 
         await prestador.save();
@@ -3588,13 +3327,13 @@ app.put('/admin/prestadores/:id', adminAuthMiddleware, uploadPrestadorDocuments,
     } catch (error) {
         console.error('[BACKEND] ADMIN: Erro ao atualizar prestador:', error);
          if (error.code === 11000) {
-              return res.status(400).json({ message: 'Email ou CPF já registado.' });
+              return res.status(400).json({ message: 'Email já cadastrado.' });
          }
         next(error);
     }
 });
 
-// Rota para deletar um prestador (ADMIN) (ATUALIZADO PARA EXCLUIR NOVOS FICHEIROS)
+// Rota para deletar um prestador (ADMIN)
 app.delete('/admin/prestadores/:id', adminAuthMiddleware, async (req, res, next) => {
     try {
         console.log(`[BACKEND] Recebida requisição DELETE /admin/prestadores/${req.params.id}`);
@@ -3639,27 +3378,6 @@ app.delete('/admin/prestadores/:id', adminAuthMiddleware, async (req, res, next)
              } else {
                   console.warn(`[BACKEND] Foto de perfil do prestador ${id} não encontrada para exclusão: ${filePath}`);
              }
-        }
-        // Deleta selfie_documento e documento_identificacao
-        if (prestadorToDelete.selfie_documento) {
-            const filePath = path.join(__dirname, prestadorToDelete.selfie_documento);
-            if (fs.existsSync(filePath)) {
-                fs.unlink(filePath, (err) => {
-                    if (err) console.error(`[BACKEND] Erro ao excluir selfie_documento do prestador ${id}:`, err);
-                });
-            } else {
-                console.warn(`[BACKEND] Selfie_documento do prestador ${id} não encontrada para exclusão: ${filePath}`);
-            }
-        }
-        if (prestadorToDelete.documento_identificacao) {
-            const filePath = path.join(__dirname, prestadorToDelete.documento_identificacao);
-            if (fs.existsSync(filePath)) {
-                fs.unlink(filePath, (err) => {
-                    if (err) console.error(`[BACKEND] Erro ao excluir documento_identificacao do prestador ${id}:`, err);
-                });
-            } else {
-                console.warn(`[BACKEND] Documento_identificacao do prestador ${id} não encontrada para exclusão: ${filePath}`);
-            }
         }
 
 
@@ -3883,14 +3601,14 @@ app.post('/admin/servicos-oferecidos', adminAuthMiddleware, async (req, res, nex
         });
 
         await novoServicoOferecido.save();
-        console.log(`[BACKEND] Novo serviço oferecido criado com sucesso: ${novoServicoOferecido.nome} (ID: ${novoServicoOferecido._id})`);
+        console.log(`[BACKEND] ADMIN: Novo serviço oferecido criado com sucesso: ${novoServicoOferecido.nome} (ID: ${novoServicoOferecido._id})`);
 
         res.status(201).json({ message: 'Serviço oferecido criado com sucesso!', servico: novoServicoOferecido });
 
     } catch (error) {
         console.error('[BACKEND] ADMIN: Erro ao criar serviço oferecido:', error);
          if (error.code === 11000) {
-             return res.status(400).json({ message: 'Este serviço já parece estar registado para este prestador.' });
+             return res.status(400).json({ message: 'Este serviço já parece estar cadastrado para este prestador.' });
          }
         next(error);
     }
@@ -3947,7 +3665,7 @@ app.put('/admin/servicos-oferecidos/:id', adminAuthMiddleware, async (req, res, 
     } catch (error) {
         console.error('[BACKEND] ADMIN: Erro ao atualizar serviço oferecido:', error);
          if (error.code === 11000) {
-             return res.status(400).json({ message: 'Este serviço já parece estar registado para este prestador.' });
+             return res.status(400).json({ message: 'Este serviço já parece estar cadastrado para este prestador.' });
          }
         next(error);
     }
@@ -3973,40 +3691,184 @@ app.delete('/admin/servicos-oferecidos/:id', adminAuthMiddleware, async (req, re
         // --- Lidar com dependências (serviços/pedidos que referenciam este serviço oferecido) ---
         // Você precisa decidir o que acontece com os pedidos que foram baseados neste serviço do catálogo.
         // Opções:
-        // 1. Deletar em cascata (perigoso, pode perder muitos dados)
-        // 2. Desassociar (definir servico_oferecido_id para null em serviços)
-        // 3. Marcar como "serviço oferecido apagado" em vez de excluir o documento
+        // 1. Deletar em cascata os pedidos (perigoso)
+        // 2. Desassociar (definir servico_oferecido_id para null nos pedidos)
+        // 3. Marcar o serviço oferecido como inativo em vez de deletar
+        await Servico.updateMany({ servico_oferecido_id: id }, { servico_oferecido_id: null }); // Exemplo: Desassociar
 
-        console.log(`[BACKEND] ADMIN: Desassociando serviços (pedidos) que referenciam o serviço oferecido ${id}...`);
-        await Servico.updateMany({ servico_oferecido_id: id }, { servico_oferecido_id: null });
 
-        console.log(`[BACKEND] ADMIN: Deletando serviço oferecido ${id}...`);
+        console.log(`[BACKEND] ADMIN: Deletando serviço oferecido (catálogo) ${id}...`);
         const servicoDeletado = await ServicoOferecido.findByIdAndDelete(id);
 
-        console.log(`[BACKEND] ADMIN: Serviço oferecido ${id} deletado com sucesso.`);
-        res.status(200).json({ message: 'Serviço oferecido deletado com sucesso!' });
+        console.log(`[BACKEND] ADMIN: Serviço oferecido (catálogo) ${id} deletado com sucesso.`);
+        res.status(200).json({ message: 'Serviço oferecido (catálogo) deletado com sucesso!' });
 
     } catch (error) {
-        console.error('[BACKEND] ADMIN: Erro ao deletar serviço oferecido:', error);
+        console.error('[BACKEND] ADMIN: Erro ao deletar serviço oferecido (catálogo):', error);
         next(error);
     }
 });
+
+
+// Rota para listar todas as avaliações (ADMIN)
+app.get('/admin/avaliacoes', adminAuthMiddleware, async (req, res, next) => {
+    try {
+        console.log('[BACKEND] ADMIN: Listando avaliações...');
+        const avaliacoes = await Avaliacao.find({})
+            .populate('cliente_id', 'nome email')
+            .populate('prestador_id', 'nome email')
+            .populate('pedido_servico_id', 'tipo_servico'); // Popula o tipo de serviço do pedido
+
+        console.log(`[BACKEND] ADMIN: Encontradas ${avaliacoes.length} avaliações.`);
+        res.status(200).json(avaliacoes);
+    } catch (error) {
+        console.error('[BACKEND] ADMIN: Erro ao listar avaliações:', error);
+        next(error);
+    }
+});
+
+// Rota para obter detalhes de uma avaliação específica (ADMIN)
+app.get('/admin/avaliacoes/:id', adminAuthMiddleware, async (req, res, next) => {
+    try {
+        console.log(`[BACKEND] ADMIN: Buscando detalhes da avaliação ${req.params.id}...`);
+        const { id } = req.params;
+         if (!mongoose.Types.ObjectId.isValid(id)) {
+              console.warn(`[BACKEND] ADMIN: Detalhes Avaliação: ID inválido recebido: ${id}`);
+              return res.status(400).json({ message: 'ID de avaliação inválido.' });
+         }
+        const avaliacao = await Avaliacao.findById(id)
+            .populate('cliente_id', 'nome email')
+            .populate('prestador_id', 'nome email')
+            .populate('pedido_servico_id', 'tipo_servico'); // Popula o tipo de serviço do pedido
+
+        if (!avaliacao) {
+            console.warn(`[BACKEND] Avaliação ${id} não encontrada.`);
+            return res.status(404).json({ message: 'Avaliação não encontrada.' });
+        }
+        console.log(`[BACKEND] Detalhes da avaliação ${id} encontrados.`);
+        res.status(200).json(avaliacao);
+    } catch (error) {
+        console.error('[BACKEND] ADMIN: Erro ao buscar detalhes da avaliação:', error);
+        next(error);
+    }
+});
+
+// Rota para atualizar uma avaliação existente (ADMIN) - Admin pode querer corrigir nota ou comentário
+app.put('/admin/avaliacoes/:id', adminAuthMiddleware, async (req, res, next) => {
+    console.log(`[BACKEND] Recebida requisição PUT /admin/avaliacoes/${req.params.id}`);
+    const { id } = req.params;
+    const { nota, comentario } = req.body; // Admin só pode atualizar nota e comentário
+
+     if (!mongoose.Types.ObjectId.isValid(id)) {
+          console.warn(`[BACKEND] Atualizar Avaliação: ID inválido recebido: ${id}`);
+          return res.status(400).json({ message: 'ID de avaliação inválido.' });
+     }
+
+    const { error, value } = validateAvaliacao({ nota, comentario }); // Reutiliza validação de avaliação
+    if (error) {
+        console.error("[BACKEND] ADMIN: Erro de validação Joi ao atualizar avaliação:", error.details);
+        return res.status(400).json({ message: error.details[0].message });
+    }
+
+    try {
+        const avaliacao = await Avaliacao.findById(id);
+        if (!avaliacao) {
+            console.warn(`[BACKEND] Avaliação ${id} não encontrada para atualização.`);
+            return res.status(404).json({ message: 'Avaliação não encontrada.' });
+        }
+
+        // Atualiza os campos permitidos
+        if (value.nota !== undefined) avaliacao.nota = value.nota;
+        if (value.comentario !== undefined) avaliacao.comentario = value.comentario;
+
+        await avaliacao.save();
+
+        console.log(`[BACKEND] ADMIN: Avaliação ${id} atualizada com sucesso.`);
+        res.status(200).json({ message: 'Avaliação atualizada com sucesso!', avaliacao });
+
+    } catch (error) {
+        console.error('[BACKEND] ADMIN: Erro ao atualizar avaliação:', error);
+        next(error);
+    }
+});
+
+// Rota para deletar uma avaliação (ADMIN)
+app.delete('/admin/avaliacoes/:id', adminAuthMiddleware, async (req, res, next) => {
+    try {
+        console.log(`[BACKEND] Recebida requisição DELETE /admin/avaliacoes/${req.params.id}`);
+        const { id } = req.params;
+
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            console.warn(`[BACKEND] Deletar Avaliação: ID inválido recebido: ${id}`);
+            return res.status(400).json({ message: 'ID de avaliação inválido.' });
+        }
+
+        const avaliacaoDeletada = await Avaliacao.findByIdAndDelete(id);
+
+        if (!avaliacaoDeletada) {
+            console.warn(`[BACKEND] Avaliação ${id} não encontrada para exclusão.`);
+            return res.status(404).json({ message: 'Avaliação não encontrada.' });
+        }
+
+         // Opcional: Atualizar o status do serviço associado de volta para 'concluido_pelo_prestador'
+         // se a avaliação for deletada, para permitir que o cliente avalie novamente.
+         // Isso depende da sua regra de negócio.
+         // await Servico.findByIdAndUpdate(avaliacaoDeletada.pedido_servico_id, { status: 'concluido_pelo_prestador' });
+
+
+        console.log(`[BACKEND] ADMIN: Avaliação ${id} deletada com sucesso.`);
+        res.status(200).json({ message: 'Avaliação deletada com sucesso!' });
+
+    } catch (error) {
+        console.error('[BACKEND] ADMIN: Erro ao deletar avaliação:', error);
+        next(error);
+    }
+});
+
+
 // --- FIM NOVAS ROTAS PARA O DASHBOARD ADMIN ---
 
-// --- Middleware de tratamento de erros global ---
-app.use((err, req, res, next) => {
-    console.error('[BACKEND] Erro Global Capturado:', err);
 
-    // Erros de Multer (upload de arquivos)
+// --- Middleware para lidar com rotas não encontradas (404) ---
+app.use((req, res, next) => {
+    console.warn(`[BACKEND] Rota não encontrada: ${req.method} ${req.originalUrl}`);
+    res.status(404).json({ message: 'Rota não encontrada.' });
+});
+
+
+// --- Middleware de tratamento de erros geral ---
+app.use((err, req, res, next) => {
+    console.error('[BACKEND] Erro interno no servidor:', err.stack);
+
     if (err instanceof multer.MulterError) {
-        console.error('[BACKEND] Erro de Multer:', err.message);
-        return res.status(400).json({ message: `Erro no upload do arquivo: ${err.message}` });
+        console.error('[BACKEND] Erro do Multer:', err.message);
+        // Tenta excluir o arquivo temporário em caso de erro no upload
+        if (req.file) {
+             const filePath = path.join(__dirname, req.file.path);
+             fs.unlink(filePath, (unlinkErr) => {
+                if (unlinkErr) console.error(`[BACKEND] Erro ao excluir arquivo temporário ${filePath}:`, unlinkErr);
+             });
+        } else if (req.files && req.files.length > 0) {
+             req.files.forEach(file => {
+                  const filePath = path.join(__dirname, file.path);
+                  fs.unlink(filePath, (unlinkErr) => {
+                     if (unlinkErr) console.error(`[BACKEND] Erro ao excluir arquivo temporário ${filePath}:`, unlinkErr);
+                  });
+             });
+        }
+        return res.status(400).json({ message: 'Erro no upload do arquivo: ' + err.message });
+    }
+
+    // Erros de validação Joi (já tratados nas rotas, mas como fallback)
+    if (Joi.isError(err)) {
+         console.error('[BACKEND] Erro de validação Joi (fallback):', err.details);
+         return res.status(400).json({ message: err.details[0].message });
     }
 
     // Erros de conexão com o MongoDB
-    if (err.name === 'MongooseServerSelectionError') {
-        console.error('[BACKEND] Erro de conexão com o MongoDB:', err.message);
-        return res.status(503).json({ message: 'Erro de conexão com o banco de dados.' });
+    if (err.name === 'MongoNetworkError' || err.name === 'MongooseServerSelectionError') {
+         console.error('[BACKEND] Erro de conexão com MongoDB:', err.message);
+         return res.status(503).json({ message: 'Erro de conexão com o banco de dados.' });
     }
 
     // Erros de duplicação (E11000)
@@ -4032,5 +3894,9 @@ app.use((err, req, res, next) => {
 
 
     // Outros erros não tratados
-    res.status(500).json({ message: 'Erro interno do servidor.' });
+    res.status(err.status || 500).json({
+        message: err.message || 'Ocorreu um erro interno no servidor.',
+        // Em produção, evite enviar o stack trace completo para o cliente por segurança
+        // stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+    });
 });
