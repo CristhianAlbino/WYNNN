@@ -36,7 +36,7 @@
             box-shadow: 0 4px 15px var(--shadow-color); /* Uses theme variable */
             padding: 40px;
             width: 100%;
-            max-width: 500px; /* Wider for more fields */
+            max-width: 600px; /* Wider for more fields */
             text-align: center;
             transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
         }
@@ -84,6 +84,7 @@
         .form-group input[type="email"],
         .form-group input[type="password"],
         .form-group input[type="number"],
+        .form-group input[type="date"],
         .form-group select,
         .form-group textarea,
         .form-group input[type="file"] { /* Added file input type */
@@ -270,8 +271,20 @@
                 <input type="text" id="name" placeholder="Seu nome" name="nome" required>
             </div>
             <div class="form-group">
-                <label for="phone">Telefone (Opcional)</label>
-                <input type="tel" id="phone" placeholder="(XX) XXXXX-XXXX" name="telefone">
+                <label for="cpf">CPF</label>
+                <input type="text" id="cpf" placeholder="000.000.000-00" name="cpf" required>
+            </div>
+            <div class="form-group">
+                <label for="dob">Data de Nascimento</label>
+                <input type="date" id="dob" name="data_nascimento" required>
+            </div>
+            <div class="form-group">
+                <label for="phone">Telefone</label>
+                <input type="tel" id="phone" placeholder="(XX) XXXXX-XXXX" name="telefone" required>
+            </div>
+            <div class="form-group">
+                <label for="address">Endereço Completo</label>
+                <input type="text" id="address" placeholder="Rua, Número, Bairro, Cidade, Estado, CEP" name="endereco" required>
             </div>
             <div class="form-group">
                 <label for="email">E-mail</label>
@@ -286,6 +299,38 @@
                 <input type="password" id="confirm-password" placeholder="********" required>
             </div>
             <div class="form-group">
+                <label for="selfie-document">Foto do Rosto (Selfie) com Documento em Mãos</label>
+                <input type="file" id="selfie-document" name="selfie_documento" accept="image/*" required>
+            </div>
+            <div class="form-group">
+                <label for="id-document">Documento com Foto (RG ou CNH)</label>
+                <input type="file" id="id-document" name="documento_identificacao" accept="image/*" required>
+            </div>
+            <div class="form-group">
+                <label for="certification">Certificação ou Curso na Área (Opcional)</label>
+                <input type="text" id="certification" placeholder="Ex: Torneiro no Senai" name="certificacao">
+            </div>
+            <div class="form-group">
+                <label for="bank-account">Dados Bancários (Banco, Agência, Conta)</label>
+                <input type="text" id="bank-account" placeholder="Ex: Banco do Brasil, Ag: 0000, Cc: 00000-0" name="dados_bancarios">
+            </div>
+            <div class="form-group">
+                <label for="pix-key">Chave Pix (Opcional)</label>
+                <input type="text" id="pix-key" placeholder="Ex: email@exemplo.com ou 000.000.000-00" name="chave_pix">
+            </div>
+            <div class="form-group">
+                <label for="cancellation-policy">Política de Cancelamento ou Reagendamento</label>
+                <select id="cancellation-policy" name="politica_cancelamento" required>
+                    <option value="">Selecione uma opção</option>
+                    <option value="padrao">Padrão da Plataforma</option>
+                    <option value="personalizada">Personalizada (descreva abaixo)</option>
+                </select>
+            </div>
+            <div class="form-group" id="custom-policy-group" style="display: none;">
+                <label for="custom-cancellation-policy">Descreva sua Política Personalizada</label>
+                <textarea id="custom-cancellation-policy" rows="3" placeholder="Ex: Cancelamentos com menos de 24h de antecedência terão multa de 50%." name="politica_cancelamento_personalizada"></textarea>
+            </div>
+            <div class="form-group">
                 <label for="service-type">Tipo de Serviço Principal</label>
                 <select id="service-type" name="tipo_servico" required>
                     <option value="">Selecione um serviço</option>
@@ -296,7 +341,8 @@
                     <option value="Jardinagem">Jardinagem</option>
                     <option value="Pedreiro">Pedreiro</option>
                     <option value="Limpeza">Limpeza</option>
-                    </select>
+                    <option value="Outros">Outros</option>
+                </select>
             </div>
             <div class="form-group">
                 <label for="min-price">Faixa de Preço Mínima (R$)</label>
@@ -310,17 +356,13 @@
                 <label for="area-atuacao">Área de Atuação (Cidades/Bairros, separados por vírgula)</label>
                 <textarea id="area-atuacao" rows="3" placeholder="Ex: São Paulo, Campinas, Sorocaba" name="area_atuacao" required></textarea>
             </div>
-            <div class="form-group">
-                <label for="profile_picture">Foto de Perfil (Opcional)</label>
-                <input type="file" id="profile_picture" name="foto_perfil" accept="image/*">
-            </div>
             <p class="message-feedback error" id="register-error-message" style="display: none;">Mensagem de erro aqui.</p>
             <p class="message-feedback success" id="register-success-message" style="display: none;">Cadastro realizado com sucesso!</p>
             <button type="submit" class="btn-register" id="btnCadastrarPrestador">Cadastrar</button>
         </form>
 
         <div class="links">
-            Já tem uma conta? <a href="login prestador.html">Faça Login</a>
+            Já tem uma conta? <a href="login-prestador.html">Faça Login</a>
         </div>
     </div>
 
@@ -328,19 +370,29 @@
     <script src="vendors/scripts/script.min.js"></script>
     <script src="vendors/scripts/process.js"></script>
     <script src="vendors/scripts/layout-settings.js"></script>
-    <script src="script.js"></script> <script>
+    <script>
         document.addEventListener("DOMContentLoaded", function() {
             const registerForm = document.getElementById('register-prestador-form');
             const nameInput = document.getElementById('name');
+            const cpfInput = document.getElementById('cpf');
+            const dobInput = document.getElementById('dob');
             const phoneInput = document.getElementById('phone');
+            const addressInput = document.getElementById('address');
             const emailInput = document.getElementById('email');
             const passwordInput = document.getElementById('password');
             const confirmPasswordInput = document.getElementById('confirm-password');
+            const selfieDocumentInput = document.getElementById('selfie-document');
+            const idDocumentInput = document.getElementById('id-document');
+            const certificationInput = document.getElementById('certification');
+            const bankAccountInput = document.getElementById('bank-account');
+            const pixKeyInput = document.getElementById('pix-key');
+            const cancellationPolicySelect = document.getElementById('cancellation-policy');
+            const customPolicyGroup = document.getElementById('custom-policy-group');
+            const customCancellationPolicyInput = document.getElementById('custom-cancellation-policy');
             const serviceTypeInput = document.getElementById('service-type');
             const minPriceInput = document.getElementById('min-price');
             const maxPriceInput = document.getElementById('max-price');
             const areaAtuacaoInput = document.getElementById('area-atuacao');
-            const profilePictureInput = document.getElementById('profile_picture');
             const errorMessage = document.getElementById('register-error-message');
             const successMessage = document.getElementById('register-success-message');
             const loadingScreen = document.getElementById("loading-screen");
@@ -348,7 +400,6 @@
 
             // --- Loading Screen Logic ---
             const loadingTime = 1000; // 1 second
-
             setTimeout(function() {
                 if (loadingScreen) {
                     loadingScreen.style.transition = 'opacity 0.5s ease-out';
@@ -370,6 +421,47 @@
                 element.style.display = 'block';
             }
 
+            // Function to validate CPF (basic check)
+            function isValidCPF(cpf) {
+                cpf = cpf.replace(/[^\d]/g, ''); // Remove non-numeric characters
+                if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) return false; // Check length and repeated digits
+                let sum = 0;
+                let remainder;
+                for (let i = 1; i <= 9; i++) sum = sum + parseInt(cpf.substring(i - 1, i)) * (11 - i);
+                remainder = (sum * 10) % 11;
+                if ((remainder === 10) || (remainder === 11)) remainder = 0;
+                if (remainder !== parseInt(cpf.substring(9, 10))) return false;
+                sum = 0;
+                for (let i = 1; i <= 10; i++) sum = sum + parseInt(cpf.substring(i - 1, i)) * (12 - i);
+                remainder = (sum * 10) % 11;
+                if ((remainder === 10) || (remainder === 11)) remainder = 0;
+                if (remainder !== parseInt(cpf.substring(10, 11))) return false;
+                return true;
+            }
+
+            // Function to validate age (18+)
+            function isAdult(dob) {
+                const birthDate = new Date(dob);
+                const today = new Date();
+                let age = today.getFullYear() - birthDate.getFullYear();
+                const m = today.getMonth() - birthDate.getMonth();
+                if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+                    age--;
+                }
+                return age >= 18;
+            }
+
+            // Event listener for cancellation policy select
+            cancellationPolicySelect.addEventListener('change', function() {
+                if (this.value === 'personalizada') {
+                    customPolicyGroup.style.display = 'block';
+                    customCancellationPolicyInput.setAttribute('required', 'required');
+                } else {
+                    customPolicyGroup.style.display = 'none';
+                    customCancellationPolicyInput.removeAttribute('required');
+                }
+            });
+
             // Event listener for the registration form
             if (registerForm) {
                 registerForm.addEventListener('submit', async function(event) {
@@ -379,7 +471,10 @@
                     showMessage(successMessage, '', 'success');
 
                     const nome = nameInput.value.trim();
+                    const cpf = cpfInput.value.trim();
+                    const data_nascimento = dobInput.value;
                     const telefone = phoneInput.value.trim();
+                    const endereco = addressInput.value.trim();
                     const email = emailInput.value.trim();
                     const senha = passwordInput.value.trim();
                     const confirmarSenha = confirmPasswordInput.value.trim();
@@ -387,9 +482,25 @@
                     const faixa_preco_min = parseFloat(minPriceInput.value);
                     const faixa_preco_max = parseFloat(maxPriceInput.value);
                     const area_atuacao = areaAtuacaoInput.value.trim();
+                    const certificacao = certificationInput.value.trim(); // Optional
+                    const dados_bancarios = bankAccountInput.value.trim(); // Optional
+                    const chave_pix = pixKeyInput.value.trim(); // Optional
+                    const politica_cancelamento = cancellationPolicySelect.value;
+                    const politica_cancelamento_personalizada = customCancellationPolicyInput.value.trim();
 
-                    if (!nome || !email || !senha || !confirmarSenha || !tipo_servico || isNaN(faixa_preco_min) || isNaN(faixa_preco_max) || !area_atuacao) {
-                        showMessage(errorMessage, 'Por favor, preencha todos os campos corretamente.', 'error');
+                    // Basic frontend validations
+                    if (!nome || !cpf || !data_nascimento || !telefone || !endereco || !email || !senha || !confirmarSenha || !tipo_servico || isNaN(faixa_preco_min) || isNaN(faixa_preco_max) || !area_atuacao || !selfieDocumentInput.files[0] || !idDocumentInput.files[0] || !politica_cancelamento) {
+                        showMessage(errorMessage, 'Por favor, preencha todos os campos obrigatórios, incluindo as fotos e a política de cancelamento.', 'error');
+                        return;
+                    }
+
+                    if (!isValidCPF(cpf)) {
+                        showMessage(errorMessage, 'CPF inválido. Por favor, verifique.', 'error');
+                        return;
+                    }
+
+                    if (!isAdult(data_nascimento)) {
+                        showMessage(errorMessage, 'Você deve ter 18 anos ou mais para se cadastrar.', 'error');
                         return;
                     }
 
@@ -408,21 +519,42 @@
                         return;
                     }
 
+                    if (politica_cancelamento === 'personalizada' && !politica_cancelamento_personalizada) {
+                        showMessage(errorMessage, 'Por favor, descreva sua política de cancelamento personalizada.', 'error');
+                        return;
+                    }
+
                     btnCadastrarPrestador.disabled = true; // Disables button
                     btnCadastrarPrestador.textContent = 'Cadastrando...';
 
                     const formData = new FormData();
                     formData.append('nome', nome);
+                    formData.append('cpf', cpf);
+                    formData.append('data_nascimento', data_nascimento);
                     formData.append('telefone', telefone);
+                    formData.append('endereco', endereco);
                     formData.append('email', email);
                     formData.append('senha', senha);
                     formData.append('tipo_servico', tipo_servico);
                     formData.append('faixa_preco_min', faixa_preco_min);
                     formData.append('faixa_preco_max', faixa_preco_max);
-                    formData.append('area_atuacao', area_atuacao.split(',').map(s => s.trim()).join(',')); // Send as comma-separated string
+                    formData.append('area_atuacao', area_atuacao.split(',').map(s => s.trim()).filter(s => s).join(',')); // Send as comma-separated string, remove empty entries
 
-                    if (profilePictureInput.files && profilePictureInput.files[0]) {
-                        formData.append('foto_perfil', profilePictureInput.files[0]);
+                    // Optional fields
+                    if (certificacao) formData.append('certificacao', certificacao);
+                    if (dados_bancarios) formData.append('dados_bancarios', dados_bancarios);
+                    if (chave_pix) formData.append('chave_pix', chave_pix);
+                    formData.append('politica_cancelamento', politica_cancelamento);
+                    if (politica_cancelamento === 'personalizada') {
+                        formData.append('politica_cancelamento_personalizada', politica_cancelamento_personalizada);
+                    }
+
+                    // Append files
+                    if (selfieDocumentInput.files && selfieDocumentInput.files[0]) {
+                        formData.append('selfie_documento', selfieDocumentInput.files[0]);
+                    }
+                    if (idDocumentInput.files && idDocumentInput.files[0]) {
+                        formData.append('documento_identificacao', idDocumentInput.files[0]);
                     }
 
                     try {
@@ -437,6 +569,9 @@
                         if (response.ok) {
                             showMessage(successMessage, data.message || 'Cadastro de prestador realizado com sucesso! Você será redirecionado para o login.', 'success');
                             registerForm.reset(); // Clears the form on success
+                            // Hide custom policy group if it was visible
+                            customPolicyGroup.style.display = 'none';
+                            customCancellationPolicyInput.removeAttribute('required');
                             setTimeout(() => {
                                 window.location.href = 'login-prestador.html'; // Redirects to provider login screen
                             }, 3000);
@@ -454,6 +589,38 @@
                 });
             } else {
                 console.warn("Elemento #register-prestador-form não encontrado.");
+            }
+
+            // --- Lógica de Alternância de Tema (movida para cá) ---
+            const themeSwitcher = document.getElementById('theme-switcher-icon');
+            const body = document.body;
+            const currentTheme = localStorage.getItem('theme');
+
+            // Aplica o tema salvo ao carregar a página
+            if (currentTheme && currentTheme !== 'light-mode') {
+                body.classList.add(currentTheme);
+                if (currentTheme === 'dark-mode') {
+                    themeSwitcher.classList.replace('bx-moon', 'bx-sun');
+                }
+            } else {
+                body.classList.remove('dark-mode');
+                themeSwitcher.classList.replace('bx-sun', 'bx-moon');
+            }
+
+            // Adiciona listener para o clique no ícone de alternar tema
+            if (themeSwitcher) {
+                themeSwitcher.addEventListener('click', () => {
+                    body.classList.toggle('dark-mode');
+                    if (body.classList.contains('dark-mode')) {
+                        localStorage.setItem('theme', 'dark-mode');
+                        themeSwitcher.classList.replace('bx-moon', 'bx-sun');
+                    } else {
+                        localStorage.setItem('theme', 'light-mode');
+                        themeSwitcher.classList.replace('bx-sun', 'bx-moon');
+                    }
+                });
+            } else {
+                console.warn("Elemento #theme-switcher-icon não encontrado.");
             }
         });
     </script>
