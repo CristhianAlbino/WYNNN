@@ -21,24 +21,27 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            background-color: var(--background-color); /* Uses theme variable */
+            background-color: var(--background-color);
             transition: background-color 0.3s ease;
             font-family: 'Inter', sans-serif;
             margin: 0;
-            padding: 20px; /* Adds padding for small screens */
-            box-sizing: border-box; /* Ensures padding does not cause overflow */
+            padding: 20px;
+            box-sizing: border-box;
+            position: relative;
+            padding-top: 60px;
         }
 
         .register-container {
-            background-color: var(--card-background); /* Uses theme variable */
-            border: 1px solid var(--border-color); /* Uses theme variable */
+            background-color: var(--card-background);
+            border: 1px solid var(--border-color);
             border-radius: 12px;
-            box-shadow: 0 4px 15px var(--shadow-color); /* Uses theme variable */
+            box-shadow: 0 4px 15px var(--shadow-color);
             padding: 40px;
             width: 100%;
-            max-width: 450px; /* Slightly wider for registration */
+            max-width: 500px; /* Aumentado para acomodar mais campos */
             text-align: center;
             transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+            z-index: 1;
         }
 
         body.dark-mode .register-container {
@@ -53,7 +56,7 @@
         }
 
         .register-container h2 {
-            color: var(--text-color); /* Uses theme variable */
+            color: var(--text-color);
             margin-bottom: 30px;
             font-weight: 700;
             transition: color 0.3s ease;
@@ -71,7 +74,7 @@
         .form-group label {
             display: block;
             margin-bottom: 8px;
-            color: var(--text-color); /* Uses theme variable */
+            color: var(--text-color);
             font-weight: 500;
             transition: color 0.3s ease;
         }
@@ -82,15 +85,16 @@
 
         .form-group input[type="text"],
         .form-group input[type="email"],
+        .form-group input[type="tel"],
         .form-group input[type="password"],
-        .form-group input[type="file"] { /* Added file input type */
+        .form-group input[type="file"] {
             width: 100%;
             padding: 12px 15px;
-            border: 1px solid var(--border-color); /* Uses theme variable */
+            border: 1px solid var(--border-color);
             border-radius: 8px;
             font-size: 1rem;
-            background-color: var(--background-color); /* Uses theme variable */
-            color: var(--text-color); /* Uses theme variable */
+            background-color: var(--background-color);
+            color: var(--text-color);
             transition: border-color 0.3s ease, background-color 0.3s ease, color 0.3s ease;
         }
 
@@ -109,7 +113,7 @@
         .btn-register {
             width: 100%;
             padding: 12px 20px;
-            background-color: var(--primary-color); /* WYN Orange */
+            background-color: var(--primary-color);
             color: var(--text-light);
             border: none;
             border-radius: 8px;
@@ -121,7 +125,7 @@
         }
 
         .btn-register:hover {
-            background-color: #e05e0a; /* Darker orange on hover */
+            background-color: #e05e0a;
             transform: translateY(-2px);
         }
 
@@ -131,14 +135,14 @@
         }
 
         .links a {
-            color: var(--link-color); /* Uses theme variable */
+            color: var(--link-color);
             text-decoration: none;
             margin: 0 10px;
             transition: color 0.3s ease;
         }
 
         .links a:hover {
-            color: var(--link-hover-color); /* Uses theme variable */
+            color: var(--link-hover-color);
             text-decoration: underline;
         }
 
@@ -154,12 +158,13 @@
             position: absolute;
             top: 20px;
             right: 20px;
+            z-index: 10;
         }
 
         .theme-switcher-container i {
             font-size: 1.8rem;
             cursor: pointer;
-            color: var(--text-color); /* Theme icon color */
+            color: var(--text-color);
             transition: color 0.3s ease;
         }
 
@@ -167,14 +172,43 @@
             color: var(--dark-text-color);
         }
 
-        /* Styles for loading screen */
+        .back-button-container {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 10;
+        }
+
+        .back-button-container a {
+            font-size: 1.1rem;
+            color: var(--link-color);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: color 0.3s ease;
+        }
+
+        .back-button-container a:hover {
+            color: var(--link-hover-color);
+        }
+
+        body.dark-mode .back-button-container a {
+            color: var(--dark-link-color);
+        }
+
+        body.dark-mode .back-button-container a:hover {
+            color: var(--dark-link-hover-color);
+        }
+
+        /* Estilos para a tela de carregamento */
         .pre-loader {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: #ffffff; /* White background for pre-loader */
+            background-color: #ffffff;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -221,17 +255,32 @@
             color: #333;
         }
 
-        /* Feedback messages */
-        .message-feedback {
-            font-size: 0.9rem;
-            margin-top: 10px;
-            display: none; /* Hidden by default */
+        /* Mensagens de sucesso/erro */
+        .message-box {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 15px 25px;
+            border-radius: 8px;
+            font-weight: 600;
+            z-index: 1000;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
-        .message-feedback.error {
-            color: #dc3545; /* Red color for error */
+
+        .message-box.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
         }
-        .message-feedback.success {
-            color: #28a745; /* Green color for success */
+
+        .message-box.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
         }
     </style>
 </head>
@@ -249,46 +298,48 @@
         </div>
     </div>
 
+    <div class="back-button-container">
+        <a href="javascript:history.back()">
+            <i class='bx bx-arrow-back'></i> Voltar
+        </a>
+    </div>
+
     <div class="theme-switcher-container">
         <i class='bx bx-moon' id="theme-switcher-icon"></i>
     </div>
 
     <div class="register-container">
         <img src="w.png" alt="WYN Logo">
-        <h2>Cadastre-se como Cliente</h2>
+        <h2>Cadastrar-se como Cliente</h2>
 
         <form id="register-client-form">
             <div class="form-group">
-                <label for="name">Nome Completo</label>
-                <input type="text" id="name" placeholder="Seu nome" name="nome" required>
-            </div>
-            <div class="form-group">
-                <label for="phone">Telefone (Opcional)</label>
-                <input type="tel" id="phone" placeholder="(XX) XXXXX-XXXX" name="telefone">
+                <label for="nome">Nome Completo</label>
+                <input type="text" id="nome" name="nome" placeholder="Seu nome completo" required>
             </div>
             <div class="form-group">
                 <label for="email">E-mail</label>
-                <input type="email" id="email" placeholder="seuemail@exemplo.com" name="email" required>
+                <input type="email" id="email" name="email" placeholder="seuemail@exemplo.com" required>
+            </div>
+            <div class="form-group">
+                <label for="telefone">Telefone (Opcional)</label>
+                <input type="tel" id="telefone" name="telefone" placeholder="(XX) XXXXX-XXXX">
             </div>
             <div class="form-group">
                 <label for="password">Senha</label>
-                <input type="password" id="password" placeholder="********" name="senha" required>
+                <input type="password" id="password" name="senha" placeholder="********" required>
             </div>
             <div class="form-group">
-                <label for="confirm-password">Confirmar Senha</label>
-                <input type="password" id="confirm-password" placeholder="********" required>
+                <label for="foto_perfil">Foto de Perfil (Opcional)</label>
+                <input type="file" id="foto_perfil" name="foto_perfil" accept="image/*">
             </div>
-            <div class="form-group">
-                <label for="profile_picture">Foto de Perfil (Opcional)</label>
-                <input type="file" id="profile_picture" name="foto_perfil" accept="image/*">
-            </div>
-            <p class="message-feedback error" id="register-error-message" style="display: none;">Mensagem de erro aqui.</p>
-            <p class="message-feedback success" id="register-success-message" style="display: none;">Cadastro realizado com sucesso!</p>
-            <button type="submit" class="btn-register" id="btnCadastrarCliente">Cadastrar</button>
+            <div id="success-message" class="message-box success" style="display: none;"></div>
+            <div id="error-message" class="message-box error" style="display: none;"></div>
+            <button type="submit" class="btn-register" id="btn-cadastrar-cliente">Cadastrar</button>
         </form>
 
         <div class="links">
-            Já tem uma conta? <a href="login.html">Faça Login</a>
+            <a href="login.html">Já tenho conta</a>
         </div>
     </div>
 
@@ -296,22 +347,17 @@
     <script src="vendors/scripts/script.min.js"></script>
     <script src="vendors/scripts/process.js"></script>
     <script src="vendors/scripts/layout-settings.js"></script>
-    <script src="script.js"></script> <script>
+    
+    <script>
         document.addEventListener("DOMContentLoaded", function() {
             const registerForm = document.getElementById('register-client-form');
-            const nameInput = document.getElementById('name');
-            const phoneInput = document.getElementById('phone');
-            const emailInput = document.getElementById('email');
-            const passwordInput = document.getElementById('password');
-            const confirmPasswordInput = document.getElementById('confirm-password');
-            const profilePictureInput = document.getElementById('profile_picture');
-            const errorMessage = document.getElementById('register-error-message');
-            const successMessage = document.getElementById('register-success-message');
+            const btnCadastrarCliente = document.getElementById('btn-cadastrar-cliente');
+            const successMessage = document.getElementById('success-message');
+            const errorMessage = document.getElementById('error-message');
             const loadingScreen = document.getElementById("loading-screen");
-            const btnCadastrarCliente = document.getElementById('btnCadastrarCliente');
 
-            // --- Loading Screen Logic ---
-            const loadingTime = 1000; // 1 second
+            // --- Lógica da Tela de Carregamento ---
+            const loadingTime = 1000; 
 
             setTimeout(function() {
                 if (loadingScreen) {
@@ -323,74 +369,78 @@
                 }
             }, loadingTime);
 
-            // Function to display feedback messages
+            // Função para exibir mensagens (sucesso/erro)
             function showMessage(element, message, type) {
-                errorMessage.style.display = 'none';
-                successMessage.style.display = 'none';
-
                 element.textContent = message;
-                element.classList.remove('error', 'success');
-                element.classList.add(type);
+                element.className = `message-box ${type}`; // Adiciona a classe de tipo (success ou error)
                 element.style.display = 'block';
+                setTimeout(() => {
+                    element.style.opacity = '1';
+                }, 10); // Pequeno delay para a transição de opacidade
+
+                // Oculta a mensagem após 5 segundos
+                setTimeout(() => {
+                    element.style.opacity = '0';
+                    element.addEventListener('transitionend', () => {
+                        element.style.display = 'none';
+                    }, { once: true }); // Garante que o listener seja removido após a primeira execução
+                }, 5000);
             }
 
-            // Event listener for the registration form
+            // Event listener para o formulário de registo
             if (registerForm) {
                 registerForm.addEventListener('submit', async function(event) {
                     event.preventDefault();
 
-                    showMessage(errorMessage, '', 'error'); // Clears previous messages
-                    showMessage(successMessage, '', 'success');
+                    // Limpa mensagens anteriores
+                    successMessage.style.display = 'none';
+                    errorMessage.style.display = 'none';
 
-                    const nome = nameInput.value.trim();
-                    const telefone = phoneInput.value.trim();
-                    const email = emailInput.value.trim();
-                    const senha = passwordInput.value.trim();
-                    const confirmarSenha = confirmPasswordInput.value.trim();
+                    const nome = document.getElementById('nome').value.trim();
+                    const email = document.getElementById('email').value.trim();
+                    const telefone = document.getElementById('telefone').value.trim();
+                    const senha = document.getElementById('password').value.trim();
+                    const fotoPerfilInput = document.getElementById('foto_perfil');
 
-                    if (!nome || !email || !senha || !confirmarSenha) {
-                        showMessage(errorMessage, 'Por favor, preencha todos os campos obrigatórios.', 'error');
+                    // Validação básica no frontend
+                    if (!nome || !email || !senha) {
+                        showMessage(errorMessage, 'Por favor, preencha todos os campos obrigatórios (Nome, E-mail, Senha).', 'error');
                         return;
                     }
-
-                    if (senha !== confirmarSenha) {
-                        showMessage(errorMessage, 'As senhas não coincidem.', 'error');
-                        return;
-                    }
-
-                    // Minimum password validation (example)
                     if (senha.length < 6) {
-                        showMessage(errorMessage, 'A senha deve ter no mínimo 6 caracteres.', 'error');
+                        showMessage(errorMessage, 'A senha deve ter pelo menos 6 caracteres.', 'error');
                         return;
                     }
 
-                    btnCadastrarCliente.disabled = true; // Disables button
+                    btnCadastrarCliente.disabled = true;
                     btnCadastrarCliente.textContent = 'Cadastrando...';
 
+                    // --- Usando FormData para enviar dados e ficheiro ---
                     const formData = new FormData();
                     formData.append('nome', nome);
-                    formData.append('telefone', telefone);
                     formData.append('email', email);
                     formData.append('senha', senha);
+                    formData.append('telefone', telefone); // Opcional, pode ser vazio
 
-                    if (profilePictureInput.files && profilePictureInput.files[0]) {
-                        formData.append('foto_perfil', profilePictureInput.files[0]);
+                    if (fotoPerfilInput.files && fotoPerfilInput.files[0]) {
+                        formData.append('foto_perfil', fotoPerfilInput.files[0]);
                     }
 
                     try {
-                        // --- UPDATED URL FOR BACKEND ON RENDER ---
                         const response = await fetch('https://wyn-backend.onrender.com/cadastrar', {
                             method: 'POST',
-                            body: formData // FormData handles Content-Type automatically
+                            // NÃO defina 'Content-Type' aqui. O navegador fará isso automaticamente
+                            // e corretamente para FormData, incluindo o 'boundary'.
+                            body: formData
                         });
 
                         const data = await response.json();
 
                         if (response.ok) {
                             showMessage(successMessage, data.message || 'Cadastro realizado com sucesso! Você será redirecionado para o login.', 'success');
-                            registerForm.reset(); // Clears the form on success
+                            registerForm.reset(); // Limpa o formulário em caso de sucesso
                             setTimeout(() => {
-                                window.location.href = 'login.html'; // Redirects to login screen
+                                window.location.href = 'login.html'; // Redireciona para a tela de login
                             }, 3000);
                         } else {
                             showMessage(errorMessage, data.message || 'Erro ao cadastrar. Tente novamente.', 'error');
@@ -400,12 +450,42 @@
                         console.error('Registration request error:', error);
                         showMessage(errorMessage, 'Não foi possível conectar ao servidor. Tente novamente mais tarde.', 'error');
                     } finally {
-                        btnCadastrarCliente.disabled = false; // Re-enables button
+                        btnCadastrarCliente.disabled = false;
                         btnCadastrarCliente.textContent = 'Cadastrar';
                     }
                 });
             } else {
                 console.warn("Elemento #register-client-form não encontrado.");
+            }
+
+            // --- Lógica de Alternância de Tema ---
+            const themeSwitcher = document.getElementById('theme-switcher-icon');
+            const body = document.body;
+            const currentTheme = localStorage.getItem('theme');
+
+            if (currentTheme && currentTheme !== 'light-mode') {
+                body.classList.add(currentTheme);
+                if (currentTheme === 'dark-mode') {
+                    themeSwitcher.classList.replace('bx-moon', 'bx-sun');
+                }
+            } else {
+                body.classList.remove('dark-mode');
+                themeSwitcher.classList.replace('bx-sun', 'bx-moon');
+            }
+
+            if (themeSwitcher) {
+                themeSwitcher.addEventListener('click', () => {
+                    body.classList.toggle('dark-mode');
+                    if (body.classList.contains('dark-mode')) {
+                        localStorage.setItem('theme', 'dark-mode');
+                        themeSwitcher.classList.replace('bx-moon', 'bx-sun');
+                    } else {
+                        localStorage.setItem('theme', 'light-mode');
+                        themeSwitcher.classList.replace('bx-sun', 'bx-moon');
+                    }
+                });
+            } else {
+                console.warn("Elemento #theme-switcher-icon não encontrado.");
             }
         });
     </script>
