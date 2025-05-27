@@ -47,6 +47,8 @@
 		href="src/plugins/datatables/css/responsive.bootstrap4.min.css"
 	/>
 	<link rel="stylesheet" type="text/css" href="vendors/styles/style.css" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
 
     <style>
         /* Estilos básicos para a foto de perfil */
@@ -65,6 +67,61 @@
         .save-profile-btn {
             margin-top: 20px;
         }
+        /* Estilo para o container de toasts */
+        #toastContainer {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1050; /* Acima de modais */
+        }
+
+        /* Estilo individual do toast */
+        .toast {
+            width: 300px;
+            max-width: 100%;
+            font-size: .875rem;
+            background-color: rgba(255,255,255,.85);
+            background-clip: padding-box;
+            border: 1px solid rgba(0,0,0,.1);
+            box-shadow: 0 .25rem .75rem rgba(0,0,0,.1);
+            opacity: 0;
+            border-radius: .25rem;
+        }
+
+        .toast.showing {
+            opacity: 1;
+        }
+
+        .toast.show {
+            display: block;
+            opacity: 1;
+        }
+
+        .toast.hide {
+            display: none;
+        }
+
+        .toast-header {
+            display: flex;
+            align-items: center;
+            padding: .25rem .75rem;
+            color: #6c757d;
+            background-color: rgba(255,255,255,.85);
+            background-clip: padding-box;
+            border-bottom: 1px solid rgba(0,0,0,.05);
+            border-top-left-radius: calc(.25rem - 1px);
+            border-top-right-radius: calc(.25rem - 1px);
+        }
+
+        .toast-body {
+            padding: .75rem;
+        }
+
+        /* Cores para os headers dos toasts */
+        .toast-header.bg-success { background-color: #28a745 !important; color: white !important; }
+        .toast-header.bg-danger { background-color: #dc3545 !important; color: white !important; }
+        .toast-header.bg-info { background-color: #17a2b8 !important; color: white !important; }
+
     </style>
 
 	<script
@@ -433,15 +490,15 @@
                             ><span class="mtext">Chat</span>
                         </a>
                     </li>
-					<li>
-						<a href="javascript:;" class="dropdown-toggle">
-							<span class="micon bi bi-file-pdf"></span
-							><span class="mtext">Documentação</span>
-						</a>
-						<ul class="submenu">
-							<li><a href="/Tela Inicial copy/Termos e Condições.docx">Termos e Condições</a></li>
-						</ul>
-					</li>
+                    <li>
+                        <a href="javascript:;" class="dropdown-toggle">
+                            <span class="micon bi bi-file-pdf"></span
+                            ><span class="mtext">Documentação</span>
+                        </a>
+                        <ul class="submenu">
+                            <li><a href="/Tela Inicial copy/Termos e Condições.docx">Termos e Condições</a></li>
+                        </ul>
+                    </li>
 				</ul>
 			</div>
 		</div>
@@ -455,7 +512,7 @@
 				<div class="row">
 					<div class="col-md-12 col-sm-12">
 						<div class="title">
-							<h4 id="profile-title">Meu Perfil (Cliente)</h4>
+							<h4 id="profile-title">Meu Perfil</h4>
 						</div>
 						<nav aria-label="breadcrumb" role="navigation">
 							<ol class="breadcrumb">
@@ -470,62 +527,75 @@
 					</div>
 				</div>
 			</div>
-
 			<div class="pd-20 card-box mb-30">
 				<div class="row">
 					<div class="col-md-4 col-sm-12 text-center">
 						<img src="vendors/images/photo1.jpg" id="profile-picture" class="profile-picture" alt="Foto de Perfil" />
-                         <div class="mt-2">
-                             <input type="file" id="upload-profile-pic" accept="image/*" style="display: none;">
-                             <button class="btn btn-primary btn-sm" id="change-profile-pic-btn">Alterar Foto</button>
-                         </div>
+						<div class="mt-2">
+							<input type="file" id="upload-profile-pic" accept="image/*" style="display: none;">
+							<button class="btn btn-primary btn-sm" id="change-profile-pic-btn">Alterar Foto</button>
+						</div>
 					</div>
 					<div class="col-md-8 col-sm-12 profile-info">
 						<h5 class="mb-20" id="profile-name">Carregando Nome...</h5>
-						<p><strong>Tipo de Perfil:</strong> <span id="profile-type">Cliente</span></p>
+						<p><strong>Tipo de Perfil:</strong> <span id="profile-type">Carregando...</span></p>
 						<p><strong>Email:</strong> <span id="profile-email">Carregando...</span></p>
 						<p><strong>Telefone:</strong> <span id="profile-phone">Carregando...</span></p>
-                        <div class="mt-30 text-right">
-                            <button class="btn btn-info" id="edit-profile-btn">Editar Perfil</button>
-                        </div>
-                    </div>
+						<div id="prestador-fields" style="display: none;">
+							<p><strong>Especialidades:</strong> <span id="profile-specialties">Carregando...</span></p>
+							<p><strong>Área de Atuação:</strong> <span id="profile-area">Carregando...</span></p>
+							<p><strong>Disponibilidade:</strong> <span id="profile-availability">Carregando...</span></p>
+						</div>
+						<div class="mt-30 text-right">
+							<button class="btn btn-info" id="edit-profile-btn">Editar Perfil</button>
+						</div>
+					</div>
 				</div>
-            </div>
-
-            <div class="modal fade" id="editProfileModal" tabindex="-1" role="dialog" aria-labelledby="editProfileModalLabel" aria-hidden="true">
-                <div class="modal-dialog modal-lg" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="editProfileModalLabel">Editar Perfil do Cliente</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <form id="editProfileForm">
-                                <div class="form-group">
-                                    <label for="editName">Nome</label>
-                                    <input type="text" class="form-control" id="editName" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="editEmail">Email</label>
-                                    <input type="email" class="form-control" id="editEmail" disabled> </div>
-                                <div class="form-group">
-                                    <label for="editPhone">Telefone</label>
-                                    <input type="text" class="form-control" id="editPhone">
-                                </div>
-                                <button type="submit" class="btn btn-primary save-profile-btn">Salvar Alterações</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-
-			<div class="footer-wrap pd-20 mb-20 card-box">
-				Plataforma WYN-TECH
 			</div>
 		</div>
+
+		<div class="modal fade" id="editProfileModal" tabindex="-1" role="dialog" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-lg" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="editProfileModalLabel">Editar Perfil</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<form id="editProfileForm">
+							<div class="form-group">
+								<label for="editName">Nome</label>
+								<input type="text" class="form-control" id="editName" required>
+							</div>
+							<div class="form-group">
+								<label for="editPhone">Telefone</label>
+								<input type="text" class="form-control" id="editPhone">
+							</div>
+							<div id="edit-prestador-fields" style="display: none;">
+								<div class="form-group">
+									<label for="editSpecialties">Especialidades (separadas por vírgula)</label>
+									<input type="text" class="form-control" id="editSpecialties">
+								</div>
+								<div class="form-group">
+									<label for="editArea">Área de Atuação</label>
+									<input type="text" class="form-control" id="editArea">
+								</div>
+								<div class="form-group">
+									<label for="editAvailability">Disponibilidade</label>
+									<input type="text" class="form-control" id="editAvailability">
+								</div>
+							</div>
+							<button type="submit" class="btn btn-primary save-profile-btn">Salvar Alterações</button>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+
+        <div id="toastContainer"></div>
+
 	</div>
 
 	<script src="vendors/scripts/core.js"></script>
@@ -535,247 +605,213 @@
 	<script src="src/plugins/datatables/js/jquery.dataTables.min.js"></script>
 	<script src="src/plugins/datatables/js/dataTables.bootstrap4.min.js"></script>
 	<script src="src/plugins/datatables/js/responsive.bootstrap4.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-	<noscript>
-		<iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NXZMQSS" height="0" width="0" style="display: none; visibility: hidden"></iframe>
-	</noscript>
+
+	<noscript
+		><iframe
+			src="https://www.googletagmanager.com/ns.html?id=GTM-NXZMQSS"
+			height="0"
+			width="0"
+			style="display: none; visibility: hidden"
+		></iframe
+	></noscript>
 
 	<script>
-		let loggedInUser = null; // Variável para armazenar os dados do usuário logado
+        // Variável global para armazenar os dados do usuário/prestador logado
+        let loggedInUser = null;
+        // URL base do seu backend (ajuste se necessário)
+        const BACKEND_BASE_URL = 'https://wyn-backend.onrender.com';
+        const DEFAULT_USER_PIC = 'vendors/images/photo1.jpg'; // Imagem padrão para usuário
+        const DEFAULT_PRESTADOR_PIC = 'vendors/images/photo4.jpg'; // Imagem padrão para prestador
 
-        // Obter a URL base do backend do ambiente (se definida) ou usar localhost para desenvolvimento
-        const BACKEND_BASE_URL = 'https://wyn-backend.onrender.com'; // Sua URL do Render
-
-		async function loadProfile() {
-			const token = localStorage.getItem('token');
-			const userCache = localStorage.getItem('usuario'); // Tenta pegar do cache de usuário
-
-			const userNameHeaderSpan = document.getElementById("user-name-header");
-            const userProfilePicHeaderImg = document.getElementById("user-profile-pic-header");
-            const profilePictureImg = document.getElementById("profile-picture");
-            const profileTitle = document.getElementById("profile-title");
-            const profileNameEl = document.getElementById("profile-name");
-            const profileTypeEl = document.getElementById("profile-type");
-            const profileEmailEl = document.getElementById("profile-email");
-            const profilePhoneEl = document.getElementById("profile-phone");
-            const sidebarCliente = document.querySelector(".left-side-bar"); // Seleciona a sidebar do cliente
-
-
-			if (!token || !userCache) {
-				console.warn("Usuário não autenticado. Redirecionando para login.");
-				window.location.href = "login.html"; // Redireciona para o login do cliente
-				return;
-			}
-
-            // Tenta usar os dados do cache primeiro para exibição rápida
-            loggedInUser = JSON.parse(userCache);
-            if (userNameHeaderSpan) userNameHeaderSpan.textContent = loggedInUser.nome || 'Usuário';
-            if (userProfilePicHeaderImg && loggedInUser.foto_perfil_url) {
-                userProfilePicHeaderImg.src = loggedInUser.foto_perfil_url;
-                userProfilePicHeaderImg.onerror = function() { this.onerror = null; this.src = "vendors/images/photo1.jpg"; };
-            } else if (userProfilePicHeaderImg) {
-                userProfilePicHeaderImg.src = "vendors/images/photo1.jpg"; // Imagem padrão cliente
+        // Função para exibir toast notifications
+        function showToast(message, type = 'success') {
+            const toastContainer = document.getElementById('toastContainer');
+            if (!toastContainer) {
+                console.error("Toast container não encontrado!");
+                return;
             }
-            if (profilePictureImg && loggedInUser.foto_perfil_url) {
-                profilePictureImg.src = loggedInUser.foto_perfil_url;
-                profilePictureImg.onerror = function() { this.onerror = null; this.src = "vendors/images/photo1.jpg"; };
-            } else if (profilePictureImg) {
-                profilePictureImg.src = "vendors/images/photo1.jpg"; // Imagem padrão cliente
+
+            const toastElement = document.createElement('div');
+            toastElement.classList.add('toast');
+            toastElement.setAttribute('role', 'alert');
+            toastElement.setAttribute('aria-live', 'assertive');
+            toastElement.setAttribute('aria-atomic', 'true');
+            toastElement.setAttribute('data-delay', '5000');
+
+            toastElement.innerHTML = `
+                <div class="toast-header ${type === 'success' ? 'bg-success text-white' : type === 'danger' ? 'bg-danger text-white' : 'bg-info text-white'}">
+                    <strong class="mr-auto">${type === 'success' ? 'Sucesso' : type === 'danger' ? 'Erro' : 'Informação'}</strong>
+                    <small>Agora</small>
+                    <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="toast-body">
+                    ${message}
+                </div>
+            `;
+
+            toastContainer.appendChild(toastElement);
+            $(toastElement).toast('show');
+            $(toastElement).on('hidden.bs.toast', function () {
+                $(this).remove();
+            });
+        }
+
+
+        // Função para carregar os dados do perfil
+        async function loadProfile() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                console.warn("Token não encontrado. Redirecionando para login.");
+                window.location.href = "login.html"; // Ou "login prestador.html" dependendo do caso
+                return;
             }
-            if (profileTitle) profileTitle.textContent = 'Meu Perfil (Cliente)';
-            if (profileTypeEl) profileTypeEl.textContent = 'Cliente';
-            if (profileNameEl) profileNameEl.textContent = loggedInUser.nome || 'Nome não informado';
-            if (profileEmailEl) profileEmailEl.textContent = loggedInUser.email || 'Email não informado';
-            if (profilePhoneEl) profilePhoneEl.textContent = loggedInUser.telefone || 'Telefone não informado';
-            if (sidebarCliente) sidebarCliente.style.display = 'block'; // Garante que a sidebar do cliente esteja visível
 
+            try {
+                const response = await fetch(`${BACKEND_BASE_URL}/perfil`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
 
-			try {
-				// Chamada ao backend para validar o token e obter dados completos e atualizados
-				const res = await fetch(`${BACKEND_BASE_URL}/perfil`, {
-					headers: { 'Authorization': 'Bearer ' + token }
-				});
-
-				const resClone = res.clone(); // Clonar para ler o body se der erro de JSON
-
-				if (!res.ok) {
-					if (res.status === 401 || res.status === 403) {
-						console.error("Token inválido ou expirado. Redirecionando para login.");
-						console.error("Sua sessão expirou. Por favor, faça login novamente.");
-						window.location.href = "login.html";
-						return;
-					}
-					throw new Error(`Erro HTTP ao buscar perfil: ${res.status}`);
-				}
-
-				let data = {};
-				try {
-					data = await res.json();
-				} catch(jsonError) {
-					console.error("Erro ao parsear JSON do perfil:", await resClone.text());
-					throw new Error("Resposta de perfil inválida.");
-				}
-
-                // Verifica se o tipo de usuário retornado é realmente um usuário (cliente)
-                if (data.tipo !== 'usuario' || !data.usuario?._id) {
-                    console.error("Token válido, mas não corresponde a um cliente. Redirecionando para login de prestador ou geral.");
-                    // Se não for um usuário, pode ser um prestador ou um tipo desconhecido.
-                    // Redireciona para o login de prestador se o cache de prestador existir,
-                    // caso contrário, volta para o login geral.
-                    if (localStorage.getItem('prestador')) {
-                        window.location.href = "login prestador.html";
-                    } else {
-                        window.location.href = "login.html";
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    console.error("Erro ao carregar perfil:", errorData.message);
+                    showToast('Erro ao carregar perfil: ' + (errorData.message || 'Verifique sua conexão.'), 'danger');
+                    if (response.status === 401 || response.status === 403) {
+                        localStorage.removeItem('token');
+                        localStorage.removeItem('usuario'); // Limpa cache de usuário
+                        localStorage.removeItem('prestador'); // Limpa cache de prestador
+                        setTimeout(() => {
+                            window.location.href = "login.html"; // Redireciona para login
+                        }, 2000);
                     }
                     return;
                 }
 
-                // Atualiza a variável global com os dados frescos do backend
-                loggedInUser = data.usuario;
+                const data = await response.json();
+                loggedInUser = data.usuario || data.prestador; // Armazena o objeto completo
+                const userType = data.tipo;
 
-                // Atualiza a interface com os dados retornados pelo backend
-                if (userNameHeaderSpan) userNameHeaderSpan.textContent = loggedInUser.nome || 'Usuário';
-                if (profileNameEl) profileNameEl.textContent = loggedInUser.nome || 'Nome não informado';
-                if (profileEmailEl) profileEmailEl.textContent = loggedInUser.email || 'Email não informado';
-                if (profilePhoneEl) profilePhoneEl.textContent = loggedInUser.telefone || 'Telefone não informado';
-
-                // Atualiza a foto de perfil com a URL retornada pelo backend
-                if (userProfilePicHeaderImg && loggedInUser.foto_perfil_url) {
-                    userProfilePicHeaderImg.src = loggedInUser.foto_perfil_url;
-                    userProfilePicHeaderImg.onerror = function() { this.onerror = null; this.src = "vendors/images/photo1.jpg"; };
-                } else if (userProfilePicHeaderImg) {
-                    userProfilePicHeaderImg.src = "vendors/images/photo1.jpg"; // Imagem padrão cliente
+                if (!loggedInUser) {
+                    console.error("Dados de perfil não encontrados na resposta.");
+                    showToast('Dados de perfil inválidos.', 'danger');
+                    return;
                 }
-                if (profilePictureImg && loggedInUser.foto_perfil_url) {
+
+                // Atualiza o cache local
+                if (userType === 'usuario') {
+                    localStorage.setItem('usuario', JSON.stringify(loggedInUser));
+                    document.getElementById('dashboard-link').href = 'indexx.html';
+                    document.getElementById('profile-title').textContent = 'Meu Perfil (Cliente)';
+                } else if (userType === 'prestador') {
+                    localStorage.setItem('prestador', JSON.stringify(loggedInUser));
+                    document.getElementById('dashboard-link').href = 'index.html';
+                    document.getElementById('profile-title').textContent = 'Meu Perfil (Prestador)';
+                }
+
+
+                // Atualiza as informações na página
+                document.getElementById('profile-name').textContent = loggedInUser.nome;
+                document.getElementById('profile-type').textContent = userType === 'usuario' ? 'Cliente' : 'Prestador';
+                document.getElementById('profile-email').textContent = loggedInUser.email;
+                document.getElementById('profile-phone').textContent = loggedInUser.telefone || 'Não informado';
+
+                // Atualiza a foto de perfil principal
+                const profilePictureImg = document.getElementById('profile-picture');
+                const headerProfilePicImg = document.getElementById('user-profile-pic-header'); // Imagem do cabeçalho
+
+                const defaultPic = userType === 'usuario' ? DEFAULT_USER_PIC : DEFAULT_PRESTADOR_PIC;
+
+                if (loggedInUser.foto_perfil_url) {
                     profilePictureImg.src = loggedInUser.foto_perfil_url;
-                    profilePictureImg.onerror = function() { this.onerror = null; this.src = "vendors/images/photo1.jpg"; };
-                } else if (profilePictureImg) {
-                    profilePictureImg.src = "vendors/images/photo1.jpg"; // Imagem padrão cliente
+                    headerProfilePicImg.src = loggedInUser.foto_perfil_url;
+                    // Adiciona um fallback caso a URL da imagem falhe
+                    profilePictureImg.onerror = function() {
+                        this.onerror = null; // Evita loop infinito de erro
+                        this.src = defaultPic;
+                    };
+                    headerProfilePicImg.onerror = function() {
+                        this.onerror = null; // Evita loop infinito de erro
+                        this.src = defaultPic;
+                    };
+                } else {
+                    profilePictureImg.src = defaultPic;
+                    headerProfilePicImg.src = defaultPic;
                 }
 
-				console.log("Perfil do cliente carregado do backend:", loggedInUser);
+                // Exibe/Oculta campos específicos para Prestador
+                const prestadorFields = document.getElementById('prestador-fields');
+                const editPrestadorFields = document.getElementById('edit-prestador-fields');
+                if (userType === 'prestador') {
+                    prestadorFields.style.display = 'block';
+                    editPrestadorFields.style.display = 'block';
+                    document.getElementById('profile-specialties').textContent = loggedInUser.especialidades?.join(', ') || 'Não informado';
+                    document.getElementById('profile-area').textContent = loggedInUser.area_atuacao || 'Não informado';
+                    document.getElementById('profile-availability').textContent = loggedInUser.disponibilidade || 'Não informado';
+                } else {
+                    prestadorFields.style.display = 'none';
+                    editPrestadorFields.style.display = 'none';
+                }
 
-
-			} catch (err) {
-				console.error('Erro ao carregar perfil:', err);
-				 console.error('Ocorreu um erro ao carregar informações do perfil.');
-				// Se a chamada falhou, manter os dados do cache (se existirem) ou exibir mensagem de erro
-                 if (!loggedInUser) { // Se nem o cache foi populado
-                      if (profileNameEl) profileNameEl.textContent = 'Erro ao carregar nome';
-                      if (profileTypeEl) profileTypeEl.textContent = 'Erro';
-                      if (profileEmailEl) profileEmailEl.textContent = 'Erro ao carregar email';
-                      if (profilePhoneEl) profilePhoneEl.textContent = 'Erro ao carregar telefone';
-                      if (profilePictureImg) profilePictureImg.src = "vendors/images/photo-error.jpg"; // Imagem de erro
-                 }
-			}
-		}
-
-        // Listener para o botão "Alterar Foto"
-        document.getElementById('change-profile-pic-btn').addEventListener('click', () => {
-             document.getElementById('upload-profile-pic').click(); // Simula o clique no input de arquivo
-        });
-
-        // Listener para quando um arquivo é selecionado no input de arquivo
-        document.getElementById('upload-profile-pic').addEventListener('change', async (event) => {
-             const file = event.target.files[0]; // Pega o primeiro arquivo selecionado
-
-             if (!file) {
-                  return; // Sai se nenhum arquivo foi selecionado
-             }
-
-             const token = localStorage.getItem('token');
-             if (!token) {
-                  console.error('Sua sessão expirou. Faça login novamente para alterar a foto.');
-                  window.location.href = 'login.html';
-                  return;
-             }
-
-             const formData = new FormData();
-             formData.append('foto_perfil', file); // 'foto_perfil' deve corresponder ao nome esperado no backend (upload.single('foto_perfil'))
-
-             // Desabilita o botão e indica que está enviando
-             const changeButton = document.getElementById('change-profile-pic-btn');
-             changeButton.disabled = true;
-             changeButton.textContent = 'Enviando...';
-
-             try {
-                  // Endpoint para upload de foto de perfil
-                  const response = await fetch(`${BACKEND_BASE_URL}/upload-foto-perfil`, {
-                       method: 'POST',
-                       headers: {
-                            // Não defina 'Content-Type' manualmente com FormData
-                           'Authorization': `Bearer ${token}`
-                       },
-                       body: formData
-                  });
-
-                  const result = await response.json();
-
-                  if (!response.ok) {
-                       console.error(result.message || 'Erro ao fazer upload da foto.');
-                       console.error('Erro no upload:', result);
-                  } else {
-                       console.log('Foto de perfil atualizada com sucesso!');
-                       console.log('Upload bem-sucedido:', result);
-
-                       // Atualiza a imagem na UI com a nova URL retornada pelo backend
-                       const newPhotoUrl = result.foto_perfil_url; // O backend deve retornar a nova URL
-                       if (newPhotoUrl) {
-                           document.getElementById('profile-picture').src = newPhotoUrl;
-                           document.getElementById('user-profile-pic-header').src = newPhotoUrl; // Atualiza também no header
-                           // Atualiza o cache local com a nova URL
-                           if (loggedInUser) {
-                                loggedInUser.foto_perfil_url = newPhotoUrl;
-                                localStorage.setItem('usuario', JSON.stringify(loggedInUser));
-                           }
-                       } else {
-                           console.warn("Backend não retornou a URL da nova foto.");
-                       }
-                  }
-
-             } catch (error) {
-                  console.error("Erro ao enviar foto:", error);
-                  console.error("Erro ao enviar foto: " + (error.message || "Verifique sua conexão."));
-             } finally {
-                  // Reabilita o botão e restaura o texto
-                  changeButton.disabled = false;
-                  changeButton.textContent = 'Alterar Foto';
-                  // Limpa o input de arquivo para permitir o upload do mesmo arquivo novamente, se necessário
-                  event.target.value = '';
-             }
-        });
-
-        // Listener para o botão "Editar Perfil" (abre o modal)
-        document.getElementById('edit-profile-btn').addEventListener('click', () => {
-            // Preenche o formulário do modal com os dados atuais do cliente
-            if (loggedInUser) {
-                document.getElementById('editName').value = loggedInUser.nome || '';
-                document.getElementById('editEmail').value = loggedInUser.email || '';
+                // Preenche o modal de edição com os dados atuais
+                document.getElementById('editName').value = loggedInUser.nome;
                 document.getElementById('editPhone').value = loggedInUser.telefone || '';
-            }
-            $('#editProfileModal').modal('show'); // Abre o modal
-        });
+                if (userType === 'prestador') {
+                    document.getElementById('editSpecialties').value = loggedInUser.especialidades?.join(', ') || '';
+                    document.getElementById('editArea').value = loggedInUser.area_atuacao || '';
+                    document.getElementById('editAvailability').value = loggedInUser.disponibilidade || '';
+                }
 
-        // Listener para o formulário de edição de perfil (salvar alterações)
-        document.getElementById('editProfileForm').addEventListener('submit', async (event) => {
-            event.preventDefault();
+            } catch (error) {
+                console.error("Erro ao carregar perfil:", error);
+                showToast('Erro ao carregar perfil: ' + (error.message || 'Verifique sua conexão.'), 'danger');
+            }
+        }
+
+        // Função para salvar as alterações do perfil
+        document.getElementById('editProfileForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
 
             const token = localStorage.getItem('token');
-            if (!token) {
-                console.error('Sua sessão expirou. Faça login novamente para salvar alterações.');
-                window.location.href = 'login.html';
+            if (!token || !loggedInUser) {
+                showToast('Você não está logado.', 'danger');
                 return;
             }
 
             const updatedData = {
                 nome: document.getElementById('editName').value,
-                telefone: document.getElementById('editPhone').value
+                telefone: document.getElementById('editPhone').value,
             };
 
+            let endpoint = '';
+            if (loggedInUser.email.includes('@usuario.com')) { // Exemplo de como diferenciar (ajuste conforme sua lógica)
+                endpoint = `${BACKEND_BASE_URL}/perfil-usuario`;
+            } else if (loggedInUser.email.includes('@prestador.com')) { // Exemplo de como diferenciar (ajuste conforme sua lógica)
+                endpoint = `${BACKEND_BASE_URL}/perfil-prestador`;
+                updatedData.especialidades = document.getElementById('editSpecialties').value.split(',').map(s => s.trim()).filter(s => s);
+                updatedData.area_atuacao = document.getElementById('editArea').value;
+                updatedData.disponibilidade = document.getElementById('editAvailability').value;
+            } else { // Fallback para o tipo de usuário determinado pelo backend
+                if (loggedInUser.hasOwnProperty('isAdmin')) { // Se tem isAdmin, é um usuário
+                    endpoint = `${BACKEND_BASE_URL}/perfil-usuario`;
+                } else { // Caso contrário, assume-se prestador
+                    endpoint = `${BACKEND_BASE_URL}/perfil-prestador`;
+                    updatedData.especialidades = document.getElementById('editSpecialties').value.split(',').map(s => s.trim()).filter(s => s);
+                    updatedData.area_atuacao = document.getElementById('editArea').value;
+                    updatedData.disponibilidade = document.getElementById('editAvailability').value;
+                }
+            }
+
+
             try {
-                // Endpoint para atualizar o perfil do usuário (cliente)
-                const response = await fetch(`${BACKEND_BASE_URL}/perfil-usuario`, { // Assumindo este endpoint no backend
-                    method: 'PUT', // Ou PATCH
+                const response = await fetch(endpoint, {
+                    method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`
@@ -787,20 +823,90 @@
 
                 if (!response.ok) {
                     console.error(result.message || 'Erro ao atualizar perfil.');
-                    alert('Erro ao atualizar perfil: ' + (result.message || 'Verifique seus dados.'));
+                    showToast('Erro ao atualizar perfil: ' + (result.message || 'Verifique seus dados.'), 'danger');
                 } else {
                     console.log('Perfil atualizado com sucesso!', result);
-                    alert('Perfil atualizado com sucesso!');
+                    showToast('Perfil atualizado com sucesso!', 'success');
                     $('#editProfileModal').modal('hide'); // Fecha o modal
 
                     // Atualiza o cache local e recarrega a página para refletir as mudanças
-                    localStorage.setItem('usuario', JSON.stringify(result.usuario)); // Backend deve retornar o usuário atualizado
+                    // O backend deve retornar o usuário/prestador atualizado
+                    if (result.usuario) {
+                        localStorage.setItem('usuario', JSON.stringify(result.usuario));
+                    } else if (result.prestador) {
+                        localStorage.setItem('prestador', JSON.stringify(result.prestador));
+                    }
                     loadProfile(); // Recarrega os dados na página
                 }
 
             } catch (error) {
                 console.error("Erro ao salvar perfil:", error);
-                alert("Erro ao salvar perfil: " + (error.message || "Verifique sua conexão."));
+                showToast("Erro ao salvar perfil: " + (error.message || "Verifique sua conexão."), 'danger');
+            }
+        });
+
+        // Lógica para upload de foto de perfil
+        document.getElementById('change-profile-pic-btn').addEventListener('click', () => {
+            document.getElementById('upload-profile-pic').click();
+        });
+
+        document.getElementById('upload-profile-pic').addEventListener('change', async (event) => {
+            const file = event.target.files[0];
+            if (!file) {
+                return;
+            }
+
+            const token = localStorage.getItem('token');
+            if (!token) {
+                showToast('Você não está logado para alterar a foto.', 'danger');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('foto_perfil', file); // 'foto_perfil' deve corresponder ao nome do campo no Multer do backend
+
+            try {
+                // Exibe um toast de carregamento
+                showToast('Fazendo upload da foto...', 'info');
+
+                const response = await fetch(`${BACKEND_BASE_URL}/upload-foto-perfil`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    console.error(result.message || 'Erro ao fazer upload da foto.');
+                    showToast('Erro ao fazer upload da foto: ' + (result.message || 'Tente novamente.'), 'danger');
+                } else {
+                    console.log('Foto de perfil atualizada com sucesso!', result);
+                    showToast('Foto de perfil atualizada com sucesso!', 'success');
+
+                    // Atualiza o cache local com a nova URL da foto
+                    if (loggedInUser.hasOwnProperty('isAdmin')) { // Se é usuário
+                        let usuarioCache = JSON.parse(localStorage.getItem('usuario'));
+                        if (usuarioCache) {
+                            usuarioCache.foto_perfil_url = result.foto_perfil_url;
+                            localStorage.setItem('usuario', JSON.stringify(usuarioCache));
+                        }
+                    } else { // Se é prestador
+                        let prestadorCache = JSON.parse(localStorage.getItem('prestador'));
+                        if (prestadorCache) {
+                            prestadorCache.foto_perfil_url = result.foto_perfil_url;
+                            localStorage.setItem('prestador', JSON.stringify(prestadorCache));
+                        }
+                    }
+
+                    loadProfile(); // Recarrega os dados na página para exibir a nova foto
+                }
+
+            } catch (error) {
+                console.error("Erro ao fazer upload da foto:", error);
+                showToast("Erro ao fazer upload da foto: " + (error.message || "Verifique sua conexão."), 'danger');
             }
         });
 
@@ -810,6 +916,7 @@
 			e.preventDefault();
 			localStorage.removeItem('token');
 			localStorage.removeItem('usuario'); // Remove o cache específico do usuário
+            localStorage.removeItem('prestador'); // Remove o cache específico do prestador
 			window.location.href = 'login.html'; // Redireciona para a página de login principal
 		});
 
