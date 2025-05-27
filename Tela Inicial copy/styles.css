@@ -2371,3 +2371,159 @@ body.dark-mode .send-button {
 .hidden {
     display: none;
 }
+
+/* Estilos para o botão flutuante do chat */
+.chat-toggle-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: var(--primary-color);
+    color: var(--text-light);
+    border: none;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2.2rem;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    z-index: 1000; /* Acima de outros elementos */
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+body.dark-mode .chat-toggle-button {
+    background-color: var(--dark-primary-color);
+    color: var(--dark-text-color);
+}
+
+.chat-toggle-button:hover {
+    background-color: #e05e0a;
+    transform: scale(1.05);
+}
+
+/* Estilos para o contêiner do chatbot flutuante */
+.floating-chatbot-container {
+    position: fixed;
+    bottom: 90px; /* Acima do botão flutuante */
+    right: 20px;
+    background-color: var(--card-background);
+    border-radius: 10px;
+    box-shadow: 0 5px 15px var(--shadow-color);
+    width: 350px; /* Largura do chat box */
+    height: 450px; /* Altura do chat box */
+    display: flex;
+    flex-direction: column;
+    z-index: 999; /* Abaixo do botão de toggle, mas acima do conteúdo */
+    transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+    transform: translateY(20px); /* Começa um pouco abaixo */
+    opacity: 0; /* Começa invisível */
+}
+
+body.dark-mode .floating-chatbot-container {
+    background-color: var(--dark-card-background);
+    box-shadow: 0 5px 15px var(--dark-shadow-color);
+}
+
+.floating-chatbot-container.visible {
+    transform: translateY(0); /* Move para a posição final */
+    opacity: 1; /* Torna visível */
+}
+
+.chatbot-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--primary-color);
+    color: var(--text-light);
+    padding: 0.8rem 1rem;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+body.dark-mode .chatbot-header {
+    background-color: var(--dark-primary-color);
+    color: var(--dark-text-color);
+}
+
+.chatbot-header h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.close-chat-button {
+    background: none;
+    border: none;
+    color: var(--text-light);
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+body.dark-mode .close-chat-button {
+    color: var(--dark-text-color);
+}
+
+.close-chat-button:hover {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* Ajustes para o chat-display dentro do floating-chatbot-container */
+.floating-chatbot-container .chat-display {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 1rem;
+    border: none; /* Remove a borda aqui, pois o contêiner já tem */
+    border-radius: 0;
+    margin-bottom: 0;
+    background-color: var(--card-background); /* Fundo do chat display */
+    transition: background-color 0.3s ease;
+}
+
+body.dark-mode .floating-chatbot-container .chat-display {
+    background-color: var(--dark-card-background);
+}
+
+/* Ajustes para o input e botão de envio dentro do floating-chatbot-container */
+.floating-chatbot-container .chat-input-area {
+    padding: 1rem;
+    border-top: 1px solid var(--border-color);
+    background-color: var(--card-background);
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+body.dark-mode .floating-chatbot-container .chat-input-area {
+    border-color: var(--dark-border-color);
+    background-color: var(--dark-card-background);
+}
+
+.floating-chatbot-container .chat-input {
+    border-radius: 5px; /* Menos arredondado para o input */
+}
+
+.floating-chatbot-container .send-button {
+    padding: 0.5rem 1rem; /* Ajusta o padding do botão */
+    font-size: 1.2rem; /* Aumenta o ícone do botão */
+}
+
+/* Responsividade para o chat box flutuante */
+@media (max-width: 480px) {
+    .floating-chatbot-container {
+        width: calc(100% - 40px); /* Ocupa quase toda a largura em telas muito pequenas */
+        right: 20px;
+        left: 20px; /* Centraliza horizontalmente */
+        bottom: 80px; /* Ajusta a posição */
+        height: 400px; /* Altura um pouco menor */
+    }
+    .chat-toggle-button {
+        width: 50px;
+        height: 50px;
+        font-size: 1.8rem;
+        bottom: 15px;
+        right: 15px;
+    }
+}

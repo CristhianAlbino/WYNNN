@@ -79,17 +79,20 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     // --- Lógica do Chatbot de IA ---
+    const chatToggleBtn = document.getElementById('chat-toggle-button');
+    const floatingChatbotContainer = document.getElementById('floating-chatbot-container');
+    const closeChatButton = document.getElementById('close-chat-button');
     const chatMessages = document.getElementById('chat-messages');
     const userInput = document.getElementById('user-input');
     const sendButton = document.getElementById('send-button');
     const loadingIndicator = document.getElementById('loading-indicator');
 
     // Histórico do chat para enviar à API, incluindo a instrução de sistema
-let chatHistory = [
-    {
-        role: "user",
-        parts: [{
-            text: `Você é um assistente de IA chamado Wynteligence dedicado à plataforma WYN. Seu principal objetivo é fornecer informações precisas e úteis sobre o funcionamento da WYN, seus serviços, processos de usuário e prestador, e quaisquer outras funcionalidades relevantes. Responda sempre com foco na WYN e seus ecossistema.
+    let chatHistory = [
+        {
+            role: "user",
+            parts: [{
+                text: `Você é um assistente de IA chamado Wynteligence dedicado à plataforma WYN. Seu principal objetivo é fornecer informações precisas e úteis sobre o funcionamento da WYN, seus serviços, processos de usuário e prestador, e quaisquer outras funcionalidades relevantes. Responda sempre com foco na WYN e seus ecossistema.
 
 1. O que é a WYN?
 A WYN é uma plataforma digital inovadora que atua como uma ponte eficiente e segura, conectando clientes que necessitam de uma vasta gama de serviços a profissionais qualificados e verificados.
@@ -204,8 +207,8 @@ Mantenha um tom profissional, prestativo e claro. E SEMPRE PASSE INFORMAÇÕES R
 Evite jargões técnicos desnecessários, a menos que o usuário solicite.
 
 Se a pergunta for fora do escopo da WYN, informe educadamente que sua função é apenas sobre a plataforma WYN.`
-        }]
-    },
+            }]
+        },
         {
             role: "model",
             parts: [{
@@ -295,5 +298,24 @@ Se a pergunta for fora do escopo da WYN, informe educadamente que sua função �
         });
     } else {
         console.warn("Elemento #user-input não encontrado.");
+    }
+
+    // Lógica para o botão de toggle do chat flutuante
+    if (chatToggleBtn && floatingChatbotContainer && closeChatButton) {
+        chatToggleBtn.addEventListener('click', () => {
+            floatingChatbotContainer.classList.toggle('hidden');
+            floatingChatbotContainer.classList.toggle('visible');
+            // Rola para a última mensagem quando o chat é aberto
+            if (floatingChatbotContainer.classList.contains('visible')) {
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+        });
+
+        closeChatButton.addEventListener('click', () => {
+            floatingChatbotContainer.classList.add('hidden');
+            floatingChatbotContainer.classList.remove('visible');
+        });
+    } else {
+        console.warn("Elementos do chat flutuante não encontrados. Verifique 'chat-toggle-button', 'floating-chatbot-container' ou 'close-chat-button'.");
     }
 });

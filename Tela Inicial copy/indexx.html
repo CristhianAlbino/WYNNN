@@ -333,7 +333,9 @@
                         <ul>
                             <li><a href="#" class="active" style="--navAni:1">Inicio</a></li>
                             <li><a href="#how-it-works-section" style="--navAni:2">Como Funciona</a></li>
-                            <li><a href="#our-team-section" style="--navAni:4">Sobre Nós</a></li><li><a href="#ai-chatbot-section" style="--navAni:3">Nossa IA</a></li> <li><a href="#contact-us-section" style="--navAni:5">Contate-nos</a></li> <li><a href="/Seleção/dist/index.html" style="--navAni:6">Login/Cadastro</a></li>
+                            <li><a href="#our-team-section" style="--navAni:4">Sobre Nós</a></li>
+                            <li><a href="#contact-us-section" style="--navAni:5">Contate-nos</a></li>
+                            <li><a href="/Seleção/dist/index.html" style="--navAni:6">Login/Cadastro</a></li>
                             <li><a href="/LANDING PAGE WYN/LANDING PAGE WYN/login-admin.html" class="admin-link-header" style="--navAni:7">Admin</a></li>
                             <li><i class='bx bx-moon theme-switcher' id="theme-switcher-icon"></i></li>
                         </ul>
@@ -622,28 +624,6 @@ Garante a qualidade e estabilidade da aplicação.</p>
                 </div>
             </div>
         </section>
-       <section class="ai-chatbot-section" id ="ai-chatbot-section">
-            <div class="container">
-                <h2 class="section-title">Converse com nossa Wynteligence</h2>
-                <p class="text-center text-lg text-gray-700 mb-8">Faça perguntas sobre nossos serviços ou peça sugestões.</p>
-                <div class="chatbot-container">
-                    <div class="chat-display" id="chat-messages">
-                        <div class="message bot-message">
-                            <p>Eu sou a Wynteligence. E estou aqui para o que você precisar!</p>
-                        </div>
-                    </div>
-                    <div class="chat-input-area">
-                        <input type="text" id="user-input" placeholder="Digite sua mensagem..." class="chat-input">
-                        <button id="send-button" class="send-button">
-                            <i class='bx bx-send'></i> Enviar
-                        </button>
-                    </div>
-                    <div id="loading-indicator" class="loading-indicator hidden">
-                        <span></span><span></span><span></span>
-                    </div>
-                </div>
-            </div>
-        </section>
         <section class="contact-us-section" id="contact-us-section">
             <div class="container">
                 <h2 class="section-title">Entre em Contato Conosco</h2>
@@ -728,6 +708,33 @@ Garante a qualidade e estabilidade da aplicação.</p>
             </div>
         </footer>
     </div>
+
+    <button id="chat-toggle-button" class="chat-toggle-button">
+        <i class='bx bx-chat'></i>
+    </button>
+
+    <div id="floating-chatbot-container" class="floating-chatbot-container hidden">
+        <div class="chatbot-header">
+            <h3>Wynteligence</h3>
+            <button id="close-chat-button" class="close-chat-button"><i class='bx bx-x'></i></button>
+        </div>
+        <div class="chat-display" id="chat-messages">
+            <div class="message bot-message">
+                <p>Eu sou a Wynteligence. E estou aqui para o que você precisar!</p>
+            </div>
+        </div>
+        <div class="chat-input-area">
+            <input type="text" id="user-input" placeholder="Digite sua mensagem..." class="chat-input">
+            <button id="send-button" class="send-button">
+                <i class='bx bx-send'></i>
+            </button>
+        </div>
+        <div id="loading-indicator" class="loading-indicator hidden">
+            <span></span><span></span><span></span>
+        </div>
+    </div>
+
+
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.1.1/owl.carousel.min.js"></script>
     <script>
