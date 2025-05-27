@@ -1770,11 +1770,6 @@ to { transform: rotate(0deg); }
   }
 }
 
-/* Animações para telas menores (opcional, pode ajustar ou remover) */
-@media (max-width: 600px) {
-  /* Pode desabilitar ou simplificar algumas animações em dispositivos móveis para performance */
-}
-
 /* Estilos adicionais para as novas seções, adaptados ao seu design existente */
 /* Seção de Contato */
 .contact-section-content {
@@ -2340,15 +2335,31 @@ body.dark-mode .send-button {
     display: flex;
     justify-content: center;
     margin-top: 1rem;
+    height: 10px; /* Garante que ocupe espaço mesmo vazio */
 }
 
+/* Estilos para os pontos de digitação */
 .loading-indicator span {
-    width: 10px;
-    height: 10px;
+    width: 8px;
+    height: 8px;
     background-color: var(--primary-color);
     border-radius: 50%;
-    margin: 0 4px;
-    animation: bounce 0.6s infinite alternate;
+    margin: 0 3px;
+    animation: typing-bounce 0.8s infinite ease-in-out;
+    opacity: 0; /* Começa invisível */
+}
+
+body.dark-mode .loading-indicator span {
+    background-color: var(--dark-primary-color);
+}
+
+.loading-indicator.hidden span {
+    animation: none; /* Para a animação quando oculto */
+    opacity: 0;
+}
+
+.loading-indicator span:nth-child(1) {
+    animation-delay: 0s;
 }
 
 .loading-indicator span:nth-child(2) {
@@ -2359,14 +2370,17 @@ body.dark-mode .send-button {
     animation-delay: 0.4s;
 }
 
-@keyframes bounce {
-    from {
+@keyframes typing-bounce {
+    0%, 100% {
         transform: translateY(0);
+        opacity: 0.5;
     }
-    to {
-        transform: translateY(-10px);
+    50% {
+        transform: translateY(-5px);
+        opacity: 1;
     }
 }
+
 
 .hidden {
     display: none;
@@ -2526,4 +2540,44 @@ body.dark-mode .floating-chatbot-container .chat-input-area {
         bottom: 15px;
         right: 15px;
     }
+}
+
+/* Estilos para os botões de FAQ */
+.faq-buttons-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+    justify-content: center; /* Centraliza os botões */
+    padding: 0 1rem; /* Adiciona padding para não colar nas bordas */
+}
+
+.faq-button {
+    background-color: var(--section-background-alt); /* Cor de fundo suave */
+    color: var(--text-color); /* Cor do texto */
+    border: 1px solid var(--border-color);
+    border-radius: 20px; /* Botões arredondados */
+    padding: 8px 15px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+    white-space: nowrap; /* Evita que o texto quebre */
+}
+
+body.dark-mode .faq-button {
+    background-color: #3a3a3a;
+    color: var(--dark-text-color);
+    border-color: var(--dark-border-color);
+}
+
+.faq-button:hover {
+    background-color: var(--primary-color); /* Laranja no hover */
+    color: var(--text-light); /* Texto branco no hover */
+    border-color: var(--primary-color);
+}
+
+body.dark-mode .faq-button:hover {
+    background-color: var(--dark-primary-color);
+    color: var(--dark-text-color);
+    border-color: var(--dark-primary-color);
 }

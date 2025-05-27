@@ -87,6 +87,20 @@ document.addEventListener("DOMContentLoaded", function() {
     const sendButton = document.getElementById('send-button');
     const loadingIndicator = document.getElementById('loading-indicator');
 
+    // Determina a mensagem de boas-vindas dinâmica
+    const now = new Date();
+    const hour = now.getHours();
+    let greeting;
+    if (hour >= 5 && hour < 12) {
+        greeting = "Bom dia!";
+    } else if (hour >= 12 && hour < 18) {
+        greeting = "Boa tarde!";
+    } else {
+        greeting = "Boa noite!";
+    }
+
+    const initialBotMessage = `${greeting} Eu sou a Wynteligence. E estou aqui para o que você precisar!`;
+
     // Histórico do chat para enviar à API, incluindo a instrução de sistema
     let chatHistory = [
         {
@@ -212,13 +226,41 @@ Se a pergunta for fora do escopo da WYN, informe educadamente que sua função �
         {
             role: "model",
             parts: [{
-                text: "Olá! Como posso ajudar você hoje?"
+                text: initialBotMessage
             }]
         }
     ];
 
     // Adiciona a mensagem inicial do bot ao carregar a página
-    addMessage('bot', "Olá! Como posso ajudar você hoje?");
+    addMessage('bot', initialBotMessage);
+
+    // Sugestões de Perguntas Frequentes (FAQs)
+    const faqs = [
+        { question: "O que é a WYN?" },
+        { question: "Como me cadastro?" },
+        { question: "Quais serviços estão disponíveis?" }
+    ];
+
+    function renderFaqButtons() {
+        const faqButtonsContainer = document.createElement('div');
+        faqButtonsContainer.classList.add('faq-buttons-container');
+
+        faqs.forEach(faq => {
+            const button = document.createElement('button');
+            button.classList.add('faq-button');
+            button.textContent = faq.question;
+            button.addEventListener('click', () => {
+                userInput.value = faq.question; // Preenche o input com a pergunta
+                sendMessageToAI(); // Envia a pergunta
+            });
+            faqButtonsContainer.appendChild(button);
+        });
+        chatMessages.appendChild(faqButtonsContainer);
+        chatMessages.scrollTop = chatMessages.scrollHeight; // Rola para a última mensagem
+    }
+
+    // Renderiza os botões de FAQ após a mensagem inicial
+    renderFaqButtons();
 
 
     function addMessage(sender, text) {
