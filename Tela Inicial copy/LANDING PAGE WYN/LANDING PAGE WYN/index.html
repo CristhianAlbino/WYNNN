@@ -635,10 +635,10 @@
 						<div
 							class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list"
 						>
-							<a class="dropdown-item" href="profile.html"
+							<a class="dropdown-item" href="prestador-profile.html"
 								><i class="dw dw-user1"></i> Perfil</a
 							>
-							<a class="dropdown-item" href="profile.html"
+							<a class="dropdown-item" href="prestador-profile.html"
 								><i class="dw dw-settings2"></i>Configurações</a
 							>
 							<a class="dropdown-item" href="faq.html"
@@ -1091,11 +1091,6 @@
             let pendingPollingInterval = null; // Para o polling de novas solicitações
             let notificationPollingInterval = null; // NOVO: Para o polling de todas as notificações
 
-            // URL base do seu backend (ajuste se necessário)
-            const BACKEND_BASE_URL = 'https://wyn-backend.onrender.com';
-            const DEFAULT_PRESTADOR_PIC = 'vendors/images/photo4.jpg'; // Imagem padrão para prestador
-
-
             // Função para exibir toast notifications
             function showToast(message, type = 'success') {
                 const toastContainer = document.getElementById('toastContainer');
@@ -1150,20 +1145,19 @@
 					 if (nomeSpan && prestadorLogado?.nome) {
 						 nomeSpan.textContent = prestadorLogado.nome;
 					 }
-                     // Define a imagem do cache ou a padrão
                      if (prestadorProfilePicImg && prestadorLogado?.foto_perfil_url) {
                          prestadorProfilePicImg.src = prestadorLogado.foto_perfil_url;
                           prestadorProfilePicImg.onerror = function() {
                              this.onerror = null;
-                             this.src = DEFAULT_PRESTADOR_PIC;
+                             this.src = "vendors/images/photo4.jpg";
                          };
                      } else if (prestadorProfilePicImg) {
-                          prestadorProfilePicImg.src = DEFAULT_PRESTADOR_PIC;
+                          prestadorProfilePicImg.src = "vendors/images/photo4.jpg";
                      }
 
 
 					 // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
-					 const res = await fetch(`${BACKEND_BASE_URL}/perfil`, {
+					 const res = await fetch('https://wyn-backend.onrender.com/perfil', {
 						 headers: { 'Authorization': 'Bearer ' + token }
 					 });
 
@@ -1201,15 +1195,14 @@
 					if (prestadorLogado?.nome && nomeSpan) {
 						nomeSpan.textContent = prestadorLogado.nome;
 					}
-                     // Atualiza a imagem com a URL do backend
                      if (prestadorProfilePicImg && prestadorLogado?.foto_perfil_url) {
                          prestadorProfilePicImg.src = prestadorLogado.foto_perfil_url;
                           prestadorProfilePicImg.onerror = function() {
                              this.onerror = null;
-                             this.src = DEFAULT_PRESTADOR_PIC;
+                             this.src = "vendors/images/photo4.jpg";
                          };
                      } else if (prestadorProfilePicImg) {
-                          prestadorProfilePicImg.src = DEFAULT_PRESTADOR_PIC;
+                          prestadorProfilePicImg.src = "vendors/images/photo4.jpg";
                      }
 
 					console.log("Perfil do prestador carregado:", prestadorLogado);
@@ -1256,65 +1249,67 @@
 				 'cancelado': 'Cancelado'
 			};
 
-			// Função para renderizar a tabela com base em um array de serviços
-			function renderizarTabela(servicosParaExibir) {
-				const tabelaBody = document.getElementById("solicitacoes-tabela"); // ID correto para esta página
-				const tableEmpty = document.getElementById("table-empty");
-				tabelaBody.innerHTML = ""; // Limpa a tabela
+            // Função para renderizar a tabela com base em um array de serviços
+            function renderizarTabela(servicosParaExibir) {
+                 const tabelaBody = document.getElementById("solicitacoes-tabela"); // ID correto para esta página
+                 const tableEmpty = document.getElementById("table-empty");
 
-				if (servicosParaExibir.length === 0) {
-					tableEmpty.style.display = 'block';
-				} else {
-					tableEmpty.style.display = 'none';
-					servicosParaExibir.forEach((servico) => {
-						const row = document.createElement("tr");
-						let actionsHtml = '';
+                 tabelaBody.innerHTML = ""; // Limpa a tabela
 
-						// O prestador só pode Aceitar ou Recusar se o status for 'aguardando_aceite_prestador'
-						if (servico.status === 'aguardando_aceite_prestador') {
-							actionsHtml += `<a href="#" data-id="${servico._id}" class="aceitar-servico btn btn-sm btn-success mr-1">Aceitar</a>`;
-							actionsHtml += `<a href="#" data-id="${servico._id}" class="recusar-servico btn btn-sm btn-danger mr-1">Recusar</a>`;
-						}
-						// Adiciona botão para ver detalhes
-						actionsHtml += `<a href="#" data-id="${servico._id}" class="ver-detalhes btn btn-sm btn-info">Detalhes</a>`;
+                 if (servicosParaExibir.length === 0) {
+                      tableEmpty.style.display = 'block';
+                 } else {
+                     tableEmpty.style.display = 'none';
+                     servicosParaExibir.forEach((servico) => {
+                         const row = document.createElement("tr");
 
-						row.innerHTML = `
-							<td class="table-plus">
-								<div class="name-avatar d-flex align-items-center">
-									<div class="avatar mr-2 flex-shrink-0">
-										<img src="${servico.foto_cliente_url || 'vendors/images/photo4.jpg'}" class="border-radius-100 shadow" width="40" height="40" alt="Foto do Cliente" onerror="this.onerror=null;this.src='vendors/images/photo4.jpg';"/>
-									</div>
-									<div class="txt">
-										<div class="weight-600">${servico.nome_cliente || 'Cliente Desconhecido'}</div>
-									</div>
-								</div>
-							</td>
-							<td>${servico.tipo_servico || 'Não informado'}</td>
-							<td>${servico.endereco_servico || "Não informado"}</td>
-							<td>${servico.urgente ? "Sim" : "Não"}</td>
-							<td>${servico.data_solicitacao ? new Date(servico.data_solicitacao).toLocaleDateString('pt-BR') : 'Não informada'}</td>
-							<td>${servico.notas_adicionais || "Nenhuma"}</td>
-							<td>${statusMapPrestador[servico.status] || servico.status}</td>
-							<td>
-								<div class="table-actions">
-									${actionsHtml}
-								</div>
-							</td>
-						`;
-						tabelaBody.appendChild(row);
-					});
-				}
-			}
+                         let actionsHtml = '';
+                         // O prestador só pode Aceitar ou Recusar se o status for 'aguardando_aceite_prestador'
+                         if (servico.status === 'aguardando_aceite_prestador') {
+                              actionsHtml += `<a href="#" data-id="${servico._id}" class="aceitar-servico btn btn-sm btn-success mr-1">Aceitar</a>`;
+                              actionsHtml += `<a href="#" data-id="${servico._id}" class="recusar-servico btn btn-sm btn-danger mr-1">Recusar</a>`;
+                         }
+                         // Adiciona botão para ver detalhes
+                         actionsHtml += `<a href="#" data-id="${servico._id}" class="ver-detalhes btn btn-sm btn-info">Detalhes</a>`;
+
+
+                         row.innerHTML = `
+                             <td class="table-plus">
+                                 <div class="name-avatar d-flex align-items-center">
+                                     <div class="avatar mr-2 flex-shrink-0">
+                                         <img src="${servico.foto_cliente_url || 'vendors/images/photo4.jpg'}" class="border-radius-100 shadow" width="40" height="40" alt="Foto do Cliente" onerror="this.onerror=null;this.src='vendors/images/photo4.jpg';"/>
+                                     </div>
+                                     <div class="txt">
+                                         <div class="weight-600">${servico.nome_cliente || 'Cliente Desconhecido'}</div>
+                                     </div>
+                                 </div>
+                             </td>
+                             <td>${servico.tipo_servico || 'Não informado'}</td>
+                             <td>${servico.endereco_servico || "Não informado"}</td>
+                             <td>${servico.urgente ? "Sim" : "Não"}</td>
+                             <td>${servico.data_solicitacao ? new Date(servico.data_solicitacao).toLocaleDateString('pt-BR') : 'Não informada'}</td>
+                             <td>${servico.notas_adicionais || "Nenhuma"}</td>
+                             <td>${statusMapPrestador[servico.status] || servico.status}</td>
+                             <td>
+                                 <div class="table-actions">
+                                     ${actionsHtml}
+                                 </div>
+                             </td>
+                         `;
+                         tabelaBody.appendChild(row);
+                     });
+                 }
+            }
 
 			async function carregarSolicitacoesPendentes() {
 				const loading = document.getElementById("table-loading");
 				const feedback = document.getElementById("table-feedback");
-				const tableEmpty = document.getElementById("table-empty");
+                const tableEmpty = document.getElementById("table-empty");
 				const token = localStorage.getItem("token");
 
 				loading.style.display = "block";
 				feedback.style.display = "none";
-				tableEmpty.style.display = 'none';
+                tableEmpty.style.display = 'none';
 
 				if (!token) {
 					feedback.textContent = "Autenticação necessária para carregar solicitações.";
@@ -1325,50 +1320,53 @@
 
 				try {
 					// --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
-					const response = await fetch(`${BACKEND_BASE_URL}/solicitacoes-servicos-pendentes`, {
-						headers: { 'Authorization': `Bearer ${token}` }
+					const response = await fetch("https://wyn-backend.onrender.com/solicitacoes-servicos-pendentes", {
+						 headers: { 'Authorization': `Bearer ${token}` }
 					});
 
 					if (!response.ok) {
-						if (response.status === 401 || response.status === 403) {
-							showToast("Sua sessão expirou ou você não tem permissão. Faça login novamente.", 'danger');
-							setTimeout(() => { window.location.href = "login-prestador.html"; }, 3000);
-							return;
-						}
-                        const errorText = await response.text();
-                        console.error("Erro HTTP ao buscar solicitações pendentes:", response.status, errorText);
+						 if (response.status === 401 || response.status === 403) {
+							  showToast("Sua sessão expirou ou você não tem permissão. Faça login novamente.", 'danger');
+							  setTimeout(() => { window.location.href = "login-prestador.html"; }, 3000);
+							  return;
+						 }
+                         const errorText = await response.text();
+                         console.error("Erro HTTP ao buscar solicitações pendentes:", response.status, errorText);
 						throw new Error(errorText || `Erro HTTP ao buscar solicitações pendentes: ${response.status}`);
 					}
 
 					const servicos = await response.json();
 					console.log("Solicitações pendentes carregadas:", servicos);
 
-					// --- Lógica de Notificação de Novas Solicitações (Indicador na Sidebar) ---
-					const currentPendingCount = servicos.length;
-					const newSolicitationIndicator = document.getElementById('new-solicitation-indicator');
-					if (newSolicitationIndicator) { // Verifica se o elemento existe
-						if (currentPendingCount > 0) {
-							newSolicitationIndicator.textContent = currentPendingCount; // Exibe a contagem
-							newSolicitationIndicator.style.display = 'inline'; // Exibe o indicador
-						} else {
-							newSolicitationIndicator.style.display = 'none'; // Oculta se não houver pendentes
-						}
-					}
+                    // --- Lógica de Notificação de Novas Solicitações (Indicador na Sidebar) ---
+                    const currentPendingCount = servicos.length;
+                    const newSolicitationIndicator = document.getElementById('new-solicitation-indicator');
+
+                    if (newSolicitationIndicator) { // Verifica se o elemento existe
+                         if (currentPendingCount > 0) {
+                             newSolicitationIndicator.textContent = currentPendingCount; // Exibe a contagem
+                             newSolicitationIndicator.style.display = 'inline'; // Exibe o indicador
+                         } else {
+                             newSolicitationIndicator.style.display = 'none'; // Oculta se não houver pendentes
+                         }
+                    }
                     // A lógica de toast para novas solicitações será movida para carregarNotificacoesDropdown
 
-					allPendingServices = servicos; // Armazena os dados carregados globalmente
-					aplicarFiltrosTabela(); // Aplica os filtros e renderiza a tabela
+
+                    allPendingServices = servicos; // Armazena os dados carregados globalmente
+                    aplicarFiltrosTabela(); // Aplica os filtros e renderiza a tabela
+
 
 				} catch (error) {
 					console.error("Erro ao carregar solicitações pendentes:", error);
 					feedback.textContent = "Erro ao carregar solicitações pendentes. Verifique a conexão ou faça login novamente.";
 					feedback.style.display = "block";
-					tableEmpty.style.display = 'none';
-					// Em caso de erro, esconde o indicador de nova solicitação
-					const newSolicitationIndicator = document.getElementById('new-solicitation-indicator');
-					if (newSolicitationIndicator) {
-						newSolicitationIndicator.style.display = 'none';
-					}
+                     tableEmpty.style.display = 'none';
+                     // Em caso de erro, esconde o indicador de nova solicitação
+                     const newSolicitationIndicator = document.getElementById('new-solicitation-indicator');
+                     if (newSolicitationIndicator) {
+                         newSolicitationIndicator.style.display = 'none';
+                     }
 				} finally {
 					loading.style.display = "none";
 				}
@@ -1376,691 +1374,1115 @@
 
             // Função para iniciar o polling de novas solicitações (apenas para o indicador na sidebar)
             function iniciarPollingNovasSolicitacoes() {
-                // Limpa qualquer intervalo existente para evitar duplicação
-                if (pendingPollingInterval) {
-                    clearInterval(pendingPollingInterval);
-                }
-                // Inicia o polling
-                pendingPollingInterval = setInterval(() => {
-                    console.log("Verificando contagem de solicitações pendentes...");
-                    // Busca apenas a contagem para atualizar o indicador na sidebar
-                    // A lista completa é carregada por carregarSolicitacoesPendentes()
-                    carregarContadoresPrestador();
-                }, 60000); // A cada 60 segundos (pode ajustar)
-                console.log("Polling de contagem de solicitações pendentes iniciado.");
+                 // Limpa qualquer intervalo existente para evitar duplicação
+                 if (pendingPollingInterval) {
+                     clearInterval(pendingPollingInterval);
+                 }
+
+                 // Inicia o polling
+                 pendingPollingInterval = setInterval(() => {
+                     console.log("Verificando contagem de solicitações pendentes...");
+                     // Busca apenas a contagem para atualizar o indicador na sidebar
+                     // A lista completa é carregada por carregarSolicitacoesPendentes()
+                     carregarContadoresPrestador();
+                 }, 60000); // A cada 60 segundos (pode ajustar)
+
+                 console.log("Polling de contagem de solicitações pendentes iniciado.");
             }
 
             // Função para parar o polling de novas solicitações
             function pararPollingNovasSolicitacoes() {
-                if (pendingPollingInterval) {
-                    clearInterval(pendingPollingInterval);
-                    pendingPollingInterval = null;
-                    console.log("Polling de contagem de solicitações pendentes parado.");
-                }
+                 if (pendingPollingInterval) {
+                     clearInterval(pendingPollingInterval);
+                     pendingPollingInterval = null;
+                     console.log("Polling de contagem de solicitações pendentes parado.");
+                 }
             }
 
-            // --- NOVO: Função para carregar e exibir notificações no dropdown do sino ---
-            async function carregarNotificacoesDropdown() {
-                const notificationList = document.getElementById("notification-list");
-                const notificationCountElement = document.getElementById("notification-count");
+
+             // --- NOVO: Função para carregar e exibir notificações no dropdown do sino ---
+             async function carregarNotificacoesDropdown() {
+                 const notificationList = document.getElementById("notification-list");
+                 const notificationCountElement = document.getElementById("notification-count");
+                 const token = localStorage.getItem("token");
+
+                 // Limpa a lista atual e adiciona um item de loading
+                 notificationList.innerHTML = `
+                     <a class="dropdown-item notification-item">
+                         <i class="icon-copy dw dw-refresh"></i>
+                         <p>Carregando notificações...</p>
+                         <span class="timestamp"></span>
+                     </a>
+                 `;
+                 notificationCountElement.style.display = 'none'; // Oculta o badge enquanto carrega
+
+                 if (!token) {
+                     notificationList.innerHTML = `
+                         <a class="dropdown-item notification-item">
+                             <i class="icon-copy dw dw-info"></i>
+                             <p>Autenticação necessária.</p>
+                             <span class="timestamp"></span>
+                         </a>
+                     `;
+                     notificationCountElement.textContent = '0';
+                     notificationCountElement.style.display = 'none';
+                     return;
+                 }
+
+                 try {
+                     // --- ASSUMIR ENDPOINT NO BACKEND: /api/notifications/prestador ---
+                     // Este endpoint deve retornar uma lista das notificações mais recentes para o prestador logado
+					 // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+                     const response = await fetch("https://wyn-backend.onrender.com/api/notifications/prestador", {
+                         headers: { 'Authorization': `Bearer ${token}` }
+                     });
+
+                     if (!response.ok) {
+                          // Erros 401/403 são tratados pelo middleware de perfil
+                          console.error("Erro HTTP ao buscar notificações:", response.status);
+                           notificationList.innerHTML = `
+                               <a class="dropdown-item notification-item">
+                                   <i class="icon-copy dw dw-warning"></i>
+                                   <p>Erro ao carregar notificações.</p>
+                                   <span class="timestamp"></span>
+                               </a>
+                           `;
+                           notificationCountElement.textContent = '0';
+                           notificationCountElement.style.display = 'none';
+                          return;
+                     }
+
+                     const notifications = await response.json();
+                     console.log("Notificações carregadas:", notifications);
+
+                      // Limpa a lista para adicionar as notificações reais
+                      notificationList.innerHTML = "";
+
+                     if (notifications.length === 0) {
+                          notificationList.innerHTML = `
+                              <a class="dropdown-item notification-item" href="#">
+                                  <i class="icon-copy dw dw-info"></i>
+                                  <p>Nenhuma notificação nova.</p>
+                                  <span class="timestamp">Agora</span>
+                              </a>
+                          `;
+                          notificationCountElement.textContent = '0';
+                          notificationCountElement.style.display = 'none';
+                     } else {
+                          let unreadCount = 0;
+                          notifications.forEach(notif => {
+                              if (!notif.lida) {
+                                  unreadCount++;
+                              }
+
+                              const notificationItem = document.createElement("a");
+                               // Adiciona a classe 'unread' se a notificação não foi lida
+                              notificationItem.classList.add("dropdown-item", "notification-item", "cursor-pointer");
+                              if (!notif.lida) {
+                                  notificationItem.classList.add("unread");
+                              }
+                               // Armazena o ID da notificação e referência para marcar como lida
+                              notificationItem.dataset.notificationId = notif._id;
+                              notificationItem.dataset.referenceId = notif.referenciaId;
+                              notificationItem.dataset.notificationType = notif.tipo; // Armazena o tipo
+
+                              let iconClass = 'dw dw-info'; // Ícone padrão
+                              let defaultLink = '#'; // Link padrão
+                              let summary = notif.resumo || 'Nova notificação'; // Resumo padrão
+
+                              // Define ícone e link com base no tipo de notificação
+                              switch (notif.tipo) {
+                                  case 'new_message':
+                                      iconClass = 'dw dw-chat-dots';
+                                      defaultLink = `chat-room.html?chatId=${notif.referenciaId}`; // Link para a sala de chat
+                                      summary = notif.resumo || 'Nova mensagem de chat';
+                                      break;
+                                  case 'new_solicitation':
+                                      iconClass = 'dw dw-calendar-form';
+                                      defaultLink = `prestador-solicitacoes.html?serviceId=${notif.referenciaId}`; // Link para a solicitação pendente
+                                       summary = notif.resumo || 'Nova solicitação de serviço';
+                                      break;
+                                  case 'new_review':
+                                      iconClass = 'dw dw-star-half';
+                                      defaultLink = `prestador-avaliacoes.html`; // Link para a página de avaliações (pode ser específico para a avaliação se o backend retornar ID)
+                                       summary = notif.resumo || 'Nova avaliação recebida';
+                                      break;
+                                  // Adicionar outros tipos de notificação aqui
+                                  default:
+                                       iconClass = 'dw dw-info';
+                                       defaultLink = '#'; // Link padrão ou para uma página geral de notificações
+                                       summary = notif.resumo || 'Nova notificação';
+                              }
+
+                               // Define o href com base no link padrão
+                              notificationItem.href = defaultLink;
+
+
+                              // Formata o timestamp
+                              const date = new Date(notif.timestamp);
+                              const timestampText = date.toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
+
+
+                              notificationItem.innerHTML = `
+                                  <i class="icon-copy ${iconClass}"></i>
+                                  <p>${summary}</p>
+                                  <span class="timestamp">${timestampText}</span>
+                              `;
+
+                              notificationList.appendChild(notificationItem);
+                          });
+
+                           // Atualiza o badge de contagem de notificações não lidas
+                           if (unreadCount > 0) {
+                               notificationCountElement.textContent = unreadCount;
+                               notificationCountElement.style.display = 'inline';
+                           } else {
+                               notificationCountElement.style.display = 'none';
+                           }
+
+                            // Adiciona listener de clique para marcar como lida e redirecionar
+                            notificationList.querySelectorAll('.notification-item').forEach(item => {
+                                item.addEventListener('click', async (event) => {
+                                    // Previne o comportamento padrão do link por enquanto, trataremos o redirect no JS
+                                    event.preventDefault();
+
+                                    const notifId = item.dataset.notificationId;
+                                    const referenceId = item.dataset.referenceId;
+                                    const notificationType = item.dataset.notificationType;
+
+                                    if (notifId && !item.classList.contains('unread')) {
+                                         // Se já foi lida na UI, não faz nada no backend
+                                         console.log(`Notificação ${notifId} já marcada como lida.`);
+                                    } else if (notifId) {
+                                        // Marca como lida no backend
+                                        try {
+                                            // --- ASSUMIR ENDPOINT NO BACKEND: /api/notifications/:id/mark-as-read ---
+											// --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+                                            const response = await fetch(`https://wyn-backend.onrender.com/api/notifications/${notifId}/mark-as-read`, {
+                                                method: 'PUT', // Ou PATCH, dependendo do backend
+                                                headers: { 'Authorization': `Bearer ${token}` }
+                                            });
+
+                                            if (!response.ok) {
+                                                console.error("Erro ao marcar notificação como lida:", response.status);
+                                                // Continua mesmo com erro, para permitir o redirect
+                                            } else {
+                                                console.log(`Notificação ${notifId} marcada como lida.`);
+                                                // Remove a classe 'unread' da UI
+                                                item.classList.remove('unread');
+                                                // Atualiza a contagem no badge
+                                                let currentCount = parseInt(notificationCountElement.textContent) || 0;
+                                                if (currentCount > 0) {
+                                                     notificationCountElement.textContent = currentCount - 1;
+                                                     if (currentCount - 1 === 0) {
+                                                          notificationCountElement.style.display = 'none';
+                                                     }
+                                                }
+                                            }
+                                        } catch (error) {
+                                            console.error("Erro ao marcar notificação como lida:", error);
+                                             // Continua mesmo com erro
+                                        }
+                                    }
+
+                                    // Redireciona para a página relevante após (ou enquanto) marca como lida
+                                    let redirectUrl = '#';
+                                     switch (notificationType) {
+                                         case 'new_message':
+                                             redirectUrl = `chat-room.html?chatId=${referenceId}`;
+                                             break;
+                                         case 'new_solicitation':
+                                             redirectUrl = `prestador-solicitacoes.html?serviceId=${referenceId}`;
+                                             break;
+                                         case 'new_review':
+                                             redirectUrl = `prestador-avaliacoes.html`; // Pode ser mais específico se tiver ID da avaliação
+                                             break;
+                                         default:
+                                             redirectUrl = item.href; // Usa o href definido anteriormente
+                                     }
+
+                                     if (redirectUrl && redirectUrl !== '#') {
+                                          window.location.href = redirectUrl;
+                                     }
+                                });
+                            });
+
+
+                     }
+
+
+                 } catch (error) {
+                     console.error("Erro ao carregar notificações:", error);
+                      notificationList.innerHTML = `
+                          <a class="dropdown-item notification-item">
+                              <i class="icon-copy dw dw-warning"></i>
+                              <p>Erro ao carregar notificações.</p>
+                              <span class="timestamp"></span>
+                          </a>
+                      `;
+                      notificationCountElement.textContent = '0';
+                      notificationCountElement.style.display = 'none';
+                 }
+             }
+             // --- FIM NOVO: Função para carregar e exibir notificações ---
+
+             // --- NOVO: Função para iniciar o polling de notificações ---
+             function iniciarPollingNotificacoes() {
+                 if (notificationPollingInterval) {
+                     clearInterval(notificationPollingInterval);
+                 }
+                 // Carrega as notificações imediatamente e depois a cada 30 segundos
+                 carregarNotificacoesDropdown();
+                 notificationPollingInterval = setInterval(() => {
+                     console.log("Verificando notificações no sino...");
+                     carregarNotificacoesDropdown();
+                 }, 30000); // A cada 30 segundos (pode ajustar)
+                 console.log("Polling de notificações iniciado.");
+             }
+
+             // --- NOVO: Função para parar o polling de notificações ---
+             function pararPollingNotificacoes() {
+                 if (notificationPollingInterval) {
+                     clearInterval(notificationPollingInterval);
+                     notificationPollingInterval = null;
+                     console.log("Polling de notificações parado.");
+                 }
+             }
+
+
+            // Função para carregar os contadores dos cards do Prestador
+            async function carregarContadoresPrestador() {
+                 const token = localStorage.getItem("token");
+                 const prestadorId = prestadorLogado?._id; // ID do prestador logado
+
+                 if (!token || !prestadorId) {
+                      console.warn("Não foi possível carregar contadores: Token ou ID do prestador ausente.");
+                      return; // Sai se não houver token ou ID do prestador
+                 }
+
+                 try {
+                     // Contar solicitações PENDENTES (aguardando aceite)
+					 // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+                     const responsePendentes = await fetch("https://wyn-backend.onrender.com/solicitacoes-servicos-pendentes", {
+                          headers: { 'Authorization': `Bearer ${token}` }
+                     });
+                     const pendentes = await responsePendentes.json();
+                     document.getElementById("total-pendentes").innerText = pendentes.length;
+
+
+                     // Contar MEUS serviços (aceitos, aguardando pagamento, em andamento)
+                     // Assumindo que /meus-servicos-prestador retorna serviços com status 'aguardando_pagamento_cliente' e 'aceito_pelo_prestador'
+					 // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+                     const responseMeusAceitos = await fetch("https://wyn-backend.onrender.com/meus-servicos-prestador", {
+                          headers: { 'Authorization': `Bearer ${token}` }
+                     });
+                     const meusAceitos = await responseMeusAceitos.json();
+                     document.getElementById("total-aceitos").innerText = meusAceitos.length;
+
+                     // Contar serviços CONCLUÍDOS por este prestador
+					 // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+                     const responseMeusConcluidos = await fetch(`https://wyn-backend.onrender.com/meus-servicos-concluidos-prestador`, {
+                          headers: { 'Authorization': `Bearer ${token}` }
+                     });
+                     const meusConcluidos = await responseMeusConcluidos.json();
+                     document.getElementById("total-concluidos").innerText = meusConcluidos.length;
+
+
+                      // Para o total de solicitações (geral), somamos os contadores que temos.
+                      document.getElementById("total-solicitacoes").innerText = pendentes.length + meusAceitos.length + meusConcluidos.length;
+
+                      // A contagem de mensagens não lidas agora é parte da função carregarNotificacoesDropdown
+                      // carregarContadorMensagensNaoLidas(); // REMOVIDO
+
+                 } catch (error) {
+                     console.error("Erro ao carregar contadores do prestador:", error);
+                     // Opcional: Exibir mensagem de erro nos cards
+                     document.getElementById("total-solicitacoes").innerText = '-';
+                     document.getElementById("total-pendentes").innerText = '-';
+                     document.getElementById("total-aceitos").innerText = '-';
+                     document.getElementById("total-concluidos").innerText = '-';
+                 }
+            }
+
+            // Função para carregar e exibir detalhes do serviço no modal
+            async function carregarDetalhesServico(serviceId) {
+                const detalhesContent = document.getElementById("detalhesServicoContent");
+                const modalTitle = document.getElementById("detalhesServicoModalLabel");
+                detalhesContent.innerHTML = 'Carregando detalhes...'; // Limpa e mostra loading
+                modalTitle.textContent = 'Detalhes da Solicitação'; // Título padrão
+
                 const token = localStorage.getItem("token");
 
-                // Limpa a lista atual e adiciona um item de loading
-                notificationList.innerHTML = `
-                    <a class="dropdown-item notification-item">
-                        <i class="icon-copy dw dw-refresh"></i>
-                        <p>Carregando notificações...</p>
-                        <span class="timestamp"></span>
-                    </a>
-                `;
-                notificationCountElement.style.display = 'none'; // Oculta o badge enquanto carrega
-
                 if (!token) {
-                    notificationList.innerHTML = `
-                        <a class="dropdown-item notification-item">
-                            <i class="icon-copy dw dw-info"></i>
-                            <p>Autenticação necessária.</p>
-                            <span class="timestamp"></span>
-                        </a>
-                    `;
-                    notificationCountElement.textContent = '0';
-                    notificationCountElement.style.display = 'none';
+                    detalhesContent.innerHTML = '<p style="color: red;">Autenticação necessária para ver detalhes.</p>';
                     return;
                 }
 
                 try {
-                    // --- ASSUMIR ENDPOINT NO BACKEND: /api/notifications/prestador ---
-                    // Este endpoint deve retornar uma lista das notificações mais recentes para o prestador logado
-                    // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
-                    const response = await fetch(`${BACKEND_BASE_URL}/api/notifications/prestador`, {
+                    // Assumindo que existe um endpoint /servico/:id que retorna os detalhes completos
+					// --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+                    const response = await fetch(`https://wyn-backend.onrender.com/servico/${serviceId}`, {
                         headers: { 'Authorization': `Bearer ${token}` }
                     });
 
                     if (!response.ok) {
-                        // Erros 401/403 são tratados pelo middleware de perfil
-                        console.error("Erro HTTP ao buscar notificações:", response.status);
-                        notificationList.innerHTML = `
-                            <a class="dropdown-item notification-item">
-                                <i class="icon-copy dw dw-warning"></i>
-                                <p>Erro ao carregar notificações.</p>
-                                <span class="timestamp"></span>
-                            </a>
-                        `;
-                        notificationCountElement.textContent = '0';
-                        notificationCountElement.style.display = 'none';
-                        return;
+                         const errorText = await response.text();
+                         console.error("Erro HTTP ao buscar detalhes:", response.status, errorText);
+                         throw new Error(errorText || `Erro HTTP: ${response.status}`);
                     }
 
-                    const notifications = await response.json();
-                    console.log("Notificações carregadas:", notifications);
+                    const servico = await response.json();
+                    console.log("Detalhes do serviço carregados:", servico);
 
-                    // Limpa a lista para adicionar as notificações reais
-                    notificationList.innerHTML = "";
-                    if (notifications.length === 0) {
-                        notificationList.innerHTML = `
-                            <a class="dropdown-item notification-item" href="#">
-                                <i class="icon-copy dw dw-info"></i>
-                                <p>Nenhuma notificação nova.</p>
-                                <span class="timestamp">Agora</span>
-                            </a>
-                        `;
-                        notificationCountElement.textContent = '0';
-                        notificationCountElement.style.display = 'none';
+                    // Construir a string da faixa de preço
+                    let faixaPrecoHtml = '';
+                    // Verifica se o objeto prestador e as propriedades de faixa de preço existem
+                    if (servico.prestador && servico.prestador.faixa_preco_min !== undefined && servico.prestador.faixa_preco_max !== undefined) {
+                         const precoMin = servico.prestador.faixa_preco_min.toFixed(2).replace('.', ',');
+                         const precoMax = servico.prestador.faixa_preco_max.toFixed(2).replace('.', ',');
+                         faixaPrecoHtml = `<p><strong>Faixa de Preço Cadastrada pelo Prestador:</strong> R$ ${precoMin} a R$ ${precoMax}</p>`;
                     } else {
-                        let unreadCount = 0;
-                        notifications.forEach(notif => {
-                            if (!notif.lida) {
-                                unreadCount++;
-                            }
-                            const notificationItem = document.createElement("a");
-                            // Adiciona a classe 'unread' se a notificação não foi lida
-                            notificationItem.classList.add("dropdown-item", "notification-item", "cursor-pointer");
-                            if (!notif.lida) {
-                                notificationItem.classList.add("unread");
-                            }
-
-                            // Define o link da notificação
-                            let link = '#'; // Link padrão
-                            if (notif.referenciaModel === 'Servico' && notif.referenciaId) {
-                                // Exemplo: redirecionar para a página de detalhes do serviço ou chat
-                                // Ajuste os links conforme a estrutura das suas páginas
-                                if (notif.type === 'new_message') {
-                                    link = `chat-servico.html?serviceId=${notif.referenciaId}`; // Exemplo: link para o chat do serviço
-                                } else {
-                                    link = `prestador-meus-servicos.html?serviceId=${notif.referenciaId}`; // Exemplo: link para detalhes do serviço
-                                }
-                            } else if (notif.type === 'password_reset') {
-                                link = 'login prestador.html'; // Redireciona para login após redefinição de senha
-                            }
-                            notificationItem.href = link;
-
-                            // Adiciona evento de clique para marcar como lida e redirecionar
-                            notificationItem.addEventListener('click', async (e) => {
-                                e.preventDefault(); // Previne o redirecionamento imediato
-                                if (!notif.lida) {
-                                    try {
-                                        const markReadResponse = await fetch(`${BACKEND_BASE_URL}/api/notifications/${notif._id}/mark-as-read`, {
-                                            method: 'PUT',
-                                            headers: { 'Authorization': `Bearer ${token}` }
-                                        });
-                                        if (markReadResponse.ok) {
-                                            console.log(`Notificação ${notif._id} marcada como lida.`);
-                                            // Atualiza a UI imediatamente
-                                            notificationItem.classList.remove("unread");
-                                            // Reduz a contagem de não lidas no badge
-                                            let currentCount = parseInt(notificationCountElement.textContent);
-                                            if (currentCount > 0) {
-                                                notificationCountElement.textContent = currentCount - 1;
-                                                if (currentCount - 1 === 0) {
-                                                    notificationCountElement.style.display = 'none';
-                                                }
-                                            }
-                                        } else {
-                                            console.error("Erro ao marcar notificação como lida.");
-                                        }
-                                    } catch (error) {
-                                        console.error("Erro na requisição para marcar notificação como lida:", error);
-                                    }
-                                }
-                                // Redireciona após a ação (ou imediatamente se já lida)
-                                if (link && link !== '#') {
-                                    window.location.href = link;
-                                }
-                            });
-
-                            notificationItem.innerHTML = `
-                                <i class="icon-copy dw dw-info"></i>
-                                <p>${notif.summary}</p>
-                                <span class="timestamp">${new Date(notif.timestamp).toLocaleString('pt-BR')}</span>
-                            `;
-                            notificationList.appendChild(notificationItem);
-                        });
-
-                        notificationCountElement.textContent = unreadCount;
-                        if (unreadCount > 0) {
-                            notificationCountElement.style.display = 'inline';
-                        } else {
-                            notificationCountElement.style.display = 'none';
-                        }
+                         faixaPrecoHtml = `<p><strong>Faixa de Preço Cadastrada pelo Prestador:</strong> Não informada</p>`;
                     }
+
+
+                    // Preenche o modal com os detalhes do serviço
+                    modalTitle.textContent = `Detalhes da Solicitação #${servico._id.substring(0, 6)}`; // Exibe parte do ID
+                    detalhesContent.innerHTML = `
+                        <p><strong>Cliente:</strong> ${servico.nome_cliente || 'Não informado'}</p>
+                        <p><strong>Tipo de Serviço:</strong> ${servico.tipo_servico || 'Não informado'}</p>
+                        <p><strong>Endereço:</strong> ${servico.endereco_servico || 'Não informado'}</p>
+                        <p><strong>Urgente:</strong> ${servico.urgente ? 'Sim' : 'Não'}</p>
+                        <p><strong>Data da Solicitação:</strong> ${servico.data_solicitacao ? new Date(servico.data_solicitacao).toLocaleString('pt-BR') : 'Não informada'}</p>
+                         <p><strong>Data Preferencial:</strong> ${servico.data_servico_preferencial ? new Date(servico.data_servico_preferencial).toLocaleDateString('pt-BR') : 'Não informada'}</p>
+                         <p><strong>Horário Preferencial:</strong> ${servico.hora_servico_preferencial || 'Não informado'}</p>
+                        <p><strong>Notas Adicionais:</strong> ${servico.notas_adicionais || 'Nenhuma'}</p>
+                        <p><strong>Status:</strong> ${statusMapPrestador[servico.status] || servico.status}</p>
+                        ${servico.valor_servico ? `<p><strong>Valor Proposto:</strong> R$ ${servico.valor_servico.toFixed(2).replace('.', ',')}</p>` : ''}
+                        ${faixaPrecoHtml}
+                        ${servico.data_aceite ? `<p><strong>Data de Aceite:</strong> ${new Date(servico.data_aceite).toLocaleString('pt-BR')}</p>` : ''}
+                         ${servico.data_conclusao ? `<p><strong>Data de Conclusão:</strong> ${new Date(servico.data_conclusao).toLocaleString('pt-BR')}</p>` : ''}
+                        ${servico.comprovantes_url && servico.comprovantes_url.length > 0 ?
+                            `<p><strong>Comprovantes:</strong></p>
+                             <ul>
+                                 ${servico.comprovantes_url.map(url => `<li><a href="${url}" target="_blank">${url.split('/').pop()}</a></li>`).join('')}
+                             </ul>`
+                            : ''}
+                         ${servico.avaliacao_cliente ? `<p><strong>Avaliação do Cliente:</strong> ${servico.avaliacao_cliente} estrelas</p>` : ''}
+                         ${servico.comentario_cliente ? `<p><strong>Comentário do Cliente:</strong> ${servico.comentario_cliente}</p>` : ''}
+                    `;
+
 
                 } catch (error) {
-                    console.error("Erro ao carregar notificações do dropdown:", error);
-                    notificationList.innerHTML = `
-                        <a class="dropdown-item notification-item">
-                            <i class="icon-copy dw dw-warning"></i>
-                            <p>Erro ao carregar notificações.</p>
-                            <span class="timestamp"></span>
-                        </a>
-                    `;
-                    notificationCountElement.textContent = '0';
-                    notificationCountElement.style.display = 'none';
+                    console.error("Erro ao carregar detalhes do serviço:", error);
+                    detalhesContent.innerHTML = `<p style="color: red;">Erro ao carregar detalhes: ${error.message || 'Verifique a conexão.'}</p>`;
+                     modalTitle.textContent = 'Erro ao Carregar Detalhes';
                 }
             }
 
-            // NOVO: Função para iniciar o polling de todas as notificações do sino
-            function iniciarPollingNotificacoes() {
-                if (notificationPollingInterval) {
-                    clearInterval(notificationPollingInterval);
+            // Função para carregar dados para o gráfico de desempenho
+            async function carregarDadosParaGrafico() {
+                const chartFeedback = document.getElementById("chart-feedback");
+                const chartLoading = document.getElementById("chart-loading");
+                const chartError = document.getElementById("chart-error");
+                const chartCanvas = document.getElementById('performanceChart');
+                const ctx = chartCanvas.getContext('2d');
+
+                chartFeedback.style.display = 'none';
+                chartLoading.style.display = 'block';
+                chartError.style.display = 'none';
+                chartCanvas.style.display = 'none'; // Esconde o canvas enquanto carrega
+
+                const token = localStorage.getItem("token");
+
+                if (!token) {
+                     console.warn("Não foi possível carregar dados do gráfico: Token ausente.");
+                     chartLoading.style.display = 'none';
+                     chartError.textContent = "Autenticação necessária para carregar dados do gráfico.";
+                     chartError.style.display = 'block';
+                     return;
                 }
-                notificationPollingInterval = setInterval(() => {
-                    console.log("Verificando notificações do sino...");
-                    carregarNotificacoesDropdown();
-                }, 30000); // A cada 30 segundos (pode ajustar)
-                console.log("Polling de notificações do sino iniciado.");
-            }
-
-            // NOVO: Função para parar o polling de notificações
-            function pararPollingNotificacoes() {
-                if (notificationPollingInterval) {
-                    clearInterval(notificationPollingInterval);
-                    notificationPollingInterval = null;
-                    console.log("Polling de notificações do sino parado.");
-                }
-            }
-
-
-			// Função para carregar os contadores dos cards
-			async function carregarContadoresPrestador() {
-				const token = localStorage.getItem('token');
-				if (!token) return;
-
-				try {
-					// Total de Solicitações
-					const resTotal = await fetch(`${BACKEND_BASE_URL}/prestador/count/servicos-prestador`, { headers: { 'Authorization': `Bearer ${token}` } });
-					const dataTotal = await resTotal.json();
-					document.getElementById('total-solicitacoes').textContent = dataTotal.total || 0;
-
-					// Pedidos Pendentes (Aguardando Aceite)
-					const resPendentes = await fetch(`${BACKEND_BASE_URL}/prestador/count/solicitacoes-pendentes`, { headers: { 'Authorization': `Bearer ${token}` } });
-					const dataPendentes = await resPendentes.json();
-					document.getElementById('total-pendentes').textContent = dataPendentes.total || 0;
-
-					// Meus Serviços (Aceitos/Em Andamento)
-					const resAceitos = await fetch(`${BACKEND_BASE_URL}/prestador/count/servicos-em-andamento`, { headers: { 'Authorization': `Bearer ${token}` } });
-					const dataAceitos = await resAceitos.json();
-					document.getElementById('total-aceitos').textContent = dataAceitos.total || 0;
-
-					// Serviços Concluídos
-					const resConcluidos = await fetch(`${BACKEND_BASE_URL}/prestador/count/servicos-concluidos`, { headers: { 'Authorization': `Bearer ${token}` } });
-					const dataConcluidos = await resConcluidos.json();
-					document.getElementById('total-concluidos').textContent = dataConcluidos.total || 0;
-
-				} catch (error) {
-					console.error("Erro ao carregar contadores do prestador:", error);
-					// showToast("Erro ao carregar alguns dados do dashboard.", 'danger'); // Evita spam de toast
-				}
-			}
-
-			// Função para carregar os próximos agendamentos
-			async function carregarProximosAgendamentos() {
-				const loading = document.getElementById('upcoming-loading');
-				const feedback = document.getElementById('upcoming-feedback');
-				const empty = document.getElementById('upcoming-empty');
-				const list = document.getElementById('upcoming-appointments-list');
-				const token = localStorage.getItem('token');
-
-				loading.style.display = 'block';
-				feedback.style.display = 'none';
-				empty.style.display = 'none';
-				list.innerHTML = '';
-
-				if (!token) {
-					loading.style.display = 'none';
-					empty.textContent = 'Faça login para ver seus agendamentos.';
-					empty.style.display = 'block';
-					return;
-				}
-
-				try {
-					const response = await fetch(`${BACKEND_BASE_URL}/prestador/proximos-agendamentos`, {
-						headers: { 'Authorization': `Bearer ${token}` }
-					});
-
-					if (!response.ok) {
-						const errorData = await response.json();
-						throw new Error(errorData.message || 'Erro ao buscar próximos agendamentos.');
-					}
-
-					const agendamentos = await response.json();
-					loading.style.display = 'none';
-
-					if (agendamentos.length === 0) {
-						empty.style.display = 'block';
-					} else {
-						agendamentos.forEach(agendamento => {
-							const li = document.createElement('li');
-							const dataFormatada = agendamento.data_servico_preferencial ? new Date(agendamento.data_servico_preferencial).toLocaleDateString('pt-BR') : 'Data não informada';
-							const horaFormatada = agendamento.hora_servico_preferencial || 'Hora não informada';
-							li.innerHTML = `
-								<div>
-									<strong>${agendamento.tipo_servico}</strong> com ${agendamento.nome_cliente}
-									<br>
-									<span>${dataFormatada} às ${horaFormatada}</span>
-								</div>
-								<a href="chat-servico.html?serviceId=${agendamento._id}" class="btn btn-sm btn-primary">Chat</a>
-							`;
-							list.appendChild(li);
-						});
-					}
-
-				} catch (error) {
-					console.error("Erro ao carregar próximos agendamentos:", error);
-					loading.style.display = 'none';
-					feedback.textContent = 'Erro ao carregar agendamentos: ' + error.message;
-					feedback.style.display = 'block';
-				}
-			}
-
-			// Função para carregar dados para o gráfico de desempenho
-			let performanceChartInstance = null; // Para armazenar a instância do Chart.js
-
-			async function carregarDadosParaGrafico() {
-				const loading = document.getElementById('chart-loading');
-				const errorDiv = document.getElementById('chart-error');
-				const feedbackDiv = document.getElementById('chart-feedback');
-				const canvas = document.getElementById('performanceChart');
-
-				loading.style.display = 'block';
-				errorDiv.style.display = 'none';
-				feedbackDiv.style.display = 'none';
-
-				const token = localStorage.getItem('token');
-				if (!token) {
-					loading.style.display = 'none';
-					feedbackDiv.textContent = 'Faça login para ver o desempenho.';
-					feedbackDiv.style.display = 'block';
-					return;
-				}
-
-				try {
-					const response = await fetch(`${BACKEND_BASE_URL}/prestador/dados-grafico-lucro`, {
-						headers: { 'Authorization': `Bearer ${token}` }
-					});
-
-					if (!response.ok) {
-						const errorData = await response.json();
-						throw new Error(errorData.message || 'Erro ao buscar dados do gráfico.');
-					}
-
-					const data = await response.json();
-					loading.style.display = 'none';
-
-					if (data.labels.length === 0) {
-						feedbackDiv.style.display = 'block';
-						feedbackDiv.textContent = 'Dados de desempenho insuficientes para gerar o gráfico.';
-						// Destruir o gráfico existente se não houver dados
-						if (performanceChartInstance) {
-							performanceChartInstance.destroy();
-							performanceChartInstance = null;
-						}
-						return;
-					}
-
-					const ctx = canvas.getContext('2d');
-
-					// Destruir a instância anterior do gráfico se existir
-					if (performanceChartInstance) {
-						performanceChartInstance.destroy();
-					}
-
-					performanceChartInstance = new Chart(ctx, {
-						type: 'bar', // Pode ser 'line', 'bar', etc.
-						data: {
-							labels: data.labels,
-							datasets: [{
-								label: 'Lucro Estimado (R$)',
-								data: data.data,
-								backgroundColor: 'rgba(75, 192, 192, 0.6)',
-								borderColor: 'rgba(75, 192, 192, 1)',
-								borderWidth: 1
-							}]
-						},
-						options: {
-							responsive: true,
-							maintainAspectRatio: false,
-							scales: {
-								y: {
-									beginAtZero: true,
-									title: {
-										display: true,
-										text: 'Lucro (R$)'
-									}
-								},
-								x: {
-									title: {
-										display: true,
-										text: 'Mês/Ano'
-									}
-								}
-							},
-							plugins: {
-								legend: {
-									display: true,
-									position: 'top',
-								},
-								tooltip: {
-									callbacks: {
-										label: function(context) {
-											return `R$ ${context.raw.toFixed(2).replace('.', ',')}`;
-										}
-									}
-								}
-							}
-						}
-					});
-
-				} catch (error) {
-					console.error("Erro ao carregar dados do gráfico:", error);
-					loading.style.display = 'none';
-					errorDiv.textContent = 'Erro ao carregar dados do gráfico: ' + error.message;
-					errorDiv.style.display = 'block';
-					// Destruir o gráfico existente em caso de erro
-					if (performanceChartInstance) {
-						performanceChartInstance.destroy();
-						performanceChartInstance = null;
-					}
-				}
-			}
-
-
-			// --- Lógica de Filtros da Tabela ---
-			document.getElementById('filtro-nome').addEventListener('keyup', aplicarFiltrosTabela);
-			document.getElementById('filtro-tipo').addEventListener('keyup', aplicarFiltrosTabela);
-			document.getElementById('filtro-urgente').addEventListener('change', aplicarFiltrosTabela);
-
-			function aplicarFiltrosTabela() {
-				const filtroNome = document.getElementById('filtro-nome').value.toLowerCase();
-				const filtroTipo = document.getElementById('filtro-tipo').value.toLowerCase();
-				const filtroUrgente = document.getElementById('filtro-urgente').value; // "Sim", "Não", ""
-
-				const servicosFiltrados = allPendingServices.filter(servico => {
-					const nomeCliente = servico.nome_cliente ? servico.nome_cliente.toLowerCase() : '';
-					const tipoServico = servico.tipo_servico ? servico.tipo_servico.toLowerCase() : '';
-					const urgente = servico.urgente ? "Sim" : "Não";
-
-					const matchesNome = nomeCliente.includes(filtroNome);
-					const matchesTipo = tipoServico.includes(filtroTipo);
-					const matchesUrgente = filtroUrgente === "" || urgente === filtroUrgente;
-
-					return matchesNome && matchesTipo && matchesUrgente;
-				});
-
-				renderizarTabela(servicosFiltrados);
-			}
-
-			// --- Lógica de Ações da Tabela (Aceitar/Recusar/Detalhes) ---
-			document.getElementById('solicitacoes-tabela').addEventListener('click', async (e) => {
-				const target = e.target;
-				const serviceId = target.dataset.id;
-				const token = localStorage.getItem('token');
-
-				if (!serviceId || !token) return;
-
-				if (target.classList.contains('aceitar-servico')) {
-					e.preventDefault();
-					// Solicita o valor do serviço antes de aceitar
-					const valorServico = prompt("Informe o valor do serviço para aceitar:");
-					if (valorServico === null || isNaN(parseFloat(valorServico)) || parseFloat(valorServico) <= 0) {
-						showToast("Valor inválido. O serviço não foi aceito.", 'danger');
-						return;
-					}
-
-					try {
-						showToast("Aceitando serviço...", 'info');
-						const response = await fetch(`${BACKEND_BASE_URL}/aceitar-servico/${serviceId}`, {
-							method: 'POST',
-							headers: {
-								'Content-Type': 'application/json',
-								'Authorization': `Bearer ${token}`
-							},
-							body: JSON.stringify({ valor_servico: parseFloat(valorServico) })
-						});
-
-						const result = await response.json();
-						if (response.ok) {
-							showToast(result.message, 'success');
-							carregarSolicitacoesPendentes(); // Recarrega a tabela
-							carregarContadoresPrestador(); // Atualiza os contadores
-						} else {
-							showToast(result.message || 'Erro ao aceitar serviço.', 'danger');
-						}
-					} catch (error) {
-						console.error("Erro ao aceitar serviço:", error);
-						showToast('Erro ao aceitar serviço. Verifique sua conexão.', 'danger');
-					}
-
-				} else if (target.classList.contains('recusar-servico')) {
-					e.preventDefault();
-					if (!confirm("Tem certeza que deseja recusar esta solicitação?")) {
-						return;
-					}
-
-					try {
-						showToast("Recusando serviço...", 'info');
-						const response = await fetch(`${BACKEND_BASE_URL}/recusar-servico/${serviceId}`, {
-							method: 'POST',
-							headers: {
-								'Authorization': `Bearer ${token}`
-							}
-						});
-
-						const result = await response.json();
-						if (response.ok) {
-							showToast(result.message, 'success');
-							carregarSolicitacoesPendentes(); // Recarrega a tabela
-							carregarContadoresPrestador(); // Atualiza os contadores
-						} else {
-							showToast(result.message || 'Erro ao recusar serviço.', 'danger');
-						}
-					} catch (error) {
-						console.error("Erro ao recusar serviço:", error);
-						showToast('Erro ao recusar serviço. Verifique sua conexão.', 'danger');
-					}
-				} else if (target.classList.contains('ver-detalhes')) {
-					e.preventDefault();
-					await carregarDetalhesServico(serviceId);
-					$('#detalhesServicoModal').modal('show');
-				}
-			});
-
-			// Função para carregar detalhes do serviço no modal
-			async function carregarDetalhesServico(serviceId) {
-				const detalhesContent = document.getElementById('detalhesServicoContent');
-				const token = localStorage.getItem('token');
-
-				detalhesContent.innerHTML = 'Carregando detalhes...';
-
-				try {
-					const response = await fetch(`${BACKEND_BASE_URL}/servico/${serviceId}`, {
-						headers: { 'Authorization': `Bearer ${token}` }
-					});
-
-					if (!response.ok) {
-						const errorData = await response.json();
-						throw new Error(errorData.message || 'Erro ao buscar detalhes do serviço.');
-					}
-
-					const servico = await response.json();
-					console.log("Detalhes do serviço:", servico);
-
-					let comprovantesHtml = '';
-					if (servico.comprovantes_url && servico.comprovantes_url.length > 0) {
-						comprovantesHtml = `
-							<h6>Comprovantes:</h6>
-							<ul>
-								${servico.comprovantes_url.map(url => `<li><a href="${url}" target="_blank">${url.split('/').pop()}</a></li>`).join('')}
-							</ul>
-						`;
-					} else {
-						comprovantesHtml = `<p>Nenhum comprovante enviado.</p>`;
-					}
-
-					let avaliacaoHtml = '';
-					if (servico.avaliacao_cliente) {
-						avaliacaoHtml = `
-							<h6>Avaliação do Cliente:</h6>
-							<p><strong>Nota:</strong> ${servico.avaliacao_cliente} estrelas</p>
-							<p><strong>Comentário:</strong> ${servico.comentario_cliente || 'Nenhum comentário.'}</p>
-						`;
-					} else {
-						avaliacaoHtml = `<p>Serviço ainda não avaliado.</p>`;
-					}
-
-					detalhesContent.innerHTML = `
-						<p><strong>ID do Serviço:</strong> ${servico._id}</p>
-						<p><strong>Cliente:</strong> ${servico.nome_cliente} (${servico.email_cliente})</p>
-						<p><strong>Tipo de Serviço:</strong> ${servico.tipo_servico}</p>
-						<p><strong>Descrição:</strong> ${servico.descricao_servico || 'Não informada'}</p>
-						<p><strong>Endereço:</strong> ${servico.endereco_servico || 'Não informado'}</p>
-						<p><strong>Notas Adicionais:</strong> ${servico.notas_adicionais || 'Nenhuma'}</p>
-						<p><strong>Urgente:</strong> ${servico.urgente ? 'Sim' : 'Não'}</p>
-						<p><strong>Data Solicitação:</strong> ${new Date(servico.data_solicitacao).toLocaleString('pt-BR')}</p>
-						<p><strong>Data Preferencial:</strong> ${servico.data_servico_preferencial ? new Date(servico.data_servico_preferencial).toLocaleDateString('pt-BR') : 'Não informada'}</p>
-						<p><strong>Hora Preferencial:</strong> ${servico.hora_servico_preferencial || 'Não informada'}</p>
-						<p><strong>Valor Acordado:</strong> ${servico.valor_servico ? `R$ ${servico.valor_servico.toFixed(2).replace('.', ',')}` : 'Aguardando definição'}</p>
-						<p><strong>Status:</strong> ${statusMapPrestador[servico.status] || servico.status}</p>
-						${servico.payment_link ? `<p><strong>Link de Pagamento:</strong> <a href="${servico.payment_link}" target="_blank">Abrir Link</a></p>` : ''}
-						${comprovantesHtml}
-						${avaliacaoHtml}
-					`;
-
-				} catch (error) {
-					console.error("Erro ao carregar detalhes do serviço:", error);
-					detalhesContent.innerHTML = `<p class="text-danger">Erro ao carregar detalhes: ${error.message}</p>`;
-				}
-			}
-
-
-			// Chamar a função ao carregar a página
-			document.addEventListener("DOMContentLoaded", carregarPerfilPrestador);
-
-            // Event listener para o botão de toggle (abrir/fechar chat)
-            const chatToggleButton = document.getElementById('chat-toggle-button');
-            const chatContainer = document.getElementById('chat-container');
-            const chatInput = document.getElementById('chat-input');
-            const chatSendButton = document.getElementById('chat-send-button');
-            const chatCloseButton = document.getElementById('chat-close-button');
-            const chatMessages = document.getElementById('chat-messages');
-            const chatLoadingIndicator = document.getElementById('chat-loading-indicator');
-
-            let chatHistory = []; // Armazena o histórico do chat
-
-            // Função para adicionar mensagem ao chat UI
-            function addMessageToChat(sender, message) {
-                const messageElement = document.createElement('div');
-                messageElement.classList.add('message', sender);
-                messageElement.textContent = message;
-                chatMessages.appendChild(messageElement);
-                chatMessages.scrollTop = chatMessages.scrollHeight; // Rola para a última mensagem
-            }
-
-            // Função para enviar mensagem para a IA
-            async function sendMessageToAI() {
-                const userMessage = chatInput.value.trim();
-                if (userMessage === '') return;
-
-                addMessageToChat('user', userMessage);
-                chatInput.value = ''; // Limpa o input
-                chatLoadingIndicator.style.display = 'block'; // Mostra indicador de carregamento
-                chatMessages.scrollTop = chatMessages.scrollHeight; // Rola para a última mensagem
-
-                // Adiciona a mensagem do usuário ao histórico
-                chatHistory.push({ role: "user", parts: [{ text: userMessage }] });
 
                 try {
-                    const payload = { contents: chatHistory };
-                    const apiKey = ""; // Deixe vazio, o Canvas fornecerá a chave em tempo de execução
-                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-
-                    const response = await fetch(apiUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
+					// --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+                    const response = await fetch(`https://wyn-backend.onrender.com/prestador/dados-grafico-lucro`, {
+                         headers: { 'Authorization': `Bearer ${token}` }
                     });
 
-                    const result = await response.json();
-
-                    if (result.candidates && result.candidates.length > 0 &&
-                        result.candidates[0].content && result.candidates[0].content.parts &&
-                        result.candidates[0].content.parts.length > 0) {
-                        const botMessage = result.candidates[0].content.parts[0].text;
-                        addMessageToChat('bot', botMessage);
-                        chatHistory.push({ role: "model", parts: [{ text: botMessage }] }); // Adiciona a resposta do bot ao histórico
-                    } else {
-                        addMessageToChat('bot', 'Desculpe, não consegui gerar uma resposta. Tente novamente.');
-                        console.error('Estrutura de resposta da API Gemini inesperada:', result);
+                    if (!response.ok) {
+                         const errorText = await response.text();
+                         console.error("Erro HTTP ao buscar dados do gráfico:", response.status, errorText);
+                         throw new Error(errorText || `Erro HTTP: ${response.status}`);
                     }
+
+                    const dadosDesempenho = await response.json();
+                    console.log("Dados de desempenho carregados:", dadosDesempenho);
+
+                    // Verifica se há dados para exibir
+                    if (!dadosDesempenho || !dadosDesempenho.labels || !dadosDesempenho.data || dadosDesempenho.data.length === 0) {
+                         chartLoading.style.display = 'none';
+                         chartFeedback.textContent = "Dados de desempenho insuficientes para gerar o gráfico.";
+                         chartFeedback.style.display = 'block';
+                         chartCanvas.style.display = 'none'; // Garante que o canvas continue oculto
+                         return;
+                    }
+
+                    // Destroi o gráfico anterior se ele existir
+                    if (window.myPerformanceChart) {
+                        window.myPerformanceChart.destroy();
+                    }
+
+                    // Renderiza o gráfico usando Chart.js
+                    window.myPerformanceChart = new Chart(ctx, {
+                        type: 'bar', // Pode ser 'line', 'bar', 'pie', etc.
+                        data: {
+                            labels: dadosDesempenho.labels, // Ex: ['Jan/2023', 'Fev/2023']
+                            datasets: [{
+                                label: 'Lucro Estimado (R$)', // Rótulo mais claro
+                                data: dadosDesempenho.data, // Ex: [1000, 1500]
+                                backgroundColor: 'rgba(46, 204, 113, 0.6)', // Cor verde (do card de concluídos)
+                                borderColor: 'rgba(46, 204, 113, 1)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false, // Permite controlar o tamanho pelo container
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    title: {
+                                        display: true,
+                                        text: 'Lucro Estimado (R$)' // Título do eixo Y
+                                    },
+                                     ticks: {
+                                         // Formata os valores do eixo Y como moeda
+                                         callback: function(value, index, ticks) {
+                                             return 'R$ ' + value.toFixed(2).replace('.', ',');
+                                         }
+                                     }
+                                },
+                                x: {
+                                     title: {
+                                         display: true,
+                                         text: 'Mês/Ano' // Título do eixo X
+                                     }
+                                }
+                            },
+                            plugins: {
+                                legend: {
+                                    display: true,
+                                    position: 'top',
+                                },
+                                title: {
+                                    display: false, // O título já está no h5 acima
+                                },
+                                 tooltip: {
+                                     callbacks: {
+                                         label: function(context) {
+                                             let label = context.dataset.label || '';
+                                             if (label) {
+                                                 label += ': ';
+                                             }
+                                             if (context.parsed.y !== null) {
+                                                 label += new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(context.parsed.y);
+                                             }
+                                             return label;
+                                         }
+                                     }
+                                 }
+                            }
+                        }
+                    });
+
+                    chartLoading.style.display = 'none';
+                    chartCanvas.style.display = 'block'; // Exibe o canvas com o gráfico
+
                 } catch (error) {
-                    console.error('Erro ao chamar a API Gemini:', error);
-                    addMessageToChat('bot', 'Ocorreu um erro ao se comunicar com a IA. Por favor, tente novamente mais tarde.');
-                } finally {
-                    chatLoadingIndicator.style.display = 'none'; // Esconde indicador de carregamento
-                    chatMessages.scrollTop = chatMessages.scrollHeight; // Rola para a última mensagem novamente
+                    console.error("Erro ao carregar dados para o gráfico:", error);
+                    chartLoading.style.display = 'none';
+                    chartError.textContent = `Erro ao carregar dados do gráfico: ${error.message || 'Verifique a conexão.'}`;
+                    chartError.style.display = 'block';
+                    chartCanvas.style.display = 'none'; // Garante que o canvas continue oculto
                 }
             }
 
-            // Event listener para o botão de toggle (abrir/fechar chat)
-            // Verifique se o elemento existe antes de adicionar o listener
-            if (chatToggleButton) {
-                chatToggleButton.addEventListener('click', () => {
-                    chatContainer.classList.toggle('open');
-                    if (chatContainer.classList.contains('open')) {
-                        chatInput.focus(); // Foca no input quando abre
+
+			// Listener para os cliques nos botões de ação (usando delegação de evento)
+			document.addEventListener("click", async (event) => {
+				const target = event.target;
+				const serviceId = target.dataset.id;
+				const token = localStorage.getItem("token");
+				const prestadorId = prestadorLogado?._id; // ID do prestador logado
+
+				if (!serviceId || !token || !prestadorId) {
+					 // Não faz nada se não tiver ID, token ou ID do prestador
+					 console.warn("Ação de serviço clicada sem ID de serviço, token ou ID de prestador.", { serviceId, hasToken: !!token, prestadorId });
+					 return;
+				}
+
+
+				// Ação de Aceitar
+				if (target.classList.contains("aceitar-servico")) {
+					event.preventDefault(); // Previne o comportamento padrão do link
+
+                    // Solicitar o valor do serviço ao prestador
+                    const valorServicoStr = prompt("Por favor, informe o valor final para este serviço:");
+
+                    // Verifica se o usuário cancelou ou não inseriu um valor
+                    if (valorServicoStr === null || valorServicoStr.trim() === "") {
+                         showToast("Ação cancelada. O valor do serviço é obrigatório para aceitar.", 'info');
+                         return;
                     }
-                });
-            } else {
-                console.warn("Elemento #chat-toggle-button não encontrado. Verifique se o botão flutuante está no HTML.");
-            }
 
+                    const valorServico = parseFloat(valorServicoStr.replace(',', '.')); // Converte para número, tratando vírgula
 
-            // Event listener para o botão de fechar o chat
-            if (chatCloseButton) {
-                chatCloseButton.addEventListener('click', () => {
-                    chatContainer.classList.remove('open');
-                });
-            } else {
-                console.warn("Elemento #chat-close-button não encontrado.");
-            }
-
-            // Event listener para o botão de enviar mensagem
-            if (chatSendButton) {
-                chatSendButton.addEventListener('click', sendMessageToAI);
-            } else {
-                console.warn("Elemento #chat-send-button não encontrado.");
-            }
-
-            // Event listener para a tecla Enter no campo de input
-            if (chatInput) {
-                chatInput.addEventListener('keypress', (event) => {
-                    if (event.key === 'Enter') {
-                        sendMessageToAI();
+                    // Validação básica do valor
+                    if (isNaN(valorServico) || valorServico <= 0) {
+                         showToast("Valor inválido. Por favor, insira um número maior que zero.", 'danger');
+                         return;
                     }
+
+
+					 if (!confirm(`Tem certeza que deseja aceitar esta solicitação pelo valor de R$ ${valorServico.toFixed(2).replace('.', ',')}?`)) return; // Confirmação com o valor
+
+
+					try {
+						// --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+						const response = await fetch(`https://wyn-backend.onrender.com/aceitar-servico/${serviceId}`, {
+							method: "POST",
+							headers: {
+								 "Content-Type": "application/json",
+								 'Authorization': `Bearer ${token}` // Incluir token
+							},
+                            // Incluir o valor do serviço no body
+                            body: JSON.stringify({ valor_servico: valorServico })
+						});
+
+						const result = await response.json(); // Leia a resposta
+
+						if (!response.ok) {
+							 showToast(result.message || "Erro ao aceitar serviço.", 'danger');
+                             console.error("Erro ao aceitar serviço:", result);
+						} else {
+                            showToast("Solicitação aceita com sucesso! O cliente será notificado para realizar o pagamento.", 'success');
+                            carregarSolicitacoesPendentes(); // Recarrega a lista de PENDENTES (o serviço aceito sumirá daqui)
+                            carregarContadoresPrestador(); // Atualiza os contadores
+                            carregarProximosAgendamentos(); // Atualiza a lista de agendamentos
+                            // carregarDadosParaGrafico(); // Atualiza o gráfico (se aceitar impactar dados de desempenho - geralmente só impacta ao CONCLUIR)
+                        }
+
+					} catch (error) {
+						console.error("Erro ao aceitar solicitação:", error);
+						showToast(error.message || "Erro ao aceitar solicitação.", 'danger');
+					}
+				}
+
+				// Ação de Recusar
+				if (target.classList.contains("recusar-servico")) {
+					event.preventDefault();
+					 if (!confirm("Tem certeza que deseja recusar esta solicitação?")) return;
+
+					try {
+						// --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+						const response = await fetch(`https://wyn-backend.onrender.com/recusar-servico/${serviceId}`, {
+							method: "POST",
+							headers: {
+								 "Content-Type": "application/json",
+								 'Authorization': `Bearer ${token}` // Incluir token
+							},
+                            // O backend /recusar-servico/:id não precisa do prestador_id no body, ele apenas muda o status
+						});
+
+						 const result = await response.json();
+
+						if (!response.ok) {
+							showToast(result.message || "Erro ao recusar serviço.", 'danger');
+                             console.error("Erro ao recusar serviço:", result);
+						} else {
+                            showToast("Solicitação recusada com sucesso!", 'success');
+                            carregarSolicitacoesPendentes(); // Recarrega a lista de PENDENTES (o serviço recusado sumirá daqui)
+                            carregarContadoresPrestador(); // Atualiza os contadores
+                            // carregarDadosParaGrafico(); // Atualiza o gráfico (se recusar impactar dados de desempenho - geralmente não impacta)
+                        }
+
+					} catch (error) {
+						console.error("Erro ao recusar solicitação:", error);
+						showToast(error.message || "Erro ao recusar solicitação.", 'danger');
+					}
+				}
+
+                // Ação de Ver Detalhes
+                 if (target.classList.contains("ver-detalhes")) {
+                      event.preventDefault();
+                       // Abre o modal e carrega os detalhes
+                      $('#detalhesServicoModal').modal('show'); // Usa jQuery do Bootstrap para mostrar o modal
+                      carregarDetalhesServico(serviceId); // Chama a função para carregar os detalhes
+                 }
+
+                // Ação de Deletar (Mantida, mas a permissão é controlada pelo backend)
+                // Em uma lista de solicitações PENDENTES (aguardando aceite),
+                // o prestador não deveria ter permissão para deletar.
+                // A rota /deletar-servico/:id no backend já verifica se o usuário (pelo token)
+                // tem permissão para deletar aquele serviço específico com base no status e no ID do usuário/prestador.
+                // Portanto, o botão pode aparecer no HTML, mas a ação será bloqueada pelo backend se o prestador não tiver permissão.
+				 if (target.classList.contains("deletar-servico")) {
+					 event.preventDefault();
+					 const botaoDeletar = target.closest(".deletar-servico");
+					 const id = botaoDeletar.dataset.id;
+
+					 if (!id) {
+						 showToast("ID inválido ou não encontrado.", 'danger');
+						 return;
+					 }
+
+					 if (!confirm("Você tem certeza que deseja deletar esta solicitação? Esta ação não pode ser desfeita.")) return;
+
+					 try {
+						 // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+						 const response = await fetch(`https://wyn-backend.onrender.com/deletar-servico/${id}`, {
+							 method: "DELETE",
+							 headers: {
+								  "Content-Type": "application/json",
+								  'Authorization': `Bearer ${token}` // Incluir token
+							 },
+						 });
+
+						 const result = await response.json(); // Leia a resposta JSON
+
+						 if (!response.ok) {
+							 // Se a resposta não for OK (status >= 400), lance um erro com a mensagem do backend
+							 showToast(result.message || `Erro HTTP: ${response.status}`, 'danger');
+                             console.error("Erro ao deletar solicitação:", result);
+						 } else {
+                             // Se a resposta for OK
+                             showToast(result.message || "Solicitação deletada com sucesso!", 'success');
+                             carregarSolicitacoesPendentes(); // Atualiza a interface (nesta página, mostra pendentes)
+                             carregarContadoresPrestador(); // Atualiza os contadores
+                             // carregarDadosParaGrafico(); // Atualiza o gráfico (se deletar impactar dados de desempenho - geralmente não impacta)
+                         }
+
+					 } catch (error) {
+						 console.error("Erro ao deletar solicitação:", error);
+						 // Exiba a mensagem de erro do backend se disponível, caso contrário, uma genérica
+						 showToast(error.message || "Não foi possível deletar a solicitação. Verifique sua conexão ou tente novamente.", 'danger');
+					 }
+				 }
+
+			});
+
+
+			// Função para aplicar os filtros na tabela
+            function aplicarFiltrosTabela() {
+                const filtroNome = document.getElementById("filtro-nome").value.toLowerCase();
+                const filtroTipo = document.getElementById("filtro-tipo").value.toLowerCase();
+                const filtroUrgente = document.getElementById("filtro-urgente").value; // 'Sim', 'Não', ou ''
+
+                const servicosFiltrados = allPendingServices.filter(servico => {
+                    const nomeCliente = (servico.nome_cliente || '').toLowerCase();
+                    const tipoServico = (servico.tipo_servico || '').toLowerCase();
+                    const urgente = servico.urgente ? 'Sim' : 'Não';
+
+                    const nomeMatch = nomeCliente.includes(filtroNome);
+                    const tipoMatch = tipoServico.includes(filtroTipo);
+                    const urgenteMatch = (filtroUrgente === '' || urgente === filtroUrgente);
+
+                    return nomeMatch && tipoMatch && urgenteMatch;
                 });
-            } else {
-                console.warn("Elemento #chat-input não encontrado.");
+
+                renderizarTabela(servicosFiltrados); // Renderiza a tabela com os resultados filtrados
             }
+
+
+            // Função para carregar e exibir próximos agendamentos
+            async function carregarProximosAgendamentos() {
+                 const loading = document.getElementById("upcoming-loading");
+                 const feedback = document.getElementById("upcoming-feedback");
+                 const empty = document.getElementById("upcoming-empty");
+                 const list = document.getElementById("upcoming-appointments-list");
+
+                 loading.style.display = "block";
+                 feedback.style.display = "none";
+                 empty.style.display = "none";
+                 list.innerHTML = ""; // Limpa a lista
+
+                 const token = localStorage.getItem("token");
+                 const prestadorId = prestadorLogado?._id;
+
+                 if (!token || !prestadorId) {
+                      feedback.textContent = "Autenticação necessária para carregar agendamentos.";
+                      feedback.style.display = "block";
+                      loading.style.display = "none";
+                      return;
+                 }
+
+                 try {
+                     // Endpoint para buscar serviços aceitos (ou em andamento) pelo prestador
+					 // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+                     const response = await fetch("https://wyn-backend.onrender.com/meus-servicos-prestador", {
+                          headers: { 'Authorization': `Bearer ${token}` }
+                     });
+
+                     if (!response.ok) {
+                          if (response.status === 401 || response.status === 403) {
+                               showToast("Sua sessão expirou ou você não tem permissão. Faça login novamente.", 'danger');
+                               setTimeout(() => { window.location.href = "login-prestador.html"; }, 3000);
+                               return;
+                          }
+                          const errorText = await response.text();
+                          console.error("Erro HTTP ao buscar serviços aceitos:", response.status, errorText);
+                          throw new Error(errorText || `Erro HTTP ao buscar serviços aceitos: ${response.status}`);
+                     }
+
+                     const servicosAceitos = await response.json();
+                     console.log("Serviços aceitos carregados:", servicosAceitos);
+
+                     // Filtra os serviços que têm data preferencial no futuro e status 'aceito_pelo_prestador'
+                     const now = new Date();
+                     const proximosAgendamentos = servicosAceitos.filter(servico => {
+                          // Verifica se há data preferencial, se ela é uma data válida no futuro (ou hoje)
+                          // E se o status é 'aceito_pelo_prestador' (ou outro status que indique agendamento confirmado)
+                          if (servico.data_servico_preferencial && servico.status === 'aceito_pelo_prestador') {
+                               const serviceDate = new Date(servico.data_servico_preferencial);
+                               // Compara apenas a data (ignora hora) para considerar o dia inteiro
+                               const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                               const serviceDay = new Date(serviceDate.getFullYear(), serviceDate.getMonth(), serviceDate.getDate());
+                               return serviceDay >= today;
+                          }
+                          return false; // Ignora serviços sem data preferencial, com data passada ou status diferente
+                     });
+
+                     // Ordena os agendamentos por data e hora
+                     proximosAgendamentos.sort((a, b) => {
+                          const dateA = new Date(`${a.data_servico_preferencial} ${a.hora_servico_preferencial || '00:00'}`);
+                          const dateB = new Date(`${b.data_servico_preferencial} ${b.hora_servico_preferencial || '00:00'}`);
+                          return dateA - dateB;
+                     });
+
+
+                     // Renderiza a lista de agendamentos futuros
+                     if (proximosAgendamentos.length > 0) {
+                          proximosAgendamentos.forEach(servico => {
+                               const listItem = document.createElement("li");
+                               // Formata a data e hora
+                               const dataFormatada = servico.data_servico_preferencial ? new Date(servico.data_servico_preferencial).toLocaleDateString('pt-BR') : 'Data não informada';
+                               const horaFormatada = servico.hora_servico_preferencial || 'Hora não informada';
+
+                               listItem.innerHTML = `
+                                   <div>
+                                       <strong>${dataFormatada} ${horaFormatada}</strong> - ${servico.tipo_servico || 'Serviço'} com ${servico.nome_cliente || 'Cliente Desconhecido'}
+                                   </div>
+                                   <div>
+                                       <a href="#" data-id="${servico._id}" class="ver-detalhes btn btn-sm btn-info">Detalhes</a>
+                                   </div>
+                               `;
+                               list.appendChild(listItem);
+                          });
+                          empty.style.display = 'none';
+                     } else {
+                          empty.style.display = 'block';
+                     }
+
+                 } catch (error) {
+                     console.error("Erro ao carregar próximos agendamentos:", error);
+                     feedback.textContent = `Erro ao carregar agendamentos: ${error.message || 'Verifique a conexão.'}`;
+                     feedback.style.display = "block";
+                     empty.style.display = 'none';
+                 } finally {
+                     loading.style.display = "none";
+                 }
+            }
+            // --- FIM Função para carregar e exibir próximos agendamentos ---
+
+
+			// Listeners para os inputs de filtro
+            // Estes listeners só devem ser adicionados se a página for a de solicitações pendentes
+            // Como este código está no index.html (dashboard), eles podem ser mantidos,
+            // mas é importante garantir que os elementos com estes IDs existam na página.
+            // Pelo snippet do index.html, eles existem.
+			document.getElementById("filtro-nome").addEventListener("input", aplicarFiltrosTabela);
+            document.getElementById("filtro-tipo").addEventListener("input", aplicarFiltrosTabela);
+            document.getElementById("filtro-urgente").addEventListener("change", aplicarFiltrosTabela); // Use 'change' para selects
+
+
+            // Chamar carregarPerfilPrestador ao carregar a página
+			document.addEventListener("DOMContentLoaded", () => {
+				 carregarPerfilPrestador();
+                 // Adiciona o listener para o dropdown do sino para carregar notificações ao abrir
+                 $('#notification-dropdown-toggle').on('shown.bs.dropdown', function () {
+                      carregarNotificacoesDropdown(); // Carrega/atualiza notificações sempre que o dropdown é aberto
+                 });
+			});
+
+            // Opcional: Parar o polling ao fechar a janela/aba
+            window.addEventListener('beforeunload', () => {
+                 pararPollingNovasSolicitacoes();
+                 pararPollingNotificacoes();
+            });
+
 		</script>
+
+<button id="chat-toggle-button" title="Abrir Chat com IA">
+    <i class="fa-solid fa-comments"></i>
+</button>
+
+<div id="chat-container">
+    <div id="chat-header">
+        Chat com IA
+        <button id="chat-close-button"><i class="dw dw-cancel"></i></button>
+    </div>
+    <div id="chat-messages">
+        <div class="message bot">Olá! Como posso ajudar você hoje?</div>
+    </div>
+    <div id="chat-loading-indicator" style="display: none;">Digitando...</div>
+    <div id="chat-input-area">
+        <input type="text" id="chat-input" placeholder="Digite sua mensagem..." />
+        <button id="chat-send-button">Enviar</button>
+    </div>
+</div>
+
+<script>
+    // --- Lógica do Chatbot IA ---
+    const chatToggleButton = document.getElementById('chat-toggle-button');
+    const chatContainer = document.getElementById('chat-container');
+    const chatCloseButton = document.getElementById('chat-close-button');
+    const chatMessages = document.getElementById('chat-messages');
+    const chatInput = document.getElementById('chat-input');
+    const chatSendButton = document.getElementById('chat-send-button');
+    const chatLoadingIndicator = document.getElementById('chat-loading-indicator');
+
+  let chatHistory = [
+    {
+        role: "user",
+        parts: [{
+            text: `Você é um assistente de IA dedicado à plataforma WYN. Seu principal objetivo é fornecer informações precisas e úteis sobre o funcionamento da WYN, seus serviços, processos de usuário e prestador, e quaisquer outras funcionalidades relevantes. Responda sempre com foco na WYN e seus ecossistema.
+
+1. O que é a WYN? LEMBRANDO QUE VOCÊ ESTÁ FALANDO COM O PRESTADOR NESTE MOMENTO ENTÃO PERSONALIZE A RESPOSTA PARA O PRESTADOR: E SEMPRE PASSE INFORMAÇÕES RESUMIDAS NUNCA PASSE DE 3 OU 4 LINHAS
+A WYN é uma plataforma digital inovadora que atua como uma ponte eficiente e segura, conectando clientes que necessitam de uma vasta gama de serviços a profissionais qualificados e verificados.
+
+Nosso Propósito: Simplificar a vida de usuários e prestadores, oferecendo uma solução completa para encontrar e oferecer serviços com agilidade, segurança e garantia de qualidade.
+
+2. Papéis na Plataforma:
+Cliente (Usuário): Indivíduo que busca e contrata serviços.
+
+Prestador (Profissional): Indivíduo ou empresa que oferece e executa serviços.
+
+Administrador (Admin): Responsável pela gestão e moderação da plataforma.
+
+3. Processos Internos e Funcionalidades:
+3.1. Cadastro (Registro de Novas Contas):
+
+Clientes: Podem se cadastrar fornecendo informações básicas (nome, e-mail, senha).
+
+Prestadores: O cadastro é mais detalhado, exigindo informações de contato, tipos de serviço oferecidos, área de atuação e, crucialmente, passa por um processo de verificação para garantir a qualificação e segurança. Podem incluir foto de perfil.
+
+3.2. Login (Acesso à Plataforma):
+
+Clientes e Prestadores: Acessam suas contas usando e-mail e senha.
+
+Administradores: Possuem uma tela de login separada (login-admin.html) e credenciais específicas para acessar o dashboard administrativo.
+
+3.3. Fazer Pedido/Solicitar Serviço (Fluxo do Cliente):
+
+Busca: O cliente pesquisa por um tipo de serviço (ex: "Eletricista") na página inicial ou na seção de serviços.
+
+Seleção: O cliente pode visualizar profissionais disponíveis e/ou solicitar um serviço específico.
+
+Detalhes da Solicitação: O cliente preenche um formulário com detalhes do serviço desejado (endereço, urgência, notas adicionais, data e hora preferenciais).
+
+Envio: A solicitação é enviada para os prestadores qualificados na área.
+
+Aceite/Recusa do Prestador: Um prestador pode aceitar a solicitação, propondo um valor, ou recusá-la.
+
+3.4. Pagamento (Fluxo do Cliente):
+
+Integração Mercado Pago: Após um prestador aceitar uma solicitação e propor um valor, o cliente é direcionado para uma página de pagamento pendente.
+
+Geração de Link de Pagamento: A plataforma gera um link de pagamento via Mercado Pago.
+
+Status Pendente: O serviço entra em status de "aguardando_pagamento_cliente" ou "aguardando_confirmacao_pagamento" enquanto o pagamento é processado.
+
+Confirmação: Após a confirmação do pagamento pelo Mercado Pago, o status do serviço é atualizado para "aceito_pelo_prestador" ou "em andamento".
+
+3.5. Gerenciamento de Serviços (Fluxo do Prestador):
+
+Dashboard do Prestador: O prestador tem acesso a um dashboard (index.html) que mostra:
+
+Solicitações Pendentes: Novas solicitações de serviço que ele pode aceitar ou recusar.
+
+Meus Serviços Aceitos/Em Andamento: Serviços que ele aceitou e estão aguardando pagamento do cliente ou já estão em andamento.
+
+Histórico de Serviços: Serviços concluídos ou cancelados.
+
+Minhas Avaliações: Feedback recebido dos clientes.
+
+Gerenciar Serviços: Onde o prestador pode adicionar ou editar os tipos de serviços que oferece.
+
+Minha Disponibilidade: Para gerenciar seus horários.
+
+Ações sobre Solicitações: O prestador pode "Aceitar" (propondo um valor) ou "Recusar" uma solicitação pendente.
+
+Conclusão do Serviço: Após a execução, o prestador marca o serviço como "concluido_pelo_prestador".
+
+3.6. Avaliações (Feedback do Cliente):
+
+Após a conclusão de um serviço, o cliente pode avaliar o prestador, dando estrelas e deixando comentários. Isso contribui para a reputação do prestador na plataforma.
+
+3.7. Notificações:
+
+Sininho de Notificações: Clientes e prestadores recebem notificações em um ícone de sino no cabeçalho.
+
+Tipos de Notificações:
+
+Novas solicitações de serviço (para prestadores).
+
+Atualizações de status de serviço (pagamento confirmado, serviço aceito/recusado, concluído).
+
+Novas mensagens de chat.
+
+Novas avaliações recebidas.
+
+Contador: O ícone do sino exibe um contador de notificações não lidas.
+
+Detalhes: O dropdown do sino mostra um resumo da notificação (ex: "Nova solicitação de serviço", "Pagamento confirmado"). Clicar na notificação marca-a como lida e pode redirecionar para a página relevante (ex: detalhes do serviço, sala de chat).
+
+3.8. Perfil do Usuário/Prestador:
+
+Ambos os tipos de usuários podem acessar e atualizar suas informações de perfil, incluindo foto de perfil.
+
+3.9. Chat de Serviços:
+
+A plataforma oferece uma funcionalidade de chat para comunicação direta entre clientes e prestadores sobre os serviços.
+
+4. Categorias de Serviços:
+Atualmente Ativas: Eletricista.
+
+Em Breve: Encanador, Pintor, Ar Condicionado, Jardinagem, Pedreiro, Limpeza.
+
+Em Expansão: Outras categorias como Personal Trainer, Aulas de Música, Fotografia, etc. (A IA deve indicar que estas estão em fase de expansão e podem não estar listadas em todas as interfaces como "Em Breve" explícito, mas fazem parte do plano de crescimento).
+
+Lembretes para a IA:
+
+Sempre que perguntado sobre um serviço "Em Breve", mencione que a WYN está trabalhando para disponibilizá-lo e convide o usuário a se cadastrar para receber notificações.
+
+Mantenha um tom profissional, prestativo e claro. E SEMPRE PASSE INFORMAÇÕES RESUMIDAS, diretas e objetivas. evite fazer um textão para o usuário.
+
+Evite jargões técnicos desnecessários, a menos que o usuário solicite.
+
+Se a pergunta for fora do escopo da WYN, informe educadamente que sua função é apenas sobre a plataforma WYN.`
+        }]
+    },
+        {
+            role: "model",
+            parts: [{
+                text: "Olá! Como posso ajudar você hoje?"
+            }]
+        }
+    ];
+
+    // Adiciona a mensagem inicial do bot ao carregar a página
+    // Removido: addMessage('bot', "Olá! Como posso ajudar você hoje?") // Já está no HTML inicial do chat
+    // Função para adicionar mensagens ao chat
+    function addMessage(sender, text) {
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('message', sender);
+        messageElement.textContent = text;
+        chatMessages.appendChild(messageElement);
+        chatMessages.scrollTop = chatMessages.scrollHeight; // Rola para a última mensagem
+    }
+
+    // Função para enviar mensagem para a IA
+    async function sendMessageToAI() {
+        const userMessage = chatInput.value.trim();
+        if (userMessage === '') return;
+
+        addMessage('user', userMessage);
+        chatHistory.push({ role: "user", parts: [{ text: userMessage }] });
+        chatInput.value = ''; // Limpa o input
+
+        chatSendButton.disabled = true; // Desabilita o botão
+        chatInput.disabled = true; // Desabilita o input
+        chatLoadingIndicator.style.display = 'block'; // Mostra o indicador de carregamento
+        chatMessages.scrollTop = chatMessages.scrollHeight; // Rola para baixo para ver o indicador
+
+        try {
+            // URL do seu backend para o endpoint do chatbot
+            const apiUrl = `https://wyn-backend.onrender.com/api/chat`; // <-- URL ATUALIZADA PARA O BACKEND NO RENDER
+
+            const payload = {
+                chatHistory: chatHistory
+            };
+
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const result = await response.json();
+
+            if (response.ok && result.aiResponse) {
+                addMessage('bot', result.aiResponse);
+                chatHistory.push({ role: "model", parts: [{ text: result.aiResponse }] });
+            } else {
+                addMessage('bot', result.message || 'Desculpe, não consegui gerar uma resposta. Tente novamente.');
+                console.error('Estrutura de resposta inesperada da API Gemini:', result);
+            }
+        } catch (error) {
+            console.error('Erro ao chamar a API Gemini:', error);
+            addMessage('bot', 'Ocorreu um erro ao conectar com a IA. Por favor, tente novamente mais tarde.');
+        } finally {
+            chatLoadingIndicator.style.display = 'none'; // Esconde o indicador de carregamento
+            chatSendButton.disabled = false; // Habilita o botão de enviar
+            chatInput.disabled = false; // Habilita o input
+            chatInput.focus(); // Coloca o foco de volta no input
+            chatMessages.scrollTop = chatMessages.scrollHeight; // Rola para a última mensagem novamente
+        }
+    }
+
+    // Event listener para o botão de toggle (abrir/fechar chat)
+    // Verifique se o elemento existe antes de adicionar o listener
+    if (chatToggleButton) {
+        chatToggleButton.addEventListener('click', () => {
+            chatContainer.classList.toggle('open');
+            if (chatContainer.classList.contains('open')) {
+                chatInput.focus(); // Foca no input quando abre
+            }
+        });
+    } else {
+        console.warn("Elemento #chat-toggle-button não encontrado. Verifique se o botão flutuante está no HTML.");
+    }
+
+
+    // Event listener para o botão de fechar o chat
+    if (chatCloseButton) {
+        chatCloseButton.addEventListener('click', () => {
+            chatContainer.classList.remove('open');
+        });
+    } else {
+        console.warn("Elemento #chat-close-button não encontrado.");
+    }
+
+    // Event listener para o botão de enviar mensagem
+    if (chatSendButton) {
+        chatSendButton.addEventListener('click', sendMessageToAI);
+    } else {
+        console.warn("Elemento #chat-send-button não encontrado.");
+    }
+
+    // Event listener para a tecla Enter no campo de input
+    if (chatInput) {
+        chatInput.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                sendMessageToAI();
+            }
+        });
+    } else {
+        console.warn("Elemento #chat-input não encontrado.");
+    }
+</script>
 
 </body>
 </html>

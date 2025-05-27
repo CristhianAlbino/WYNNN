@@ -759,442 +759,724 @@
                                          <div class="font-14 text-secondary weight-500">Notificações</div>
                                      </div>
                                      <div class="widget-icon">
-                                         <div class="icon" data-color="#3498db">
-                                             <i class="icon-copy dw dw-notification"></i>
-                                         </div>
+                                         <div class="icon" data-color="#3498db"> <i class="icon-copy dw dw-notification"></i> </div>
                                      </div>
                                  </div>
                              </div>
                          </div>
                          <div class="col-xl-3 col-lg-3 col-md-6 mb-20">
-                             <div class="card-box height-100-p widget-style3">
-                                 <div class="d-flex flex-wrap">
-                                     <div class="widget-data">
-                                         <div class="weight-700 font-24 text-dark" id="valor-total">R$ 0.00</div>
-                                         <div class="font-14 text-secondary weight-500">Valor Total de Pedidos</div>
-                                     </div>
-                                     <div class="widget-icon">
-                                         <div class="icon" data-color="#9b59b6">
-                                             <i class="icon-copy dw dw-money-2"></i>
-                                         </div>
-                                     </div>
-                                 </div>
-                             </div>
+                              <div class="card-box height-100-p widget-style3">
+                                  <div class="d-flex flex-wrap">
+                                      <div class="widget-data">
+                                          <div class="weight-700 font-24 text-dark" id="valor-total">R$ 0.00</div>
+                                          <div class="font-14 text-secondary weight-500">Valor Total de Pedidos</div>
+                                      </div>
+                                      <div class="widget-icon">
+                                          <div class="icon" data-color="#9b59b6"> <i class="icon-copy dw dw-money-2"></i> </div>
+                                      </div>
+                                  </div>
+                              </div>
                          </div>
                          <div class="col-xl-3 col-lg-3 col-md-6 mb-20">
-                             <div class="card-box height-100-p widget-style3">
-                                 <div class="d-flex flex-wrap">
-                                     <div class="widget-data">
-                                         <div class="weight-700 font-24 text-dark" id="total-mensagens">0</div>
-                                         <div class="font-14 text-secondary weight-500">Mensagens Não Lidas</div>
-                                     </div>
-                                     <div class="widget-icon">
-                                         <div class="icon" data-color="#e74c3c">
-                                             <i class="icon-copy dw dw-chat"></i>
-                                         </div>
-                                     </div>
-                                 </div>
-                             </div>
+                              <div class="card-box height-100-p widget-style3">
+                                  <div class="d-flex flex-wrap">
+                                      <div class="widget-data">
+                                          <div class="weight-700 font-24 text-dark" id="total-mensagens">0</div>
+                                          <div class="font-14 text-secondary weight-500">Mensagens Não Lidas</div>
+                                      </div>
+                                      <div class="widget-icon">
+                                          <div class="icon" data-color="#e74c3c"> <i class="icon-copy dw dw-chat"></i> </div>
+                                      </div>
+                                  </div>
+                              </div>
                          </div>
-                    </div>
-				</div>
+					</div>
 
-				<div class="footer-wrap pd-20 mb-20 card-box">
-					Plataforma WYN-TECH
+					<script>
+						let usuarioLogado = null; // Variável para armazenar os dados do usuário logado
+                        let unreadMessagesPollingInterval = null; // Variável para o intervalo de polling de mensagens não lidas
+
+						async function carregarPerfilUsuario() {
+							const token = localStorage.getItem('token');
+							const usuarioCache = localStorage.getItem('usuario'); // Chave correta para usuário
+
+							if (!token || !usuarioCache) {
+								console.warn("Usuário não autenticado. Redirecionando para login.");
+								window.location.href = "login.html"; // Redirecionar para login do usuário
+								return;
+							}
+
+							try {
+								 // Parse do cache para obter o ID e nome rapidamente
+								 usuarioLogado = JSON.parse(usuarioCache);
+								 const nomeSpan = document.querySelector(".user-name");
+                                 const userProfilePicImg = document.getElementById("user-profile-pic"); // Pega a tag img da foto
+
+								 if (nomeSpan && usuarioLogado?.nome) {
+									 nomeSpan.textContent = usuarioLogado.nome;
+								 }
+                                 // Exibe a foto de perfil do cache se existir
+                                 if (userProfilePicImg && usuarioLogado?.foto_perfil_url) {
+                                     userProfilePicImg.src = usuarioLogado.foto_perfil_url;
+                                     userProfilePicImg.onerror = function() {
+                                         // Fallback para imagem padrão se a URL da foto falhar
+                                         this.onerror = null; // Evita loop infinito de erro
+                                         this.src = "vendors/images/photo1.jpg";
+                                     };
+                                 } else if (userProfilePicImg) {
+                                      // Se não houver foto no cache, usa a imagem padrão
+                                      userProfilePicImg.src = "vendors/images/photo1.jpg";
+                                 }
+
+
+								// Chamada ao backend para validar o token e obter dados completos
+								 // Usando a rota /perfil que agora verifica o tipo no token
+								 // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+								 const res = await fetch('https://wyn-backend.onrender.com/perfil', {
+									 headers: { 'Authorization': 'Bearer ' + token }
+								 });
+
+								 const resClone = res.clone(); // Clonar para ler o body se der erro de JSON
+
+								 if (!res.ok) {
+									 if (res.status === 401 || res.status === 403) {
+										 console.error("Token inválido ou expirado. Redirecionando para login.");
+										 // Substituído alert por showToast
+                                         showToast("Sua sessão expirou. Por favor, faça login novamente.", 'danger');
+										 window.location.href = "login.html";
+										 return;
+									 }
+                                     const errorText = await resClone.text();
+                                     console.error("Erro HTTP ao buscar perfil:", res.status, errorText);
+									 throw new Error(`Erro HTTP ao buscar perfil: ${res.status}`);
+								 }
+
+								let data = {};
+								 try {
+									 data = await res.json();
+								 } catch(jsonError) {
+									 console.error("Erro ao parsear JSON do perfil:", await resClone.text());
+									 throw new Error("Resposta de perfil inválida.");
+								 }
+
+
+								// Verifique se o perfil retornado é de um usuário cliente
+								 if (data.tipo !== 'usuario' || !data.usuario?._id) {
+									  console.error("Token válido, mas não corresponde a um usuário cliente.");
+									  // Substituído alert por showToast
+                                      showToast("Acesso negado para este tipo de usuário.", 'danger');
+									  window.location.href = "login-prestador.html"; // Redireciona para login do prestador se for prestador
+									  return;
+								 }
+
+								 // Atualiza a variável global com os dados completos do usuário
+								 usuarioLogado = data.usuario;
+
+								// Atualiza o nome na interface (se a chamada backend for bem sucedida)
+								if (usuarioLogado?.nome && nomeSpan) {
+									nomeSpan.textContent = usuarioLogado.nome;
+								}
+                                // Atualiza a foto de perfil com a URL retornada pelo backend
+                                 if (userProfilePicImg && usuarioLogado?.foto_perfil_url) {
+                                     userProfilePicImg.src = usuarioLogado.foto_perfil_url;
+                                      userProfilePicImg.onerror = function() {
+                                         this.onerror = null; // Evita loop infinito de erro
+                                         this.src = "vendors/images/photo1.jpg";
+                                     };
+                                 } else if (userProfilePicImg) {
+                                      // Se não houver foto retornada pelo backend, usa a imagem padrão
+                                      userProfilePicImg.src = "vendors/images/photo1.jpg";
+                                 }
+
+
+								console.log("Perfil do usuário carregado:", usuarioLogado);
+
+                                // Carregar dados do dashboard (incluindo contadores) após carregar o perfil
+                                carregarDadosDashboardCliente();
+                                // Iniciar polling de mensagens não lidas após carregar o perfil
+                                iniciarPollingMensagensNaoLidas();
+
+
+							} catch (err) {
+								console.error('Erro ao carregar perfil do usuário:', err);
+								 // Se já tentou parsear do cache e deu erro, alertar. Senão, talvez o erro já tenha sido alertado no redirect.
+								 if (usuarioLogado) { // Se usuarioLogado foi populado do cache mas a chamada falhou
+									 // Substituído alert por showToast
+                                     showToast('Erro ao validar sessão do usuário. Pode haver problemas na conexão.', 'danger');
+								 } else { // Se nem o cache existia ou deu erro no parse
+									 // Substituído alert por showToast
+                                     showToast('Ocorreu um erro ao carregar informações do usuário.', 'danger');
+								 }
+								// Não redireciona aqui se o redirect já aconteceu acima
+							}
+						}
+
+						// Função de Logout
+						document.getElementById('logout-link').addEventListener('click', (e) => {
+							 e.preventDefault();
+							 localStorage.removeItem('token');
+							 localStorage.removeItem('usuario'); // Limpa também o cache do usuário
+                             // Limpa o intervalo de polling ao sair
+                             if (unreadMessagesPollingInterval) {
+                                 clearInterval(unreadMessagesPollingInterval);
+                             }
+							 window.location.href = 'login.html'; // Redireciona para a página de login do usuário
+						});
+
+                        // Função para exibir toast notifications (copiada do catalogo.html)
+                        function showToast(message, type = 'success') {
+                            const toastContainer = document.getElementById('toastContainer');
+                            if (!toastContainer) {
+                                console.error("[DASHBOARD] Toast container não encontrado!");
+                                return;
+                            }
+
+                            const toastElement = document.createElement('div');
+                            toastElement.classList.add('toast');
+                            toastElement.setAttribute('role', 'alert');
+                            toastElement.setAttribute('aria-live', 'assertive');
+                            toastElement.setAttribute('aria-atomic', 'true');
+                            toastElement.setAttribute('data-delay', '5000');
+
+                            toastElement.innerHTML = `
+                                <div class="toast-header ${type === 'success' ? 'bg-success text-white' : type === 'danger' ? 'bg-danger text-white' : 'bg-info text-white'}">
+                                    <strong class="mr-auto">${type === 'success' ? 'Sucesso' : type === 'danger' ? 'Erro' : 'Informação'}</strong>
+                                    <small>Agora</small>
+                                    <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="toast-body">
+                                    ${message}
+                                </div>
+                            `;
+
+                            toastContainer.appendChild(toastElement);
+                            $(toastElement).toast('show');
+                            $(toastElement).on('hidden.bs.toast', function () {
+                                $(this).remove();
+                            });
+                        }
+
+
+						// Mapeamento de status do backend para texto amigável
+						const statusMapCliente = { // Mapeamento específico para a visão do cliente
+							 'pendente': 'Pendente',
+							 'aceito_pelo_prestador': 'Aceito pelo Prestador',
+							 'recusado_pelo_prestador': 'Recusado',
+							 'concluido_pelo_prestador': 'Concluído',
+							 'avaliado_pelo_cliente': 'Avaliado',
+							 'cancelado': 'Cancelado'
+						};
+
+						// Função para carregar os serviços do usuário e atualizar cards/tabela
+						async function carregarDadosDashboardCliente() {
+							// Elementos dos contadores (IDs corrigidos)
+							const totalSolicitadosEl = document.getElementById("total-solicitados");
+							const totalPendentesEl = document.getElementById("total-pendentes");
+							const totalConcluidosEl = document.getElementById("total-concluidos");
+							const totalAvaliacoesEl = document.getElementById("total-avaliacoes");
+                            const totalNotificacoesEl = document.getElementById("total-notificacoes"); // Novo
+                            const valorTotalEl = document.getElementById("valor-total"); // Novo
+                            // O elemento totalMensagensEl será atualizado pela função de polling separada
+
+
+							const token = localStorage.getItem("token"); // Obter token
+
+
+							if (!token) {
+								console.warn("Autenticação necessária para carregar dados do dashboard.");
+								// Não exibe feedback na tabela, pois esta função é para os cards
+								return;
+							}
+
+
+							try {
+								// Chamar o endpoint correto para buscar TODOS os serviços do usuário logado
+								// --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+								const responseServicos = await fetch("https://wyn-backend.onrender.com/meus-servicos", {
+									 headers: { 'Authorization': `Bearer ${token}` } // Incluir o token
+								});
+
+								if (!responseServicos.ok) {
+									 if (responseServicos.status === 401 || responseServicos.status === 403) {
+										  // Substituído alert por showToast
+                                          showToast("Sua sessão expirou ou você não tem permissão. Faça login novamente.", 'danger');
+										  window.location.href = "login.html"; // Redireciona para login do usuário
+										  return;
+									 }
+                                     const errorText = await responseServicos.text();
+                                     console.error("Erro HTTP ao buscar seus serviços:", responseServicos.status, errorText);
+									throw new Error(`Erro HTTP ao buscar seus serviços: ${responseServicos.status}`);
+								}
+
+								const servicos = await responseServicos.json();
+								console.log("Meus serviços carregados para dashboard:", servicos); // Log para ver os dados
+
+								// Calcular contadores no frontend com base nos serviços retornados
+								let totalPedidos = servicos.length;
+								let totalPendentes = 0;
+								let totalConcluidos = 0;
+								let totalAvaliacoesPendentes = 0; // Serviços concluídos que ainda não foram avaliados
+                                let valorTotalPedidos = 0; // Para calcular o valor total
+
+								servicos.forEach((servico) => {
+									if (servico.status === 'pendente') totalPendentes++;
+									// Consideramos concluído se o prestador marcou como concluído OU se o cliente já avaliou
+									if (servico.status === 'concluido_pelo_prestador' || servico.status === 'avaliado_pelo_cliente') {
+										totalConcluidos++;
+                                        // Se o status é concluído pelo prestador E ainda não foi avaliado pelo cliente, conta como avaliação pendente
+                                        if (servico.status === 'concluido_pelo_prestador') {
+                                             totalAvaliacoesPendentes++;
+                                        }
+									}
+                                    // Somar valor se disponível
+                                    if (servico.valor_servico && !isNaN(servico.valor_servico)) {
+                                         valorTotalPedidos += servico.valor_servico;
+                                    }
+								});
+
+								// Atualizar os elementos dos cards com os contadores calculados
+								if(totalSolicitadosEl) totalSolicitadosEl.innerText = totalPedidos;
+								if(totalPendentesEl) totalPendentesEl.innerText = totalPendentes;
+								if(totalConcluidosEl) totalConcluidosEl.innerText = totalConcluidos;
+								if(totalAvaliacoesEl) totalAvaliacoesEl.innerText = totalAvaliacoesPendentes;
+                                if(valorTotalEl) valorTotalEl.innerText = `R$ ${valorTotalPedidos.toFixed(2)}`;
+
+
+                                // --- CHAMADA PARA CONTAR NOTIFICAÇÕES (REQUER BACKEND) ---
+                                // ESTA CHAMADA ESTÁ COMENTADA POIS O ENDPOINT AINDA PRECISA SER CRIADO NO BACKEND
+                                /*
+                                // Contagem de Notificações (exemplo)
+                                fetch(`https://wyn-backend.onrender.com/api/notificacoes/quantidade`, { headers: { 'Authorization': `Bearer ${token}` } }) // Endpoint hipotético // --- URL ATUALIZADA ---
+                                    .then(res => {
+                                         if (!res.ok) {
+                                              console.error(`Erro HTTP ao buscar notificações: ${res.status}`);
+                                              throw new Error("Erro ao buscar notificações.");
+                                         }
+                                         return res.json();
+                                     })
+                                    .then(data => {
+                                         if(totalNotificacoesEl) totalNotificacoesEl.innerText = data.total || 0;
+                                     })
+                                    .catch(err => {
+                                         console.error("Erro ao buscar notificações:", err);
+                                         if(totalNotificacoesEl) totalNotificacoesEl.innerText = 'Erro'; // Exibe "Erro" no card
+                                     });
+                                */
+                                // --- FIM DA CHAMADA PARA NOTIFICAÇÕES ---
+
+
+							} catch (error) {
+								console.error("Erro ao carregar dados do dashboard:", error);
+								// Não exibe feedback na tabela, pois esta função é para os cards
+                                // Opcional: Exibir erro em algum lugar na tela se os cards não carregarem
+							} finally {
+								// Não há loading específico para os cards, o loading da tabela já cobre
+							}
+						}
+
+                        // --- NOVA FUNÇÃO PARA POLLING DE MENSAGENS NÃO LIDAS ---
+                        async function atualizarContadorMensagensNaoLidas() {
+                            const totalMensagensEl = document.getElementById("total-mensagens");
+                            // Usa o ID específico do cliente
+                            const unreadChatCountSidebarEl = document.getElementById("unread-chat-count-sidebar-cliente");
+                            const token = localStorage.getItem("token");
+
+                            if (!token || !totalMensagensEl || !unreadChatCountSidebarEl) {
+                                console.warn("Não é possível atualizar contador de mensagens: Token ou elemento faltando.");
+                                if(totalMensagensEl) totalMensagensEl.innerText = '--'; // Indica que não foi possível carregar
+                                if(unreadChatCountSidebarEl) unreadChatCountSidebarEl.style.display = 'none';
+                                return;
+                            }
+
+                            try {
+								// --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
+                                const response = await fetch(`https://wyn-backend.onrender.com/api/chat/unread-count`, {
+                                    headers: { 'Authorization': `Bearer ${token}` }
+                                });
+
+                                if (!response.ok) {
+                                    console.error(`Erro HTTP ao buscar mensagens não lidas: ${response.status}`);
+                                     // Continua tentando no próximo intervalo, não precisa alertar o usuário a cada falha
+                                    return;
+                                }
+
+                                const data = await response.json();
+                                const unreadCount = data.total || 0;
+
+                                // Atualiza o texto do elemento no card
+                                totalMensagensEl.innerText = unreadCount;
+
+                                // Atualiza o badge na sidebar
+                                if (unreadCount > 0) {
+                                    unreadChatCountSidebarEl.textContent = unreadCount;
+                                    unreadChatCountSidebarEl.style.display = 'inline';
+                                } else {
+                                    unreadChatCountSidebarEl.style.display = 'none';
+                                }
+
+
+                            } catch (error) {
+                                console.error("Erro ao buscar mensagens não lidas:", error);
+                                if(totalMensagensEl) totalMensagensEl.innerText = 'Erro'; // Exibe "Erro" no card em caso de falha persistente
+                                if(unreadChatCountSidebarEl) unreadChatCountSidebarEl.style.display = 'none';
+                            }
+                        }
+
+                        // --- NOVA FUNÇÃO PARA INICIAR O POLLING ---
+                        function iniciarPollingMensagensNaoLidas() {
+                            // Limpa qualquer intervalo existente para evitar duplicação
+                            if (unreadMessagesPollingInterval) {
+                                clearInterval(unreadMessagesPollingInterval);
+                            }
+                            // Chama a função de atualização imediatamente e depois a cada X milissegundos
+                            atualizarContadorMensagensNaoLidas();
+                            // Define o intervalo de polling (ex: a cada 5 segundos = 5000 ms)
+                            unreadMessagesPollingInterval = setInterval(atualizarContadorMensagensNaoLidas, 5000); // Ajuste o intervalo conforme necessário
+                            console.log("Polling de mensagens não lidas iniciado.");
+                        }
+
+                        // Limpa o intervalo de polling ao sair da página (navegação ou fechar aba)
+                        window.addEventListener('beforeunload', () => {
+                            if (unreadMessagesPollingInterval) {
+                                clearInterval(unreadMessagesPollingInterval);
+                                console.log("Polling de mensagens não lidas parado.");
+                            }
+                        });
+
+
+						// Chamar carregarPerfilUsuario ao carregar a página
+						document.addEventListener("DOMContentLoaded", () => {
+							 carregarPerfilUsuario();
+							 // carregarDadosDashboardCliente e iniciarPollingMensagensNaoLidas
+                             // são chamados dentro de carregarPerfilUsuario após o perfil ser carregado com sucesso.
+						});
+					</script>
 				</div>
 			</div>
 		</div>
 
-        <button id="chat-toggle-button" class="btn btn-primary"><i class="icon-copy dw dw-chat"></i></button>
 
-        <div id="chat-container">
-            <div id="chat-header">
-                Chatbot WYN
-                <button id="chat-close-button">&times;</button>
-            </div>
-            <div id="chat-messages">
-                <div class="message bot">Olá! Como posso ajudar você hoje?</div>
-            </div>
-            <div id="chat-loading-indicator" style="display: none;">Digitando...</div>
-            <div id="chat-input-area">
-                <input type="text" id="chat-input" placeholder="Digite sua mensagem...">
-                <button id="chat-send-button">Enviar</button>
-            </div>
-        </div>
-
+					<div class="footer-wrap pd-20 mb-20 card-box">
+						Plataforma WYN-TECH
+					</div>
+			</div>
+		</div>
 		<script src="vendors/scripts/core.js"></script>
 		<script src="vendors/scripts/script.min.js"></script>
 		<script src="vendors/scripts/process.js"></script>
 		<script src="vendors/scripts/layout-settings.js"></script>
 		<script src="src/plugins/datatables/js/jquery.dataTables.min.js"></script>
 		<script src="src/plugins/datatables/js/dataTables.bootstrap4.min.js"></script>
+		<script src="src/plugins/datatables/js/dataTables.responsive.min.js"></script>
 		<script src="src/plugins/datatables/js/responsive.bootstrap4.min.js"></script>
-		<script>
-			let usuarioLogado = null; // Variável para armazenar os dados do usuário logado
-            let unreadMessagesPollingInterval = null; // Variável para o intervalo de polling de mensagens não lidas
-            // URL base do seu backend (ajuste se necessário)
-            const BACKEND_BASE_URL = 'https://wyn-backend.onrender.com';
-            const DEFAULT_USER_PIC = 'vendors/images/photo1.jpg'; // Imagem padrão para usuário
+		<noscript
+			><iframe
+				src="https://www.googletagmanager.com/ns.html?id=GTM-NXZMQSS"
+				height="0"
+				width="0"
+				style="display: none; visibility: hidden"
+			></iframe
+		></noscript>
+<button id="chat-toggle-button">
+    <i class="fa-solid fa-comments"></i>
+</button>
 
+<div id="toastContainer"></div> <div id="chat-container">
+    <div id="chat-header">
+        Chat com IA
+        <button id="chat-close-button"><i class="dw dw-cancel"></i></button>
+    </div>
+    <div id="chat-messages">
+        <div class="message bot">Olá! Como posso ajudar você hoje?</div>
+    </div>
+    <div id="chat-loading-indicator" style="display: none;">Digitando...</div>
+    <div id="chat-input-area">
+        <input type="text" id="chat-input" placeholder="Digite sua mensagem..." />
+        <button id="chat-send-button">Enviar</button>
+    </div>
+</div>
 
-            // Função para exibir toast notifications (pode ser reutilizada de profile.html)
-            function showToast(message, type = 'success') {
-                const toastContainer = document.getElementById('toastContainer');
-                if (!toastContainer) {
-                    // Cria o container se não existir
-                    const newToastContainer = document.createElement('div');
-                    newToastContainer.id = 'toastContainer';
-                    newToastContainer.style.position = 'fixed';
-                    newToastContainer.style.top = '20px';
-                    newToastContainer.style.right = '20px';
-                    newToastContainer.style.zIndex = '1050';
-                    document.body.appendChild(newToastContainer);
-                }
+<script>
+    // Função para exibir toast notifications (copiada do catalogo.html para garantir que funcione aqui)
+    function showToast(message, type = 'success') {
+        const toastContainer = document.getElementById('toastContainer');
+        if (!toastContainer) {
+            console.error("[DASHBOARD] Toast container não encontrado!");
+            return;
+        }
 
-                const toastElement = document.createElement('div');
-                toastElement.classList.add('toast');
-                toastElement.setAttribute('role', 'alert');
-                toastElement.setAttribute('aria-live', 'assertive');
-                toastElement.setAttribute('aria-atomic', 'true');
-                toastElement.setAttribute('data-delay', '5000');
+        const toastElement = document.createElement('div');
+        toastElement.classList.add('toast');
+        toastElement.setAttribute('role', 'alert');
+        toastElement.setAttribute('aria-live', 'assertive');
+        toastElement.setAttribute('aria-atomic', 'true');
+        toastElement.setAttribute('data-delay', '5000');
 
-                toastElement.innerHTML = `
-                    <div class="toast-header ${type === 'success' ? 'bg-success text-white' : type === 'danger' ? 'bg-danger text-white' : 'bg-info text-white'}">
-                        <strong class="mr-auto">${type === 'success' ? 'Sucesso' : type === 'danger' ? 'Erro' : 'Informação'}</strong>
-                        <small>Agora</small>
-                        <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="toast-body">
-                        ${message}
-                    </div>
-                `;
+        toastElement.innerHTML = `
+            <div class="toast-header ${type === 'success' ? 'bg-success text-white' : type === 'danger' ? 'bg-danger text-white' : 'bg-info text-white'}">
+                <strong class="mr-auto">${type === 'success' ? 'Sucesso' : type === 'danger' ? 'Erro' : 'Informação'}</strong>
+                <small>Agora</small>
+                <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="toast-body">
+                ${message}
+            </div>
+        `;
 
-                document.getElementById('toastContainer').appendChild(toastElement);
-                // Usa jQuery para o funcionamento do toast (necessário incluir jQuery e Bootstrap JS)
-                $(toastElement).toast('show');
-                $(toastElement).on('hidden.bs.toast', function () {
-                    $(this).remove();
-                });
-            }
+        toastContainer.appendChild(toastElement);
+        $(toastElement).toast('show');
+        $(toastElement).on('hidden.bs.toast', function () {
+            $(this).remove();
+        });
+    }
 
+    // --- Lógica do Chatbot IA ---
+    // Certifique-se de que o elemento chat-toggle-button está no HTML antes de tentar acessá-lo.
+    // Ele foi movido para fora do script para ser um elemento HTML visível.
+    const chatToggleButton = document.getElementById('chat-toggle-button');
+    const chatContainer = document.getElementById('chat-container');
+    const chatCloseButton = document.getElementById('chat-close-button');
+    const chatMessages = document.getElementById('chat-messages');
+    const chatInput = document.getElementById('chat-input');
+    const chatSendButton = document.getElementById('chat-send-button');
+    const chatLoadingIndicator = document.getElementById('chat-loading-indicator');
 
-            async function carregarPerfilUsuario() {
-                const token = localStorage.getItem('token');
-                const usuarioCache = localStorage.getItem('usuario'); // Chave correta para usuário
+    let chatHistory = [
+        {
+            role: "user",
+            parts: [{
+                text: `Você é um assistente de IA decicadoà plataforma WYN. Seu principal objetivo é fornecer informações precisas e úteis sobre o funcionamento da WYN, seus serviços, processos de usuário e prestador, e quaisquer outras funcionalidades relevantes. Responda sempre com foco na WYN e seus ecossistema.
 
-                if (!token || !usuarioCache) {
-                    console.warn("Usuário não autenticado. Redirecionando para login.");
-                    window.location.href = "login.html"; // Redirecionar para login do usuário
-                    return;
-                }
+1. O que é a WYN? LEMBRANDO QUE NESTE MOMENTO VOCÊ ESTA FALANDO COM O CLIENTE, NA TELA DO CLIENTE: SEMPRE INFORMAÇÕES RESUMIDAS, NUNCA PASSANDO DE 3 OU 4 LINHAS
+A WYN é uma plataforma digital inovadora que atua como uma ponte eficiente e segura, conectando clientes que necessitam de uma vasta gama de serviços a profissionais qualificados e verificados.
 
-                try {
-                    // Parse do cache para obter o ID e nome rapidamente
-                    usuarioLogado = JSON.parse(usuarioCache);
-                    const nomeSpan = document.querySelector(".user-name");
-                    const userProfilePicImg = document.getElementById("user-profile-pic"); // Pega a tag img da foto
+Nosso Propósito: Simplificar a vida de usuários e prestadores, oferecendo uma solução completa para encontrar e oferecer serviços com agilidade, segurança e garantia de qualidade.
 
-                    if (nomeSpan && usuarioLogado?.nome) {
-                        nomeSpan.textContent = usuarioLogado.nome;
-                    }
-                    // Exibe a foto de perfil do cache se existir
-                    if (userProfilePicImg && usuarioLogado?.foto_perfil_url) {
-                        userProfilePicImg.src = usuarioLogado.foto_perfil_url;
-                        userProfilePicImg.onerror = function() {
-                            // Fallback para imagem padrão se a URL da foto falhar
-                            this.onerror = null; // Evita loop infinito de erro
-                            this.src = DEFAULT_USER_PIC;
-                        };
-                    } else if (userProfilePicImg) {
-                        // Se não houver foto no cache, usa a imagem padrão
-                        userProfilePicImg.src = DEFAULT_USER_PIC;
-                    }
+2. Papéis na Plataforma:
+Cliente (Usuário): Indivíduo que busca e contrata serviços.
 
-                    // Chamada ao backend para validar o token e obter dados completos
-                    // Usando a rota /perfil que agora verifica o tipo no token
-                    // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
-                    const res = await fetch(`${BACKEND_BASE_URL}/perfil`, {
-                        headers: { 'Authorization': 'Bearer ' + token }
-                    });
+Prestador (Profissional): Indivíduo ou empresa que oferece e executa serviços.
 
-                    const resClone = res.clone(); // Clonar para ler o body se der erro de JSON
+Administrador (Admin): Responsável pela gestão e moderação da plataforma.
 
-                    if (!res.ok) {
-                        if (res.status === 401 || res.status === 403) {
-                            console.error("Token inválido ou expirado. Redirecionando para login.");
-                            // Substituído alert por showToast
-                            showToast("Sua sessão expirou. Por favor, faça login novamente.", 'danger');
-                            window.location.href = "login.html";
-                            return;
-                        }
-                        const errorText = await resClone.text();
-                        console.error("Erro HTTP ao buscar perfil:", res.status, errorText);
-                        throw new Error(`Erro HTTP ao buscar perfil: ${res.status}`);
-                    }
+3. Processos Internos e Funcionalidades:
+3.1. Cadastro (Registro de Novas Contas):
 
-                    let data = {};
-                    try {
-                        data = await res.json();
-                    } catch(jsonError) {
-                        console.error("Erro ao parsear JSON do perfil:", await resClone.text());
-                        throw new Error("Resposta de perfil inválida.");
-                    }
+Clientes: Podem se cadastrar fornecendo informações básicas (nome, e-mail, senha).
 
-                    // Verifique se o perfil retornado é de um usuário cliente
-                    if (data.tipo !== 'usuario' || !data.usuario?._id) {
-                        console.error("Token válido, mas não corresponde a um usuário cliente.");
-                        // Substituído alert por showToast
-                        showToast("Acesso negado para este tipo de usuário.", 'danger');
-                        window.location.href = "login-prestador.html"; // Redireciona para login do prestador se for prestador
-                        return;
-                    }
+Prestadores: O cadastro é mais detalhado, exigindo informações de contato, tipos de serviço oferecidos, área de atuação e, crucialmente, passa por um processo de verificação para garantir a qualificação e segurança. Podem incluir foto de perfil.
 
-                    // Atualiza a variável global com os dados completos do usuário
-                    usuarioLogado = data.usuario;
+3.2. Login (Acesso à Plataforma):
 
-                    // Atualiza o nome na interface (se a chamada backend for bem sucedida)
-                    if (usuarioLogado?.nome && nomeSpan) {
-                        nomeSpan.textContent = usuarioLogado.nome;
-                    }
-                    // Atualiza a foto de perfil com a URL retornada pelo backend
-                    if (userProfilePicImg && usuarioLogado?.foto_perfil_url) {
-                        userProfilePicImg.src = usuarioLogado.foto_perfil_url;
-                        userProfilePicImg.onerror = function() {
-                            this.onerror = null; // Evita loop infinito de erro
-                            this.src = DEFAULT_USER_PIC;
-                        };
-                    } else if (userProfilePicImg) {
-                        // Se não houver foto no cache, usa a imagem padrão
-                        userProfilePicImg.src = DEFAULT_USER_PIC;
-                    }
+Clientes e Prestadores: Acessam suas contas usando e-mail e senha.
 
-                    console.log("Perfil do usuário carregado:", usuarioLogado);
+Administradores: Possuem uma tela de login separada (login-admin.html) e credenciais específicas para acessar o dashboard administrativo.
 
-                    // Carregar contadores do dashboard
-                    carregarContadoresUsuario();
-                    // Iniciar polling para mensagens não lidas
-                    iniciarPollingMensagensNaoLidas();
+3.3. Fazer Pedido/Solicitar Serviço (Fluxo do Cliente):
 
-                } catch (err) {
-                    console.error('Erro ao carregar perfil do usuário:', err);
-                    if (usuarioLogado) {
-                        showToast('Erro ao validar sessão do usuário. Pode haver problemas na conexão.', 'danger');
-                    } else {
-                        showToast('Ocorreu um erro ao carregar informações do usuário.', 'danger');
-                    }
-                }
-            }
+Busca: O cliente pesquisa por um tipo de serviço (ex: "Eletricista") na página inicial ou na seção de serviços.
 
-            // Função para carregar os contadores do dashboard do cliente
-            async function carregarContadoresUsuario() {
-                const token = localStorage.getItem('token');
-                if (!token) return;
+Seleção: O cliente pode visualizar profissionais disponíveis e/ou solicitar um serviço específico.
 
-                try {
-                    // Total de Solicitações
-                    const resTotal = await fetch(`${BACKEND_BASE_URL}/meus-servicos`, { headers: { 'Authorization': `Bearer ${token}` } });
-                    const dataTotal = await resTotal.json();
-                    document.getElementById('total-solicitados').textContent = dataTotal.length || 0;
+Detalhes da Solicitação: O cliente preenche um formulário com detalhes do serviço desejado (endereço, urgência, notas adicionais, data e hora preferenciais).
 
-                    // Pedidos Pendentes (aguardando aceite do prestador, aguardando pagamento, recusado, cancelado)
-                    const resPendentes = await fetch(`${BACKEND_BASE_URL}/meus-servicos`, { headers: { 'Authorization': `Bearer ${token}` } });
-                    const dataPendentes = await resPendentes.json();
-                    const pendentes = dataPendentes.filter(s =>
-                        s.status === 'aguardando_aceite_prestador' ||
-                        s.status === 'aguardando_pagamento_cliente' ||
-                        s.status === 'recusado_pelo_prestador' ||
-                        s.status === 'cancelado'
-                    );
-                    document.getElementById('total-pendentes').textContent = pendentes.length || 0;
+Envio: A solicitação é enviada para os prestadores qualificados na área.
 
-                    // Serviços Concluídos
-                    const resConcluidos = await fetch(`${BACKEND_BASE_URL}/meus-servicos`, { headers: { 'Authorization': `Bearer ${token}` } });
-                    const dataConcluidos = await resConcluidos.json();
-                    const concluidos = dataConcluidos.filter(s => s.status === 'concluido_pelo_prestador' || s.status === 'avaliado_pelo_cliente');
-                    document.getElementById('total-concluidos').textContent = concluidos.length || 0;
+Aceite/Recusa do Prestador: Um prestador pode aceitar a solicitação, propondo um valor, ou recusá-la.
 
-                    // Avaliações Pendentes (serviços concluídos que ainda não foram avaliados)
-                    const resAvaliacoesPendentes = await fetch(`${BACKEND_BASE_URL}/pedidos-para-avaliar`, { headers: { 'Authorization': `Bearer ${token}` } });
-                    const dataAvaliacoesPendentes = await resAvaliacoesPendentes.json();
-                    document.getElementById('total-avaliacoes').textContent = dataAvaliacoesPendentes.length || 0;
+3.4. Pagamento (Fluxo do Cliente):
 
-                    // Valor Total de Pedidos (apenas concluídos e avaliados com valor)
-                    const valorTotal = concluidos.reduce((sum, s) => sum + (s.valor_servico || 0), 0);
-                    document.getElementById('valor-total').textContent = `R$ ${valorTotal.toFixed(2).replace('.', ',')}`;
+Integração Mercado Pago: Após um prestador aceitar uma solicitação e propor um valor, o cliente é direcionado para uma página de pagamento pendente.
 
-                    // Mensagens Não Lidas (do chat)
-                    const resUnreadMessages = await fetch(`${BACKEND_BASE_URL}/api/chat/unread-count-for-user`, { headers: { 'Authorization': `Bearer ${token}` } });
-                    const dataUnreadMessages = await resUnreadMessages.json();
-                    document.getElementById('total-mensagens').textContent = dataUnreadMessages.total || 0;
-                    // Atualiza o badge da sidebar também
-                    const unreadChatCountSidebar = document.getElementById('unread-chat-count-sidebar-cliente');
-                    if (unreadChatCountSidebar) {
-                        if (dataUnreadMessages.total > 0) {
-                            unreadChatCountSidebar.textContent = dataUnreadMessages.total;
-                            unreadChatCountSidebar.style.display = 'inline';
-                        } else {
-                            unreadChatCountSidebar.style.display = 'none';
-                        }
-                    }
+Geração de Link de Pagamento: A plataforma gera um link de pagamento via Mercado Pago.
 
-                    // Notificações (se houver um endpoint para isso)
-                    // Se você tiver um endpoint para contar notificações gerais, adicione-o aqui.
-                    // Por enquanto, vamos usar um placeholder ou uma contagem dummy.
-                    // const resNotificacoes = await fetch(`${BACKEND_BASE_URL}/api/notifications/usuario/count`, { headers: { 'Authorization': `Bearer ${token}` } });
-                    // const dataNotificacoes = await resNotificacoes.json();
-                    document.getElementById('total-notificacoes').textContent = '0'; // Placeholder
+Status Pendente: O serviço entra em status de "aguardando_pagamento_cliente" ou "aguardando_confirmacao_pagamento" enquanto o pagamento é processado.
 
+Confirmação: Após a confirmação do pagamento pelo Mercado Pago, o status do serviço é atualizado para "aceito_pelo_prestador" ou "em andamento".
 
-                } catch (error) {
-                    console.error("Erro ao carregar contadores do usuário:", error);
-                    // showToast("Erro ao carregar alguns dados do dashboard.", 'danger'); // Evita spam de toast
-                }
-            }
+3.5. Gerenciamento de Serviços (Fluxo do Prestador):
 
-            // Função para iniciar o polling de mensagens não lidas
-            function iniciarPollingMensagensNaoLidas() {
-                // Limpa qualquer intervalo existente para evitar duplicação
-                if (unreadMessagesPollingInterval) {
-                    clearInterval(unreadMessagesPollingInterval);
-                }
-                // Inicia o polling
-                unreadMessagesPollingInterval = setInterval(() => {
-                    console.log("Verificando mensagens não lidas...");
-                    carregarContadoresUsuario(); // Chama a função que atualiza a contagem de mensagens
-                }, 30000); // A cada 30 segundos (pode ajustar)
-                console.log("Polling de mensagens não lidas iniciado.");
-            }
+Dashboard do Prestador: O prestador tem acesso a um dashboard (index.html) que mostra:
 
-            // Função para parar o polling de mensagens não lidas
-            function pararPollingMensagensNaoLidas() {
-                if (unreadMessagesPollingInterval) {
-                    clearInterval(unreadMessagesPollingInterval);
-                    unreadMessagesPollingInterval = null;
-                    console.log("Polling de mensagens não lidas parado.");
-                }
-            }
+Solicitações Pendentes: Novas solicitações de serviço que ele pode aceitar ou recusar.
 
+Meus Serviços Aceitos/Em Andamento: Serviços que ele aceitou e estão aguardando pagamento do cliente ou já estão em andamento.
 
-			// Função de Logout
-			document.getElementById('logout-link').addEventListener('click', (e) => {
-				e.preventDefault();
-				localStorage.removeItem('token');
-				localStorage.removeItem('usuario'); // Remove o cache específico do usuário
-                pararPollingMensagensNaoLidas(); // Para o polling ao deslogar
-				window.location.href = "login.html";
-			});
+Histórico de Serviços: Serviços concluídos ou cancelados.
 
-			// Chamar loadProfile ao carregar a página
-			document.addEventListener("DOMContentLoaded", carregarPerfilUsuario);
+Minhas Avaliações: Feedback recebido dos clientes.
 
-            // Event listener para o botão de toggle (abrir/fechar chat)
-            const chatToggleButton = document.getElementById('chat-toggle-button');
-            const chatContainer = document.getElementById('chat-container');
-            const chatInput = document.getElementById('chat-input');
-            const chatSendButton = document.getElementById('chat-send-button');
-            const chatCloseButton = document.getElementById('chat-close-button');
-            const chatMessages = document.getElementById('chat-messages');
-            const chatLoadingIndicator = document.getElementById('chat-loading-indicator');
+Gerenciar Serviços: Onde o prestador pode adicionar ou editar os tipos de serviços que oferece.
 
-            let chatHistory = []; // Armazena o histórico do chat
+Minha Disponibilidade: Para gerenciar seus horários.
 
-            // Função para adicionar mensagem ao chat UI
-            function addMessageToChat(sender, message) {
-                const messageElement = document.createElement('div');
-                messageElement.classList.add('message', sender);
-                messageElement.textContent = message;
-                chatMessages.appendChild(messageElement);
-                chatMessages.scrollTop = chatMessages.scrollHeight; // Rola para a última mensagem
-            }
+Ações sobre Solicitações: O prestador pode "Aceitar" (propondo um valor) ou "Recusar" uma solicitação pendente.
 
-            // Função para enviar mensagem para a IA
-            async function sendMessageToAI() {
-                const userMessage = chatInput.value.trim();
-                if (userMessage === '') return;
+Conclusão do Serviço: Após a execução, o prestador marca o serviço como "concluido_pelo_prestador".
 
-                addMessageToChat('user', userMessage);
-                chatInput.value = ''; // Limpa o input
-                chatLoadingIndicator.style.display = 'block'; // Mostra indicador de carregamento
-                chatMessages.scrollTop = chatMessages.scrollHeight; // Rola para a última mensagem
+3.6. Avaliações (Feedback do Cliente):
 
-                // Adiciona a mensagem do usuário ao histórico
-                chatHistory.push({ role: "user", parts: [{ text: userMessage }] });
+Após a conclusão de um serviço, o cliente pode avaliar o prestador, dando estrelas e deixando comentários. Isso contribui para a reputação do prestador na plataforma.
 
-                try {
-                    const payload = { contents: chatHistory };
-                    const apiKey = ""; // Deixe vazio, o Canvas fornecerá a chave em tempo de execução
-                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+3.7. Notificações:
 
-                    const response = await fetch(apiUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
+Sininho de Notificações: Clientes e prestadores recebem notificações em um ícone de sino no cabeçalho.
 
-                    const result = await response.json();
+Tipos de Notificações:
 
-                    if (result.candidates && result.candidates.length > 0 &&
-                        result.candidates[0].content && result.candidates[0].content.parts &&
-                        result.candidates[0].content.parts.length > 0) {
-                        const botMessage = result.candidates[0].content.parts[0].text;
-                        addMessageToChat('bot', botMessage);
-                        chatHistory.push({ role: "model", parts: [{ text: botMessage }] }); // Adiciona a resposta do bot ao histórico
-                    } else {
-                        addMessageToChat('bot', 'Desculpe, não consegui gerar uma resposta. Tente novamente.');
-                        console.error('Estrutura de resposta da API Gemini inesperada:', result);
-                    }
-                } catch (error) {
-                    console.error('Erro ao chamar a API Gemini:', error);
-                    addMessageToChat('bot', 'Ocorreu um erro ao se comunicar com a IA. Por favor, tente novamente mais tarde.');
-                } finally {
-                    chatLoadingIndicator.style.display = 'none'; // Esconde indicador de carregamento
-                    chatMessages.scrollTop = chatMessages.scrollHeight; // Rola para a última mensagem novamente
-                }
-            }
+Novas solicitações de serviço (para prestadores).
 
-            // Event listener para o botão de toggle (abrir/fechar chat)
-            // Verifique se o elemento existe antes de adicionar o listener
-            if (chatToggleButton) {
-                chatToggleButton.addEventListener('click', () => {
-                    chatContainer.classList.toggle('open');
-                    if (chatContainer.classList.contains('open')) {
-                        chatInput.focus(); // Foca no input quando abre
-                    }
-                });
+Atualizações de status de serviço (pagamento confirmado, serviço aceito/recusado, concluído).
+
+Novas mensagens de chat.
+
+Novas avaliações recebidas.
+
+Contador: O ícone do sino exibe um contador de notificações não lidas.
+
+Detalhes: O dropdown do sino mostra um resumo da notificação (ex: "Nova solicitação de serviço", "Pagamento confirmado"). Clicar na notificação marca-a como lida e pode redirecionar para a página relevante (ex: detalhes do serviço, sala de chat).
+
+3.8. Perfil do Usuário/Prestador:
+
+Ambos os tipos de usuários podem acessar e atualizar suas informações de perfil, incluindo foto de perfil.
+
+3.9. Chat de Serviços:
+
+A plataforma oferece uma funcionalidade de chat para comunicação direta entre clientes e prestadores sobre os serviços.
+
+4. Categorias de Serviços:
+Atualmente Ativas: Eletricista.
+
+Em Breve: Encanador, Pintor, Ar Condicionado, Jardinagem, Pedreiro, Limpeza.
+
+Em Expansão: Outras categorias como Personal Trainer, Aulas de Música, Fotografia, etc. (A IA deve indicar que estas estão em fase de expansão e podem não estar listadas em todas as interfaces como "Em Breve" explícito, mas fazem parte do plano de crescimento).
+
+Lembretes para a IA:
+
+Sempre que perguntado sobre um serviço "Em Breve", mencione que a WYN está trabalhando para disponibilizá-lo e convide o usuário a se cadastrar para receber notificações.
+
+Mantenha um tom profissional, prestativo e claro. E SEMPRE PASSE INFORMAÇÕES RESUMIDAS, diretas e objetivas. evite fazer um textão para o usuário.
+
+Evite jargões técnicos desnecessários, a menos que o usuário solicite.
+
+Se a pergunta for fora do escopo da WYN, informe educadamente que sua função é apenas sobre a plataforma WYN.`
+            }]
+        },
+        {
+            role: "model",
+            parts: [{
+                text: "Olá! Como posso ajudar você hoje?"
+            }]
+        }
+    ];
+
+    // Adiciona a mensagem inicial do bot ao carregar a página
+    // Removido: addMessage('bot', "Olá! Como posso ajudar você hoje?") // Já está no HTML inicial do chat
+    // Função para adicionar mensagens ao chat
+    function addMessage(sender, text) {
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('message', sender);
+        messageElement.textContent = text;
+        chatMessages.appendChild(messageElement);
+        chatMessages.scrollTop = chatMessages.scrollHeight; // Rola para a última mensagem
+    }
+
+    // Função para enviar mensagem para a IA
+    async function sendMessageToAI() {
+        const userMessage = chatInput.value.trim();
+        if (userMessage === '') return;
+
+        addMessage('user', userMessage);
+        chatHistory.push({ role: "user", parts: [{ text: userMessage }] });
+        chatInput.value = ''; // Limpa o input
+
+        chatSendButton.disabled = true; // Desabilita o botão
+        chatInput.disabled = true; // Desabilita o input
+        chatLoadingIndicator.style.display = 'block'; // Mostra o indicador de carregamento
+        chatMessages.scrollTop = chatMessages.scrollHeight; // Rola para baixo para ver o indicador
+
+        try {
+            // URL do seu backend para o endpoint do chatbot
+            const apiUrl = `https://wyn-backend.onrender.com/api/chat`; // <-- URL ATUALIZADA PARA O BACKEND NO RENDER
+
+            const payload = {
+                chatHistory: chatHistory
+            };
+
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const result = await response.json();
+
+            if (response.ok && result.aiResponse) {
+                addMessage('bot', result.aiResponse);
+                chatHistory.push({ role: "model", parts: [{ text: result.aiResponse }] });
             } else {
-                console.warn("Elemento #chat-toggle-button não encontrado. Verifique se o botão flutuante está no HTML.");
+                addMessage('bot', result.message || 'Desculpe, não consegui gerar uma resposta. Tente novamente.');
+                console.error('Estrutura de resposta inesperada da API Gemini:', result);
             }
+        } catch (error) {
+            console.error('Erro ao chamar a API Gemini:', error);
+            addMessage('bot', 'Ocorreu um erro ao conectar com a IA. Por favor, tente novamente mais tarde.');
+        } finally {
+            chatLoadingIndicator.style.display = 'none'; // Esconde o indicador de carregamento
+            chatSendButton.disabled = false; // Habilita o botão de enviar
+            chatInput.disabled = false; // Habilita o input
+            chatInput.focus(); // Coloca o foco de volta no input
+            chatMessages.scrollTop = chatMessages.scrollHeight; // Rola para a última mensagem novamente
+        }
+    }
+
+    // Event listener para o botão de toggle (abrir/fechar chat)
+    // Verifique se o elemento existe antes de adicionar o listener
+    if (chatToggleButton) {
+        chatToggleButton.addEventListener('click', () => {
+            chatContainer.classList.toggle('open');
+            if (chatContainer.classList.contains('open')) {
+                chatInput.focus(); // Foca no input quando abre
+            }
+        });
+    } else {
+        console.warn("Elemento #chat-toggle-button não encontrado. Verifique se o botão flutuante está no HTML.");
+    }
 
 
-            // Event listener para o botão de fechar o chat
-            if (chatCloseButton) {
-                chatCloseButton.addEventListener('click', () => {
-                    chatContainer.classList.remove('open');
-                });
-            } else {
-                console.warn("Elemento #chat-close-button não encontrado.");
-            }
+    // Event listener para o botão de fechar o chat
+    if (chatCloseButton) {
+        chatCloseButton.addEventListener('click', () => {
+            chatContainer.classList.remove('open');
+        });
+    } else {
+        console.warn("Elemento #chat-close-button não encontrado.");
+    }
 
-            // Event listener para o botão de enviar mensagem
-            if (chatSendButton) {
-                chatSendButton.addEventListener('click', sendMessageToAI);
-            } else {
-                console.warn("Elemento #chat-send-button não encontrado.");
-            }
+    // Event listener para o botão de enviar mensagem
+    if (chatSendButton) {
+        chatSendButton.addEventListener('click', sendMessageToAI);
+    } else {
+        console.warn("Elemento #chat-send-button não encontrado.");
+    }
 
-            // Event listener para a tecla Enter no campo de input
-            if (chatInput) {
-                chatInput.addEventListener('keypress', (event) => {
-                    if (event.key === 'Enter') {
-                        sendMessageToAI();
-                    }
-                });
-            } else {
-                console.warn("Elemento #chat-input não encontrado.");
+    // Event listener para a tecla Enter no campo de input
+    if (chatInput) {
+        chatInput.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                sendMessageToAI();
             }
-		</script>
+        });
+    } else {
+        console.warn("Elemento #chat-input não encontrado.");
+    }
+</script>
 
 </body>
 </html>
