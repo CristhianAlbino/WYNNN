@@ -46,6 +46,62 @@ document.addEventListener("DOMContentLoaded", function() {
     const body = document.body;
     const currentTheme = localStorage.getItem('theme');
 
+    // Referências para as imagens que serão trocadas
+    const heroImage = document.getElementById('hero-main-image');
+    const iconElectrician = document.getElementById('icon-electrician');
+    const iconPlumber = document.getElementById('icon-plumber');
+    const iconPainter = document.getElementById('icon-painter');
+    const iconCleaning = document.getElementById('icon-cleaning');
+    const footerLogo = document.getElementById('footer-logo-img');
+
+
+    // Caminhos das imagens para modo claro e escuro
+    const images = {
+        hero: {
+            light: '/w.png', // Imagem principal para modo claro
+            dark: '/w(1).png' // Imagem principal para modo escuro (VOCÊ PRECISA CRIAR ESTA IMAGEM)
+        },
+        electrician: {
+            light: '/w/3.png', // Ícone Eletricista modo claro
+            dark: '/w/3-dark.png' // Ícone Eletricista modo escuro (CRIAR OU USAR O MESMO)
+        },
+        plumber: {
+            light: '/w/4.png', // Ícone Encanador modo claro
+            dark: '/w/4-dark.png' // Ícone Encanador modo escuro (CRIAR OU USAR O MESMO)
+        },
+        painter: {
+            light: '/w/5.png', // Ícone Pintor modo claro
+            dark: '/w/5-dark.png' // Ícone Pintor modo escuro (CRIAR OU USAR O MESMO)
+        },
+        cleaning: {
+            light: '/w/2.png', // Ícone Limpeza modo claro
+            dark: '/w/2-dark.png' // Ícone Limpeza modo escuro (CRIAR OU USAR O MESMO)
+        },
+        footerLogo: {
+            light: '/w (1).png', // Logo do rodapé modo claro
+            dark: '/w-dark (1).png' // Logo do rodapé modo escuro (CRIAR OU USAR O MESMO)
+        }
+    };
+
+    // Função para atualizar as imagens com base no tema
+    function updateThemeImages() {
+        if (body.classList.contains('dark-mode')) {
+            if (heroImage) heroImage.src = images.hero.dark;
+            if (iconElectrician) iconElectrician.src = images.electrician.dark;
+            if (iconPlumber) iconPlumber.src = images.plumber.dark;
+            if (iconPainter) iconPainter.src = images.painter.dark;
+            if (iconCleaning) iconCleaning.src = images.cleaning.dark;
+            if (footerLogo) footerLogo.src = images.footerLogo.dark;
+        } else {
+            if (heroImage) heroImage.src = images.hero.light;
+            if (iconElectrician) iconElectrician.src = images.electrician.light;
+            if (iconPlumber) iconPlumber.src = images.plumber.light;
+            if (iconPainter) iconPainter.src = images.painter.light;
+            if (iconCleaning) iconCleaning.src = images.cleaning.light;
+            if (footerLogo) footerLogo.src = images.footerLogo.light;
+        }
+    }
+
     if (currentTheme && currentTheme !== 'light-mode') { // Verifica se há um tema salvo E se não é explicitamente 'light-mode'
         body.classList.add(currentTheme);
         // Atualiza o ícone com base no tema aplicado
@@ -57,6 +113,9 @@ document.addEventListener("DOMContentLoaded", function() {
         body.classList.remove('dark-mode'); // Garante que a classe dark-mode não esteja presente
          themeSwitcher.classList.replace('bx-sun', 'bx-moon'); // Garante que o ícone seja a lua
     }
+
+    // Chama a função para garantir que as imagens corretas sejam carregadas na inicialização
+    updateThemeImages();
 
 
     // Adiciona listener para o clique no ícone de alternar tema
@@ -73,6 +132,8 @@ document.addEventListener("DOMContentLoaded", function() {
                 localStorage.setItem('theme', 'light-mode'); // Salva como light-mode
                 themeSwitcher.classList.replace('bx-sun', 'bx-moon'); // Muda para a lua
             }
+            // Chama a função para atualizar as imagens após a troca de tema
+            updateThemeImages();
         });
     } else {
         console.warn("Elemento #theme-switcher-icon não encontrado.");
