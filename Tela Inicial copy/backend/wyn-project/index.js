@@ -147,9 +147,6 @@ const ServicoSchema = new mongoose.Schema({
     email_cliente: { type: String, required: true },
     telefone_cliente: { type: String }, // REMOVIDO required: true
     endereco_servico: { type: String },
-    // NOVO: Campos para geolocalização do serviço
-    latitude: { type: Number, default: null },
-    longitude: { type: Number, default: null },
     notas_adicionais: { type: String },
     tipo_servico: { type: String, required: true }, // Nome do serviço (copiado do ServicoOferecido)
     descricao_servico: { type: String }, // Descrição (copiado do ServicoOferecido)
@@ -203,19 +200,7 @@ const PrestadorSchema = new mongoose.Schema({
     resetPasswordExpires: { type: Date },
     especialidades: [{ type: String }], // Adicionado para prestador
     area_atuacao: { type: String }, // Adicionado para prestador
-    disponibilidade: { type: String }, // Adicionado para prestador
-    // NOVO: Campo para geolocalização do prestador (ponto)
-    location: {
-        type: {
-            type: String,
-            enum: ['Point'],
-            default: 'Point'
-        },
-        coordinates: {
-            type: [Number], // [longitude, latitude]
-            index: '2dsphere' // Cria um índice geoespacial
-        }
-    }
+    disponibilidade: { type: String } // Adicionado para prestador
 });
 const Prestador = mongoose.model('Prestador', PrestadorSchema);
 
@@ -319,8 +304,6 @@ const validateSolicitarServico = (data) => {
         data_servico_preferencial: Joi.date().allow(null).optional(),
         hora_servico_preferencial: Joi.string().pattern(/^([01]\d|2[0-3]):([0-5]\d)$/).allow(null).optional(),
         endereco_servico: Joi.string().required(), // Endereço onde o serviço será realizado
-        latitude: Joi.number().min(-90).max(90).allow(null).optional(), // NOVO: Latitude
-        longitude: Joi.number().min(-180).max(180).allow(null).optional(), // NOVO: Longitude
         notas_adicionais: Joi.string().allow('', null).optional(),
         urgente: Joi.boolean().required(),
         // cliente_id é pego do token, nome/email/telefone do cliente podem ser pegos do perfil do usuário logado
@@ -434,9 +417,6 @@ const validateAdminPrestadorUpdate = (data) => {
         nome: Joi.string().optional(),
         email: Joi.string().email().optional(),
         telefone: Joi.string().allow(null, '').optional(),
-        // NOVO: Adicionado latitude e longitude para atualização do prestador pelo admin
-        latitude: Joi.number().min(-90).max(90).allow(null).optional(),
-        longitude: Joi.number().min(-180).max(180).allow(null).optional(),
         // Senha não é validada aqui
     }).min(1);
     return schema.validate(data);
@@ -476,8 +456,6 @@ const validateAdminServicoUpdate = (data) => {
         hora_servico_preferencial: Joi.string().pattern(/^([01]\d|2[0-3]):([0-5]\d)$/).allow(null).optional(),
         // Outros campos que o admin pode querer ajustar (endereço, notas, etc.)
         endereco_servico: Joi.string().optional(),
-        latitude: Joi.number().min(-90).max(90).allow(null).optional(), // NOVO
-        longitude: Joi.number().min(-180).max(180).allow(null).optional(), // NOVO
         notas_adicionais: Joi.string().allow('', null).optional(),
         urgente: Joi.boolean().optional()
 
@@ -500,10 +478,7 @@ const validatePrestadorUpdate = (data) => {
         telefone: Joi.string().allow(null, '').optional(),
         especialidades: Joi.array().items(Joi.string()).optional(),
         area_atuacao: Joi.string().allow(null, '').optional(),
-        disponibilidade: Joi.string().allow(null, '').optional(),
-        // NOVO: Adicionado latitude e longitude para atualização do prestador
-        latitude: Joi.number().min(-90).max(90).allow(null).optional(),
-        longitude: Joi.number().min(-180).max(180).allow(null).optional(),
+        disponibilidade: Joi.string().allow(null, '').optional()
     }).min(1); // Pelo menos um campo deve ser fornecido para atualização
     return schema.validate(data);
 };
@@ -688,8 +663,6 @@ app.post('/solicitar-servico', authMiddlewareUsuario, async (req, res) => {
             email_cliente: usuario.email,
             telefone_cliente: usuario.telefone, // Agora não é mais obrigatório pelo Schema
             endereco_servico: value.endereco_servico,
-            latitude: value.latitude, // NOVO: Salva a latitude
-            longitude: value.longitude, // NOVO: Salva a longitude
             notas_adicionais: value.notas_adicionais,
             tipo_servico: servicoOferecido.nome, // Copia o nome do serviço oferecido
             descricao_servico: servicoOferecido.descricao, // Copia a descrição do serviço oferecido
@@ -1484,7 +1457,7 @@ app.get('/perfil', authMiddleware, async (req, res, next) => {
             // --- FIM NOVO CONSOLE.LOG ---
             res.status(200).json({ usuario: { ...usuario.toObject(), foto_perfil_url: fotoPerfilUrl }, tipo: 'usuario' });
         } else if (req.user.tipo === 'prestador') {
-             const prestador = await Prestador.findById(req.user.id).select('_id nome email telefone foto_perfil especialidades area_atuacao disponibilidade location'); // Adicionado campos específicos do prestador, incluindo location
+             const prestador = await Prestador.findById(req.user.id).select('_id nome email telefone foto_perfil especialidades area_atuacao disponibilidade'); // Adicionado campos específicos do prestador
              if (!prestador) {
                   console.warn(`[BACKEND] Perfil: Prestador ${req.user.id} não encontrado.`);
                   return res.status(404).json({ message: 'Prestador não encontrado.' });
@@ -1545,7 +1518,7 @@ app.put('/perfil-usuario', authMiddlewareUsuario, async (req, res, next) => {
 // --- NOVA ROTA: Atualizar perfil do PRESTADOR logado ---
 app.put('/perfil-prestador', authMiddlewarePrestador, async (req, res, next) => {
     console.log(`[BACKEND] Recebida requisição PUT /perfil-prestador para prestador ${req.user.id}`);
-    const { nome, telefone, especialidades, area_atuacao, disponibilidade, latitude, longitude } = req.body; // NOVO: latitude e longitude
+    const { nome, telefone, especialidades, area_atuacao, disponibilidade } = req.body;
 
     const { error, value } = validatePrestadorUpdate(req.body);
     if (error) {
@@ -1566,18 +1539,6 @@ app.put('/perfil-prestador', authMiddlewarePrestador, async (req, res, next) => 
         if (value.especialidades !== undefined) prestador.especialidades = value.especialidades;
         if (value.area_atuacao !== undefined) prestador.area_atuacao = value.area_atuacao;
         if (value.disponibilidade !== undefined) prestador.disponibilidade = value.disponibilidade;
-
-        // NOVO: Atualiza a localização do prestador
-        if (value.latitude !== undefined && value.longitude !== undefined) {
-            prestador.location = {
-                type: 'Point',
-                coordinates: [value.longitude, value.latitude] // MongoDB espera [longitude, latitude]
-            };
-        } else if (value.latitude === null && value.longitude === null) {
-            // Se ambos forem explicitamente null, remove a localização
-            prestador.location = undefined;
-        }
-
 
         await prestador.save();
 
@@ -2547,119 +2508,55 @@ app.delete('/prestador/servicos-oferecidos/:id', authMiddlewarePrestador, async 
 // --- FIM NOVAS ROTAS PARA GERENCIAR SERVIÇOS OFERECIDOS ---
 
 
-// --- NOVA ROTA: Listar serviços oferecidos no catálogo (PARA CLIENTES) ---
-app.post('/servicos-catalogo', authMiddlewareUsuario, async (req, res, next) => {
+// --- NOVA ROTA PARA LISTAR SERVIÇOS OFERECIDOS NO CATÁLOGO (PARA CLIENTES) ---
+app.get('/servicos-catalogo', authMiddlewareUsuario, async (req, res, next) => {
     try {
-        console.log('[BACKEND] Recebida requisição POST /servicos-catalogo para usuário:', req.user.id);
-        const { latitude, longitude } = req.body; // Recebe a localização do cliente
+        console.log('[BACKEND] Recebida requisição GET /servicos-catalogo para usuário:', req.user.id);
 
-        let pipeline = [];
+        // 1. Buscar todos os serviços oferecidos e popular os dados básicos do prestador
+        const servicosCatalogo = await ServicoOferecido.find({})
+            .populate('prestador_id', 'nome foto_perfil'); // Popula nome e foto de perfil do prestador
 
-        // Se latitude e longitude forem fornecidas, use $geoNear como a primeira etapa
-        if (latitude !== null && longitude !== null && latitude !== undefined && longitude !== undefined) {
-            console.log(`[BACKEND] Usando $geoNear para buscar serviços próximos a: ${latitude}, ${longitude}`);
-            pipeline.push(
-                {
-                    $geoNear: {
-                        near: {
-                            type: "Point",
-                            coordinates: [longitude, latitude] // MongoDB espera [longitude, latitude]
-                        },
-                        distanceField: "distance", // Nome do campo onde a distância será armazenada
-                        spherical: true, // Calcula a distância em uma esfera (Terra)
-                        maxDistance: 50 * 1000, // Distância máxima em metros (ex: 50 km)
-                        // O 'key' é o campo no documento que contém o índice geoespacial.
-                        // Como estamos buscando em 'Prestador' e depois fazendo lookup para 'ServicoOferecido',
-                        // precisamos que o $geoNear atue na coleção que tem o índice geoespacial (Prestador).
-                        // Para fazer isso, precisamos mudar a abordagem:
-                        // 1. Fazer o $geoNear na coleção de Prestadores.
-                        // 2. Fazer um $lookup para a coleção de ServicosOferecidos usando o ID do prestador.
-                        // 3. Descompactar os serviços oferecidos.
-                        // 4. Continuar com os lookups de avaliações, etc.
-                        // A propriedade 'key' não é usada diretamente aqui, pois estamos fazendo $geoNear na coleção principal (Prestador)
-                        // e depois fazendo lookup para ServicoOferecido.
-                        // A coleção principal para $geoNear deve ser 'Prestador'.
-                        // Portanto, a agregação deve começar com Prestador.aggregate e depois fazer lookup para ServicoOferecido.
-                    }
-                },
-                {
-                    // Agora que temos os prestadores próximos, fazemos lookup para seus serviços oferecidos
-                    $lookup: {
-                        from: 'servicooferecidos', // Nome da coleção de serviços oferecidos
-                        localField: '_id', // ID do prestador (do resultado do $geoNear)
-                        foreignField: 'prestador_id',
-                        as: 'offeredServices'
-                    }
-                },
-                {
-                    $unwind: '$offeredServices' // Descompacta o array de serviços oferecidos
-                },
-                {
-                    // Combina os campos do serviço oferecido com os dados do prestador e a distância
-                    $replaceRoot: { newRoot: { $mergeObjects: ["$offeredServices", { prestadorInfo: "$$ROOT", distance: "$distance" }] } }
-                }
-            );
-        } else {
-            console.log('[BACKEND] Sem geolocalização. Carregando todos os serviços do catálogo.');
-            pipeline.push(
-                {
-                    $lookup: {
-                        from: 'prestadores', // Nome da coleção de prestadores
-                        localField: 'prestador_id',
-                        foreignField: '_id',
-                        as: 'prestadorInfo'
-                    }
-                },
-                {
-                    $unwind: '$prestadorInfo' // Descompacta o array de prestadores (deve haver apenas um)
-                }
-            );
-        }
-
-        // Etapas comuns para ambas as pipelines (geolocalizada e não-geolocalizada)
-        pipeline.push(
+        // 2. Calcular a média de avaliações para CADA prestador
+        // Agrupa as avaliações por prestador_id e calcula a média da nota
+        const avaliacoesPorPrestador = await Avaliacao.aggregate([
             {
-                $lookup: {
-                    from: 'avaliacaos', // Nome da coleção de avaliações
-                    localField: 'prestadorInfo._id',
-                    foreignField: 'prestador_id',
-                    as: 'avaliacoesPrestador'
-                }
-            },
-            {
-                $addFields: {
-                    media_avaliacoes_prestador: { $avg: '$avaliacoesPrestador.nota' },
-                    total_avaliacoes_prestador: { $size: '$avaliacoesPrestador' },
-                    nome_prestador: '$prestadorInfo.nome',
-                    foto_perfil_prestador_url: {
-                        $concat: [
-                            BACKEND_BASE_URL,
-                            '/',
-                            { $replace: { input: '$prestadorInfo.foto_perfil', find: '\\', replacement: '/' } }
-                        ]
-                    }
-                }
-            },
-            {
-                $project: {
-                    prestadorInfo: 0, // Remove o objeto completo do prestador
-                    avaliacoesPrestador: 0 // Remove o array de avaliações
+                $group: {
+                    _id: "$prestador_id", // Agrupa pelo ID do prestador
+                    mediaAvaliacoes: { $avg: "$nota" }, // Calcula a média das notas
+                    totalAvaliacoes: { $sum: 1 } // Conta o total de avaliações
                 }
             }
-        );
+        ]);
 
-        let servicosCatalogo;
-        if (latitude !== null && longitude !== null && latitude !== undefined && longitude !== undefined) {
-            // Se houver geolocalização, a agregação começa da coleção 'Prestador'
-            servicosCatalogo = await Prestador.aggregate(pipeline);
-        } else {
-            // Caso contrário, começa da coleção 'ServicoOferecido'
-            servicosCatalogo = await ServicoOferecido.aggregate(pipeline);
-        }
+        // Converte o array de avaliações para um mapa para fácil acesso (prestador_id -> dados de avaliação)
+        const avaliacoesMap = new Map();
+        avaliacoesPorPrestador.forEach(item => {
+            avaliacoesMap.set(item._id.toString(), {
+                media: item.mediaAvaliacoes,
+                total: item.totalAvaliacoes
+            });
+        });
 
+        // 3. Formatar a resposta para incluir a URL completa da foto de perfil do prestador
+        // e a média de avaliações
+        const formattedServicos = servicosCatalogo.map(servico => {
+            const prestadorId = servico.prestador_id ? servico.prestador_id._id.toString() : null;
+            const avaliacaoDoPrestador = prestadorId ? avaliacoesMap.get(prestadorId) : null;
 
-        console.log(`[BACKEND] Encontrados ${servicosCatalogo.length} serviços para o catálogo (com avaliações e localização).`);
-        res.status(200).json(servicosCatalogo);
+            return {
+                ...servico.toObject(),
+                nome_prestador: servico.prestador_id ? servico.prestador_id.nome : 'Prestador Desconhecido',
+                foto_perfil_prestador_url: (servico.prestador_id && servico.prestador_id.foto_perfil)
+                                            ? `${BACKEND_BASE_URL}/${servico.prestador_id.foto_perfil.replace(/\\/g, '/')}`
+                                            : null, // URL da foto do prestador ou null
+                media_avaliacoes_prestador: avaliacaoDoPrestador ? avaliacaoDoPrestador.media : 0, // Média de avaliações
+                total_avaliacoes_prestador: avaliacaoDoPrestador ? avaliacaoDoPrestador.total : 0 // Total de avaliações
+            };
+        });
+
+        console.log(`[BACKEND] Encontrados ${formattedServicos.length} serviços para o catálogo (com avaliações).`);
+        res.status(200).json(formattedServicos);
 
     } catch (error) {
         console.error('[BACKEND] Erro ao buscar serviços para o catálogo:', error);
@@ -3402,17 +3299,22 @@ app.put('/admin/prestadores/:id', adminAuthMiddleware, uploadProfilePicture, asy
         if (value.nome !== undefined) prestador.nome = value.nome;
         if (value.email !== undefined) prestador.email = value.email;
         if (value.telefone !== undefined) prestador.telefone = value.telefone;
-        // NOVO: Atualiza a localização do prestador pelo admin
-        if (value.latitude !== undefined && value.longitude !== undefined) {
-            prestador.location = {
-                type: 'Point',
-                coordinates: [value.longitude, value.latitude] // MongoDB espera [longitude, latitude]
-            };
-        } else if (value.latitude === null && value.longitude === null) {
-            // Se ambos forem explicitamente null, remove a localização
-            prestador.location = undefined;
-        }
 
+        // Lida com o upload da nova foto de perfil
+        if (fotoPerfil) {
+             // Se já existe uma foto, tenta deletar a antiga
+             if (prestador.foto_perfil) {
+                  const oldFilePath = path.join(__dirname, prestador.foto_perfil);
+                  if (fs.existsSync(oldFilePath)) {
+                       fs.unlink(oldFilePath, (err) => {
+                           if (err) console.error(`[BACKEND] Erro ao excluir foto de perfil antiga do prestador ${oldFilePath}:`, err);
+                       });
+                  } else {
+                       console.warn(`[BACKEND] Foto de perfil antiga do prestador não encontrada para exclusão: ${oldFilePath}`);
+                  }
+             }
+             prestador.foto_perfil = fotoPerfil.path; // Salva o caminho da nova foto
+        }
 
         await prestador.save();
 
@@ -3606,8 +3508,6 @@ app.put('/admin/servicos/:id', adminAuthMiddleware, async (req, res, next) => {
         if (value.data_servico_preferencial !== undefined) servico.data_servico_preferencial = value.data_servico_preferencial;
         if (value.hora_servico_preferencial !== undefined) servico.hora_servico_preferencial = value.hora_servico_preferencial;
         if (value.endereco_servico !== undefined) servico.endereco_servico = value.endereco_servico;
-        if (value.latitude !== undefined) servico.latitude = value.latitude; // NOVO
-        if (value.longitude !== undefined) servico.longitude = value.longitude; // NOVO
         if (value.notas_adicionais !== undefined) servico.notas_adicionais = value.notas_adicionais;
         if (value.urgente !== undefined) servico.urgente = value.urgente;
 
