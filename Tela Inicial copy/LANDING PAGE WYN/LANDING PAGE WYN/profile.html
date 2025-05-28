@@ -65,6 +65,54 @@
         .save-profile-btn {
             margin-top: 20px;
         }
+
+        /* Estilo para o placeholder de carregamento da imagem */
+        .profile-pic-placeholder-lg {
+            background-color: #e0e0e0; /* Cor cinza claro */
+            border-radius: 50%;
+            width: 150px;
+            height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3em; /* Tamanho do ícone de carregamento */
+            color: #888;
+            margin-bottom: 20px;
+            border: 3px solid #007bff;
+        }
+        .profile-pic-placeholder-lg .spinner {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Estilo para o placeholder da foto de perfil no header */
+        .profile-pic-placeholder-header {
+            background-color: #e0e0e0; /* Cor cinza claro */
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em; /* Tamanho do ícone de carregamento */
+            color: #888;
+        }
+        .profile-pic-placeholder-header .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
     </style>
 
 	<script
@@ -97,6 +145,52 @@
 			f.parentNode.insertBefore(j, f);
 		})(window, document, "script", "dataLayer", "GTM-NXZMQSS");
 	</script>
+
+    <script>
+        // Função para exibir toast notifications (pode ser movida para um arquivo JS global)
+        function showToast(message, type = 'success') {
+            const toastContainer = document.getElementById('toastContainer');
+            if (!toastContainer) {
+                // Cria o container se ele não existir
+                const body = document.querySelector('body');
+                const newToastContainer = document.createElement('div');
+                newToastContainer.id = 'toastContainer';
+                newToastContainer.style.position = 'fixed';
+                newToastContainer.style.top = '20px';
+                newToastContainer.style.right = '20px';
+                newToastContainer.style.zIndex = '9999';
+                body.appendChild(newToastContainer);
+                // Tenta novamente com o container recém-criado
+                return showToast(message, type);
+            }
+
+            const toastElement = document.createElement('div');
+            toastElement.classList.add('toast');
+            toastElement.setAttribute('role', 'alert');
+            toastElement.setAttribute('aria-live', 'assertive');
+            toastElement.setAttribute('aria-atomic', 'true');
+            toastElement.setAttribute('data-delay', '5000');
+
+            toastElement.innerHTML = `
+                <div class="toast-header ${type === 'success' ? 'bg-success text-white' : type === 'danger' ? 'bg-danger text-white' : 'bg-info text-white'}">
+                    <strong class="mr-auto">${type === 'success' ? 'Sucesso' : type === 'danger' ? 'Erro' : 'Informação'}</strong>
+                    <small>Agora</small>
+                    <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="toast-body">
+                    ${message}
+                </div>
+            `;
+
+            toastContainer.appendChild(toastElement);
+            $(toastElement).toast('show');
+            $(toastElement).on('hidden.bs.toast', function () {
+                $(this).remove();
+            });
+        }
+    </script>
 </head>
 <body>
 	<div class="pre-loader">
@@ -200,7 +294,10 @@
 						data-toggle="dropdown"
 					>
 						<span class="user-icon">
-							<img src="vendors/images/photo1.jpg" id="user-profile-pic-header" alt="" />
+                            <img src="vendors/images/photo1.jpg" id="user-profile-pic-header" alt="Foto de Perfil" style="display: none;" />
+                            <div id="user-profile-pic-header-spinner" class="profile-pic-placeholder-header">
+                                <div class="spinner"></div>
+                            </div>
 						</span>
 						<span class="user-name" id="user-name-header">Carregando...</span>
 					</a>
@@ -386,67 +483,73 @@
 					</div>
 				</div>
 
-				<div class="reset-options pt-30 text-center">
-					<button class="btn btn-danger" id="reset-settings">
-						Resetar Configurações
-					</button>
+					<div class="reset-options pt-30 text-center">
+						<button class="btn btn-danger" id="reset-settings">
+							Resetar Configurações
+						</button>
+					</div>
 				</div>
 			</div>
 		</div>
-	</div>
 
-    <div class="left-side-bar">
-		<div class="brand-logo">
-			<a href="indexx.html"> <img src="w (1).png" alt="" class="dark-logo" />
-				<img
-					src="w (1).png"
-					alt=""
-					class="light-logo"
-				/>
-			</a>
-			<div class="close-sidebar" data-toggle="left-sidebar-close">
-				<i class="ion-close-round"></i>
+		<div class="left-side-bar">
+			<div class="brand-logo">
+				<a href="indexx.html"> <img src="w (1).png" alt="" class="dark-logo" />
+					<img
+						src="w (1).png"
+						alt=""
+						class="light-logo"
+					/>
+				</a>
+				<div class="close-sidebar" data-toggle="left-sidebar-close">
+					<i class="ion-close-round"></i>
+				</div>
 			</div>
-		</div>
-		<div class="menu-block customscroll">
-			<div class="sidebar-menu">
-				<ul id="accordion-menu">
-					<li>
-						<a href="indexx.html" class="dropdown-toggle no-arrow"> <span class="micon bi bi-house"></span
-							><span class="mtext">Dashboard</span>
-						</a>
-					</li>
-					<li class="dropdown">
-						<a href="javascript:;" class="dropdown-toggle">
-							<span class="micon bi bi-textarea-resize"></span
-							><span class="mtext">Funcionalidades</span>
-						</a>
-						<ul class="submenu">
-							<li><a href="/em breve/index.html">Histórico</a></li>
-                            <li><a href="/LANDING PAGE WYN/LANDING PAGE WYN/catalogo.html">Fazer Pedido</a></li>
-                            <li><a href="/LANDING PAGE WYN/LANDING PAGE WYN/contratos.html">Meus Pedidos</a></li>
-                        </ul>
-					</li>
-                    <li>
-                        <a href="chat.html" class="dropdown-toggle no-arrow">
-                            <span class="micon bi bi-chat-dots"></span
-                            ><span class="mtext">Chat</span>
-                        </a>
-                    </li>
-					<li>
-						<a href="javascript:;" class="dropdown-toggle">
-							<span class="micon bi bi-file-pdf"></span
-							><span class="mtext">Documentação</span>
-						</a>
-						<ul class="submenu">
-							<li><a href="/Tela Inicial copy/Termos e Condições.docx">Termos e Condições</a></li>
+			<div class="menu-block customscroll">
+				<div class="sidebar-menu">
+					<ul id="accordion-menu">
+						<li>
+							<a href="indexx.html" class="dropdown-toggle no-arrow active">
+                                <span class="micon bi bi-house"></span
+								><span class="mtext">Dashboard</span>
+							</a>
+						</li>
+						<li>
+							<a href="catalogo.html" class="dropdown-toggle no-arrow"> <span class="micon bi bi-grid"></span
+								><span class="mtext">Catálogo de Serviços</span>
+							</a>
+						</li>
+						<li>
+							<a href="contratos.html" class="dropdown-toggle no-arrow">
+                                <span class="micon bi bi-journal-check"></span
+								><span class="mtext">Meus Pedidos</span>
+							</a>
+						</li>
+                        <li>
+							<a href="chat-list.html" class="dropdown-toggle no-arrow">
+                                <span class="micon bi bi-chat-dots"></span>
+                                <span class="mtext">Chat de Pedidos</span>
+                                <span id="unread-chat-count-sidebar-cliente" class="badge badge-pill badge-danger" style="display: none; margin-left: 5px;">0</span>
+                            </a>
+                        </li>
+                         <li>
+							<a href="avaliar-prestador.html" class="dropdown-toggle no-arrow">
+                                <span class="micon bi bi-star-fill"></span>
+                                <span class="mtext">Avaliar Prestadores</span>
+                            </a>
+                        </li>
+                         <li>
+							<a href="profile.html" class="dropdown-toggle no-arrow">
+                                <span class="micon bi bi-person"></span>
+                                <span class="mtext">Meu Perfil</span>
+                            </a>
+                        </li>
+
+	
 						</ul>
-					</li>
-				</ul>
+				</div>
 			</div>
 		</div>
-	</div>
-
 	<div class="mobile-menu-overlay"></div>
 
 	<div class="main-container">
@@ -474,7 +577,10 @@
 			<div class="pd-20 card-box mb-30">
 				<div class="row">
 					<div class="col-md-4 col-sm-12 text-center">
-						<img src="vendors/images/photo1.jpg" id="profile-picture" class="profile-picture" alt="Foto de Perfil" />
+                        <img src="vendors/images/photo1.jpg" id="profile-picture" class="profile-picture" alt="Foto de Perfil" style="display: none;" />
+                        <div id="profile-picture-spinner" class="profile-pic-placeholder-lg">
+                            <div class="spinner"></div>
+                        </div>
                          <div class="mt-2">
                              <input type="file" id="upload-profile-pic" accept="image/*" style="display: none;">
                              <button class="btn btn-primary btn-sm" id="change-profile-pic-btn">Alterar Foto</button>
@@ -528,7 +634,7 @@
 		</div>
 	</div>
 
-	<script src="vendors/scripts/core.js"></script>
+    <div id="toastContainer"></div> <script src="vendors/scripts/core.js"></script>
 	<script src="vendors/scripts/script.min.js"></script>
 	<script src="vendors/scripts/process.js"></script>
 	<script src="vendors/scripts/layout-settings.js"></script>
@@ -552,13 +658,21 @@
 
 			const userNameHeaderSpan = document.getElementById("user-name-header");
             const userProfilePicHeaderImg = document.getElementById("user-profile-pic-header");
+            const userProfilePicHeaderSpinner = document.getElementById("user-profile-pic-header-spinner"); // Spinner do header
             const profilePictureImg = document.getElementById("profile-picture");
+            const profilePictureSpinner = document.getElementById("profile-picture-spinner"); // Spinner da foto principal
             const profileTitle = document.getElementById("profile-title");
             const profileNameEl = document.getElementById("profile-name");
             const profileTypeEl = document.getElementById("profile-type");
             const profileEmailEl = document.getElementById("profile-email");
             const profilePhoneEl = document.getElementById("profile-phone");
             const sidebarCliente = document.querySelector(".left-side-bar"); // Seleciona a sidebar do cliente
+
+            // Exibe spinners e esconde imagens enquanto carrega
+            if (userProfilePicHeaderImg) userProfilePicHeaderImg.style.display = 'none';
+            if (userProfilePicHeaderSpinner) userProfilePicHeaderSpinner.style.display = 'flex';
+            if (profilePictureImg) profilePictureImg.style.display = 'none';
+            if (profilePictureSpinner) profilePictureSpinner.style.display = 'flex';
 
 
 			if (!token || !userCache) {
@@ -570,18 +684,41 @@
             // Tenta usar os dados do cache primeiro para exibição rápida
             loggedInUser = JSON.parse(userCache);
             if (userNameHeaderSpan) userNameHeaderSpan.textContent = loggedInUser.nome || 'Usuário';
+
+            // Carrega foto de perfil do cache (se existir)
             if (userProfilePicHeaderImg && loggedInUser.foto_perfil_url) {
                 userProfilePicHeaderImg.src = loggedInUser.foto_perfil_url;
-                userProfilePicHeaderImg.onerror = function() { this.onerror = null; this.src = "vendors/images/photo1.jpg"; };
+                userProfilePicHeaderImg.style.display = 'block';
+                if (userProfilePicHeaderSpinner) userProfilePicHeaderSpinner.style.display = 'none';
+                userProfilePicHeaderImg.onerror = function() {
+                    this.onerror = null;
+                    this.src = "vendors/images/photo1.jpg"; // Fallback para imagem padrão
+                    this.style.display = 'block';
+                    if (userProfilePicHeaderSpinner) userProfilePicHeaderSpinner.style.display = 'none';
+                };
             } else if (userProfilePicHeaderImg) {
                 userProfilePicHeaderImg.src = "vendors/images/photo1.jpg"; // Imagem padrão cliente
+                userProfilePicHeaderImg.style.display = 'block';
+                if (userProfilePicHeaderSpinner) userProfilePicHeaderSpinner.style.display = 'none';
             }
+
             if (profilePictureImg && loggedInUser.foto_perfil_url) {
                 profilePictureImg.src = loggedInUser.foto_perfil_url;
-                profilePictureImg.onerror = function() { this.onerror = null; this.src = "vendors/images/photo1.jpg"; };
+                profilePictureImg.style.display = 'block';
+                if (profilePictureSpinner) profilePictureSpinner.style.display = 'none';
+                profilePictureImg.onerror = function() {
+                    this.onerror = null;
+                    this.src = "vendors/images/photo1.jpg"; // Fallback para imagem padrão
+                    this.style.display = 'block';
+                    if (profilePictureSpinner) profilePictureSpinner.style.display = 'none';
+                };
             } else if (profilePictureImg) {
                 profilePictureImg.src = "vendors/images/photo1.jpg"; // Imagem padrão cliente
+                profilePictureImg.style.display = 'block';
+                if (profilePictureSpinner) profilePictureSpinner.style.display = 'none';
             }
+
+
             if (profileTitle) profileTitle.textContent = 'Meu Perfil (Cliente)';
             if (profileTypeEl) profileTypeEl.textContent = 'Cliente';
             if (profileNameEl) profileNameEl.textContent = loggedInUser.nome || 'Nome não informado';
@@ -601,7 +738,7 @@
 				if (!res.ok) {
 					if (res.status === 401 || res.status === 403) {
 						console.error("Token inválido ou expirado. Redirecionando para login.");
-						console.error("Sua sessão expirou. Por favor, faça login novamente.");
+						showToast("Sua sessão expirou. Por favor, faça login novamente.", 'danger');
 						window.location.href = "login.html";
 						return;
 					}
@@ -619,9 +756,6 @@
                 // Verifica se o tipo de usuário retornado é realmente um usuário (cliente)
                 if (data.tipo !== 'usuario' || !data.usuario?._id) {
                     console.error("Token válido, mas não corresponde a um cliente. Redirecionando para login de prestador ou geral.");
-                    // Se não for um usuário, pode ser um prestador ou um tipo desconhecido.
-                    // Redireciona para o login de prestador se o cache de prestador existir,
-                    // caso contrário, volta para o login geral.
                     if (localStorage.getItem('prestador')) {
                         window.location.href = "login prestador.html";
                     } else {
@@ -642,15 +776,34 @@
                 // Atualiza a foto de perfil com a URL retornada pelo backend
                 if (userProfilePicHeaderImg && loggedInUser.foto_perfil_url) {
                     userProfilePicHeaderImg.src = loggedInUser.foto_perfil_url;
-                    userProfilePicHeaderImg.onerror = function() { this.onerror = null; this.src = "vendors/images/photo1.jpg"; };
+                    userProfilePicHeaderImg.style.display = 'block';
+                    if (userProfilePicHeaderSpinner) userProfilePicHeaderSpinner.style.display = 'none';
+                    userProfilePicHeaderImg.onerror = function() {
+                        this.onerror = null;
+                        this.src = "vendors/images/photo1.jpg"; // Fallback final
+                        this.style.display = 'block';
+                        if (userProfilePicHeaderSpinner) userProfilePicHeaderSpinner.style.display = 'none';
+                    };
                 } else if (userProfilePicHeaderImg) {
                     userProfilePicHeaderImg.src = "vendors/images/photo1.jpg"; // Imagem padrão cliente
+                    userProfilePicHeaderImg.style.display = 'block';
+                    if (userProfilePicHeaderSpinner) userProfilePicHeaderSpinner.style.display = 'none';
                 }
+
                 if (profilePictureImg && loggedInUser.foto_perfil_url) {
                     profilePictureImg.src = loggedInUser.foto_perfil_url;
-                    profilePictureImg.onerror = function() { this.onerror = null; this.src = "vendors/images/photo1.jpg"; };
+                    profilePictureImg.style.display = 'block';
+                    if (profilePictureSpinner) profilePictureSpinner.style.display = 'none';
+                    profilePictureImg.onerror = function() {
+                        this.onerror = null;
+                        this.src = "vendors/images/photo1.jpg"; // Fallback final
+                        this.style.display = 'block';
+                        if (profilePictureSpinner) profilePictureSpinner.style.display = 'none';
+                    };
                 } else if (profilePictureImg) {
                     profilePictureImg.src = "vendors/images/photo1.jpg"; // Imagem padrão cliente
+                    profilePictureImg.style.display = 'block';
+                    if (profilePictureSpinner) profilePictureSpinner.style.display = 'none';
                 }
 
 				console.log("Perfil do cliente carregado do backend:", loggedInUser);
@@ -658,15 +811,12 @@
 
 			} catch (err) {
 				console.error('Erro ao carregar perfil:', err);
-				 console.error('Ocorreu um erro ao carregar informações do perfil.');
-				// Se a chamada falhou, manter os dados do cache (se existirem) ou exibir mensagem de erro
-                 if (!loggedInUser) { // Se nem o cache foi populado
-                      if (profileNameEl) profileNameEl.textContent = 'Erro ao carregar nome';
-                      if (profileTypeEl) profileTypeEl.textContent = 'Erro';
-                      if (profileEmailEl) profileEmailEl.textContent = 'Erro ao carregar email';
-                      if (profilePhoneEl) profilePhoneEl.textContent = 'Erro ao carregar telefone';
-                      if (profilePictureImg) profilePictureImg.src = "vendors/images/photo-error.jpg"; // Imagem de erro
-                 }
+				showToast('Ocorreu um erro ao carregar informações do perfil.', 'danger');
+				// Garante que os spinners são escondidos e as imagens padrão são mostradas em caso de erro
+                 if (profilePictureImg) profilePictureImg.style.display = 'block';
+                 if (profilePictureSpinner) profilePictureSpinner.style.display = 'none';
+                 if (userProfilePicHeaderImg) userProfilePicHeaderImg.style.display = 'block';
+                 if (userProfilePicHeaderSpinner) userProfilePicHeaderSpinner.style.display = 'none';
 			}
 		}
 
@@ -698,6 +848,18 @@
              changeButton.disabled = true;
              changeButton.textContent = 'Enviando...';
 
+             // Exibe spinners e esconde imagens enquanto a nova foto é enviada
+             const profilePictureImg = document.getElementById("profile-picture");
+             const profilePictureSpinner = document.getElementById("profile-picture-spinner");
+             const userProfilePicHeaderImg = document.getElementById("user-profile-pic-header");
+             const userProfilePicHeaderSpinner = document.getElementById("user-profile-pic-header-spinner");
+
+             if (profilePictureImg) profilePictureImg.style.display = 'none';
+             if (profilePictureSpinner) profilePictureSpinner.style.display = 'flex';
+             if (userProfilePicHeaderImg) userProfilePicHeaderImg.style.display = 'none';
+             if (userProfilePicHeaderSpinner) userProfilePicHeaderSpinner.style.display = 'flex';
+
+
              try {
                   // Endpoint para upload de foto de perfil
                   const response = await fetch(`${BACKEND_BASE_URL}/upload-foto-perfil`, {
@@ -714,28 +876,54 @@
                   if (!response.ok) {
                        console.error(result.message || 'Erro ao fazer upload da foto.');
                        console.error('Erro no upload:', result);
+                       showToast(result.message || 'Erro ao fazer upload da foto.', 'danger');
                   } else {
                        console.log('Foto de perfil atualizada com sucesso!');
                        console.log('Upload bem-sucedido:', result);
+                       showToast('Foto de perfil atualizada com sucesso!', 'success');
 
                        // Atualiza a imagem na UI com a nova URL retornada pelo backend
                        const newPhotoUrl = result.foto_perfil_url; // O backend deve retornar a nova URL
                        if (newPhotoUrl) {
-                           document.getElementById('profile-picture').src = newPhotoUrl;
-                           document.getElementById('user-profile-pic-header').src = newPhotoUrl; // Atualiza também no header
+                           if (profilePictureImg) {
+                               profilePictureImg.src = newPhotoUrl;
+                               profilePictureImg.style.display = 'block';
+                               if (profilePictureSpinner) profilePictureSpinner.style.display = 'none';
+                           }
+                           if (userProfilePicHeaderImg) {
+                               userProfilePicHeaderImg.src = newPhotoUrl; // Atualiza também no header
+                               userProfilePicHeaderImg.style.display = 'block';
+                               if (userProfilePicHeaderSpinner) userProfilePicHeaderSpinner.style.display = 'none';
+                           }
                            // Atualiza o cache local com a nova URL
                            if (loggedInUser) {
                                 loggedInUser.foto_perfil_url = newPhotoUrl;
                                 localStorage.setItem('usuario', JSON.stringify(loggedInUser));
+                                console.log("localStorage 'usuario' atualizado com nova foto_perfil_url:", loggedInUser.foto_perfil_url);
                            }
                        } else {
                            console.warn("Backend não retornou a URL da nova foto.");
+                           showToast("Erro: URL da nova foto não recebida do servidor.", 'danger');
+                           // Em caso de URL ausente, volta para a imagem padrão e esconde spinner
+                           if (profilePictureImg) profilePictureImg.src = "vendors/images/photo1.jpg";
+                           if (userProfilePicHeaderImg) userProfilePicHeaderImg.src = "vendors/images/photo1.jpg";
+                           if (profilePictureImg) profilePictureImg.style.display = 'block';
+                           if (profilePictureSpinner) profilePictureSpinner.style.display = 'none';
+                           if (userProfilePicHeaderImg) userProfilePicHeaderImg.style.display = 'block';
+                           if (userProfilePicHeaderSpinner) userProfilePicHeaderSpinner.style.display = 'none';
                        }
                   }
 
              } catch (error) {
                   console.error("Erro ao enviar foto:", error);
-                  console.error("Erro ao enviar foto: " + (error.message || "Verifique sua conexão."));
+                  showToast("Erro ao enviar foto: " + (error.message || "Verifique sua conexão."), 'danger');
+                  // Em caso de erro na requisição, volta para a imagem padrão e esconde spinner
+                  if (profilePictureImg) profilePictureImg.src = "vendors/images/photo1.jpg";
+                  if (userProfilePicHeaderImg) userProfilePicHeaderImg.src = "vendors/images/photo1.jpg";
+                  if (profilePictureImg) profilePictureImg.style.display = 'block';
+                  if (profilePictureSpinner) profilePictureSpinner.style.display = 'none';
+                  if (userProfilePicHeaderImg) userProfilePicHeaderImg.style.display = 'block';
+                  if (userProfilePicHeaderSpinner) userProfilePicHeaderSpinner.style.display = 'none';
              } finally {
                   // Reabilita o botão e restaura o texto
                   changeButton.disabled = false;
@@ -787,10 +975,10 @@
 
                 if (!response.ok) {
                     console.error(result.message || 'Erro ao atualizar perfil.');
-                    alert('Erro ao atualizar perfil: ' + (result.message || 'Verifique seus dados.'));
+                    showToast('Erro ao atualizar perfil: ' + (result.message || 'Verifique seus dados.'), 'danger');
                 } else {
                     console.log('Perfil atualizado com sucesso!', result);
-                    alert('Perfil atualizado com sucesso!');
+                    showToast('Perfil atualizado com sucesso!', 'success');
                     $('#editProfileModal').modal('hide'); // Fecha o modal
 
                     // Atualiza o cache local e recarrega a página para refletir as mudanças
@@ -800,7 +988,7 @@
 
             } catch (error) {
                 console.error("Erro ao salvar perfil:", error);
-                alert("Erro ao salvar perfil: " + (error.message || "Verifique sua conexão."));
+                showToast("Erro ao salvar perfil: " + (error.message || "Verifique sua conexão."), 'danger');
             }
         });
 
