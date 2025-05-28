@@ -162,6 +162,13 @@
                  background-color: #f8f9fa; /* Fundo suave no hover */
              }
 
+             .notification-item .timestamp {
+                 font-size: 11px;
+                 color: #999;
+                 display: block;
+                 margin-top: 3px;
+             }
+
              .notification-item.unread {
                  background-color: #e9f5ff; /* Fundo azul claro para não lidas */
                  font-weight: bold;
@@ -459,31 +466,6 @@
                     right: 15px;
                 }
             }
-
-            /* Estilo para o placeholder da foto de perfil no header */
-            .profile-pic-placeholder-header {
-                background-color: #e0e0e0; /* Cor cinza claro */
-                border-radius: 50%;
-                width: 40px;
-                height: 40px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 1.5em; /* Tamanho do ícone de carregamento */
-                color: #888;
-            }
-            .profile-pic-placeholder-header .spinner {
-                border: 3px solid #f3f3f3;
-                border-top: 3px solid #3498db;
-                border-radius: 50%;
-                width: 20px;
-                height: 20px;
-                animation: spin 1s linear infinite;
-            }
-            @keyframes spin {
-                0% { transform: rotate(0deg); }
-                100% { transform: rotate(360deg); }
-            }
 		</style>
 
 
@@ -646,12 +628,9 @@
 							data-toggle="dropdown"
 						>
 							<span class="user-icon">
-								<img src="vendors/images/photo4.jpg" id="prestador-profile-pic" class="profile-pic-header" alt="Foto de Perfil" style="display: none;" />
-								<div id="prestador-profile-pic-spinner" class="profile-pic-placeholder-header">
-									<div class="spinner"></div>
-								</div>
+								<img src="vendors/images/photo4.jpg" id="prestador-profile-pic" class="profile-pic-header" alt="" />
 							</span>
-							<span class="user-name" id="prestador-name-header">Carregando...</span>
+							<span class="user-name">Prestador</span>
 						</a>
 						<div
 							class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list"
@@ -1108,17 +1087,8 @@
             function showToast(message, type = 'success') {
                 const toastContainer = document.getElementById('toastContainer');
                 if (!toastContainer) {
-                    // Cria o container se ele não existir
-                    const body = document.querySelector('body');
-                    const newToastContainer = document.createElement('div');
-                    newToastContainer.id = 'toastContainer';
-                    newToastContainer.style.position = 'fixed';
-                    newToastContainer.style.top = '20px';
-                    newToastContainer.style.right = '20px';
-                    newToastContainer.style.zIndex = '9999';
-                    body.appendChild(newToastContainer);
-                    // Tenta novamente com o container recém-criado
-                    return showToast(message, type);
+                    console.error("Toast container não encontrado!");
+                    return;
                 }
 
                 const toastElement = document.createElement('div');
@@ -1153,43 +1123,28 @@
 				const token = localStorage.getItem('token');
 				const prestadorCache = localStorage.getItem('prestador');
 
-				const prestadorNameHeaderSpan = document.getElementById("prestador-name-header");
-                const prestadorProfilePicImg = document.getElementById("prestador-profile-pic");
-                const prestadorProfilePicSpinner = document.getElementById("prestador-profile-pic-spinner"); // Spinner do header
-
-
 				if (!token || !prestadorCache) {
 					console.warn("Prestador não autenticado. Redirecionando para login.");
 					window.location.href = "login prestador.html";
 					return;
 				}
 
-                // Exibe spinner e esconde a imagem enquanto carrega
-                if (prestadorProfilePicImg) prestadorProfilePicImg.style.display = 'none';
-                if (prestadorProfilePicSpinner) prestadorProfilePicSpinner.style.display = 'flex';
-
-
 				try {
 					 prestadorLogado = JSON.parse(prestadorCache);
-					 
-					 if (prestadorNameHeaderSpan && prestadorLogado?.nome) {
-						 prestadorNameHeaderSpan.textContent = prestadorLogado.nome;
+					 const nomeSpan = document.querySelector(".user-name");
+                     const prestadorProfilePicImg = document.getElementById("prestador-profile-pic");
+
+					 if (nomeSpan && prestadorLogado?.nome) {
+						 nomeSpan.textContent = prestadorLogado.nome;
 					 }
-                     // Carrega foto de perfil do cache (se existir)
                      if (prestadorProfilePicImg && prestadorLogado?.foto_perfil_url) {
                          prestadorProfilePicImg.src = prestadorLogado.foto_perfil_url;
-                         prestadorProfilePicImg.style.display = 'block';
-                         if (prestadorProfilePicSpinner) prestadorProfilePicSpinner.style.display = 'none';
-                         prestadorProfilePicImg.onerror = function() {
+                          prestadorProfilePicImg.onerror = function() {
                              this.onerror = null;
-                             this.src = "vendors/images/photo4.jpg"; // Fallback para imagem padrão
-                             this.style.display = 'block';
-                             if (prestadorProfilePicSpinner) prestadorProfilePicSpinner.style.display = 'none';
+                             this.src = "vendors/images/photo4.jpg";
                          };
                      } else if (prestadorProfilePicImg) {
-                          prestadorProfilePicImg.src = "vendors/images/photo4.jpg"; // Imagem padrão
-                          prestadorProfilePicImg.style.display = 'block';
-                          if (prestadorProfilePicSpinner) prestadorProfilePicSpinner.style.display = 'none';
+                          prestadorProfilePicImg.src = "vendors/images/photo4.jpg";
                      }
 
 
@@ -1223,30 +1178,23 @@
 					 if (data.tipo !== 'prestador' || !data.prestador?._id) {
 						  console.error("Token válido, mas não corresponde a um prestador.");
 						  showToast("Acesso negado para este tipo de usuário.", 'danger');
-						   setTimeout(() => { window.location.href = "login.html"; }, 3000); // Redireciona para login do cliente se for cliente
+						   setTimeout(() => { window.location.href = "login.html"; }, 3000);
 						  return;
 					 }
 
 					 prestadorLogado = data.prestador;
 
-					if (prestadorLogado?.nome && prestadorNameHeaderSpan) {
-						prestadorNameHeaderSpan.textContent = prestadorLogado.nome;
+					if (prestadorLogado?.nome && nomeSpan) {
+						nomeSpan.textContent = prestadorLogado.nome;
 					}
-                     // Atualiza a foto de perfil com a URL retornada pelo backend
                      if (prestadorProfilePicImg && prestadorLogado?.foto_perfil_url) {
                          prestadorProfilePicImg.src = prestadorLogado.foto_perfil_url;
-                         prestadorProfilePicImg.style.display = 'block';
-                         if (prestadorProfilePicSpinner) prestadorProfilePicSpinner.style.display = 'none';
-                         prestadorProfilePicImg.onerror = function() {
+                          prestadorProfilePicImg.onerror = function() {
                              this.onerror = null;
-                             this.src = "vendors/images/photo4.jpg"; // Fallback final
-                             this.style.display = 'block';
-                             if (prestadorProfilePicSpinner) prestadorProfilePicSpinner.style.display = 'none';
+                             this.src = "vendors/images/photo4.jpg";
                          };
                      } else if (prestadorProfilePicImg) {
-                          prestadorProfilePicImg.src = "vendors/images/photo4.jpg"; // Imagem padrão
-                          prestadorProfilePicImg.style.display = 'block';
-                          if (prestadorProfilePicSpinner) prestadorProfilePicSpinner.style.display = 'none';
+                          prestadorProfilePicImg.src = "vendors/images/photo4.jpg";
                      }
 
 					console.log("Perfil do prestador carregado:", prestadorLogado);
@@ -1267,9 +1215,6 @@
 					 } else {
 						 showToast('Ocorreu um erro ao carregar informações do prestador.', 'danger');
 					 }
-                    // Garante que o spinner é escondido e a imagem padrão é mostrada em caso de erro
-                    if (prestadorProfilePicImg) prestadorProfilePicImg.style.display = 'block';
-                    if (prestadorProfilePicSpinner) prestadorProfilePicSpinner.style.display = 'none';
 				}
 			}
 
