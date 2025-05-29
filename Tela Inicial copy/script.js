@@ -360,34 +360,4 @@ Se a pergunta for fora do escopo da WYN, informe educadamente que sua função �
     } else {
         console.warn("Elementos do chat flutuante não encontrados. Verifique 'chat-toggle-button', 'floating-chatbot-container' ou 'close-chat-button'.");
     }
-
-    // --- Lógica do Carrossel de Imagens na Seção de Prestadores ---
-    function startImageSlider() {
-        const sliderImages = document.querySelectorAll('.image-slider .slider-image');
-        let currentImageIndex = 0;
-        const intervalTime = 3000; // Tempo em milissegundos (3 segundos)
-
-        if (sliderImages.length === 0) {
-            console.warn("Nenhuma imagem encontrada para o carrossel na seção de prestadores.");
-            return;
-        }
-
-        // Função para mostrar a próxima imagem
-        function showNextImage() {
-            // Remove a classe 'active' da imagem atual
-            sliderImages[currentImageIndex].classList.remove('active');
-
-            // Calcula o índice da próxima imagem
-            currentImageIndex = (currentImageIndex + 1) % sliderImages.length;
-
-            // Adiciona a classe 'active' à próxima imagem
-            sliderImages[currentImageIndex].classList.add('active');
-        }
-
-        // Inicia o intervalo para alternar as imagens
-        setInterval(showNextImage, intervalTime);
-    }
-
-    // Chama a função para iniciar o carrossel de imagens quando o DOM estiver carregado
-    startImageSlider();
 });
