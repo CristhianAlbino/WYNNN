@@ -800,7 +800,7 @@ body.dark-mode .image-slider {
     left: 0;
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain; /* Alterado de 'cover' para 'contain' */
     opacity: 0; /* Todas as imagens começam invisíveis */
     transition: opacity 1s ease-in-out; /* Transição suave de 1 segundo */
 }
