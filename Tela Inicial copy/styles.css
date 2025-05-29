@@ -774,40 +774,26 @@ body.dark-mode .provider-text p {
 
 .provider-image {
   flex-shrink: 0; /* Não permite que a imagem diminua */
-  width: 400px; /* Largura da imagem */
+  width: 500px; /* Largura da imagem aumentada */
+  height: 350px; /* Altura da imagem aumentada */
   max-width: 100%; /* Garante que não ultrapasse o contêiner */
   margin: 0 auto; /* Centraliza em telas menores */
-}
-/* Estilos para o contêiner do carrossel de imagens */
-.image-slider {
-    position: relative;
-    width: 100%;
-    height: 250px; /* Altura fixa para o carrossel */
-    overflow: hidden;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px var(--shadow-color);
-    transition: box-shadow 0.3s ease;
+  overflow: hidden; /* Garante que a imagem não vaze se for maior que o container */
+  border-radius: 8px; /* Mantém os cantos arredondados */
+  box-shadow: 0 4px 8px var(--shadow-color); /* Mantém a sombra */
+  transition: box-shadow 0.3s ease;
 }
 
-body.dark-mode .image-slider {
+body.dark-mode .provider-image {
     box-shadow: 0 4px 8px var(--dark-shadow-color);
 }
 
-/* Estilos para as imagens dentro do carrossel */
-.slider-image {
-    position: absolute;
-    top: 0;
-    left: 0;
+/* Estilos para a imagem dentro do contêiner */
+.provider-image img {
     width: 100%;
     height: 100%;
-    object-fit: contain; /* Alterado de 'cover' para 'contain' */
-    opacity: 0; /* Todas as imagens começam invisíveis */
-    transition: opacity 1s ease-in-out; /* Transição suave de 1 segundo */
-}
-
-/* A imagem com a classe 'active' será visível */
-.slider-image.active {
-    opacity: 1;
+    object-fit: cover; /* A imagem cobrirá o contêiner, cortando se necessário */
+    display: block; /* Remove espaço extra abaixo da imagem */
 }
 
 
@@ -1650,11 +1636,12 @@ to { transform: rotate(0deg); }
   }
   .provider-image {
        width: 300px;
+       height: 200px; /* Altura menor para telas pequenas */
   }
   /* Ajuste para o carrossel de imagens em telas menores */
-  .image-slider {
-      height: 200px; /* Altura menor para telas pequenas */
-  }
+  /* .image-slider {
+      height: 200px;
+  } */
 
 
   /* Seção Por Que Escolher a WYN */
