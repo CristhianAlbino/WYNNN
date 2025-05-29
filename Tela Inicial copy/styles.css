@@ -277,7 +277,7 @@ body.dark-mode .menu-icon {
 }
 
 
-/* --- Seção Principal (Hero) --- */
+/* --- Seção Principal (Hero) */
 .hero-section {
   padding: 80px 0; /* Espaço acima e abaixo */
   background-color: var(--background-color); /* Fundo baseado no tema */
@@ -774,20 +774,26 @@ body.dark-mode .provider-text p {
 
 .provider-image {
   flex-shrink: 0; /* Não permite que a imagem diminua */
-  width: 400px; /* Largura da imagem */
+  width: 450px; /* Largura da imagem */
+  height: auto; /* Altura automática para manter proporção */
   max-width: 100%; /* Garante que não ultrapasse o contêiner */
   margin: 0 auto; /* Centraliza em telas menores */
-}
-.provider-image img {
-  display: block;
-  width: 100%;
-  height: auto;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px var(--shadow-color);
+  overflow: hidden; /* Garante que a imagem não vaze se for maior que o container */
+  border-radius: 8px; /* Mantém os cantos arredondados */
+  box-shadow: 0 4px 8px var(--shadow-color); /* Mantém a sombra */
   transition: box-shadow 0.3s ease;
 }
-body.dark-mode .provider-image img {
-  box-shadow: 0 4px 8px var(--dark-shadow-color);
+
+body.dark-mode .provider-image {
+    box-shadow: 0 4px 8px var(--dark-shadow-color);
+}
+
+/* Estilos para a imagem dentro do contêiner */
+.provider-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* A imagem cobrirá o contêiner, cortando se necessário */
+    display: block; /* Remove espaço extra abaixo da imagem */
 }
 
 
@@ -1630,6 +1636,7 @@ to { transform: rotate(0deg); }
   }
   .provider-image {
        width: 300px;
+       height: auto; /* Altura automática para telas pequenas */
   }
 
 
@@ -1768,11 +1775,6 @@ to { transform: rotate(0deg); }
   .footer-menu li a {
       font-size: 0.9em;
   }
-}
-
-/* Animações para telas menores (opcional, pode ajustar ou remover) */
-@media (max-width: 600px) {
-  /* Pode desabilitar ou simplificar algumas animações em dispositivos móveis para performance */
 }
 
 /* Estilos adicionais para as novas seções, adaptados ao seu design existente */
@@ -2340,15 +2342,31 @@ body.dark-mode .send-button {
     display: flex;
     justify-content: center;
     margin-top: 1rem;
+    height: 10px; /* Garante que ocupe espaço mesmo vazio */
 }
 
+/* Estilos para os pontos de digitação */
 .loading-indicator span {
-    width: 10px;
-    height: 10px;
+    width: 8px;
+    height: 8px;
     background-color: var(--primary-color);
     border-radius: 50%;
-    margin: 0 4px;
-    animation: bounce 0.6s infinite alternate;
+    margin: 0 3px;
+    animation: typing-bounce 0.8s infinite ease-in-out;
+    opacity: 0; /* Começa invisível */
+}
+
+body.dark-mode .loading-indicator span {
+    background-color: var(--dark-primary-color);
+}
+
+.loading-indicator.hidden span {
+    animation: none; /* Para a animação quando oculto */
+    opacity: 0;
+}
+
+.loading-indicator span:nth-child(1) {
+    animation-delay: 0s;
 }
 
 .loading-indicator span:nth-child(2) {
@@ -2359,15 +2377,214 @@ body.dark-mode .send-button {
     animation-delay: 0.4s;
 }
 
-@keyframes bounce {
-    from {
+@keyframes typing-bounce {
+    0%, 100% {
         transform: translateY(0);
+        opacity: 0.5;
     }
-    to {
-        transform: translateY(-10px);
+    50% {
+        transform: translateY(-5px);
+        opacity: 1;
     }
 }
 
+
 .hidden {
     display: none;
+}
+
+/* Estilos para o botão flutuante do chat */
+.chat-toggle-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: var(--primary-color);
+    color: var(--text-light);
+    border: none;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2.2rem;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    z-index: 1000; /* Acima de outros elementos */
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+body.dark-mode .chat-toggle-button {
+    background-color: var(--dark-primary-color);
+    color: var(--dark-text-color);
+}
+
+.chat-toggle-button:hover {
+    background-color: #e05e0a;
+    transform: scale(1.05);
+}
+
+/* Estilos para o contêiner do chatbot flutuante */
+.floating-chatbot-container {
+    position: fixed;
+    bottom: 90px; /* Acima do botão flutuante */
+    right: 20px;
+    background-color: var(--card-background);
+    border-radius: 10px;
+    box-shadow: 0 5px 15px var(--shadow-color);
+    width: 350px; /* Largura do chat box */
+    height: 450px; /* Altura do chat box */
+    display: flex;
+    flex-direction: column;
+    z-index: 999; /* Abaixo do botão de toggle, mas acima do conteúdo */
+    transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+    transform: translateY(20px); /* Começa um pouco abaixo */
+    opacity: 0; /* Começa invisível */
+}
+
+body.dark-mode .floating-chatbot-container {
+    background-color: var(--dark-card-background);
+    box-shadow: 0 5px 15px var(--dark-shadow-color);
+}
+
+.floating-chatbot-container.visible {
+    transform: translateY(0); /* Move para a posição final */
+    opacity: 1; /* Torna visível */
+}
+
+.chatbot-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--primary-color);
+    color: var(--text-light);
+    padding: 0.8rem 1rem;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+body.dark-mode .chatbot-header {
+    background-color: var(--dark-primary-color);
+    color: var(--dark-text-color);
+}
+
+.chatbot-header h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.close-chat-button {
+    background: none;
+    border: none;
+    color: var(--text-light);
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+body.dark-mode .close-chat-button {
+    color: var(--dark-text-color);
+}
+
+.close-chat-button:hover {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* Ajustes para o chat-display dentro do floating-chatbot-container */
+.floating-chatbot-container .chat-display {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 1rem;
+    border: none; /* Remove a borda aqui, pois o contêiner já tem */
+    border-radius: 0;
+    margin-bottom: 0;
+    background-color: var(--card-background); /* Fundo do chat display */
+    transition: background-color 0.3s ease;
+}
+
+body.dark-mode .floating-chatbot-container .chat-display {
+    background-color: var(--dark-card-background);
+}
+
+/* Ajustes para o input e botão de envio dentro do floating-chatbot-container */
+.floating-chatbot-container .chat-input-area {
+    padding: 1rem;
+    border-top: 1px solid var(--border-color);
+    background-color: var(--card-background);
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+body.dark-mode .floating-chatbot-container .chat-input-area {
+    border-color: var(--dark-border-color);
+    background-color: var(--dark-card-background);
+}
+
+.floating-chatbot-container .chat-input {
+    border-radius: 5px; /* Menos arredondado para o input */
+}
+
+.floating-chatbot-container .send-button {
+    padding: 0.5rem 1rem; /* Ajusta o padding do botão */
+    font-size: 1.2rem; /* Aumenta o ícone do botão */
+}
+
+/* Responsividade para o chat box flutuante */
+@media (max-width: 480px) {
+    .floating-chatbot-container {
+        width: calc(100% - 40px); /* Ocupa quase toda a largura em telas muito pequenas */
+        right: 20px;
+        left: 20px; /* Centraliza horizontalmente */
+        bottom: 80px; /* Ajusta a posição */
+        height: 400px; /* Altura um pouco menor */
+    }
+    .chat-toggle-button {
+        width: 50px;
+        height: 50px;
+        font-size: 1.8rem;
+        bottom: 15px;
+        right: 15px;
+    }
+}
+
+/* Estilos para os botões de FAQ */
+.faq-buttons-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+    justify-content: center; /* Centraliza os botões */
+    padding: 0 1rem; /* Adiciona padding para não colar nas bordas */
+}
+
+.faq-button {
+    background-color: var(--section-background-alt); /* Cor de fundo suave */
+    color: var(--text-color); /* Cor do texto */
+    border: 1px solid var(--border-color);
+    border-radius: 20px; /* Botões arredondados */
+    padding: 8px 15px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+    white-space: nowrap; /* Evita que o texto quebre */
+}
+
+body.dark-mode .faq-button {
+    background-color: #3a3a3a;
+    color: var(--dark-text-color);
+    border-color: var(--dark-border-color);
+}
+
+.faq-button:hover {
+    background-color: var(--primary-color); /* Laranja no hover */
+    color: var(--text-light); /* Texto branco no hover */
+    border-color: var(--primary-color);
+}
+
+body.dark-mode .faq-button:hover {
+    background-color: var(--dark-primary-color);
+    color: var(--dark-text-color);
+    border-color: var(--dark-primary-color);
 }
