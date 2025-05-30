@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>WYN - Avaliar Prestadores</title>
+
+		<link
+			rel="apple-touch-icon"
+			sizes="180x180"
+			href="/w/1.png"
+		/>
+		<link
+			rel="icon"
+			type="image/png"
+			sizes="32x32"
+			href="/w/1.png"
+		/>
+		<link
+			rel="icon"
+			type="image/png"
+			sizes="16x16"
+			href="/w/1.png"
+		/>
+
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1, maximum-scale=1"
+		/>
+
+		<link
+			href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+			rel="stylesheet"
+		/>
+		<link rel="stylesheet" type="text/css" href="vendors/styles/core.css" />
+		<link
+			rel="stylesheet"
+			type="text/css"
+			href="vendors/styles/icon-font.min.css"
+		/>
+		<link rel="stylesheet" type="text/css" href="vendors/styles/style.css" />
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" xintegrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0x0Ugau/r+PRGFNfN/P1M2k/L/W84b36d0K7+v7z/z0q0+A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+		<style>
+			.service-evaluation-card {
+				border: 1px solid #eee;
+				border-radius: 8px;
+				padding: 20px;
+				margin-bottom: 20px;
+				background-color: #fff;
+				box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+			}
+            .service-evaluation-card h5 {
+                font-weight: 600;
+                color: #333;
+            }
+            .service-evaluation-card p {
+                font-size: 14px;
+                color: #555;
+            }
+            .star-rating-input {
+                direction: rtl; /* Para fazer as estrelas preencherem da direita para a esquerda */
+                display: inline-block;
+            }
+            .star-rating-input input[type="radio"] {
+                display: none;
+            }
+            .star-rating-input label {
+                color: #ddd; /* Cor da estrela vazia */
+                font-size: 2rem; /* Tamanho das estrelas */
+                padding: 0 2px;
+                cursor: pointer;
+                transition: color 0.2s;
+            }
+            .star-rating-input input[type="radio"]:checked ~ label,
+            .star-rating-input label:hover,
+            .star-rating-input label:hover ~ label {
+                color: #ffc107; /* Cor da estrela cheia/hover */
+            }
+            .feedback-message {
+				text-align: center;
+				padding: 10px;
+				margin: 15px 0;
+				border-radius: 4px;
+				font-weight: 500;
+			}
+			.feedback-loading {
+				color: #007bff;
+				background-color: #e9f5ff;
+				border: 1px solid #b8daff;
+			}
+			.feedback-error {
+				color: #dc3545;
+				background-color: #f8d7da;
+				border: 1px solid #f5c6cb;
+			}
+			.feedback-empty {
+				color: #6c757d;
+				background-color: #f8f9fa;
+				border: 1px solid #dee2e6;
+			}
+            #toastContainer {
+                 position: fixed;
+                 top: 20px;
+                 right: 20px;
+                 z-index: 1050;
+            }
+            .toast-header.bg-success { background-color: #28a745 !important; color: white !important; }
+            .toast-header.bg-danger { background-color: #dc3545 !important; color: white !important; }
+            .toast-header.bg-info { background-color: #17a2b8 !important; color: white !important; }
+		</style>
+
+		<script async src="https://www.googletagmanager.com/gtag/js?id=G-GBZ3SGGX85"></script>
+		<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2973766580778258" crossorigin="anonymous"></script>
+		<script>
+			window.dataLayer = window.dataLayer || [];
+			function gtag() {
+				dataLayer.push(arguments);
+			}
+			gtag("js", new Date());
+			gtag("config", "G-GBZ3SGGX85");
+		</script>
+		<script>
+			(function (w, d, s, l, i) {
+				w[l] = w[l] || [];
+				w[l].push({ "gtm.start": new Date().getTime(), event: "gtm.js" });
+				var f = d.getElementsByTagName(s)[0],
+					j = d.createElement(s),
+					dl = l != "dataLayer" ? "&l=" + l : "";
+				j.async = true;
+				j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
+				f.parentNode.insertBefore(j, f);
+			})(window, document, "script", "dataLayer", "GTM-NXZMQSS");
+		</script>
+	</head>
+	<body>
+		<div class="pre-loader">
+			<div class="pre-loader-box">
+				<div class="loader-logo">
+					<img src="w (1).png" alt="" />
+				</div>
+				<div class="loader-progress" id="progress_div">
+					<div class="bar" id="bar1"></div>
+				</div>
+				<div class="percent" id="percent1">0%</div>
+				<div class="loading-text">Carregando...</div>
+			</div>
+		</div>
+
+		<div class="header">
+			<div class="header-left">
+				<div class="menu-icon bi bi-list"></div>
+			</div>
+			<div class="header-right">
+				<div class="dashboard-setting user-notification">
+					<div class="dropdown">
+						<a class="dropdown-toggle no-arrow" href="javascript:;" data-toggle="right-sidebar">
+							<i class="dw dw-settings2"></i>
+						</a>
+					</div>
+				</div>
+				<div class="user-info-dropdown">
+					<div class="dropdown">
+						<a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown">
+							<span class="user-icon">
+								<img src="vendors/images/photo1.jpg" id="user-profile-pic" class="profile-pic-header" alt="" />
+							</span>
+							<span class="user-name" id="user-name-header">Cliente</span>
+						</a>
+						<div class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list">
+							<a class="dropdown-item" href="profile.html"><i class="dw dw-user1"></i> Perfil</a>
+							<a class="dropdown-item" href="profile.html"><i class="dw dw-settings2"></i> Configurações</a>
+							<a class="dropdown-item" href="faq.html"><i class="dw dw-help"></i> Ajuda</a>
+							<a class="dropdown-item" href="#" id="logout-link"><i class="dw dw-logout"></i> Sair</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="right-sidebar">
+			<div class="sidebar-title">
+				<h3 class="weight-600 font-16 text-blue">
+					Configuração de Layout
+					<span class="btn-block font-weight-400 font-12">Personalização</span>
+				</h3>
+				<div class="close-sidebar" data-toggle="right-sidebar-close">
+					<i class="icon-copy ion-close-round"></i>
+				</div>
+			</div>
+			<div class="right-sidebar-body customscroll">
+				<div class="right-sidebar-body-content">
+					<h4 class="weight-600 font-18 pb-10">Fundo</h4>
+					<div class="sidebar-btn-group pb-30 mb-10">
+						<a href="javascript:void(0);" class="btn btn-outline-primary header-white active">Claro</a>
+						<a href="javascript:void(0);" class="btn btn-outline-primary header-dark">Escuro</a>
+					</div>
+					<h4 class="weight-600 font-18 pb-10">Menu Lateral</h4>
+					<div class="sidebar-btn-group pb-30 mb-10">
+						<a href="javascript:void(0);" class="btn btn-outline-primary sidebar-light">Claro</a>
+						<a href="javascript:void(0);" class="btn btn-outline-primary sidebar-dark active">Escuro</a>
+					</div>
+					<div class="reset-options pt-30 text-center">
+						<button class="btn btn-danger" id="reset-settings">Resetar Configurações</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="left-side-bar">
+			<div class="brand-logo">
+				<a href="indexx.html">
+					<img src="w (1).png" alt="" class="dark-logo" />
+					<img src="w (1).png" alt="" class="light-logo" />
+				</a>
+				<div class="close-sidebar" data-toggle="left-sidebar-close">
+					<i class="ion-close-round"></i>
+				</div>
+			</div>
+			<div class="menu-block customscroll">
+				<div class="sidebar-menu">
+					<ul id="accordion-menu">
+						<li>
+							<a href="indexx.html" class="dropdown-toggle no-arrow">
+								<span class="micon bi bi-house"></span><span class="mtext">Dashboard</span>
+							</a>
+						</li>
+						<li>
+							<a href="catalogo.html" class="dropdown-toggle no-arrow">
+								<span class="micon bi bi-grid"></span><span class="mtext">Catálogo de Serviços</span>
+							</a>
+						</li>
+						<li>
+							<a href="contratos.html" class="dropdown-toggle no-arrow">
+								<span class="micon bi bi-journal-check"></span><span class="mtext">Meus Pedidos</span>
+							</a>
+						</li>
+                        <li>
+							<a href="chat-list.html" class="dropdown-toggle no-arrow">
+                                <span class="micon bi bi-chat-dots"></span>
+                                <span class="mtext">Chat de Pedidos</span>
+                                <span id="unread-chat-count-sidebar-cliente" class="badge badge-pill badge-danger" style="display: none; margin-left: 5px;">0</span>
+                            </a>
+                        </li>
+                         <li class="active"> {/* Adicionado active para destacar no menu */}
+							<a href="avaliar-prestador.html" class="dropdown-toggle no-arrow active">
+                                <span class="micon bi bi-star-fill"></span>
+                                <span class="mtext">Avaliar Prestadores</span>
+                            </a>
+                        </li>
+                         <li>
+							<a href="profile.html" class="dropdown-toggle no-arrow">
+                                <span class="micon bi bi-person"></span>
+                                <span class="mtext">Meu Perfil</span>
+                            </a>
+                        </li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<div class="mobile-menu-overlay"></div>
+
+		<div class="main-container">
+			<div class="pd-ltr-20 xs-pd-20-10">
+				<div class="min-height-200px">
+					<div class="page-header">
+						<div class="row">
+							<div class="col-md-6 col-sm-12">
+								<div class="title">
+									<h4>Avaliar Serviços Pendentes</h4>
+								</div>
+								<nav aria-label="breadcrumb" role="navigation">
+									<ol class="breadcrumb">
+										<li class="breadcrumb-item"><a href="indexx.html">Dashboard</a></li>
+										<li class="breadcrumb-item active" aria-current="page">Avaliar Prestadores</li>
+									</ol>
+								</nav>
+							</div>
+						</div>
+					</div>
+
+					<div id="services-loading" class="feedback-message feedback-loading" style="display: none;">Carregando serviços para avaliação...</div>
+					<div id="services-feedback" class="feedback-message feedback-error" style="display: none;"></div>
+                    <div id="services-empty" class="feedback-message feedback-empty" style="display: none;">Nenhum serviço pendente de avaliação no momento.</div>
+
+					<div id="pedidos-para-avaliar-list" class="row">
+						</div>
+				</div>
+				<div class="footer-wrap pd-20 mb-20 card-box">
+					Plataforma WYN-TECH
+				</div>
+			</div>
+		</div>
+
+        <div class="modal fade" id="avaliacaoModal" tabindex="-1" role="dialog" aria-labelledby="avaliacaoModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="avaliacaoModalLabel">Avaliar Serviço</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p><strong>Serviço:</strong> <span id="modal-service-title"></span></p>
+                        <p><strong>Prestador:</strong> <span id="modal-provider-name-eval"></span></p>
+                        <form id="formAvaliacao">
+                            <input type="hidden" id="service-id-avaliacao-modal">
+                            <div class="form-group">
+                                <label for="rating-modal">Nota (1 a 5 estrelas):</label>
+                                <div class="star-rating-input">
+                                    <input type="radio" name="rating" id="star5" value="5"><label for="star5"><i class="fas fa-star"></i></label>
+                                    <input type="radio" name="rating" id="star4" value="4"><label for="star4"><i class="fas fa-star"></i></label>
+                                    <input type="radio" name="rating" id="star3" value="3"><label for="star3"><i class="fas fa-star"></i></label>
+                                    <input type="radio" name="rating" id="star2" value="2"><label for="star2"><i class="fas fa-star"></i></label>
+                                    <input type="radio" name="rating" id="star1" value="1" required><label for="star1"><i class="fas fa-star"></i></label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="comment-modal">Comentário:</label>
+                                <textarea class="form-control" id="comment-modal" name="comment" rows="3" placeholder="Deixe seu feedback sobre o serviço..."></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary" id="submit-avaliacao-btn">Enviar Avaliação</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+         <div id="toastContainer"></div>
+
+		<script src="vendors/scripts/core.js"></script>
+		<script src="vendors/scripts/script.min.js"></script>
+		<script src="vendors/scripts/process.js"></script>
+		<script src="vendors/scripts/layout-settings.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+		<noscript>
+			<iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NXZMQSS" height="0" width="0" style="display: none; visibility: hidden"></iframe>
+		</noscript>
+
+		<script>
+			let usuarioLogado = null;
+            let unreadChatPollingInterval = null;
+
+            // Função para exibir toast notifications
+            function showToast(message, type = 'success') {
+                const toastContainer = document.getElementById('toastContainer');
+                if (!toastContainer) {
+                    console.error("Toast container não encontrado!");
+                    return;
+                }
+                const toastId = 'toast-' + Date.now();
+                const toastElement = document.createElement('div');
+                toastElement.classList.add('toast');
+                toastElement.setAttribute('id', toastId);
+                toastElement.setAttribute('role', 'alert');
+                toastElement.setAttribute('aria-live', 'assertive');
+                toastElement.setAttribute('aria-atomic', 'true');
+                toastElement.setAttribute('data-delay', '5000');
+
+                toastElement.innerHTML = `
+                    <div class="toast-header ${type === 'success' ? 'bg-success text-white' : type === 'danger' ? 'bg-danger text-white' : 'bg-info text-white'}">
+                        <strong class="mr-auto">${type === 'success' ? 'Sucesso' : type === 'danger' ? 'Erro' : 'Informação'}</strong>
+                        <small>Agora</small>
+                        <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="toast-body">
+                        ${message}
+                    </div>
+                `;
+                toastContainer.appendChild(toastElement);
+                $('#' + toastId).toast('show');
+                $('#' + toastId).on('hidden.bs.toast', function () {
+                    $(this).remove();
+                });
+            }
+
+			async function carregarPerfilUsuario() {
+				const token = localStorage.getItem('token');
+				const usuarioCache = localStorage.getItem('usuario');
+
+				if (!token || !usuarioCache) {
+					console.warn("[AVALIAR] Usuário não autenticado. Redirecionando para login.");
+					window.location.href = "login.html";
+					return;
+				}
+
+				try {
+					usuarioLogado = JSON.parse(usuarioCache);
+					const nomeSpan = document.getElementById("user-name-header");
+                    const userProfilePicImg = document.getElementById("user-profile-pic");
+
+					if (nomeSpan && usuarioLogado?.nome) {
+						nomeSpan.textContent = usuarioLogado.nome;
+					}
+                    if (userProfilePicImg && usuarioLogado?.foto_perfil_url) {
+                        userProfilePicImg.src = usuarioLogado.foto_perfil_url;
+                        userProfilePicImg.onerror = function() { this.onerror=null; this.src='vendors/images/photo1.jpg'; };
+                    } else if (userProfilePicImg) {
+                        userProfilePicImg.src = 'vendors/images/photo1.jpg';
+                    }
+
+					const res = await fetch('https://wyn-backend.onrender.com/perfil', {
+						headers: { 'Authorization': 'Bearer ' + token }
+					});
+
+					if (!res.ok) {
+						if (res.status === 401 || res.status === 403) {
+							console.error("[AVALIAR] Token inválido ou expirado. Redirecionando.");
+                            showToast("Sua sessão expirou. Por favor, faça login novamente.", "danger");
+							localStorage.removeItem('token');
+							localStorage.removeItem('usuario');
+							setTimeout(() => { window.location.href = "login.html"; }, 3000);
+							return;
+						}
+                        const errorText = await res.text();
+                        throw new Error(errorText || ('Erro HTTP ao buscar perfil: ' + res.status));
+					}
+
+					const data = await res.json();
+					if (data.tipo !== 'usuario' || !data.usuario?._id) {
+						console.error("[AVALIAR] Token válido, mas não corresponde a um usuário cliente.");
+                        showToast("Acesso negado. Esta página é para clientes.", "danger");
+						localStorage.removeItem('token');
+						localStorage.removeItem('usuario');
+						setTimeout(() => { window.location.href = "login.html"; }, 3000);
+						return;
+					}
+					usuarioLogado = data.usuario;
+                    if (nomeSpan && usuarioLogado?.nome) nomeSpan.textContent = usuarioLogado.nome;
+                    if (userProfilePicImg && usuarioLogado?.foto_perfil_url) userProfilePicImg.src = usuarioLogado.foto_perfil_url;
+
+					console.log("[AVALIAR] Perfil do usuário (cliente) carregado e validado.");
+                    carregarPedidosParaAvaliar();
+                    carregarContadorMensagensNaoLidas();
+                    iniciarPollingMensagensNaoLidas();
+				} catch (err) {
+					console.error('[AVALIAR] Erro ao carregar perfil:', err);
+                    showToast("Erro ao carregar informações: " + err.message, "danger");
+                    localStorage.removeItem('token');
+					localStorage.removeItem('usuario');
+                    setTimeout(() => { window.location.href = "login.html"; }, 3000);
+				}
+			}
+
+			document.getElementById('logout-link').addEventListener('click', (e) => {
+				e.preventDefault();
+				localStorage.removeItem('token');
+				localStorage.removeItem('usuario');
+                pararPollingMensagensNaoLidas();
+				window.location.href = 'login.html';
+			});
+
+            async function carregarContadorMensagensNaoLidas() {
+                 const token = localStorage.getItem("token");
+                 const unreadCountElementSidebar = document.getElementById("unread-chat-count-sidebar-cliente");
+                 if (!token || !unreadCountElementSidebar) return;
+
+                 try {
+                     const response = await fetch("https://wyn-backend.onrender.com/api/chat/unread-count", {
+                         headers: { 'Authorization': 'Bearer ' + token }
+                     });
+                     if (!response.ok) {
+                         console.error("[AVALIAR] Erro ao buscar contagem de mensagens não lidas (cliente):", response.status);
+                         unreadCountElementSidebar.style.display = 'none';
+                         return;
+                     }
+                     const data = await response.json();
+                     const unreadCount = data.total || 0;
+                     if (unreadCount > 0) {
+                         unreadCountElementSidebar.textContent = unreadCount;
+                         unreadCountElementSidebar.style.display = 'inline';
+                     } else {
+                         unreadCountElementSidebar.style.display = 'none';
+                     }
+                 } catch (error) {
+                     console.error("[AVALIAR] Erro ao carregar contagem de mensagens não lidas (cliente):", error);
+                     if (unreadChatPollingInterval) clearInterval(unreadChatPollingInterval);
+                     unreadCountElementSidebar.style.display = 'none';
+                 }
+            }
+
+            function iniciarPollingMensagensNaoLidas() {
+                 if (unreadChatPollingInterval) clearInterval(unreadChatPollingInterval);
+                 unreadChatPollingInterval = setInterval(carregarContadorMensagensNaoLidas, 30000);
+                 console.log("[AVALIAR] Polling de mensagens não lidas (cliente) iniciado.");
+            }
+
+            function pararPollingMensagensNaoLidas() {
+                 if (unreadChatPollingInterval) {
+                     clearInterval(unreadChatPollingInterval);
+                     unreadChatPollingInterval = null;
+                     console.log("[AVALIAR] Polling de mensagens não lidas parado.");
+                 }
+            }
+
+			async function carregarPedidosParaAvaliar() {
+                const loadingEl = document.getElementById("services-loading");
+                const feedbackEl = document.getElementById("services-feedback");
+                const emptyEl = document.getElementById("services-empty");
+                const listContainer = document.getElementById("pedidos-para-avaliar-list");
+                const token = localStorage.getItem("token");
+
+                loadingEl.style.display = "block";
+                feedbackEl.style.display = "none";
+                emptyEl.style.display = "none";
+                listContainer.innerHTML = "";
+
+                if (!token) {
+                    feedbackEl.textContent = "Autenticação necessária.";
+                    feedbackEl.style.display = "block";
+                    loadingEl.style.display = "none";
+                    return;
+                }
+
+                try {
+                    const response = await fetch("https://wyn-backend.onrender.com/pedidos-para-avaliar", {
+                        headers: { 'Authorization': 'Bearer ' + token }
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json().catch(() => ({ message: "Erro desconhecido ao buscar pedidos."}));
+                        throw new Error(errorData.message || 'Erro HTTP: ' + response.status);
+                    }
+
+                    const pedidos = await response.json();
+
+                    if (pedidos.length === 0) {
+                        emptyEl.style.display = "block";
+                    } else {
+                        pedidos.forEach(pedido => {
+                            const card = document.createElement("div");
+                            card.className = "col-md-6 col-lg-4";
+                            card.innerHTML = `
+                                <div class="service-evaluation-card">
+                                    <h5>${pedido.titulo || 'Serviço Concluído'}</h5>
+                                    <p><strong>Prestador:</strong> ${pedido.prestadorNome || 'Não informado'}</p>
+                                    <button class="btn btn-primary btn-sm btn-block avaliar-btn" data-service-id="${pedido._id}" data-service-title="${pedido.titulo || 'Serviço Concluído'}" data-provider-name="${pedido.prestadorNome || 'Não informado'}">
+                                        Avaliar Serviço
+                                    </button>
+                                </div>
+                            `;
+                            listContainer.appendChild(card);
+                        });
+                    }
+                } catch (error) {
+                    console.error("[AVALIAR] Erro ao carregar pedidos para avaliação:", error);
+                    feedbackEl.textContent = "Erro ao carregar: " + error.message;
+                    feedbackEl.style.display = "block";
+                } finally {
+                    loadingEl.style.display = "none";
+                }
+            }
+
+            document.getElementById('pedidos-para-avaliar-list').addEventListener('click', function(event) {
+                if (event.target.classList.contains('avaliar-btn')) {
+                    const serviceId = event.target.dataset.serviceId;
+                    const serviceTitle = event.target.dataset.serviceTitle;
+                    const providerName = event.target.dataset.providerName;
+
+                    document.getElementById('modal-service-title').textContent = serviceTitle;
+                    document.getElementById('modal-provider-name-eval').textContent = providerName;
+                    document.getElementById('service-id-avaliacao-modal').value = serviceId;
+                    
+                    // Resetar estrelas e comentário do modal
+                    document.getElementById('formAvaliacao').reset();
+                    // Forçar reset visual das estrelas (se necessário, limpando a 'checked' property)
+                    const starRadios = document.querySelectorAll('#avaliacaoModal .star-rating-input input[type="radio"]');
+                    starRadios.forEach(radio => radio.checked = false);
+
+
+                    $('#avaliacaoModal').modal('show');
+                }
+            });
+
+            document.getElementById('formAvaliacao').addEventListener('submit', async function(event) {
+                event.preventDefault();
+                const serviceId = document.getElementById('service-id-avaliacao-modal').value;
+                const ratingInput = document.querySelector('#avaliacaoModal input[name="rating"]:checked');
+                const comment = document.getElementById('comment-modal').value.trim();
+                const token = localStorage.getItem('token');
+                const submitButton = document.getElementById('submit-avaliacao-btn');
+
+                if (!ratingInput) {
+                    showToast("Por favor, selecione uma nota (1 a 5 estrelas).", "danger");
+                    return;
+                }
+                const rating = ratingInput.value;
+
+                if (!comment) {
+                    showToast("Por favor, deixe um comentário.", "danger");
+                    return;
+                }
+                
+                submitButton.disabled = true;
+                submitButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Enviando...';
+
+                try {
+                    const response = await fetch('https://wyn-backend.onrender.com/avaliar-servico/' + serviceId, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer ' + token
+                        },
+                        body: JSON.stringify({ nota: parseInt(rating), comentario: comment })
+                    });
+
+                    const result = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(result.message || 'Erro HTTP ' + response.status);
+                    }
+
+                    showToast(result.message || "Avaliação enviada com sucesso!", "success");
+                    $('#avaliacaoModal').modal('hide');
+                    carregarPedidosParaAvaliar(); // Recarrega a lista para remover o item avaliado
+
+                } catch (error) {
+                    console.error("[AVALIAR] Erro ao enviar avaliação:", error);
+                    showToast("Erro ao enviar avaliação: " + error.message, "danger");
+                } finally {
+                    submitButton.disabled = false;
+                    submitButton.innerHTML = 'Enviar Avaliação';
+                }
+            });
+
+
+			document.addEventListener("DOMContentLoaded", carregarPerfilUsuario);
+            window.addEventListener('beforeunload', pararPollingMensagensNaoLidas);
+
+		</script>
+	</body>
+</html>
