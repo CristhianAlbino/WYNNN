@@ -259,17 +259,18 @@
                 display: flex;
                 align-items: flex-start;
                 margin-bottom: 15px;
-                padding: 15px; /* Adicionado padding para melhor espaçamento interno */
+                padding: 10px; /* Reduzido padding */
                 border-radius: 8px; /* Cantos arredondados */
-                background-color: #f8f9fa; /* Fundo levemente cinza para cada item */
-                border: 1px solid #e9ecef; /* Borda sutil */
-                box-shadow: 0 2px 5px rgba(0,0,0,0.05); /* Sombra suave */
-                transition: all 0.2s ease-in-out; /* Transição para hover */
+                background-color: #ffffff; /* Fundo branco */
+                border: 1px solid #e0e0e0; /* Borda mais suave */
+                box-shadow: none; /* Removida sombra */
+                transition: background-color 0.2s ease-in-out; /* Transição apenas para cor de fundo */
             }
 
             .activity-item:hover {
-                transform: translateY(-3px); /* Efeito de levantar no hover */
-                box-shadow: 0 4px 10px rgba(0,0,0,0.1); /* Sombra mais pronunciada no hover */
+                background-color: #f0f0f0; /* Fundo levemente cinza no hover */
+                transform: none; /* Removido efeito de levantar */
+                box-shadow: none; /* Mantida sem sombra */
             }
 
             .activity-item:last-child {
@@ -279,10 +280,10 @@
             }
 
             .activity-icon {
-                font-size: 1.8rem; /* Ícones maiores */
-                margin-right: 15px;
+                font-size: 1.6rem; /* Ícones ligeiramente menores */
+                margin-right: 12px; /* Espaçamento ajustado */
                 color: #007bff; /* Cor padrão para ícones de atividade */
-                flex-shrink: 0; /* Impede que o ícone diminua */
+                flex-shrink: 0;
             }
 
             .activity-content {
@@ -291,14 +292,14 @@
 
             .activity-content strong {
                 display: block;
-                font-size: 1.1em;
-                margin-bottom: 5px;
-                color: #333; /* Cor mais escura para o título */
+                font-size: 1em; /* Tamanho da fonte ajustado */
+                margin-bottom: 3px; /* Espaçamento ajustado */
+                color: #333;
             }
 
             .activity-content small {
-                color: #666;
-                font-size: 0.9em; /* Fonte um pouco menor para o tempo */
+                color: #777; /* Cor mais suave para o tempo */
+                font-size: 0.85em; /* Fonte um pouco menor para o tempo */
             }
 
             /* Media queries para responsividade */
@@ -308,7 +309,7 @@
                     height: 80%;
                     bottom: 5%;
                     right: 5%;
-                    transform: translateX(100vw); /* Esconde para a direita na tela pequena */
+                    transform: translateX(100vw);
                 }
 
                 #chat-container.open {
@@ -1346,16 +1347,16 @@
                             const labels = Object.keys(statusCounts);
                             const data = Object.values(statusCounts);
                             const backgroundColors = [
-                                '#f39c12', // Pendente (Laranja)
-                                '#3498db', // Aceito (Azul)
-                                '#2ecc71', // Concluído (Verde)
-                                '#e74c3c'  // Recusado/Cancelado (Vermelho)
+                                '#F39C12', // Pendente (Laranja)
+                                '#3498DB', // Aceito (Azul)
+                                '#2ECC71', // Concluído (Verde)
+                                '#E74C3C'  // Recusado/Cancelado (Vermelho)
                             ];
-                             const borderColors = [
-                                '#e67e22',
-                                '#2980b9',
-                                '#27ae60',
-                                '#c0392b'
+                             const borderColors = [ // Cores de borda mais escuras para contraste
+                                '#D35400',
+                                '#2980B9',
+                                '#27AE60',
+                                '#C0392B'
                             ];
 
 
@@ -1375,19 +1376,20 @@
                                             backgroundColor: backgroundColors,
                                             borderColor: borderColors,
                                             borderWidth: 1,
-                                            hoverOffset: 8 // Aumenta o offset no hover
+                                            hoverOffset: 4 // Reduzido para um efeito mais sutil
                                         }]
                                     },
                                     options: {
                                         responsive: true,
-                                        maintainAspectRatio: false, // Permite que o gráfico não mantenha a proporção original
+                                        maintainAspectRatio: false,
                                         plugins: {
                                             legend: {
-                                                position: 'top',
+                                                position: 'right', // Posiciona a legenda à direita
                                                 labels: {
                                                     font: {
-                                                        size: 14
-                                                    }
+                                                        size: 12
+                                                    },
+                                                    boxWidth: 20 // Largura da caixa de cor na legenda
                                                 }
                                             },
                                             tooltip: {
@@ -1398,7 +1400,7 @@
                                                             label += ': ';
                                                         }
                                                         if (context.parsed !== null) {
-                                                            label += context.parsed;
+                                                            label += context.parsed + ' pedidos'; // Adiciona "pedidos"
                                                         }
                                                         return label;
                                                     }
@@ -1406,8 +1408,8 @@
                                             }
                                         },
                                         animation: {
-                                            animateScale: true, // Anima a escala
-                                            animateRotate: true // Anima a rotação
+                                            animateScale: true,
+                                            animateRotate: true
                                         }
                                     }
                                 });
@@ -1439,10 +1441,10 @@
                                         datasets: [{
                                             label: 'Total Gasto (R$)',
                                             data: data,
-                                            backgroundColor: 'rgba(155, 89, 182, 0.8)', // Roxo com transparência
-                                            borderColor: 'rgba(142, 68, 173, 1)',
+                                            backgroundColor: '#9B59B6', // Roxo sólido
+                                            borderColor: '#8E44AD', // Borda roxa mais escura
                                             borderWidth: 1,
-                                            borderRadius: 5 // Cantos arredondados para as barras
+                                            borderRadius: 5
                                         }]
                                     },
                                     options: {
@@ -1473,7 +1475,8 @@
                                                     }
                                                 },
                                                 grid: {
-                                                    display: false // Remove as linhas de grade do eixo Y
+                                                    display: true, // Mantém as linhas de grade do eixo Y para referência
+                                                    color: '#e0e0e0' // Cor suave para as linhas de grade
                                                 }
                                             },
                                             x: {
@@ -1483,8 +1486,8 @@
                                             }
                                         },
                                         animation: {
-                                            duration: 1000, // Duração da animação em ms
-                                            easing: 'easeInOutQuart' // Tipo de easing
+                                            duration: 1000,
+                                            easing: 'easeInOutQuart'
                                         }
                                     }
                                 });
@@ -1499,10 +1502,6 @@
 
                             // Limpar atividades existentes
                             activitiesList.innerHTML = '';
-
-                            // Criar uma lista de atividades baseada nos serviços (simplificado)
-                            // Idealmente, isso viria de um endpoint de "atividades" do backend
-                            const recentActivities = [];
 
                             // Adicionar atividades de serviços, ordenando por data de atualização (ou criação)
                             servicos.sort((a, b) => new Date(b.updatedAt || b.createdAt) - new Date(a.updatedAt || a.createdAt));
