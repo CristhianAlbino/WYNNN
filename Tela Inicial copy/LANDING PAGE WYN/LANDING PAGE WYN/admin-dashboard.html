@@ -912,7 +912,7 @@
                 // --- Verificar se o token é de um ADMIN válido no backend ---
                 // Esta requisição valida o token e confirma se o usuário é admin
                 const res = await fetch(`${BACKEND_BASE_URL}/perfil`, { // Reutiliza o endpoint /perfil do backend
-                    headers: { 'Authorization': 'Bearer ' + token }
+                    headers: { 'Authorization': `Bearer ${token}` }
                 });
 
                 const resClone = res.clone(); // Clona a resposta para poder ler o body mais de uma vez
@@ -1203,7 +1203,12 @@
                   activeLink.classList.add('active');
              } else if (sectionId === 'overview') {
                   // Caso especial para o link do Dashboard inicial
-                  document.querySelector('.sidebar-menu a[href="admin-dashboard.html"]').classList.add('active');
+                  const overviewLink = document.querySelector('.sidebar-menu a[href="admin-dashboard.html"]');
+                  if (overviewLink) { // Adiciona verificação de null aqui
+                      overviewLink.classList.add('active');
+                  } else {
+                      console.warn("[ADMIN DASHBOARD] Link 'admin-dashboard.html' não encontrado no menu lateral.");
+                  }
              }
 
 
