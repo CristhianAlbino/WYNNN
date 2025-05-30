@@ -6,7 +6,7 @@
 
     <link rel="apple-touch-icon" sizes="180x180" href="/Tela Inicial copy/w.png" />
     <link rel="icon" type="image/png" sizes="32x32" href="/Tela Inicial copy/w.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="/Tela Inicial copy/w.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/w/1.png" />
 
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
 
@@ -831,6 +831,9 @@
     </noscript>
 
     <script>
+        // Define BACKEND_BASE_URL globally for consistency
+        const BACKEND_BASE_URL = 'https://wyn-backend.onrender.com';
+
         let adminLogado = null; // Variável para armazenar os dados do admin logado
         let currentManagedSection = 'overview'; // Controla qual seção está visível
         let allPrestadores = []; // Para popular o dropdown de prestadores no modal de serviço oferecido
@@ -875,13 +878,10 @@
             const token = localStorage.getItem('token');
             const adminCache = localStorage.getItem('admin'); // Assume que você salva o admin no cache
 
-            // URL base do backend (consistência é fundamental!)
-            const BACKEND_BASE_URL = 'https://wyn-backend.onrender.com';
-
             if (!token || !adminCache) {
-                console.warn("Admin não autenticado. Redirecionando para login.");
+                console.warn("[ADMIN DASHBOARD] Admin não autenticado. Redirecionando para login.");
                 // Redireciona para a tela de login de admin se não houver token ou cache
-                window.location.href = "login-admin.html"; // Corrigido para login-admin.html
+                window.location.href = "login-admin.html";
                 return;
             }
 
@@ -905,6 +905,9 @@
                       adminProfilePicImg.src = "vendors/images/photo4.jpg"; // Imagem padrão
                  }
 
+                console.log("[ADMIN DASHBOARD] Token obtido do localStorage:", token);
+                console.log("[ADMIN DASHBOARD] Dados do admin do cache:", adminLogado);
+
 
                 // --- Verificar se o token é de um ADMIN válido no backend ---
                 // Esta requisição valida o token e confirma se o usuário é admin
@@ -916,36 +919,38 @@
 
                 if (!res.ok) {
                     if (res.status === 401 || res.status === 403) {
-                        console.error("Token inválido ou expirado para admin. Redirecionando para login.");
+                        console.error("[ADMIN DASHBOARD] Erro de autenticação/autorização (401/403) ao buscar perfil. Status:", res.status);
                         showToast("Sua sessão expirou ou você não tem permissão. Por favor, faça login novamente.", 'danger');
                         // Redireciona após um pequeno delay
-                        setTimeout(() => { window.location.href = "login-admin.html"; }, 3000); // Corrigido para login-admin.html
+                        setTimeout(() => { window.location.href = "login-admin.html"; }, 3000);
                         return;
                     }
                     // Lança erro para outros status HTTP que não 200, 401, 403
-                    throw new Error(`Erro HTTP ao buscar perfil: ${res.status}`);
+                    const errorText = await resClone.text();
+                    console.error("[ADMIN DASHBOARD] Erro HTTP inesperado ao buscar perfil. Status:", res.status, "Erro:", errorText);
+                    throw new Error(`Erro HTTP ao buscar perfil: ${res.status} - ${errorText}`);
                 }
 
                 let data = {};
                 try {
                     data = await res.json(); // Tenta parsear a resposta como JSON
                 } catch (jsonError) {
-                    console.error("Erro ao parsear JSON do perfil:", await resClone.text()); // Loga o texto da resposta se o JSON for inválido
+                    console.error("[ADMIN DASHBOARD] Erro ao parsear JSON do perfil:", await resClone.text(), "Erro:", jsonError);
                     throw new Error("Resposta de perfil inválida.");
                 }
 
-                // --- NOVO CONSOLE.LOG PARA DEPURAR ---
-                console.log("Dados do usuário recebidos do backend para admin:", data);
-                // --- FIM NOVO CONSOLE.LOG ---
+                console.log("[ADMIN DASHBOARD] Dados do perfil recebidos do backend:", data);
+                console.log("[ADMIN DASHBOARD] Tipo de usuário do backend:", data.tipo);
+                console.log("[ADMIN DASHBOARD] isAdmin do backend:", data.usuario?.isAdmin);
 
 
                 // --- VERIFICAÇÃO CRUCIAL: O usuário logado é realmente um ADMIN? ---
                 // Verifica se o tipo de usuário é 'usuario' e se a propriedade 'isAdmin' é true
                 if (data.tipo !== 'usuario' || !data.usuario?._id || !data.usuario?.isAdmin) {
-                    console.error("Token válido, mas não corresponde a um administrador.");
+                    console.error("[ADMIN DASHBOARD] Acesso negado: Token válido, mas não corresponde a um administrador.");
                     showToast("Acesso negado. Esta área é apenas para administradores.", 'danger');
                     // Redireciona para a página de login de admin
-                     setTimeout(() => { window.location.href = "login-admin.html"; }, 3000); // Redireciona para login-admin.html
+                     setTimeout(() => { window.location.href = "login-admin.html"; }, 3000);
                     return;
                 }
 
@@ -967,7 +972,7 @@
                  }
 
 
-                console.log("Perfil do administrador carregado e autenticado:", adminLogado);
+                console.log("[ADMIN DASHBOARD] Perfil do administrador carregado e autenticado:", adminLogado);
 
                 // Carregar dados iniciais para os cards e a visão geral
                 carregarContadoresAdmin();
@@ -978,10 +983,10 @@
 
 
             } catch (err) {
-                console.error('Erro ao carregar perfil do administrador:', err);
+                console.error('[ADMIN DASHBOARD] Erro ao carregar perfil do administrador:', err);
                 showToast('Ocorreu um erro ao carregar informações do administrador.', 'danger');
                  // Em caso de erro grave, redireciona para login
-                 setTimeout(() => { window.location.href = "login-admin.html"; }, 3000); // Corrigido para login-admin.html
+                 setTimeout(() => { window.location.href = "login-admin.html"; }, 3000);
             }
         }
 
@@ -989,11 +994,8 @@
          async function carregarContadoresAdmin() {
               const token = localStorage.getItem("token");
 
-              // URL base do backend (consistência é fundamental!)
-              const BACKEND_BASE_URL = 'https://wyn-backend.onrender.com';
-
               if (!token) {
-                   console.warn("Não foi possível carregar contadores admin: Token ausente.");
+                   console.warn("[ADMIN DASHBOARD] Não foi possível carregar contadores admin: Token ausente.");
                    return;
               }
 
@@ -1029,7 +1031,7 @@
 
 
               } catch (error) {
-                   console.error("Erro ao carregar contadores do admin:", error);
+                   console.error("[ADMIN DASHBOARD] Erro ao carregar contadores do admin:", error);
                    // Exibe '-' nos cards em caso de erro
                    document.getElementById("total-usuarios").innerText = '-';
                    document.getElementById("total-prestadores").innerText = '-';
@@ -1047,9 +1049,6 @@
               const chartCanvas = document.getElementById('adminStatsChart');
               const ctx = chartCanvas.getContext('2d');
 
-              // URL base do backend (consistência é fundamental!)
-              const BACKEND_BASE_URL = 'https://wyn-backend.onrender.com';
-
               // Mostra loading e esconde outros feedbacks e o canvas
               chartFeedback.style.display = 'none';
               chartLoading.style.display = 'block';
@@ -1059,7 +1058,7 @@
               const token = localStorage.getItem("token");
 
               if (!token) {
-                   console.warn("Não foi possível carregar dados do gráfico admin: Token ausente.");
+                   console.warn("[ADMIN DASHBOARD] Não foi possível carregar dados do gráfico admin: Token ausente.");
                    chartLoading.style.display = 'none';
                    chartError.textContent = "Autenticação necessária para carregar dados do gráfico.";
                    chartError.style.display = 'block';
@@ -1075,12 +1074,12 @@
 
                    if (!response.ok) {
                         const errorText = await response.text();
-                        console.error("Erro HTTP ao buscar dados do gráfico admin:", response.status, errorText);
+                        console.error("[ADMIN DASHBOARD] Erro HTTP ao buscar dados do gráfico admin:", response.status, errorText);
                         throw new Error(errorText || `Erro HTTP ao buscar dados do gráfico: ${response.status}`);
                    }
 
                    const dadosGrafico = await response.json(); // Espera um formato como { labels: ['Status A', 'Status B'], data: [10, 25] }
-                   console.log("Dados de gráfico admin carregados:", dadosGrafico);
+                   console.log("[ADMIN DASHBOARD] Dados de gráfico admin carregados:", dadosGrafico);
 
                    // Verifica se há dados para exibir no gráfico
                    if (!dadosGrafico || !dadosGrafico.labels || !dadosGrafico.data || dadosGrafico.data.length === 0) {
@@ -1172,7 +1171,7 @@
                    chartCanvas.style.display = 'block';
 
                } catch (error) {
-                   console.error("Erro ao carregar dados para o gráfico admin:", error);
+                   console.error("[ADMIN DASHBOARD] Erro ao carregar dados para o gráfico admin:", error);
                    // Exibe mensagem de erro no feedback
                    chartLoading.style.display = 'none';
                    chartError.textContent = `Erro ao carregar dados do gráfico: ${error.message || 'Verifique a conexão.'}`;
@@ -1249,9 +1248,6 @@
             const tbody = document.getElementById("tbody-usuarios");
             const token = localStorage.getItem("token");
 
-            // URL base do backend (consistência é fundamental!)
-            const BACKEND_BASE_URL = 'https://wyn-backend.onrender.com';
-
             // Mostra loading e esconde outros feedbacks
             loading.style.display = "block";
             feedback.style.display = "none";
@@ -1280,13 +1276,13 @@
                 // Verifica se a resposta foi bem-sucedida (status 2xx)
                 if (!response.ok) {
                     const errorText = await response.text();
-                    console.error("Erro HTTP ao buscar usuários:", response.status, errorText);
+                    console.error("[ADMIN DASHBOARD] Erro HTTP ao buscar usuários:", response.status, errorText);
                     // Lança um erro com a mensagem do backend ou status HTTP
                     throw new Error(errorText || `Erro HTTP: ${response.status}`);
                 }
 
                 const usuarios = await response.json(); // Parseia a resposta JSON
-                console.log("Usuários carregados:", usuarios);
+                console.log("[ADMIN DASHBOARD] Usuários carregados:", usuarios);
 
                 // Verifica se a lista de usuários está vazia
                 if (usuarios.length === 0) {
@@ -1324,7 +1320,7 @@
                     });
                 }
             } catch (error) {
-                console.error("Erro ao carregar usuários:", error);
+                console.error("[ADMIN DASHBOARD] Erro ao carregar usuários:", error);
                 // Exibe mensagem de erro no feedback
                 feedback.textContent = `Erro ao carregar usuários: ${error.message || 'Verifique a conexão.'}`;
                 feedback.style.display = "block";
@@ -1341,9 +1337,6 @@
             const empty = document.getElementById("prestadores-empty");
             const tbody = document.getElementById("tbody-prestadores");
             const token = localStorage.getItem("token");
-
-            // URL base do backend (consistência é fundamental!)
-            const BACKEND_BASE_URL = 'https://wyn-backend.onrender.com';
 
             loading.style.display = "block";
             feedback.style.display = "none";
@@ -1370,12 +1363,12 @@
 
                 if (!response.ok) {
                     const errorText = await response.text();
-                    console.error("Erro HTTP ao buscar prestadores:", response.status, errorText);
+                    console.error("[ADMIN DASHBOARD] Erro HTTP ao buscar prestadores:", response.status, errorText);
                     throw new Error(errorText || `Erro HTTP: ${response.status}`);
                 }
 
                 const prestadores = await response.json();
-                console.log("Prestadores carregados:", prestadores);
+                console.log("[ADMIN DASHBOARD] Prestadores carregados:", prestadores);
                 allPrestadores = prestadores; // Armazena a lista de prestadores para usar no modal de serviço oferecido
 
                 if (prestadores.length === 0) {
@@ -1409,7 +1402,7 @@
                     });
                 }
             } catch (error) {
-                console.error("Erro ao carregar prestadores:", error);
+                console.error("[ADMIN DASHBOARD] Erro ao carregar prestadores:", error);
                 feedback.textContent = `Erro ao carregar prestadores: ${error.message || 'Verifique a conexão.'}`;
                 feedback.style.display = "block";
                 empty.style.display = 'none';
@@ -1425,9 +1418,6 @@
             const empty = document.getElementById("servicos-empty");
             const tbody = document.getElementById("tbody-servicos");
             const token = localStorage.getItem("token");
-
-            // URL base do backend (consistência é fundamental!)
-            const BACKEND_BASE_URL = 'https://wyn-backend.onrender.com';
 
             loading.style.display = "block";
             feedback.style.display = "none";
@@ -1455,12 +1445,12 @@
 
                 if (!response.ok) {
                     const errorText = await response.text();
-                    console.error("Erro HTTP ao buscar serviços:", response.status, errorText);
+                    console.error("[ADMIN DASHBOARD] Erro HTTP ao buscar serviços:", response.status, errorText);
                     throw new Error(errorText || `Erro HTTP: ${response.status}`);
                 }
 
                 const servicos = await response.json();
-                console.log("Serviços (pedidos) carregados:", servicos);
+                console.log("[ADMIN DASHBOARD] Serviços (pedidos) carregados:", servicos);
 
                 if (servicos.length === 0) {
                     empty.style.display = 'block';
@@ -1498,7 +1488,7 @@
                     });
                 }
             } catch (error) {
-                console.error("Erro ao carregar serviços:", error);
+                console.error("[ADMIN DASHBOARD] Erro ao carregar serviços:", error);
                 feedback.textContent = `Erro ao carregar serviços: ${error.message || 'Verifique a conexão.'}`;
                 feedback.style.display = "block";
                 empty.style.display = 'none';
@@ -1514,9 +1504,6 @@
             const empty = document.getElementById("servicos-oferecidos-empty");
             const tbody = document.getElementById("tbody-servicos-oferecidos");
             const token = localStorage.getItem("token");
-
-            // URL base do backend (consistência é fundamental!)
-            const BACKEND_BASE_URL = 'https://wyn-backend.onrender.com';
 
             loading.style.display = "block";
             feedback.style.display = "none";
@@ -1544,12 +1531,12 @@
 
                 if (!response.ok) {
                     const errorText = await response.text();
-                    console.error("Erro HTTP ao buscar catálogo de serviços:", response.status, errorText);
+                    console.error("[ADMIN DASHBOARD] Erro HTTP ao buscar catálogo de serviços:", response.status, errorText);
                     throw new Error(errorText || `Erro HTTP: ${response.status}`);
                 }
 
                 const servicos = await response.json();
-                console.log("Catálogo de serviços carregado:", servicos);
+                console.log("[ADMIN DASHBOARD] Catálogo de serviços carregado:", servicos);
 
                 if (servicos.length === 0) {
                     empty.style.display = 'block';
@@ -1583,7 +1570,7 @@
                     });
                 }
             } catch (error) {
-                console.error("Erro ao carregar catálogo de serviços oferecidos:", error);
+                console.error("[ADMIN DASHBOARD] Erro ao carregar catálogo de serviços oferecidos:", error);
                 feedback.textContent = `Erro ao carregar catálogo de serviços: ${error.message || 'Verifique a conexão.'}`;
                 feedback.style.display = "block";
                 empty.style.display = 'none';
@@ -1599,9 +1586,6 @@
             const empty = document.getElementById("avaliacoes-empty");
             const tbody = document.getElementById("tbody-avaliacoes");
             const token = localStorage.getItem("token");
-
-            // URL base do backend (consistência é fundamental!)
-            const BACKEND_BASE_URL = 'https://wyn-backend.onrender.com';
 
             loading.style.display = "block";
             feedback.style.display = "none";
@@ -1629,12 +1613,12 @@
 
                 if (!response.ok) {
                     const errorText = await response.text();
-                    console.error("Erro HTTP ao buscar avaliações:", response.status, errorText);
+                    console.error("[ADMIN DASHBOARD] Erro HTTP ao buscar avaliações:", response.status, errorText);
                     throw new Error(errorText || `Erro HTTP: ${response.status}`);
                 }
 
                 const avaliacoes = await response.json();
-                console.log("Avaliações carregadas:", avaliacoes);
+                console.log("[ADMIN DASHBOARD] Avaliações carregadas:", avaliacoes);
 
                 if (avaliacoes.length === 0) {
                     empty.style.display = 'block';
@@ -1667,7 +1651,7 @@
                     });
                 }
             } catch (error) {
-                console.error("Erro ao carregar avaliações:", error);
+                console.error("[ADMIN DASHBOARD] Erro ao carregar avaliações:", error);
                 feedback.textContent = `Erro ao carregar avaliações: ${error.message || 'Verifique a conexão.'}`;
                 feedback.style.display = "block";
                 empty.style.display = 'none';
@@ -1700,9 +1684,6 @@
                 const userId = event.target.dataset.id;
                 const token = localStorage.getItem('token');
 
-                // URL base do backend (consistência é fundamental!)
-                const BACKEND_BASE_URL = 'https://wyn-backend.onrender.com';
-
                 if (!token) {
                     showToast("Autenticação necessária para editar usuário.", 'danger');
                     return;
@@ -1720,7 +1701,7 @@
                     }
 
                     const usuario = await response.json();
-                    console.log("Detalhes do usuário para edição:", usuario);
+                    console.log("[ADMIN DASHBOARD] Detalhes do usuário para edição:", usuario);
 
                     // Preenche o formulário do modal com os dados do usuário
                     document.getElementById('usuarioId').value = usuario._id;
@@ -1737,7 +1718,7 @@
                     $('#usuarioModal').modal('show');
 
                 } catch (error) {
-                    console.error("Erro ao carregar detalhes do usuário para edição:", error);
+                    console.error("[ADMIN DASHBOARD] Erro ao carregar detalhes do usuário para edição:", error);
                     showToast(`Erro ao carregar detalhes do usuário: ${error.message || 'Verifique a conexão.'}`, 'danger');
                 }
             }
@@ -1756,8 +1737,6 @@
             const fotoPerfilFile = fotoPerfilInput.files[0];
 
             const token = localStorage.getItem('token');
-            // URL base do backend (consistência é fundamental!)
-            const BACKEND_BASE_URL = 'https://wyn-backend.onrender.com';
 
             if (!token) {
                 showToast("Autenticação necessária para salvar usuário.", 'danger');
@@ -1808,7 +1787,7 @@
                 $('#usuarioModal').modal('hide'); // Fecha o modal
                 carregarUsuarios(); // Recarrega a tabela de usuários
             } catch (error) {
-                console.error("Erro ao salvar usuário:", error);
+                console.error("[ADMIN DASHBOARD] Erro ao salvar usuário:", error);
                 showToast(`Erro ao salvar usuário: ${error.message || 'Verifique os dados.'}`, 'danger');
             }
         });
@@ -1819,9 +1798,6 @@
                 event.preventDefault();
                 const userId = event.target.dataset.id;
                 const token = localStorage.getItem('token');
-
-                // URL base do backend (consistência é fundamental!)
-                const BACKEND_BASE_URL = 'https://wyn-backend.onrender.com';
 
                 if (!confirm('Tem certeza que deseja deletar este usuário? Esta ação é irreversível e pode afetar serviços associados.')) {
                     return; // Cancela a exclusão se o admin não confirmar
@@ -1848,7 +1824,7 @@
                     showToast(result.message, 'success');
                     carregarUsuarios(); // Recarrega a tabela de usuários
                 } catch (error) {
-                    console.error("Erro ao deletar usuário:", error);
+                    console.error("[ADMIN DASHBOARD] Erro ao deletar usuário:", error);
                     showToast(`Erro ao deletar usuário: ${error.message || 'Verifique a conexão.'}`, 'danger');
                 }
             }
@@ -1872,9 +1848,6 @@
                 const prestadorId = event.target.dataset.id;
                 const token = localStorage.getItem('token');
 
-                // URL base do backend (consistência é fundamental!)
-                const BACKEND_BASE_URL = 'https://wyn-backend.onrender.com';
-
                 if (!token) {
                     showToast("Autenticação necessária para editar prestador.", 'danger');
                     return;
@@ -1892,7 +1865,7 @@
                     }
 
                     const prestador = await response.json();
-                    console.log("Detalhes do prestador para edição:", prestador);
+                    console.log("[ADMIN DASHBOARD] Detalhes do prestador para edição:", prestador);
 
                     document.getElementById('prestadorId').value = prestador._id;
                     document.getElementById('prestadorNome').value = prestador.nome || '';
@@ -1910,7 +1883,7 @@
                     $('#prestadorModal').modal('show');
 
                 } catch (error) {
-                    console.error("Erro ao carregar detalhes do prestador para edição:", error);
+                    console.error("[ADMIN DASHBOARD] Erro ao carregar detalhes do prestador para edição:", error);
                     showToast(`Erro ao carregar detalhes do prestador: ${error.message || 'Verifique a conexão.'}`, 'danger');
                 }
             }
@@ -1928,8 +1901,6 @@
             const fotoPerfilFile = fotoPerfilInput.files[0];
 
             const token = localStorage.getItem('token');
-            // URL base do backend (consistência é fundamental!)
-            const BACKEND_BASE_URL = 'https://wyn-backend.onrender.com';
 
             if (!token) {
                 showToast("Autenticação necessária para salvar prestador.", 'danger');
@@ -1983,7 +1954,7 @@
                 $('#prestadorModal').modal('hide');
                 carregarPrestadores(); // Recarrega a tabela de prestadores
             } catch (error) {
-                console.error("Erro ao salvar prestador:", error);
+                console.error("[ADMIN DASHBOARD] Erro ao salvar prestador:", error);
                 showToast(`Erro ao salvar prestador: ${error.message || 'Verifique os dados.'}`, 'danger');
             }
         });
@@ -1994,9 +1965,6 @@
                 event.preventDefault();
                 const prestadorId = event.target.dataset.id;
                 const token = localStorage.getItem('token');
-
-                // URL base do backend (consistência é fundamental!)
-                const BACKEND_BASE_URL = 'https://wyn-backend.onrender.com';
 
                 if (!confirm('Tem certeza que deseja deletar este prestador? Esta ação é irreversível e pode afetar serviços e catálogo associados.')) {
                     return;
@@ -2025,7 +1993,7 @@
                     carregarServicosOferecidos(); // Recarrega o catálogo, pois serviços podem ter sido desassociados
                     carregarServicos(); // Recarrega serviços, pois pedidos podem ter sido desassociados
                 } catch (error) {
-                    console.error("Erro ao deletar prestador:", error);
+                    console.error("[ADMIN DASHBOARD] Erro ao deletar prestador:", error);
                     showToast(`Erro ao deletar prestador: ${error.message || 'Verifique a conexão.'}`, 'danger');
                 }
             }
@@ -2063,9 +2031,6 @@
                 const servicoId = event.target.dataset.id;
                 const token = localStorage.getItem('token');
 
-                // URL base do backend (consistência é fundamental!)
-                const BACKEND_BASE_URL = 'https://wyn-backend.onrender.com';
-
                 if (!token) {
                     showToast("Autenticação necessária para editar serviço do catálogo.", 'danger');
                     return;
@@ -2083,7 +2048,7 @@
                     }
 
                     const servico = await response.json();
-                    console.log("Detalhes do serviço oferecido para edição:", servico);
+                    console.log("[ADMIN DASHBOARD] Detalhes do serviço oferecido para edição:", servico);
 
                     document.getElementById('servicoOferecidoId').value = servico._id;
                     document.getElementById('servicoOferecidoNome').value = servico.nome || '';
@@ -2101,7 +2066,7 @@
                     $('#servicoOferecidoModal').modal('show');
 
                 } catch (error) {
-                    console.error("Erro ao carregar detalhes do serviço oferecido para edição:", error);
+                    console.error("[ADMIN DASHBOARD] Erro ao carregar detalhes do serviço oferecido para edição:", error);
                     showToast(`Erro ao carregar detalhes do serviço do catálogo: ${error.message || 'Verifique a conexão.'}`, 'danger');
                 }
             }
@@ -2119,8 +2084,6 @@
             const categorias = document.getElementById('servicoOferecidoCategorias').value.split(',').map(cat => cat.trim()).filter(cat => cat !== '');
 
             const token = localStorage.getItem('token');
-            // URL base do backend (consistência é fundamental!)
-            const BACKEND_BASE_URL = 'https://wyn-backend.onrender.com';
 
             if (!token) {
                 showToast("Autenticação necessária para salvar serviço do catálogo.", 'danger');
@@ -2168,7 +2131,7 @@
                 $('#servicoOferecidoModal').modal('hide');
                 carregarServicosOferecidos(); // Recarrega a tabela
             } catch (error) {
-                console.error("Erro ao salvar serviço oferecido:", error);
+                console.error("[ADMIN DASHBOARD] Erro ao salvar serviço oferecido:", error);
                 showToast(`Erro ao salvar serviço no catálogo: ${error.message || 'Verifique os dados.'}`, 'danger');
             }
         });
@@ -2179,9 +2142,6 @@
                 event.preventDefault();
                 const servicoId = event.target.dataset.id;
                 const token = localStorage.getItem('token');
-
-                // URL base do backend (consistência é fundamental!)
-                const BACKEND_BASE_URL = 'https://wyn-backend.onrender.com';
 
                 if (!confirm('Tem certeza que deseja deletar este serviço do catálogo? Esta ação é irreversível.')) {
                     return;
@@ -2208,7 +2168,7 @@
                     showToast(result.message, 'success');
                     carregarServicosOferecidos(); // Recarrega a tabela
                 } catch (error) {
-                    console.error("Erro ao deletar serviço oferecido:", error);
+                    console.error("[ADMIN DASHBOARD] Erro ao deletar serviço oferecido:", error);
                     showToast(`Erro ao deletar serviço do catálogo: ${error.message || 'Verifique a conexão.'}`, 'danger');
                 }
             }
@@ -2223,9 +2183,6 @@
                 const token = localStorage.getItem('token');
                 const modalBody = document.getElementById('detalhesServicoAdminContent');
                 modalBody.innerHTML = 'Carregando detalhes...'; // Mensagem de carregamento
-
-                // URL base do backend (consistência é fundamental!)
-                const BACKEND_BASE_URL = 'https://wyn-backend.onrender.com';
 
                 if (!token) {
                     showToast("Autenticação necessária para ver detalhes do serviço.", 'danger');
@@ -2245,7 +2202,7 @@
                     }
 
                     const servico = await response.json();
-                    console.log("Detalhes do serviço para admin:", servico);
+                    console.log("[ADMIN DASHBOARD] Detalhes do serviço para admin:", servico);
 
                     // Mapeamento de status para texto amigável (reutilizado do prestador)
                     const statusMap = {
@@ -2316,7 +2273,7 @@
                     $('#detalhesServicoAdminModal').modal('show');
 
                 } catch (error) {
-                    console.error("Erro ao carregar detalhes do serviço para admin:", error);
+                    console.error("[ADMIN DASHBOARD] Erro ao carregar detalhes do serviço para admin:", error);
                     modalBody.innerHTML = `<p class="text-danger">Erro ao carregar detalhes do serviço: ${error.message || 'Verifique a conexão.'}</p>`;
                     showToast(`Erro ao carregar detalhes do serviço: ${error.message || 'Verifique a conexão.'}`, 'danger');
                 }
@@ -2329,9 +2286,6 @@
                 event.preventDefault();
                 const serviceId = event.target.dataset.id;
                 const token = localStorage.getItem('token');
-
-                // URL base do backend (consistência é fundamental!)
-                const BACKEND_BASE_URL = 'https://wyn-backend.onrender.com';
 
                 if (!confirm('Tem certeza que deseja deletar este serviço (pedido)? Esta ação é irreversível e deletará todos os dados associados.')) {
                     return;
@@ -2358,7 +2312,7 @@
                     showToast(result.message, 'success');
                     carregarServicos(); // Recarrega a tabela de serviços
                 } catch (error) {
-                    console.error("Erro ao deletar serviço:", error);
+                    console.error("[ADMIN DASHBOARD] Erro ao deletar serviço:", error);
                     showToast(`Erro ao deletar serviço: ${error.message || 'Verifique a conexão.'}`, 'danger');
                 }
             }
@@ -2371,9 +2325,6 @@
                 event.preventDefault();
                 const avaliacaoId = event.target.dataset.id;
                 const token = localStorage.getItem('token');
-
-                // URL base do backend (consistência é fundamental!)
-                const BACKEND_BASE_URL = 'https://wyn-backend.onrender.com';
 
                 if (!confirm('Tem certeza que deseja deletar esta avaliação? Esta ação é irreversível.')) {
                     return;
@@ -2400,7 +2351,7 @@
                     showToast(result.message, 'success');
                     carregarAvaliacoes(); // Recarrega a tabela de avaliações
                 } catch (error) {
-                    console.error("Erro ao deletar avaliação:", error);
+                    console.error("[ADMIN DASHBOARD] Erro ao deletar avaliação:", error);
                     showToast(`Erro ao deletar avaliação: ${error.message || 'Verifique a conexão.'}`, 'danger');
                 }
             }
