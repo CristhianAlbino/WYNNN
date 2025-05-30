@@ -745,6 +745,8 @@
         </div>
     </div>
 
+    <div id="toastContainer"></div>
+
     <script src="vendors/scripts/core.js"></script>
     <script src="vendors/scripts/script.min.js"></script>
     <script src="vendors/scripts/process.js"></script>
@@ -1010,6 +1012,7 @@
         function displayMessage(message) {
             const messageElement = document.createElement("div");
             messageElement.classList.add("message");
+            messageElement.dataset.messageId = message._id; // Adiciona o ID da mensagem para deduplicação
 
             const isSent = (usuarioLogado && message.remetente_id === usuarioLogado._id);
 
@@ -1033,11 +1036,9 @@
                 return;
             }
 
-            // Apenas mostra o spinner na primeira carga ou se não houver mensagens
             if (chatMessagesDiv.children.length === 0 || chatMessagesDiv.children[0].id === 'loading-messages') {
                  loadingMessagesDiv.style.display = "block";
             }
-
 
             try {
                 const response = await fetch(`${BACKEND_BASE_URL}/chat/${serviceId}/messages`, {
@@ -1057,7 +1058,6 @@
                 const messages = await response.json();
                 console.log("Mensagens carregadas:", messages);
 
-                // Compara as mensagens carregadas com as que já estão na tela para evitar redesenho completo
                 const currentMessageIds = Array.from(chatMessagesDiv.children).map(el => el.dataset.messageId).filter(id => id);
                 let newMessagesCount = 0;
 
@@ -1074,7 +1074,7 @@
                 } else {
                     loadingMessagesDiv.style.display = "none";
                     if (newMessagesCount > 0) {
-                         chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight; // Rola para a última mensagem se houver novas
+                         chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
                     }
                 }
 
@@ -1098,6 +1098,12 @@
             sendButton.disabled = true;
             sendButton.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Enviando...`;
 
+            // Implementação do AbortController para timeout
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => {
+                controller.abort(); // Aborta a requisição após o timeout
+            }, 10000); // 10 segundos de timeout
+
             try {
                 const response = await fetch(`${BACKEND_BASE_URL}/chat/message`, {
                     method: "POST",
@@ -1108,8 +1114,11 @@
                     body: JSON.stringify({
                         serviceId: serviceId,
                         conteudo: content,
-                    })
+                    }),
+                    signal: controller.signal // Associa o signal ao fetch
                 });
+
+                clearTimeout(timeoutId); // Limpa o timeout se a requisição for concluída
 
                 if (!response.ok) {
                     const errorText = await response.text();
@@ -1129,8 +1138,13 @@
                 carregarMensagens(); // Recarrega para exibir a nova mensagem
 
             } catch (error) {
-                console.error("Erro ao enviar mensagem:", error);
-                showToast("Erro ao enviar mensagem: " + (error.message || "Verifique sua conexão ou tente novamente."), 'danger');
+                clearTimeout(timeoutId); // Garante que o timeout é limpo mesmo em caso de erro
+                if (error.name === 'AbortError') {
+                    showToast("Erro ao enviar mensagem: Tempo limite excedido. Verifique sua conexão.", 'danger');
+                } else {
+                    console.error("Erro ao enviar mensagem:", error);
+                    showToast("Erro ao enviar mensagem: " + (error.message || "Verifique sua conexão ou tente novamente."), 'danger');
+                }
             } finally {
                 messageInput.disabled = false;
                 sendButton.disabled = false;
