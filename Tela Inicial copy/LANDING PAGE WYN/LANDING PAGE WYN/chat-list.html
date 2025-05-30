@@ -48,6 +48,8 @@
         href="src/plugins/datatables/css/responsive.bootstrap4.min.css"
     />
     <link rel="stylesheet" type="text/css" href="vendors/styles/style.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" xintegrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0x0Ugau/r+PRGFNfN/P1M2k/L/W84b36d0K7+v7z/z0q0+A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
 
     <style>
         /* Estilo para a foto de perfil no header */
@@ -148,6 +150,18 @@
              background-color: #f1f1f1; /* Cor de fundo ao passar o mouse */
          }
 
+        /* Estilo para o badge de mensagens não lidas na lista de chats */
+        .unread-badge {
+            background-color: #007bff; /* Azul */
+            color: white;
+            border-radius: 50%;
+            padding: 4px 8px;
+            font-size: 0.75em;
+            margin-left: 10px;
+            min-width: 25px; /* Garante que a bolha tenha um tamanho mínimo */
+            text-align: center;
+            display: inline-block;
+        }
 
     </style>
 
@@ -553,8 +567,6 @@
                              </a>
                          </li>
                      </li>
-
-
                 </ul>
             </div>
         </div>
@@ -580,7 +592,9 @@
                         <tr>
                             <th class="table-plus">Serviço</th>
                             <th>Participante</th> <th>Status</th>
-                            <th>Última Mensagem</th> </tr>
+                            <th>Última Mensagem</th>
+                            <th>Não Lidas</th>
+                        </tr>
                     </thead>
                     <tbody id="services-list-body">
                         </tbody>
@@ -613,17 +627,25 @@
     </noscript>
 
     <script>
-        let usuarioLogado = null; // Variável para armazenar os dados do usuário/prestador logado
-        let usuarioTipo = null; // 'usuario' ou 'prestador'
-        let unreadChatPollingInterval = null; // Variável para o intervalo de polling de mensagens não lidas
+        const BACKEND_BASE_URL = 'https://wyn-backend.onrender.com';
+        let usuarioLogado = null;
+        let usuarioTipo = null;
+        let unreadChatPollingInterval = null;
 
 
         // Função para exibir toast notifications (copiada das outras telas)
         function showToast(message, type = 'success') {
             const toastContainer = document.getElementById('toastContainer');
             if (!toastContainer) {
-                console.error("[CHAT LIST] Toast container não encontrado!");
-                return;
+                const newToastContainer = document.createElement('div');
+                newToastContainer.id = 'toastContainer';
+                newToastContainer.style.position = 'fixed';
+                newToastContainer.style.top = '20px';
+                newToastContainer.style.right = '20px';
+                newToastContainer.style.zIndex = '1050';
+                document.body.appendChild(newToastContainer);
+                // Re-select the container
+                toastContainer = document.getElementById('toastContainer');
             }
 
             const toastElement = document.createElement('div');
@@ -656,8 +678,11 @@
 
         async function carregarPerfil() {
             const token = localStorage.getItem('token');
-            const usuarioCache = localStorage.getItem('usuario'); // Tenta carregar como usuário
-            const prestadorCache = localStorage.getItem('prestador'); // Tenta carregar como prestador
+            const usuarioCache = localStorage.getItem('usuario');
+            const prestadorCache = localStorage.getItem('prestador');
+
+            const nomeSpan = document.querySelector(".user-name");
+            const profilePicImg = document.getElementById("user-profile-pic");
 
             if (!token) {
                 console.warn("[CHAT LIST] Não autenticado. Redirecionando para login.");
@@ -666,110 +691,97 @@
             }
 
             try {
-                 // Tenta carregar do cache primeiro
-                 if (usuarioCache) {
-                      usuarioLogado = JSON.parse(usuarioCache);
-                      usuarioTipo = 'usuario';
-                 } else if (prestadorCache) {
-                      usuarioLogado = JSON.parse(prestadorCache);
-                      usuarioTipo = 'prestador';
-                 }
+                if (usuarioCache) {
+                    usuarioLogado = JSON.parse(usuarioCache);
+                    usuarioTipo = 'usuario';
+                } else if (prestadorCache) {
+                    usuarioLogado = JSON.parse(prestadorCache);
+                    usuarioTipo = 'prestador';
+                }
 
-                 const nomeSpan = document.querySelector(".user-name");
-                 const profilePicImg = document.getElementById("user-profile-pic"); // ID genérico para a foto no header
-
-                 if (nomeSpan && usuarioLogado?.nome) {
-                     nomeSpan.textContent = usuarioLogado.nome;
-                 }
-                 // Exibe a foto de perfil do cache se existir
-                 if (profilePicImg && usuarioLogado?.foto_perfil_url) {
-                     profilePicImg.src = usuarioLogado.foto_perfil_url;
-                     profilePicImg.onerror = function() {
-                         this.onerror = null;
-                         this.src = usuarioTipo === 'usuario' ? "vendors/images/photo1.jpg" : "vendors/images/photo4.jpg"; // Fallback por tipo
-                     };
-                 } else if (profilePicImg) {
-                      profilePicImg.src = usuarioTipo === 'usuario' ? "vendors/images/photo1.jpg" : "vendors/images/photo4.jpg"; // Padrão por tipo
-                 }
+                if (nomeSpan && usuarioLogado?.nome) {
+                    nomeSpan.textContent = usuarioLogado.nome;
+                }
+                if (profilePicImg && usuarioLogado?.foto_perfil_url) {
+                    profilePicImg.src = usuarioLogado.foto_perfil_url;
+                    profilePicImg.onerror = function() {
+                        this.onerror = null;
+                        this.src = usuarioTipo === 'usuario' ? "vendors/images/photo1.jpg" : "vendors/images/photo4.jpg";
+                    };
+                } else if (profilePicImg) {
+                    profilePicImg.src = usuarioTipo === 'usuario' ? "vendors/images/photo1.jpg" : "vendors/images/photo4.jpg";
+                }
 
 
-                // Chamada ao backend para validar o token e obter dados completos
-                // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
-                 const res = await fetch('https://wyn-backend.onrender.com/perfil', {
-                     headers: { 'Authorization': 'Bearer ' + token }
-                 });
+                const res = await fetch(`${BACKEND_BASE_URL}/perfil`, {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
 
-                 const resClone = res.clone();
+                const resClone = res.clone();
 
-                 if (!res.ok) {
-                     if (res.status === 401 || res.status === 403) {
-                         console.error("[CHAT LIST] Token inválido ou expirado. Redirecionando para login.");
-                         showToast("Sua sessão expirou. Por favor, faça login novamente.", 'danger');
-                         localStorage.removeItem('token');
-                         localStorage.removeItem('usuario');
-                         localStorage.removeItem('prestador');
-                         setTimeout(() => { window.location.href = "login.html"; }, 3000);
-                         return;
-                     }
-                     const errorText = await resClone.text();
-                     console.error("[CHAT LIST] Erro HTTP ao buscar perfil:", res.status, errorText);
-                     throw new Error(errorText || `Erro HTTP ao buscar perfil: ${res.status}`);
-                 }
+                if (!res.ok) {
+                    if (res.status === 401 || res.status === 403) {
+                        console.error("[CHAT LIST] Token inválido ou expirado. Redirecionando para login.");
+                        showToast("Sua sessão expirou. Por favor, faça login novamente.", 'danger');
+                        localStorage.removeItem('token');
+                        localStorage.removeItem('usuario');
+                        localStorage.removeItem('prestador');
+                        setTimeout(() => { window.location.href = "login.html"; }, 3000);
+                        return;
+                    }
+                    throw new Error(await resClone.text() || `Erro HTTP ao buscar perfil: ${res.status}`);
+                }
 
                 let data = {};
-                 try {
-                     data = await res.json();
-                 } catch(jsonError) {
-                     console.error("[CHAT LIST] Erro ao parsear JSON do perfil:", await resClone.text());
-                     throw new Error("Resposta de perfil inválida.");
-                 }
+                try {
+                    data = await res.json();
+                } catch(jsonError) {
+                    console.error("[CHAT LIST] Erro ao parsear JSON do perfil:", await resClone.text());
+                    throw new Error("Resposta de perfil inválida.");
+                }
 
-                // Atualiza a variável global com os dados completos e o tipo, e ajusta o menu lateral
+                // CORREÇÃO: Garante que a propriedade 'tipo' seja incluída no usuarioLogado
                 if (data.tipo === 'usuario' && data.usuario?._id) {
-                    usuarioLogado = data.usuario;
+                    usuarioLogado = { ...data.usuario, tipo: data.tipo };
                     usuarioTipo = 'usuario';
                     localStorage.setItem('usuario', JSON.stringify(usuarioLogado));
                     localStorage.removeItem('prestador');
                     document.getElementById('cliente-menu').style.display = 'block';
                     document.getElementById('prestador-menu').style.display = 'none';
                 } else if (data.tipo === 'prestador' && data.prestador?._id) {
-                    usuarioLogado = data.prestador;
+                    usuarioLogado = { ...data.prestador, tipo: data.tipo };
                     usuarioTipo = 'prestador';
                     localStorage.setItem('prestador', JSON.stringify(usuarioLogado));
                     localStorage.removeItem('usuario');
-                     document.getElementById('cliente-menu').style.display = 'none';
+                    document.getElementById('cliente-menu').style.display = 'none';
                     document.getElementById('prestador-menu').style.display = 'block';
                 } else {
-                     console.error("[CHAT LIST] Token válido, mas tipo de usuário/prestador desconhecido ou dados incompletos.");
-                     showToast("Erro ao carregar perfil. Faça login novamente.", 'danger');
-                     localStorage.removeItem('token');
-                     localStorage.removeItem('usuario');
-                     localStorage.removeItem('prestador');
-                     setTimeout(() => { window.location.href = "login.html"; }, 3000);
-                     return;
+                    console.error("[CHAT LIST] Token válido, mas tipo de usuário/prestador desconhecido ou dados incompletos.");
+                    showToast("Erro ao carregar perfil. Faça login novamente.", 'danger');
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('usuario');
+                    localStorage.removeItem('prestador');
+                    setTimeout(() => { window.location.href = "login.html"; }, 3000);
+                    return;
                 }
 
-
-                // Atualiza o nome e foto na interface com os dados validados do backend
                 if (usuarioLogado?.nome && nomeSpan) {
                     nomeSpan.textContent = usuarioLogado.nome;
                 }
-                 if (profilePicImg && usuarioLogado?.foto_perfil_url) {
-                     profilePicImg.src = usuarioLogado.foto_perfil_url;
-                      profilePicImg.onerror = function() {
-                         this.onerror = null;
-                         this.src = usuarioTipo === 'usuario' ? "vendors/images/photo1.jpg" : "vendors/images/photo4.jpg";
-                     };
-                 } else if (profilePicImg) {
-                      profilePicImg.src = usuarioTipo === 'usuario' ? "vendors/images/photo1.jpg" : "vendors/images/photo4.jpg";
-                 }
+                if (profilePicImg && usuarioLogado?.foto_perfil_url) {
+                    profilePicImg.src = usuarioLogado.foto_perfil_url;
+                    profilePicImg.onerror = function() {
+                        this.onerror = null;
+                        this.src = usuarioTipo === 'usuario' ? "vendors/images/photo1.jpg" : "vendors/images/photo4.jpg";
+                    };
+                } else if (profilePicImg) {
+                    profilePicImg.src = usuarioTipo === 'usuario' ? "vendors/images/photo1.jpg" : "vendors/images/photo4.jpg";
+                }
 
                 console.log(`[CHAT LIST] Perfil de ${usuarioTipo} carregado:`, usuarioLogado);
 
-                // Agora que o perfil e o tipo de usuário estão definidos, carrega a lista de serviços para chat
                 carregarListaServicosParaChat();
-                iniciarPollingMensagensNaoLidas(); // Inicia polling para o contador na sidebar
-
+                iniciarPollingMensagensNaoLidas();
 
             } catch (err) {
                 console.error('[CHAT LIST] Erro ao carregar perfil:', err);
@@ -777,17 +789,15 @@
             }
         }
 
-        // Função de Logout
         document.getElementById('logout-link').addEventListener('click', (e) => {
              e.preventDefault();
              localStorage.removeItem('token');
              localStorage.removeItem('usuario');
              localStorage.removeItem('prestador');
-             pararPollingMensagensNaoLidas(); // Para o polling de mensagens
+             pararPollingMensagensNaoLidas();
              window.location.href = 'login.html';
         });
 
-        // Função para carregar a lista de serviços com chat ativo
         async function carregarListaServicosParaChat() {
             const loading = document.getElementById("loading-services");
             const feedback = document.getElementById("feedback-services");
@@ -798,7 +808,7 @@
             loading.style.display = "block";
             feedback.style.display = "none";
             empty.style.display = "none";
-            servicesListBody.innerHTML = ""; // Limpa a lista atual
+            servicesListBody.innerHTML = "";
 
             if (!token || !usuarioLogado || !usuarioTipo) {
                 feedback.textContent = "Autenticação necessária para carregar chats.";
@@ -808,57 +818,82 @@
                 return;
             }
 
-            // Destroi a instância anterior do DataTables antes de recarregar
-             if ($.fn.DataTable.isDataTable('#services-table')) {
-                 $('#services-table').DataTable().destroy();
-             }
-
+            if ($.fn.DataTable.isDataTable('#services-table')) {
+                $('#services-table').DataTable().destroy();
+            }
 
             try {
                 let endpoint = '';
-                // Usa endpoints diferentes dependendo do tipo de usuário
                 if (usuarioTipo === 'usuario') {
-                    // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
-                    endpoint = "https://wyn-backend.onrender.com/meus-servicos"; // Endpoint que lista serviços do cliente
+                    endpoint = `${BACKEND_BASE_URL}/meus-servicos`;
                 } else if (usuarioTipo === 'prestador') {
-                     // Prestadores podem ver chats de serviços aceitos ou em andamento
-                     // O endpoint /meus-servicos-prestador lista serviços aceitos/aguardando pagamento
-                     // Para incluir histórico, talvez precise de outro endpoint ou ajustar este
-                     // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
-                     endpoint = "https://wyn-backend.onrender.com/meus-servicos-prestador"; // Endpoint que lista serviços do prestador
+                    endpoint = `${BACKEND_BASE_URL}/meus-servicos-prestador`;
                 } else {
-                     feedback.textContent = "Tipo de usuário desconhecido.";
-                     feedback.style.display = "block";
-                     loading.style.display = "none";
-                     console.error("[CHAT LIST] Tipo de usuário inválido para carregar lista de chats:", usuarioTipo);
-                     return;
+                    feedback.textContent = "Tipo de usuário desconhecido.";
+                    feedback.style.display = "block";
+                    loading.style.display = "none";
+                    console.error("[CHAT LIST] Tipo de usuário inválido para carregar lista de chats:", usuarioTipo);
+                    return;
                 }
-
 
                 console.log(`[CHAT LIST] Buscando lista de serviços para chat (${usuarioTipo})...`);
                 const response = await fetch(endpoint, {
-                     headers: { 'Authorization': `Bearer ${token}` }
+                    headers: { 'Authorization': `Bearer ${token}` }
                 });
 
                 console.log("[CHAT LIST] Resposta do backend recebida:", response.status);
 
                 if (!response.ok) {
-                     const errorText = await response.text();
-                     console.error("[CHAT LIST] Erro HTTP ao buscar lista de serviços para chat:", response.status, errorText);
-                     throw new Error(errorText || `Erro HTTP ao buscar lista de serviços para chat: ${response.status}`);
+                    const errorText = await response.text();
+                    console.error("[CHAT LIST] Erro HTTP ao buscar lista de serviços para chat:", response.status, errorText);
+                    throw new Error(errorText || `Erro HTTP ao buscar lista de serviços para chat: ${response.status}`);
                 }
 
-                const servicos = await response.json();
+                let servicos = await response.json();
                 console.log("[CHAT LIST] Lista de serviços para chat carregada:", servicos);
 
-                // Filtra serviços que estão em um status onde o chat é relevante
-                // Ex: não incluímos 'aguardando_aceite_prestador' (chat começa após aceite) ou 'cancelado'
-                const servicosComChatAtivo = servicos.filter(servico =>
-                     servico.status !== 'aguardando_aceite_prestador' &&
-                     servico.status !== 'recusado_pelo_prestador' &&
-                     servico.status !== 'cancelado'
-                     // Pode adicionar outros status conforme sua lógica de negócio
+                // Para cada serviço, tenta buscar a última mensagem e a contagem de não lidas
+                const servicesWithChatInfo = await Promise.all(servicos.map(async servico => {
+                    let lastMessage = null;
+                    let unreadCount = 0;
+                    try {
+                        const messagesResponse = await fetch(`${BACKEND_BASE_URL}/chat/${servico._id}/messages`, {
+                            headers: { 'Authorization': `Bearer ${token}` }
+                        });
+                        if (messagesResponse.ok) {
+                            const messages = await messagesResponse.json();
+                            if (messages.length > 0) {
+                                lastMessage = messages[messages.length - 1];
+                                unreadCount = messages.filter(msg =>
+                                    msg.remetente_id !== usuarioLogado._id && !msg.lido_por.includes(usuarioLogado._id)
+                                ).length;
+                            }
+                        }
+                    } catch (msgError) {
+                        console.error(`Erro ao buscar mensagens para o serviço ${servico._id}:`, msgError);
+                    }
+                    return { ...servico, lastMessage, unreadCount };
+                }));
+
+
+                const servicosComChatAtivo = servicesWithChatInfo.filter(servico =>
+                    servico.status !== 'aguardando_aceite_prestador' &&
+                    servico.status !== 'recusado_pelo_prestador' &&
+                    servico.status !== 'cancelado'
                 );
+
+                // Ordena os serviços: primeiro os com mensagens não lidas (mais recentes), depois os demais (mais recentes)
+                servicosComChatAtivo.sort((a, b) => {
+                    const dateA = a.lastMessage ? new Date(a.lastMessage.data_envio) : new Date(a.data_solicitacao);
+                    const dateB = b.lastMessage ? new Date(b.lastMessage.data_envio) : new Date(b.data_solicitacao);
+
+                    // Prioriza chats com mensagens não lidas
+                    if (a.unreadCount > 0 && b.unreadCount === 0) return -1;
+                    if (a.unreadCount === 0 && b.unreadCount > 0) return 1;
+
+                    // Depois, ordena por data (mais recente primeiro)
+                    return dateB.getTime() - dateA.getTime();
+                });
 
 
                 if (servicosComChatAtivo.length === 0) {
@@ -867,74 +902,63 @@
                     empty.style.display = "none";
                     servicosComChatAtivo.forEach(servico => {
                         const row = document.createElement('tr');
-                        row.dataset.serviceId = servico._id; // Armazena o ID do serviço na linha
-                         row.classList.add('service-row'); // Adiciona classe para identificar linhas clicáveis
+                        row.dataset.serviceId = servico._id;
+                        row.classList.add('service-row');
 
-                        // Determina o nome do "participante" (o outro lado da conversa)
                         let participanteNome = 'Desconhecido';
-                         if (usuarioTipo === 'usuario' && servico.nome_prestador) {
-                              participanteNome = servico.nome_prestador;
-                         } else if (usuarioTipo === 'prestador' && servico.nome_cliente) {
-                              participanteNome = servico.nome_cliente;
-                         }
+                        if (usuarioTipo === 'usuario' && servico.nome_prestador) {
+                            participanteNome = servico.nome_prestador;
+                        } else if (usuarioTipo === 'prestador' && servico.nome_cliente) {
+                            participanteNome = servico.nome_cliente;
+                        }
 
+                        const statusMap = {
+                            'aguardando_pagamento_cliente': 'Aguardando Pagamento',
+                            'aguardando_confirmacao_pagamento': 'Pagamento em Processamento',
+                            'aceito_pelo_prestador': 'Em Andamento',
+                            'concluido_pelo_prestador': 'Concluído',
+                            'avaliado_pelo_cliente': 'Avaliado',
+                        };
 
-                         // Mapeamento de status (pode ser o mesmo usado nos dashboards)
-                         const statusMap = {
-                             'aguardando_pagamento_cliente': 'Aguardando Pagamento',
-                             'aguardando_confirmacao_pagamento': 'Pagamento em Processamento',
-                             'aceito_pelo_prestador': 'Em Andamento',
-                             'concluido_pelo_prestador': 'Concluído',
-                             'avaliado_pelo_cliente': 'Avaliado',
-                             // Status não incluídos na lista, mas para referência:
-                             // 'aguardando_aceite_prestador': 'Aguardando Aceite',
-                             // 'recusado_pelo_prestador': 'Recusado',
-                             // 'cancelado': 'Cancelado'
-                         };
-
-                         // Formata a data da última mensagem
-                         const ultimaMensagemFormatada = servico.ultima_mensagem ? new Date(servico.ultima_mensagem.data_envio).toLocaleString('pt-BR') : 'Nenhuma mensagem';
-
+                        const ultimaMensagemTexto = servico.lastMessage ? servico.lastMessage.conteudo : 'Nenhuma mensagem';
+                        const ultimaMensagemTime = servico.lastMessage ? new Date(servico.lastMessage.data_envio).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : '';
 
                         row.innerHTML = `
                             <td class="table-plus">${servico.tipo_servico || 'Serviço sem Nome'}</td>
                             <td>${participanteNome}</td>
                             <td>${statusMap[servico.status] || servico.status}</td>
-                            <td>${ultimaMensagemFormatada}</td>
+                            <td>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span>${ultimaMensagemTexto.substring(0, 50)}${ultimaMensagemTexto.length > 50 ? '...' : ''}</span>
+                                    ${servico.unreadCount > 0 ? `<span class="unread-badge">${servico.unreadCount}</span>` : ''}
+                                </div>
+                                <small class="text-muted">${ultimaMensagemTime}</small>
+                            </td>
                         `;
                         servicesListBody.appendChild(row);
                     });
 
-                     // Inicializa o DataTables após popular a tabela
-                     // Verifica se já existe uma instância e a destrói antes de criar uma nova
-                     if ($.fn.DataTable.isDataTable('#services-table')) {
-                         $('#services-table').DataTable().destroy();
-                     }
-                      $('#services-table').DataTable({
-                         responsive: true,
-                         paging: true, // Habilita paginação
-                         searching: true, // Habilita busca
-                         ordering: true, // Habilita ordenação
-                         info: true, // Mostra informações de "Mostrando X de Y"
-                         language: { // Configurações de idioma para português
-                             url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/pt-BR.json'
-                         }
-                      });
+                    $('#services-table').DataTable({
+                        responsive: true,
+                        paging: true,
+                        searching: true,
+                        ordering: true,
+                        info: true,
+                        language: {
+                            url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/pt-BR.json'
+                        }
+                    });
 
-
-                     // Adiciona listener de clique nas linhas da tabela
-                     document.querySelectorAll('#services-table tbody tr.service-row').forEach(row => {
-                         row.addEventListener('click', function() {
-                             const serviceId = this.dataset.serviceId;
-                             if (serviceId) {
-                                 console.log("[CHAT LIST] Clicou na linha do serviço:", serviceId);
-                                 // Redireciona para a página de chat com o ID do serviço
-                                 window.location.href = `chat.html?serviceId=${serviceId}`;
-                             }
-                         });
-                     });
+                    document.querySelectorAll('#services-table tbody tr.service-row').forEach(row => {
+                        row.addEventListener('click', function() {
+                            const serviceId = this.dataset.serviceId;
+                            if (serviceId) {
+                                console.log("[CHAT LIST] Clicou na linha do serviço:", serviceId);
+                                window.location.href = `chat.html?serviceId=${serviceId}`;
+                            }
+                        });
+                    });
                 }
-
 
             } catch (error) {
                 console.error("[CHAT LIST] Erro ao carregar lista de serviços para chat:", error);
@@ -946,7 +970,6 @@
             }
         }
 
-         // Função para carregar o contador de mensagens não lidas (para a sidebar)
          async function carregarContadorMensagensNaoLidas() {
               const token = localStorage.getItem("token");
               const unreadCountElementCliente = document.getElementById("unread-chat-count-sidebar-cliente");
@@ -959,8 +982,7 @@
               }
 
               try {
-                  // --- URL ATUALIZADA PARA O BACKEND NO RENDER ---
-                  const response = await fetch("https://wyn-backend.onrender.com/api/chat/unread-count", {
+                  const response = await fetch(`${BACKEND_BASE_URL}/api/chat/unread-count`, {
                       headers: { 'Authorization': `Bearer ${token}` }
                   });
 
@@ -974,7 +996,6 @@
                   const data = await response.json();
                   const unreadCount = data.total || 0;
 
-                  // Atualiza o contador na sidebar correta (cliente ou prestador)
                   if (usuarioTipo === 'usuario' && unreadCountElementCliente) {
                       if (unreadCount > 0) {
                           unreadCountElementCliente.textContent = unreadCount;
@@ -982,7 +1003,7 @@
                       } else {
                           unreadCountElementCliente.style.display = 'none';
                       }
-                       if (unreadCountElementPrestador) unreadCountElementPrestador.style.display = 'none'; // Garante que o outro está oculto
+                       if (unreadCountElementPrestador) unreadCountElementPrestador.style.display = 'none';
                   } else if (usuarioTipo === 'prestador' && unreadCountElementPrestador) {
                        if (unreadCount > 0) {
                            unreadCountElementPrestador.textContent = unreadCount;
@@ -990,7 +1011,7 @@
                        } else {
                            unreadCountElementPrestador.style.display = 'none';
                        }
-                        if (unreadCountElementCliente) unreadCountElementCliente.style.display = 'none'; // Garante que o outro está oculto
+                        if (unreadCountElementCliente) unreadCountElementCliente.style.display = 'none';
                   }
 
 
@@ -1001,19 +1022,15 @@
               }
          }
 
-          // Função para iniciar o polling de mensagens não lidas (a cada 5 segundos)
           function iniciarPollingMensagensNaoLidas() {
-              // Limpa qualquer intervalo existente para evitar duplicação
               if (unreadChatPollingInterval) {
                   clearInterval(unreadChatPollingInterval);
               }
-              // Chama a função de atualização imediatamente e depois a cada X milissegundos
               carregarContadorMensagensNaoLidas();
-              unreadChatPollingInterval = setInterval(carregarContadorMensagensNaoLidas, 5000); // A cada 5 segundos
+              unreadChatPollingInterval = setInterval(carregarContadorMensagensNaoLidas, 5000);
               console.log("[CHAT LIST] Polling de mensagens não lidas iniciado.");
           }
 
-          // Função para parar o polling de mensagens não lidas
           function pararPollingMensagensNaoLidas() {
               if (unreadChatPollingInterval) {
                   clearInterval(unreadChatPollingInterval);
@@ -1022,11 +1039,8 @@
               }
           }
 
-
-        // Chamar carregarPerfil ao carregar a página
         document.addEventListener("DOMContentLoaded", carregarPerfil);
 
-         // Opcional: Parar polling ao fechar a janela/aba
          window.addEventListener('beforeunload', () => {
               pararPollingMensagensNaoLidas();
          });
