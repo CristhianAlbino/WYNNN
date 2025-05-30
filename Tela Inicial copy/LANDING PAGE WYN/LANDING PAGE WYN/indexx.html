@@ -1203,11 +1203,8 @@
                                 loadRecentActivities(servicos);
                                 // --- Fim Carregar Atividades Recentes ---
 
-
-                                // --- CHAMADA PARA CONTAR NOTIFICAÇÕES (REQUER BACKEND) ---
-                                // Esta chamada ainda precisa do endpoint no backend.
-                                // Por enquanto, o número de notificações será 0 ou o que for definido estaticamente.
-                                fetch(`${BACKEND_BASE_URL}/api/notificacoes/cliente/unread-count`, { headers: { 'Authorization': `Bearer ${token}` } }) // Endpoint hipotético
+                                // --- CHAMADA PARA CONTAR NOTIFICAÇÕES (AGORA APONTA PARA O ENDPOINT CORRETO) ---
+                                fetch(`${BACKEND_BASE_URL}/api/notifications/unread-count`, { headers: { 'Authorization': `Bearer ${token}` } })
                                     .then(res => {
                                          if (!res.ok) {
                                               console.error(`Erro HTTP ao buscar notificações: ${res.status}`);
@@ -1445,37 +1442,37 @@
 
                                 switch (servico.status) {
                                     case 'pendente':
-                                        message = `Seu pedido de ${servico.servico_nome} está aguardando aceitação.`;
+                                        message = `Seu pedido de ${servico.tipo_servico} está aguardando aceitação.`;
                                         iconClass = 'dw dw-hourglass';
                                         iconColorClass = 'text-info';
                                         break;
                                     case 'aceito_pelo_prestador':
-                                        message = `Seu pedido de ${servico.servico_nome} foi aceito pelo prestador!`;
+                                        message = `Seu pedido de ${servico.tipo_servico} foi aceito pelo prestador!`;
                                         iconClass = 'dw dw-user-check';
                                         iconColorClass = 'text-primary';
                                         break;
                                     case 'concluido_pelo_prestador':
-                                        message = `Serviço de ${servico.servico_nome} concluído - Avalie agora!`;
+                                        message = `Serviço de ${servico.tipo_servico} concluído - Avalie agora!`;
                                         iconClass = 'dw dw-check';
                                         iconColorClass = 'text-warning'; // Sugere avaliação
                                         break;
                                     case 'avaliado_pelo_cliente':
-                                        message = `Você avaliou o serviço de ${servico.servico_nome}.`;
+                                        message = `Você avaliou o serviço de ${servico.tipo_servico}.`;
                                         iconClass = 'dw dw-star';
                                         iconColorClass = 'text-success';
                                         break;
                                     case 'recusado_pelo_prestador':
-                                        message = `Seu pedido de ${servico.servico_nome} foi recusado.`;
+                                        message = `Seu pedido de ${servico.tipo_servico} foi recusado.`;
                                         iconClass = 'dw dw-cancel';
                                         iconColorClass = 'text-danger';
                                         break;
                                     case 'cancelado':
-                                        message = `Seu pedido de ${servico.servico_nome} foi cancelado.`;
+                                        message = `Seu pedido de ${servico.tipo_servico} foi cancelado.`;
                                         iconClass = 'dw dw-cancel';
                                         iconColorClass = 'text-danger';
                                         break;
                                     default:
-                                        message = `Atualização no seu pedido de ${servico.servico_nome}.`;
+                                        message = `Atualização no seu pedido de ${servico.tipo_servico}.`;
                                         iconClass = 'dw dw-notification';
                                         iconColorClass = 'text-secondary';
                                         break;
