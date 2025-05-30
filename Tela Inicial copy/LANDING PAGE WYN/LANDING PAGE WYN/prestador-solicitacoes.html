@@ -421,7 +421,7 @@
 							</a>
 						</li>
 						<li>
-							<a href="login-prestador.html" class="dropdown-toggle no-arrow">
+							<a href="login prestador.html" class="dropdown-toggle no-arrow">
 								<span class="micon bi bi-box-arrow-right"></span
 								><span class="mtext">Sair</span>
 							</a>
@@ -524,7 +524,7 @@
 
 				if (!token || !prestadorCache) {
 					console.warn("Prestador não autenticado. Redirecionando para login.");
-					window.location.href = "login-prestador.html";
+					window.location.href = "login prestador.html";
 					return;
 				}
 
@@ -546,7 +546,7 @@
 						 if (res.status === 401 || res.status === 403) {
 							 console.error("Token inválido ou expirado. Redirecionando para login.");
 							 alert("Sua sessão expirou. Por favor, faça login novamente.");
-							 window.location.href = "login-prestador.html";
+							 window.location.href = "login prestador.html";
 							 return;
 						 }
 						throw new Error(`Erro HTTP ao buscar perfil: ${res.status}`);
@@ -563,7 +563,7 @@
 					 if (data.tipo !== 'prestador' || !data.prestador?._id) {
 						  console.error("Token válido, mas não corresponde a um prestador.");
 						  alert("Acesso negado para este tipo de usuário.");
-						  window.location.href = "login-prestador.html";
+						  window.location.href = "login prestador.html";
 						  return;
 					 }
 
@@ -594,7 +594,7 @@
 				 e.preventDefault();
 				 localStorage.removeItem('token');
 				 localStorage.removeItem('prestador');
-				 window.location.href = 'login-prestador.html';
+				 window.location.href = 'login prestador.html';
 			});
 
 
@@ -636,7 +636,7 @@
 					if (!response.ok) {
 						 if (response.status === 401 || response.status === 403) {
 							  alert("Sua sessão expirou ou você não tem permissão. Faça login novamente.");
-							  window.location.href = "login-prestador.html";
+							  window.location.href = "login prestador.html";
 							  return;
 						 }
 						throw new Error(`Erro HTTP ao buscar solicitações pendentes: ${response.status}`);
