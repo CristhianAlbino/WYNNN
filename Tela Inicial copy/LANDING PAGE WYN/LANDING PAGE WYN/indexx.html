@@ -1017,7 +1017,7 @@
 								 }
 
 								 // Atualiza a variável global com os dados completos do usuário (frescos do backend)
-								 usuarioLogado = data.usuario;
+								 usuarioLogado = { ...data.usuario, tipo: data.tipo };
 
 								// Atualiza o nome na interface
 								if (usuarioLogado?.nome && nomeSpan) {
@@ -1209,7 +1209,12 @@
                                         }
 									}
                                     // Somar valor se disponível e serviço concluído/avaliado
-                                    if ((servico.status === 'concluido_pelo_prestador' || servico.status === 'avaliado_pelo_cliente') && servico.valor_servico && !isNaN(servico.valor_servico)) {
+                                    // CORREÇÃO: Inclui 'aceito_pelo_prestador' e 'aguardando_pagamento_cliente' na soma do valor total
+                                    if (servico.valor_servico && !isNaN(servico.valor_servico) &&
+                                        (servico.status === 'concluido_pelo_prestador' ||
+                                         servico.status === 'avaliado_pelo_cliente' ||
+                                         servico.status === 'aceito_pelo_prestador' ||
+                                         servico.status === 'aguardando_pagamento_cliente')) {
                                          valorTotalPedidos += servico.valor_servico;
 
                                          // Acumular gastos para o gráfico de evolução
