@@ -49,7 +49,6 @@
 		<link rel="stylesheet" type="text/css" href="vendors/styles/style.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" xintegrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0x0Ugau/r+PRGFNfN/P1M2k/L/W84b36d0K7+v7z/z0q0+A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
         <style>
             /* Adiciona estilo para a foto de perfil no header */
@@ -254,53 +253,6 @@
                 100% { transform: rotate(360deg); }
             }
 
-            /* Estilos para a seção de Atividades Recentes */
-            .activity-item {
-                display: flex;
-                align-items: flex-start;
-                margin-bottom: 15px;
-                padding: 10px; /* Reduzido padding */
-                border-radius: 8px; /* Cantos arredondados */
-                background-color: #ffffff; /* Fundo branco */
-                border: 1px solid #e0e0e0; /* Borda mais suave */
-                box-shadow: none; /* Removida sombra */
-                transition: background-color 0.2s ease-in-out; /* Transição apenas para cor de fundo */
-            }
-
-            .activity-item:hover {
-                background-color: #f0f0f0; /* Fundo levemente cinza no hover */
-                transform: none; /* Removido efeito de levantar */
-                box-shadow: none; /* Mantida sem sombra */
-            }
-
-            .activity-item:last-child {
-                border-bottom: none;
-                margin-bottom: 0;
-                padding-bottom: 0;
-            }
-
-            .activity-icon {
-                font-size: 1.6rem; /* Ícones ligeiramente menores */
-                margin-right: 12px; /* Espaçamento ajustado */
-                color: #007bff; /* Cor padrão para ícones de atividade */
-                flex-shrink: 0;
-            }
-
-            .activity-content {
-                flex-grow: 1;
-            }
-
-            .activity-content strong {
-                display: block;
-                font-size: 1em; /* Tamanho da fonte ajustado */
-                margin-bottom: 3px; /* Espaçamento ajustado */
-                color: #333;
-            }
-
-            .activity-content small {
-                color: #777; /* Cor mais suave para o tempo */
-                font-size: 0.85em; /* Fonte um pouco menor para o tempo */
-            }
 
             /* Media queries para responsividade */
             @media (max-width: 768px) {
@@ -309,7 +261,7 @@
                     height: 80%;
                     bottom: 5%;
                     right: 5%;
-                    transform: translateX(100vw);
+                    transform: translateX(100vw); /* Esconde para a direita na tela pequena */
                 }
 
                 #chat-container.open {
@@ -758,7 +710,7 @@
 			<div class="xs-pd-20-10 pd-ltr-20">
 				<div class="title pb-20">
 					<div class="welcome-message card-box p-4 mb-20">
-						<h1 class="h3 text-center mb-20" id="welcome-title">Bem-vindo à Plataforma WYN</h1>
+						<h1 class="h3 text-center mb-20">Bem-vindo à Plataforma WYN</h1>
 						<p class="text-center font-16">Estamos felizes em tê-lo aqui. Use nosso painel para gerenciar suas solicitações.</p>
 					</div>
 
@@ -858,19 +810,17 @@
 							</a>
 						</div>
                          <div class="col-xl-3 col-lg-3 col-md-6 mb-20">
-                             <a href="#" id="notifications-card-link" style="text-decoration: none;">
-                                 <div class="card-box height-100-p widget-style3 cursor-pointer">
-                                     <div class="d-flex flex-wrap">
-                                         <div class="widget-data">
-                                             <div class="weight-700 font-24 text-dark" id="total-notificacoes">0</div>
-                                             <div class="font-14 text-secondary weight-500">Notificações</div>
-                                         </div>
-                                         <div class="widget-icon">
-                                             <div class="icon" data-color="#3498db"> <i class="icon-copy dw dw-notification"></i> </div>
-                                         </div>
+                             <div class="card-box height-100-p widget-style3">
+                                 <div class="d-flex flex-wrap">
+                                     <div class="widget-data">
+                                         <div class="weight-700 font-24 text-dark" id="total-notificacoes">0</div>
+                                         <div class="font-14 text-secondary weight-500">Notificações</div>
+                                     </div>
+                                     <div class="widget-icon">
+                                         <div class="icon" data-color="#3498db"> <i class="icon-copy dw dw-notification"></i> </div>
                                      </div>
                                  </div>
-                             </a>
+                             </div>
                          </div>
                          <div class="col-xl-3 col-lg-3 col-md-6 mb-20">
                               <div class="card-box height-100-p widget-style3">
@@ -886,68 +836,19 @@
                               </div>
                          </div>
                          <div class="col-xl-3 col-lg-3 col-md-6 mb-20">
-                             <a href="chat-list.html" style="text-decoration: none;">
-                                 <div class="card-box height-100-p widget-style3 cursor-pointer">
-                                     <div class="d-flex flex-wrap">
-                                         <div class="widget-data">
-                                             <div class="weight-700 font-24 text-dark" id="total-mensagens">0</div>
-                                             <div class="font-14 text-secondary weight-500">Mensagens Não Lidas</div>
-                                         </div>
-                                         <div class="widget-icon">
-                                             <div class="icon" data-color="#e74c3c"> <i class="icon-copy dw dw-chat"></i> </div>
-                                         </div>
-                                     </div>
-                                 </div>
-                             </a>
+                              <div class="card-box height-100-p widget-style3">
+                                  <div class="d-flex flex-wrap">
+                                      <div class="widget-data">
+                                          <div class="weight-700 font-24 text-dark" id="total-mensagens">0</div>
+                                          <div class="font-14 text-secondary weight-500">Mensagens Não Lidas</div>
+                                      </div>
+                                      <div class="widget-icon">
+                                          <div class="icon" data-color="#e74c3c"> <i class="icon-copy dw dw-chat"></i> </div>
+                                      </div>
+                                  </div>
+                              </div>
                          </div>
 					</div>
-
-                    <div class="row pb-20">
-                        <div class="col-lg-6 mb-20">
-                            <div class="card-box height-100-p pd-20">
-                                <h4 class="h4 text-blue pb-20">Status dos Pedidos</h4>
-                                <canvas id="orderStatusChart"></canvas>
-                            </div>
-                        </div>
-                        <div class="col-lg-6 mb-20">
-                            <div class="card-box height-100-p pd-20">
-                                <h4 class="h4 text-blue pb-20">Evolução de Gastos (Últimos 6 Meses)</h4>
-                                <canvas id="spendingEvolutionChart"></canvas>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row pb-20">
-                        <div class="col-md-12 mb-20">
-                            <div class="card-box height-100-p pd-20">
-                                <h4 class="h4 text-blue pb-20">Atividades Recentes</h4>
-                                <div id="recent-activities-list">
-                                    <div class="activity-item">
-                                        <div class="activity-icon text-info"><i class="dw dw-hourglass"></i></div>
-                                        <div class="activity-content">
-                                            <strong>Seu pedido de Eletricista foi aceito.</strong>
-                                            <small>Há 2 horas</small>
-                                        </div>
-                                    </div>
-                                    <div class="activity-item">
-                                        <div class="activity-icon text-success"><i class="dw dw-check"></i></div>
-                                        <div class="activity-content">
-                                            <strong>Pagamento confirmado para Jardinagem.</strong>
-                                            <small>Ontem</small>
-                                        </div>
-                                    </div>
-                                    <div class="activity-item">
-                                        <div class="activity-icon text-warning"><i class="dw dw-star"></i></div>
-                                        <div class="activity-content">
-                                            <strong>Serviço de Pintura concluído - Avalie agora!</strong>
-                                            <small>Há 3 dias</small>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
 
 					<script>
 						let usuarioLogado = null; // Variável para armazenar os dados do usuário logado
@@ -962,7 +863,6 @@
 							const usuarioCache = localStorage.getItem('usuario'); // Chave correta para usuário
 
                             const nomeSpan = document.querySelector(".user-name");
-                            const welcomeTitle = document.getElementById("welcome-title"); // Elemento do título de boas-vindas
                             const userProfilePicImg = document.getElementById("user-profile-pic"); // Pega a tag img da foto
                             const userProfilePicSpinner = document.getElementById("user-profile-pic-spinner"); // Pega o spinner
 
@@ -984,10 +884,6 @@
 								 
 								 if (nomeSpan && usuarioLogado?.nome) {
 									 nomeSpan.textContent = usuarioLogado.nome;
-                                     // Personaliza a mensagem de boas-vindas
-                                     if (welcomeTitle) {
-                                         welcomeTitle.textContent = `Bem-vindo(a), ${usuarioLogado.nome}!`;
-                                     }
 								 }
                                  // Exibe a foto de perfil do cache se existir (temporariamente, antes da chamada ao backend)
                                  if (userProfilePicImg && usuarioLogado?.foto_perfil_url) {
@@ -1050,10 +946,6 @@
 								// Atualiza o nome na interface
 								if (usuarioLogado?.nome && nomeSpan) {
 									nomeSpan.textContent = usuarioLogado.nome;
-                                    // Personaliza a mensagem de boas-vindas com o nome do usuário
-                                    if (welcomeTitle) {
-                                        welcomeTitle.textContent = `Bem-vindo(a), ${usuarioLogado.nome}!`;
-                                    }
 								}
                                 // Atualiza a foto de perfil com a URL retornada pelo backend
                                  if (userProfilePicImg && usuarioLogado?.foto_perfil_url) {
@@ -1169,16 +1061,6 @@
 								let totalAvaliacoesPendentes = 0; // Serviços concluídos que ainda não foram avaliados
                                 let valorTotalPedidos = 0; // Para calcular o valor total
 
-                                // Dados para o gráfico de evolução de gastos
-                                const monthlySpending = {}; // { 'YYYY-MM': total_spent }
-                                const now = new Date();
-                                for (let i = 0; i < 6; i++) {
-                                    const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
-                                    const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-                                    monthlySpending[monthKey] = 0;
-                                }
-
-
 								servicos.forEach((servico) => {
 									if (servico.status === 'pendente') totalPendentes++;
 									// Consideramos concluído se o prestador marcou como concluído OU se o cliente já avaliou
@@ -1189,18 +1071,9 @@
                                              totalAvaliacoesPendentes++;
                                         }
 									}
-                                    // Somar valor se disponível para o valor total
+                                    // Somar valor se disponível
                                     if (servico.valor_servico && !isNaN(servico.valor_servico)) {
                                          valorTotalPedidos += servico.valor_servico;
-
-                                         // Adicionar ao cálculo de gastos mensais
-                                         if (servico.data_conclusao) { // Assumindo que o valor é gasto na conclusão
-                                             const serviceDate = new Date(servico.data_conclusao);
-                                             const monthKey = `${serviceDate.getFullYear()}-${String(serviceDate.getMonth() + 1).padStart(2, '0')}`;
-                                             if (monthlySpending.hasOwnProperty(monthKey)) {
-                                                 monthlySpending[monthKey] += servico.valor_servico;
-                                             }
-                                         }
                                     }
 								});
 
@@ -1211,17 +1084,12 @@
 								if(totalAvaliacoesEl) totalAvaliacoesEl.innerText = totalAvaliacoesPendentes;
                                 if(valorTotalEl) valorTotalEl.innerText = `R$ ${valorTotalPedidos.toFixed(2)}`;
 
-                                // --- Renderizar Gráficos ---
-                                renderOrderStatusChart(servicos);
-                                renderSpendingEvolutionChart(monthlySpending);
-                                // --- Fim Renderizar Gráficos ---
 
-                                // --- Carregar Atividades Recentes (Mock Data por enquanto) ---
-                                loadRecentActivities(servicos);
-                                // --- Fim Carregar Atividades Recentes ---
-
-                                // --- CHAMADA PARA CONTAR NOTIFICAÇÕES (AGORA APONTA PARA O ENDPOINT CORRETO) ---
-                                fetch(`${BACKEND_BASE_URL}/api/notifications/unread-count`, { headers: { 'Authorization': `Bearer ${token}` } })
+                                // --- CHAMADA PARA CONTAR NOTIFICAÇÕES (REQUER BACKEND) ---
+                                // ESTA CHAMADA ESTÁ COMENTADA POIS O ENDPOINT AINDA PRECISA SER CRIADO NO BACKEND
+                                /*
+                                // Contagem de Notificações (exemplo)
+                                fetch(`${BACKEND_BASE_URL}/api/notificacoes/quantidade`, { headers: { 'Authorization': `Bearer ${token}` } }) // Endpoint hipotético
                                     .then(res => {
                                          if (!res.ok) {
                                               console.error(`Erro HTTP ao buscar notificações: ${res.status}`);
@@ -1236,6 +1104,7 @@
                                          console.error("Erro ao buscar notificações:", err);
                                          if(totalNotificacoesEl) totalNotificacoesEl.innerText = 'Erro'; // Exibe "Erro" no card
                                      });
+                                */
                                 // --- FIM DA CHAMADA PARA NOTIFICAÇÕES ---
 
 
@@ -1313,291 +1182,6 @@
                             if (unreadMessagesPollingInterval) {
                                 clearInterval(unreadMessagesPollingInterval);
                                 console.log("Polling de mensagens não lidas parado.");
-                            }
-                        });
-
-
-                        // --- Funções para Gráficos ---
-                        let orderStatusChartInstance = null; // Para armazenar a instância do gráfico de status
-                        let spendingEvolutionChartInstance = null; // Para armazenar a instância do gráfico de gastos
-
-                        function renderOrderStatusChart(servicos) {
-                            const ctx = document.getElementById('orderStatusChart').getContext('2d');
-
-                            // Contar status dos pedidos
-                            const statusCounts = {
-                                'Pendente': 0,
-                                'Aceito pelo Prestador': 0,
-                                'Concluído': 0,
-                                'Recusado/Cancelado': 0 // Agrupar recusado e cancelado para simplicidade
-                            };
-
-                            servicos.forEach(servico => {
-                                if (servico.status === 'pendente') {
-                                    statusCounts['Pendente']++;
-                                } else if (servico.status === 'aceito_pelo_prestador') {
-                                    statusCounts['Aceito pelo Prestador']++;
-                                } else if (servico.status === 'concluido_pelo_prestador' || servico.status === 'avaliado_pelo_cliente') {
-                                    statusCounts['Concluído']++;
-                                } else if (servico.status === 'recusado_pelo_prestador' || servico.status === 'cancelado') {
-                                    statusCounts['Recusado/Cancelado']++;
-                                }
-                            });
-
-                            const labels = Object.keys(statusCounts);
-                            const data = Object.values(statusCounts);
-                            const backgroundColors = [
-                                '#F39C12', // Pendente (Laranja)
-                                '#3498DB', // Aceito (Azul)
-                                '#2ECC71', // Concluído (Verde)
-                                '#E74C3C'  // Recusado/Cancelado (Vermelho)
-                            ];
-                             const borderColors = [ // Cores de borda mais escuras para contraste
-                                '#D35400',
-                                '#2980B9',
-                                '#27AE60',
-                                '#C0392B'
-                            ];
-
-
-                            // Se a instância do gráfico já existe, atualize-a
-                            if (orderStatusChartInstance) {
-                                orderStatusChartInstance.data.labels = labels;
-                                orderStatusChartInstance.data.datasets[0].data = data;
-                                orderStatusChartInstance.update(); // Atualiza o gráfico
-                            } else {
-                                // Caso contrário, crie uma nova instância do gráfico
-                                orderStatusChartInstance = new Chart(ctx, {
-                                    type: 'pie',
-                                    data: {
-                                        labels: labels,
-                                        datasets: [{
-                                            data: data,
-                                            backgroundColor: backgroundColors,
-                                            borderColor: borderColors,
-                                            borderWidth: 1,
-                                            hoverOffset: 4 // Reduzido para um efeito mais sutil
-                                        }]
-                                    },
-                                    options: {
-                                        responsive: true,
-                                        maintainAspectRatio: false,
-                                        plugins: {
-                                            legend: {
-                                                position: 'right', // Posiciona a legenda à direita
-                                                labels: {
-                                                    font: {
-                                                        size: 12
-                                                    },
-                                                    boxWidth: 20 // Largura da caixa de cor na legenda
-                                                }
-                                            },
-                                            tooltip: {
-                                                callbacks: {
-                                                    label: function(context) {
-                                                        let label = context.label || '';
-                                                        if (label) {
-                                                            label += ': ';
-                                                        }
-                                                        if (context.parsed !== null) {
-                                                            label += context.parsed + ' pedidos'; // Adiciona "pedidos"
-                                                        }
-                                                        return label;
-                                                    }
-                                                }
-                                            }
-                                        },
-                                        animation: {
-                                            animateScale: true,
-                                            animateRotate: true
-                                        }
-                                    }
-                                });
-                            }
-                        }
-
-                        function renderSpendingEvolutionChart(monthlySpending) {
-                            const ctx = document.getElementById('spendingEvolutionChart').getContext('2d');
-
-                            // Ordenar os meses cronologicamente
-                            const sortedMonths = Object.keys(monthlySpending).sort();
-                            const labels = sortedMonths.map(monthKey => {
-                                const [year, month] = monthKey.split('-');
-                                return new Date(year, month - 1).toLocaleString('pt-BR', { month: 'short', year: '2-digit' });
-                            });
-                            const data = sortedMonths.map(monthKey => monthlySpending[monthKey]);
-
-                            // Se a instância do gráfico já existe, atualize-a
-                            if (spendingEvolutionChartInstance) {
-                                spendingEvolutionChartInstance.data.labels = labels;
-                                spendingEvolutionChartInstance.data.datasets[0].data = data;
-                                spendingEvolutionChartInstance.update(); // Atualiza o gráfico
-                            } else {
-                                // Caso contrário, crie uma nova instância do gráfico
-                                spendingEvolutionChartInstance = new Chart(ctx, {
-                                    type: 'bar',
-                                    data: {
-                                        labels: labels,
-                                        datasets: [{
-                                            label: 'Total Gasto (R$)',
-                                            data: data,
-                                            backgroundColor: '#9B59B6', // Roxo sólido
-                                            borderColor: '#8E44AD', // Borda roxa mais escura
-                                            borderWidth: 1,
-                                            borderRadius: 5
-                                        }]
-                                    },
-                                    options: {
-                                        responsive: true,
-                                        maintainAspectRatio: false,
-                                        plugins: {
-                                            legend: {
-                                                display: false
-                                            },
-                                            title: {
-                                                display: false,
-                                                text: 'Evolução de Gastos'
-                                            },
-                                            tooltip: {
-                                                callbacks: {
-                                                    label: function(context) {
-                                                        return 'R$ ' + context.parsed.y.toFixed(2).replace('.', ',');
-                                                    }
-                                                }
-                                            }
-                                        },
-                                        scales: {
-                                            y: {
-                                                beginAtZero: true,
-                                                ticks: {
-                                                    callback: function(value) {
-                                                        return 'R$ ' + value.toFixed(2).replace('.', ',');
-                                                    }
-                                                },
-                                                grid: {
-                                                    display: true, // Mantém as linhas de grade do eixo Y para referência
-                                                    color: '#e0e0e0' // Cor suave para as linhas de grade
-                                                }
-                                            },
-                                            x: {
-                                                grid: {
-                                                    display: false // Remove as linhas de grade do eixo X
-                                                }
-                                            }
-                                        },
-                                        animation: {
-                                            duration: 1000,
-                                            easing: 'easeInOutQuart'
-                                        }
-                                    }
-                                });
-                            }
-                        }
-                        // --- Fim Funções para Gráficos ---
-
-                        // --- Função para carregar atividades recentes ---
-                        function loadRecentActivities(servicos) {
-                            const activitiesList = document.getElementById('recent-activities-list');
-                            if (!activitiesList) return;
-
-                            // Limpar atividades existentes
-                            activitiesList.innerHTML = '';
-
-                            // Adicionar atividades de serviços, ordenando por data de atualização (ou criação)
-                            servicos.sort((a, b) => new Date(b.updatedAt || b.createdAt) - new Date(a.updatedAt || a.createdAt));
-
-                            servicos.slice(0, 5).forEach(servico => { // Mostrar as 5 últimas atividades
-                                let message = '';
-                                let iconClass = '';
-                                let iconColorClass = '';
-
-                                switch (servico.status) {
-                                    case 'pendente':
-                                        message = `Seu pedido de ${servico.tipo_servico} está aguardando aceitação.`;
-                                        iconClass = 'dw dw-hourglass';
-                                        iconColorClass = 'text-info';
-                                        break;
-                                    case 'aceito_pelo_prestador':
-                                        message = `Seu pedido de ${servico.tipo_servico} foi aceito pelo prestador!`;
-                                        iconClass = 'dw dw-user-check';
-                                        iconColorClass = 'text-primary';
-                                        break;
-                                    case 'concluido_pelo_prestador':
-                                        message = `Serviço de ${servico.tipo_servico} concluído - Avalie agora!`;
-                                        iconClass = 'dw dw-check';
-                                        iconColorClass = 'text-warning'; // Sugere avaliação
-                                        break;
-                                    case 'avaliado_pelo_cliente':
-                                        message = `Você avaliou o serviço de ${servico.tipo_servico}.`;
-                                        iconClass = 'dw dw-star';
-                                        iconColorClass = 'text-success';
-                                        break;
-                                    case 'recusado_pelo_prestador':
-                                        message = `Seu pedido de ${servico.tipo_servico} foi recusado.`;
-                                        iconClass = 'dw dw-cancel';
-                                        iconColorClass = 'text-danger';
-                                        break;
-                                    case 'cancelado':
-                                        message = `Seu pedido de ${servico.tipo_servico} foi cancelado.`;
-                                        iconClass = 'dw dw-cancel';
-                                        iconColorClass = 'text-danger';
-                                        break;
-                                    default:
-                                        message = `Atualização no seu pedido de ${servico.tipo_servico}.`;
-                                        iconClass = 'dw dw-notification';
-                                        iconColorClass = 'text-secondary';
-                                        break;
-                                }
-
-                                const activityDate = new Date(servico.updatedAt || servico.createdAt);
-                                const timeAgo = formatTimeAgo(activityDate);
-
-                                const activityHtml = `
-                                    <div class="activity-item">
-                                        <div class="activity-icon ${iconColorClass}"><i class="${iconClass}"></i></div>
-                                        <div class="activity-content">
-                                            <strong>${message}</strong>
-                                            <small>${timeAgo}</small>
-                                        </div>
-                                    </div>
-                                `;
-                                activitiesList.insertAdjacentHTML('beforeend', activityHtml);
-                            });
-
-                            if (servicos.length === 0) {
-                                activitiesList.innerHTML = '<p class="text-center text-muted">Nenhuma atividade recente para exibir.</p>';
-                            }
-                        }
-
-                        // Função auxiliar para formatar "tempo atrás"
-                        function formatTimeAgo(date) {
-                            const seconds = Math.floor((new Date() - date) / 1000);
-                            let interval = seconds / 31536000;
-                            if (interval > 1) return Math.floor(interval) + " anos atrás";
-                            interval = seconds / 2592000;
-                            if (interval > 1) return Math.floor(interval) + " meses atrás";
-                            interval = seconds / 86400;
-                            if (interval > 1) return Math.floor(interval) + " dias atrás";
-                            interval = seconds / 3600;
-                            if (interval > 1) return Math.floor(interval) + " horas atrás";
-                            interval = seconds / 60;
-                            if (interval > 1) return Math.floor(interval) + " minutos atrás";
-                            return Math.floor(seconds) + " segundos atrás";
-                        }
-                        // --- Fim Função para carregar atividades recentes ---
-
-                        // Event listener para o card de Notificações
-                        document.addEventListener('DOMContentLoaded', () => {
-                            const notificationsCardLink = document.getElementById('notifications-card-link');
-                            if (notificationsCardLink) {
-                                notificationsCardLink.addEventListener('click', (e) => {
-                                    e.preventDefault(); // Impede o comportamento padrão do link
-                                    // Aqui você pode redirecionar para uma página de notificações
-                                    // ou abrir um modal/dropdown com as notificações.
-                                    showToast('Funcionalidade de Notificações em breve!', 'info');
-                                    // Exemplo de redirecionamento:
-                                    // window.location.href = 'notifications.html';
-                                });
                             }
                         });
 
