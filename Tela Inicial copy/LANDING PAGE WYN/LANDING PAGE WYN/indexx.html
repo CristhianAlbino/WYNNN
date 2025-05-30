@@ -1359,56 +1359,59 @@
                             ];
 
 
-                            // Destruir instância anterior se existir
+                            // Se a instância do gráfico já existe, atualize-a
                             if (orderStatusChartInstance) {
-                                orderStatusChartInstance.destroy();
-                            }
-
-                            orderStatusChartInstance = new Chart(ctx, {
-                                type: 'pie',
-                                data: {
-                                    labels: labels,
-                                    datasets: [{
-                                        data: data,
-                                        backgroundColor: backgroundColors,
-                                        borderColor: borderColors,
-                                        borderWidth: 1,
-                                        hoverOffset: 8 // Aumenta o offset no hover
-                                    }]
-                                },
-                                options: {
-                                    responsive: true,
-                                    maintainAspectRatio: false, // Permite que o gráfico não mantenha a proporção original
-                                    plugins: {
-                                        legend: {
-                                            position: 'top',
-                                            labels: {
-                                                font: {
-                                                    size: 14
+                                orderStatusChartInstance.data.labels = labels;
+                                orderStatusChartInstance.data.datasets[0].data = data;
+                                orderStatusChartInstance.update(); // Atualiza o gráfico
+                            } else {
+                                // Caso contrário, crie uma nova instância do gráfico
+                                orderStatusChartInstance = new Chart(ctx, {
+                                    type: 'pie',
+                                    data: {
+                                        labels: labels,
+                                        datasets: [{
+                                            data: data,
+                                            backgroundColor: backgroundColors,
+                                            borderColor: borderColors,
+                                            borderWidth: 1,
+                                            hoverOffset: 8 // Aumenta o offset no hover
+                                        }]
+                                    },
+                                    options: {
+                                        responsive: true,
+                                        maintainAspectRatio: false, // Permite que o gráfico não mantenha a proporção original
+                                        plugins: {
+                                            legend: {
+                                                position: 'top',
+                                                labels: {
+                                                    font: {
+                                                        size: 14
+                                                    }
+                                                }
+                                            },
+                                            tooltip: {
+                                                callbacks: {
+                                                    label: function(context) {
+                                                        let label = context.label || '';
+                                                        if (label) {
+                                                            label += ': ';
+                                                        }
+                                                        if (context.parsed !== null) {
+                                                            label += context.parsed;
+                                                        }
+                                                        return label;
+                                                    }
                                                 }
                                             }
                                         },
-                                        tooltip: {
-                                            callbacks: {
-                                                label: function(context) {
-                                                    let label = context.label || '';
-                                                    if (label) {
-                                                        label += ': ';
-                                                    }
-                                                    if (context.parsed !== null) {
-                                                        label += context.parsed;
-                                                    }
-                                                    return label;
-                                                }
-                                            }
+                                        animation: {
+                                            animateScale: true, // Anima a escala
+                                            animateRotate: true // Anima a rotação
                                         }
-                                    },
-                                    animation: {
-                                        animateScale: true, // Anima a escala
-                                        animateRotate: true // Anima a rotação
                                     }
-                                }
-                            });
+                                });
+                            }
                         }
 
                         function renderSpendingEvolutionChart(monthlySpending) {
@@ -1422,67 +1425,70 @@
                             });
                             const data = sortedMonths.map(monthKey => monthlySpending[monthKey]);
 
-                            // Destruir instância anterior se existir
+                            // Se a instância do gráfico já existe, atualize-a
                             if (spendingEvolutionChartInstance) {
-                                spendingEvolutionChartInstance.destroy();
-                            }
-
-                            spendingEvolutionChartInstance = new Chart(ctx, {
-                                type: 'bar',
-                                data: {
-                                    labels: labels,
-                                    datasets: [{
-                                        label: 'Total Gasto (R$)',
-                                        data: data,
-                                        backgroundColor: 'rgba(155, 89, 182, 0.8)', // Roxo com transparência
-                                        borderColor: 'rgba(142, 68, 173, 1)',
-                                        borderWidth: 1,
-                                        borderRadius: 5 // Cantos arredondados para as barras
-                                    }]
-                                },
-                                options: {
-                                    responsive: true,
-                                    maintainAspectRatio: false,
-                                    plugins: {
-                                        legend: {
-                                            display: false
-                                        },
-                                        title: {
-                                            display: false,
-                                            text: 'Evolução de Gastos'
-                                        },
-                                        tooltip: {
-                                            callbacks: {
-                                                label: function(context) {
-                                                    return 'R$ ' + context.parsed.y.toFixed(2).replace('.', ',');
+                                spendingEvolutionChartInstance.data.labels = labels;
+                                spendingEvolutionChartInstance.data.datasets[0].data = data;
+                                spendingEvolutionChartInstance.update(); // Atualiza o gráfico
+                            } else {
+                                // Caso contrário, crie uma nova instância do gráfico
+                                spendingEvolutionChartInstance = new Chart(ctx, {
+                                    type: 'bar',
+                                    data: {
+                                        labels: labels,
+                                        datasets: [{
+                                            label: 'Total Gasto (R$)',
+                                            data: data,
+                                            backgroundColor: 'rgba(155, 89, 182, 0.8)', // Roxo com transparência
+                                            borderColor: 'rgba(142, 68, 173, 1)',
+                                            borderWidth: 1,
+                                            borderRadius: 5 // Cantos arredondados para as barras
+                                        }]
+                                    },
+                                    options: {
+                                        responsive: true,
+                                        maintainAspectRatio: false,
+                                        plugins: {
+                                            legend: {
+                                                display: false
+                                            },
+                                            title: {
+                                                display: false,
+                                                text: 'Evolução de Gastos'
+                                            },
+                                            tooltip: {
+                                                callbacks: {
+                                                    label: function(context) {
+                                                        return 'R$ ' + context.parsed.y.toFixed(2).replace('.', ',');
+                                                    }
                                                 }
                                             }
-                                        }
-                                    },
-                                    scales: {
-                                        y: {
-                                            beginAtZero: true,
-                                            ticks: {
-                                                callback: function(value) {
-                                                    return 'R$ ' + value.toFixed(2).replace('.', ',');
+                                        },
+                                        scales: {
+                                            y: {
+                                                beginAtZero: true,
+                                                ticks: {
+                                                    callback: function(value) {
+                                                        return 'R$ ' + value.toFixed(2).replace('.', ',');
+                                                    }
+                                                },
+                                                grid: {
+                                                    display: false // Remove as linhas de grade do eixo Y
                                                 }
                                             },
-                                            grid: {
-                                                display: false // Remove as linhas de grade do eixo Y
+                                            x: {
+                                                grid: {
+                                                    display: false // Remove as linhas de grade do eixo X
+                                                }
                                             }
                                         },
-                                        x: {
-                                            grid: {
-                                                display: false // Remove as linhas de grade do eixo X
-                                            }
+                                        animation: {
+                                            duration: 1000, // Duração da animação em ms
+                                            easing: 'easeInOutQuart' // Tipo de easing
                                         }
-                                    },
-                                    animation: {
-                                        duration: 1000, // Duração da animação em ms
-                                        easing: 'easeInOutQuart' // Tipo de easing
                                     }
-                                }
-                            });
+                                });
+                            }
                         }
                         // --- Fim Funções para Gráficos ---
 
