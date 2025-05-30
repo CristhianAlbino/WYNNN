@@ -735,7 +735,12 @@
                                 <span class="mtext">Meu Perfil</span>
                             </a>
                         </li>
-
+                        <li>
+							<a href="notificacoes.html" class="dropdown-toggle no-arrow">
+                                <span class="micon bi bi-bell"></span>
+                                <span class="mtext">Notificações</span>
+                            </a>
+                        </li>
 	
 						</ul>
 				</div>
@@ -910,29 +915,9 @@
                             <div class="card-box height-100-p pd-20">
                                 <h4 class="h4 text-blue mb-20">Atividades Recentes</h4>
                                 <div id="recent-activities-list">
-                                    <div class="activity-item">
-                                        <div class="activity-icon"><i class="icon-copy dw dw-check"></i></div>
-                                        <div class="activity-content">
-                                            <h6>Serviço de Eletricista Concluído</h6>
-                                            <p>Seu pedido de eletricista para instalação de tomadas foi concluído. Avalie agora!</p>
-                                        </div>
-                                        <div class="activity-time">1 hora atrás</div>
-                                    </div>
-                                    <div class="activity-item">
-                                        <div class="activity-icon"><i class="icon-copy dw dw-chat"></i></div>
-                                        <div class="activity-content">
-                                            <h6>Nova Mensagem no Chat</h6>
-                                            <p>Você tem uma nova mensagem do prestador João Silva sobre o serviço de pintura.</p>
-                                        </div>
-                                        <div class="activity-time">3 horas atrás</div>
-                                    </div>
-                                    <div class="activity-item">
-                                        <div class="activity-icon"><i class="icon-copy dw dw-clock"></i></div>
-                                        <div class="activity-content">
-                                            <h6>Pedido de Jardinagem Aceito</h6>
-                                            <p>Seu pedido de jardinagem foi aceito pelo prestador Maria Flor. Aguardando agendamento.</p>
-                                        </div>
-                                        <div class="activity-time">1 dia atrás</div>
+                                    <div class="no-activities" style="text-align: center; padding: 20px; color: #777; display: none;">
+                                        <i class="dw dw-notification-1" style="font-size: 2em; margin-bottom: 10px;"></i>
+                                        <p>Nenhuma atividade recente para exibir.</p>
                                     </div>
                                 </div>
                             </div>
@@ -983,7 +968,6 @@
                                      userProfilePicImg.style.display = 'block';
                                      if (userProfilePicSpinner) userProfilePicSpinner.style.display = 'none'; // Esconde spinner se a imagem do cache carregar
                                      userProfilePicImg.onerror = function() {
-                                         // Fallback para imagem padrão se a URL da foto do cache falhar
                                          this.onerror = null; // Evita loop infinito de erro
                                          this.src = "vendors/images/photo1.jpg";
                                          this.style.display = 'block';
@@ -1099,12 +1083,27 @@
 						// Mapeamento de status do backend para texto amigável
 						const statusMapCliente = { // Mapeamento específico para a visão do cliente
 							 'pendente': 'Pendente',
+							 'aguardando_aceite_prestador': 'Aguardando Aceite',
+                             'aguardando_pagamento_cliente': 'Aguardando Pagamento',
+                             'aguardando_confirmacao_pagamento': 'Pagamento Pendente',
 							 'aceito_pelo_prestador': 'Aceito pelo Prestador',
 							 'recusado_pelo_prestador': 'Recusado',
 							 'concluido_pelo_prestador': 'Concluído',
 							 'avaliado_pelo_cliente': 'Avaliado',
 							 'cancelado': 'Cancelado'
 						};
+
+                        // Mapeamento de tipos de notificação para ícones e títulos (para atividades recentes)
+                        const activityTypeMap = {
+                            'new_message': { icon: 'dw dw-chat', title: 'Nova Mensagem' },
+                            'solicitation_accepted': { icon: 'dw dw-check', title: 'Pedido Aceito' },
+                            'solicitation_rejected': { icon: 'dw dw-cancel', title: 'Pedido Recusado' },
+                            'service_concluded': { icon: 'dw dw-check-circle', title: 'Serviço Concluído' },
+                            'payment_received': { icon: 'dw dw-money-2', title: 'Pagamento Recebido' }, // Para o prestador, mas pode ser adaptado
+                            'new_review': { icon: 'dw dw-star', title: 'Nova Avaliação' }, // Para o prestador, mas pode ser adaptado
+                            'default': { icon: 'dw dw-notification', title: 'Atualização' }
+                        };
+
 
 						// Função para carregar os serviços do usuário e atualizar cards/tabela
 						async function carregarDadosDashboardCliente() {
@@ -1134,6 +1133,11 @@
 									 headers: { 'Authorization': `Bearer ${token}` } // Incluir o token
 								});
 
+                                const responseNotifications = await fetch(`${BACKEND_BASE_URL}/api/notifications/usuario`, {
+                                    headers: { 'Authorization': `Bearer ${token}` }
+                                });
+
+
 								if (!responseServicos.ok) {
 									 if (responseServicos.status === 401 || responseServicos.status === 403) {
                                          showToast("Sua sessão expirou ou você não tem permissão. Faça login novamente.", 'danger');
@@ -1145,8 +1149,16 @@
 									throw new Error(`Erro HTTP ao buscar seus serviços: ${responseServicos.status}`);
 								}
 
+                                if (!responseNotifications.ok) {
+                                    console.error(`Erro HTTP ao buscar notificações: ${responseNotifications.status}`);
+                                    // Não é um erro crítico, apenas loga e continua
+                                }
+
 								const servicos = await responseServicos.json();
+                                const notifications = await responseNotifications.json(); // Pega as notificações
 								console.log("Meus serviços carregados para dashboard:", servicos); // Log para ver os dados
+                                console.log("Minhas notificações carregadas para dashboard:", notifications);
+
 
 								// Calcular contadores no frontend com base nos serviços retornados
 								let totalPedidos = servicos.length;
@@ -1155,75 +1167,95 @@
 								let totalAvaliacoesPendentes = 0; // Serviços concluídos que ainda não foram avaliados
                                 let valorTotalPedidos = 0; // Para calcular o valor total
 
+                                // Contagem de notificações não lidas
+                                const unreadNotificationsCount = notifications.filter(n => !n.lida).length;
+
+
                                 // Dados para o gráfico de status dos pedidos
                                 const statusCounts = {
-                                    'Pendente': 0,
-                                    'Aceito pelo Prestador': 0,
+                                    'Aguardando Aceite': 0,
+                                    'Aguardando Pagamento': 0,
+                                    'Aceito': 0,
                                     'Concluído': 0,
-                                    'Recusado': 0,
-                                    'Cancelado': 0,
-                                    'Avaliado': 0
+                                    'Recusado/Cancelado': 0
                                 };
 
-                                // Dados para o gráfico de evolução de gastos (mock para os últimos 6 meses)
-                                // Em um cenário real, isso viria do backend com valores reais por mês.
+                                // Dados para o gráfico de evolução de gastos
                                 const spendingData = {
-                                    labels: [], // Ex: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun']
-                                    values: []  // Ex: [100, 150, 200, 120, 180, 250]
+                                    labels: [],
+                                    values: []
                                 };
-                                // Gerar labels dos últimos 6 meses
+                                // Inicializa os dados de gastos para os últimos 6 meses com 0
                                 const months = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
                                 const today = new Date();
-                                for (let i = 5; i >= 0; i--) { // Últimos 6 meses
+                                const monthlySpending = {}; // Para acumular gastos por mês
+                                for (let i = 5; i >= 0; i--) {
                                     const d = new Date(today.getFullYear(), today.getMonth() - i, 1);
+                                    const monthKey = `${d.getFullYear()}-${d.getMonth() + 1}`;
                                     spendingData.labels.push(months[d.getMonth()]);
-                                    spendingData.values.push(Math.floor(Math.random() * 300) + 50); // Dados mockados
+                                    monthlySpending[monthKey] = 0;
                                 }
 
 
 								servicos.forEach((servico) => {
-									if (servico.status === 'pendente') totalPendentes++;
-									// Consideramos concluído se o prestador marcou como concluído OU se o cliente já avaliou
+                                    // Contadores de cards
+									if (servico.status === 'aguardando_aceite_prestador' || servico.status === 'aguardando_pagamento_cliente' || servico.status === 'aguardando_confirmacao_pagamento') {
+                                        totalPendentes++;
+                                    }
 									if (servico.status === 'concluido_pelo_prestador' || servico.status === 'avaliado_pelo_cliente') {
 										totalConcluidos++;
-                                        // Se o status é concluído pelo prestador E ainda não foi avaliado pelo cliente, conta como avaliação pendente
-                                        if (servico.status === 'concluido_pelo_prestador' && servico.status !== 'avaliado_pelo_cliente') { // Lógica corrigida
+                                        if (servico.status === 'concluido_pelo_prestador') {
                                              totalAvaliacoesPendentes++;
                                         }
 									}
-                                    // Somar valor se disponível
-                                    if (servico.valor_servico && !isNaN(servico.valor_servico)) {
+                                    // Somar valor se disponível e serviço concluído/avaliado
+                                    if ((servico.status === 'concluido_pelo_prestador' || servico.status === 'avaliado_pelo_cliente') && servico.valor_servico && !isNaN(servico.valor_servico)) {
                                          valorTotalPedidos += servico.valor_servico;
+
+                                         // Acumular gastos para o gráfico de evolução
+                                         const serviceDate = new Date(servico.data_conclusao || servico.data_aceite || servico.data_solicitacao);
+                                         const monthKey = `${serviceDate.getFullYear()}-${serviceDate.getMonth() + 1}`;
+                                         if (monthlySpending[monthKey] !== undefined) {
+                                             monthlySpending[monthKey] += servico.valor_servico;
+                                         }
                                     }
 
-                                    // Contar status para o gráfico
-                                    const mappedStatus = statusMapCliente[servico.status] || 'Outros';
-                                    if (statusCounts[mappedStatus] !== undefined) {
-                                        statusCounts[mappedStatus]++;
-                                    } else {
-                                        // Adiciona o status ao objeto se não existir (para lidar com novos status)
-                                        statusCounts[mappedStatus] = 1;
+                                    // Contar status para o gráfico de pizza
+                                    if (servico.status === 'aguardando_aceite_prestador') {
+                                        statusCounts['Aguardando Aceite']++;
+                                    } else if (servico.status === 'aguardando_pagamento_cliente' || servico.status === 'aguardando_confirmacao_pagamento') {
+                                        statusCounts['Aguardando Pagamento']++;
+                                    } else if (servico.status === 'aceito_pelo_prestador') {
+                                        statusCounts['Aceito']++;
+                                    } else if (servico.status === 'concluido_pelo_prestador' || servico.status === 'avaliado_pelo_cliente') {
+                                        statusCounts['Concluído']++;
+                                    } else if (servico.status === 'recusado_pelo_prestador' || servico.status === 'cancelado') {
+                                        statusCounts['Recusado/Cancelado']++;
                                     }
 								});
+
+                                // Preenche os valores do gráfico de gastos com os dados acumulados
+                                spendingData.labels.forEach((label, index) => {
+                                    const year = today.getFullYear();
+                                    const monthIndex = (today.getMonth() - (5 - index) + 12) % 12; // Calcula o índice do mês correto
+                                    const monthKey = `${year}-${monthIndex + 1}`;
+                                    spendingData.values.push(monthlySpending[monthKey] || 0);
+                                });
+
 
 								// Atualizar os elementos dos cards com os contadores calculados
 								if(totalSolicitadosEl) totalSolicitadosEl.innerText = totalPedidos;
 								if(totalPendentesEl) totalPendentesEl.innerText = totalPendentes;
 								if(totalConcluidosEl) totalConcluidosEl.innerText = totalConcluidos;
 								if(totalAvaliacoesEl) totalAvaliacoesEl.innerText = totalAvaliacoesPendentes;
-                                if(valorTotalEl) valorTotalEl.innerText = `R$ ${valorTotalPedidos.toFixed(2)}`;
-
-
-                                // --- CHAMADA PARA CONTAR NOTIFICAÇÕES (REQUER BACKEND) ---
-                                // Este é um placeholder. A contagem real de notificações viria do backend.
-                                // Por enquanto, definimos um valor fixo ou baseado em alguma lógica mock.
-                                if(totalNotificacoesEl) totalNotificacoesEl.innerText = Math.floor(Math.random() * 5); // Exemplo: 0 a 4 notificações mockadas
+                                if(valorTotalEl) valorTotalEl.innerText = `R$ ${valorTotalPedidos.toFixed(2).replace('.', ',')}`;
+                                if(totalNotificacoesEl) totalNotificacoesEl.innerText = unreadNotificationsCount;
 
 
                                 // Renderizar Gráficos
                                 renderOrderStatusChart(statusCounts);
                                 renderSpendingEvolutionChart(spendingData);
-                                renderRecentActivities(servicos); // Passa os serviços para a função de atividades
+                                renderRecentActivities(servicos, notifications); // Passa serviços e notificações para atividades
 
 
 							} catch (error) {
@@ -1309,22 +1341,26 @@
                         // Gráfico de Status dos Pedidos (Pizza)
                         function renderOrderStatusChart(statusCounts) {
                             const ctx = document.getElementById('orderStatusChart').getContext('2d');
+                            // Destrói o gráfico existente se houver para evitar sobreposição
+                            if (window.orderStatusChartInstance) {
+                                window.orderStatusChartInstance.destroy();
+                            }
+
                             const labels = Object.keys(statusCounts);
                             const data = Object.values(statusCounts);
 
-                            new Chart(ctx, {
+                            window.orderStatusChartInstance = new Chart(ctx, {
                                 type: 'pie',
                                 data: {
                                     labels: labels,
                                     datasets: [{
                                         data: data,
                                         backgroundColor: [
-                                            '#f39c12', // Pendente (Laranja)
-                                            '#3498db', // Aceito (Azul)
-                                            '#2ecc71', // Concluído (Verde)
-                                            '#e74c3c', // Recusado (Vermelho)
-                                            '#95a5a6', // Cancelado (Cinza)
-                                            '#9b59b6'  // Avaliado (Roxo)
+                                            '#f39c12', // Aguardando Aceite (Laranja)
+                                            '#3498db', // Aguardando Pagamento (Azul)
+                                            '#2ecc71', // Aceito (Verde)
+                                            '#1abc9c', // Concluído (Verde Água)
+                                            '#e74c3c'  // Recusado/Cancelado (Vermelho)
                                         ],
                                         hoverOffset: 4
                                     }]
@@ -1347,7 +1383,12 @@
                         // Gráfico de Evolução de Gastos (Barras)
                         function renderSpendingEvolutionChart(spendingData) {
                             const ctx = document.getElementById('spendingEvolutionChart').getContext('2d');
-                            new Chart(ctx, {
+                            // Destrói o gráfico existente se houver para evitar sobreposição
+                            if (window.spendingEvolutionChartInstance) {
+                                window.spendingEvolutionChartInstance.destroy();
+                            }
+
+                            window.spendingEvolutionChartInstance = new Chart(ctx, {
                                 type: 'bar',
                                 data: {
                                     labels: spendingData.labels,
@@ -1390,89 +1431,103 @@
                         }
 
                         // Função para renderizar Atividades Recentes
-                        function renderRecentActivities(servicos) {
+                        async function renderRecentActivities(servicos, notifications) {
                             const activitiesList = document.getElementById('recent-activities-list');
-                            if (!activitiesList) return;
+                            const noActivitiesMessage = activitiesList.querySelector('.no-activities');
+                            if (!activitiesList || !noActivitiesMessage) return;
 
-                            // Limpa as atividades mockadas existentes
-                            activitiesList.innerHTML = '';
+                            activitiesList.innerHTML = ''; // Limpa a lista existente
+                            activitiesList.appendChild(noActivitiesMessage); // Adiciona a mensagem de volta
 
-                            // Mock de atividades mais detalhado para demonstração
-                            const mockActivities = [
-                                {
-                                    icon: 'dw dw-check',
-                                    title: 'Serviço Concluído',
-                                    description: 'Seu pedido de Eletricista para instalação foi concluído. Avalie agora!',
-                                    time: '1 hora atrás'
-                                },
-                                {
-                                    icon: 'dw dw-chat',
-                                    title: 'Nova Mensagem',
-                                    description: 'Você tem uma nova mensagem no chat do pedido de Pintura.',
-                                    time: '3 horas atrás'
-                                },
-                                {
-                                    icon: 'dw dw-clock',
-                                    title: 'Pedido Aceito',
-                                    description: 'Seu pedido de Jardinagem foi aceito pelo prestador.',
-                                    time: '1 dia atrás'
-                                },
-                                {
-                                    icon: 'dw dw-notification',
-                                    title: 'Lembrete de Pagamento',
-                                    description: 'Você tem um pagamento pendente para o serviço de Encanador.',
-                                    time: '2 dias atrás'
-                                }
-                            ];
+                            const allActivities = [];
 
-                            // Adiciona as atividades mockadas
-                            mockActivities.forEach(activity => {
-                                const activityItem = document.createElement('div');
-                                activityItem.classList.add('activity-item');
-                                activityItem.innerHTML = `
-                                    <div class="activity-icon"><i class="${activity.icon}"></i></div>
-                                    <div class="activity-content">
-                                        <h6>${activity.title}</h6>
-                                        <p>${activity.description}</p>
-                                    </div>
-                                    <div class="activity-time">${activity.time}</div>
-                                `;
-                                activitiesList.appendChild(activityItem);
+                            // Adicionar atividades baseadas em notificações
+                            notifications.forEach(notif => {
+                                const typeInfo = activityTypeMap[notif.type] || activityTypeMap['default'];
+                                const date = new Date(notif.timestamp);
+                                allActivities.push({
+                                    timestamp: date,
+                                    icon: typeInfo.icon,
+                                    title: typeInfo.title,
+                                    description: notif.summary,
+                                    link: notif.referenciaId ? getNotificationLink(notif.referenciaId, notif.referenciaModel) : null
+                                });
                             });
 
-                            // Em um cenário real, você processaria os 'servicos' para gerar atividades dinamicamente
-                            // Exemplo (simplificado):
-                            /*
-                            servicos.slice(0, 3).forEach(servico => { // Pega os 3 últimos serviços
-                                const activityItem = document.createElement('div');
-                                activityItem.classList.add('activity-item');
-                                let icon = 'dw dw-notification';
-                                let title = 'Atualização de Pedido';
-                                let description = `Seu pedido de ${servico.nome_servico} está com status: ${statusMapCliente[servico.status]}.`;
-                                let time = 'Recentemente'; // Você precisaria de um campo de data no serviço
-
-                                if (servico.status === 'concluido_pelo_prestador') {
-                                    icon = 'dw dw-check';
-                                    title = 'Serviço Concluído';
-                                    description = `O serviço de ${servico.nome_servico} foi concluído. Avalie agora!`;
-                                } else if (servico.status === 'aceito_pelo_prestador') {
-                                    icon = 'dw dw-clock';
-                                    title = 'Pedido Aceito';
-                                    description = `Seu pedido de ${servico.nome_servico} foi aceito.`;
+                            // Adicionar atividades baseadas em serviços (se não houver notificação equivalente)
+                            servicos.forEach(servico => {
+                                let activityAdded = false;
+                                // Exemplo: Se o serviço foi concluído e não há notificação de "serviço concluído" para ele
+                                if (servico.status === 'concluido_pelo_prestador' && !notifications.some(n => n.referenciaId === servico._id && n.type === 'service_concluded')) {
+                                    allActivities.push({
+                                        timestamp: new Date(servico.data_conclusao || servico.data_aceite || servico.data_solicitacao),
+                                        icon: 'dw dw-check',
+                                        title: 'Serviço Concluído',
+                                        description: `Seu pedido de ${servico.tipo_servico} foi concluído. Avalie agora!`,
+                                        link: `avaliar-prestador.html?serviceId=${servico._id}`
+                                    });
+                                    activityAdded = true;
                                 }
-                                // Adicione mais condições para outros status
-
-                                activityItem.innerHTML = `
-                                    <div class="activity-icon"><i class="${icon}"></i></div>
-                                    <div class="activity-content">
-                                        <h6>${title}</h6>
-                                        <p>${description}</p>
-                                    </div>
-                                    <div class="activity-time">${time}</div>
-                                `;
-                                activitiesList.appendChild(activityItem);
+                                // Adicione mais lógicas para outros status de serviço se desejar
                             });
-                            */
+
+                            // Ordena as atividades por data (mais recente primeiro)
+                            allActivities.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+
+                            // Limita a um número razoável de atividades (ex: 5)
+                            const recentActivitiesToShow = allActivities.slice(0, 5);
+
+                            if (recentActivitiesToShow.length === 0) {
+                                noActivitiesMessage.style.display = 'block';
+                            } else {
+                                noActivitiesMessage.style.display = 'none';
+                                recentActivitiesToShow.forEach(activity => {
+                                    const activityItem = document.createElement('div');
+                                    activityItem.classList.add('activity-item');
+
+                                    const timeDiff = Date.now() - activity.timestamp.getTime();
+                                    let timeString;
+                                    const minutes = Math.floor(timeDiff / (1000 * 60));
+                                    const hours = Math.floor(minutes / 60);
+                                    const days = Math.floor(hours / 24);
+
+                                    if (minutes < 1) timeString = 'Agora mesmo';
+                                    else if (minutes < 60) timeString = `${minutes} minuto(s) atrás`;
+                                    else if (hours < 24) timeString = `${hours} hora(s) atrás`;
+                                    else if (hours < 24) timeString = `${hours} hora(s) atrás`;
+                                    else timeString = `${days} dia(s) atrás`;
+
+                                    activityItem.innerHTML = `
+                                        <div class="activity-icon"><i class="${activity.icon}"></i></div>
+                                        <div class="activity-content">
+                                            <h6>${activity.title}</h6>
+                                            <p>${activity.description}</p>
+                                        </div>
+                                        <div class="activity-time">${timeString}</div>
+                                    `;
+                                    if (activity.link) {
+                                        activityItem.style.cursor = 'pointer';
+                                        activityItem.addEventListener('click', () => {
+                                            window.location.href = activity.link;
+                                        });
+                                    }
+                                    activitiesList.appendChild(activityItem);
+                                });
+                            }
+                        }
+
+                        // Função auxiliar para gerar links de notificação (duplicada da página de notificações para auto-suficiência)
+                        function getNotificationLink(referenciaId, referenciaModel) {
+                            switch (referenciaModel) {
+                                case 'Servico':
+                                    return `contratos.html?serviceId=${referenciaId}`;
+                                case 'Message':
+                                    return `chat-list.html?serviceId=${referenciaId}`;
+                                case 'Avaliacao':
+                                    return `avaliar-prestador.html?reviewId=${referenciaId}`;
+                                default:
+                                    return null;
+                            }
                         }
 
 

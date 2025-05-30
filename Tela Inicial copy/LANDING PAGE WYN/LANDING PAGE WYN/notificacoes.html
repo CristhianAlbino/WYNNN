@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>WYN - Notificações</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="/w/1.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/w/1.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/w/1.png" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="vendors/styles/core.css" />
+    <link rel="stylesheet" type="text/css" href="vendors/styles/icon-font.min.css" />
+    <link rel="stylesheet" type="text/css" href="vendors/styles/style.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" xintegrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0x0Ugau/r+PRGFNfN/P1M2k/L/W84b36d0K7+v7z/z0q0+A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <style>
+        /* Estilos específicos para a página de notificações */
+        .notification-item {
+            background-color: #fff;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: flex-start;
+            border-left: 5px solid transparent; /* Para indicar status lido/não lido */
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        .notification-item.unread {
+            background-color: #e6f7ff; /* Fundo mais claro para não lidas */
+            border-left-color: #007bff; /* Borda azul para não lidas */
+        }
+
+        .notification-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .notification-icon {
+            font-size: 2rem;
+            margin-right: 20px;
+            color: #007bff;
+        }
+
+        .notification-content {
+            flex-grow: 1;
+        }
+
+        .notification-content h5 {
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .notification-content p {
+            font-size: 0.95em;
+            color: #555;
+            margin-bottom: 10px;
+        }
+
+        .notification-meta {
+            font-size: 0.8em;
+            color: #888;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .notification-actions {
+            margin-left: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .notification-actions button {
+            padding: 8px 12px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.85em;
+            transition: background-color 0.2s ease;
+        }
+
+        .notification-actions .btn-mark-read {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .notification-actions .btn-mark-read:hover {
+            background-color: #218838;
+        }
+
+        .notification-actions .btn-view-details {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .notification-actions .btn-view-details:hover {
+            background-color: #0056b3;
+        }
+
+        .no-notifications {
+            text-align: center;
+            padding: 50px;
+            color: #777;
+            font-size: 1.1em;
+        }
+
+        /* Estilos para a foto de perfil no header */
+        .user-icon img.profile-pic-header {
+            border-radius: 50% !important;
+            object-fit: cover;
+            width: 40px;
+            height: 40px;
+        }
+
+        .profile-pic-placeholder {
+            background-color: #e0e0e0;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            color: #888;
+        }
+        .profile-pic-placeholder .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="pre-loader">
+        <div class="pre-loader-box">
+            <div class="loader-logo">
+                <img src="w.png" alt="" />
+            </div>
+            <div class="loader-progress" id="progress_div">
+                <div class="bar" id="bar1"></div>
+            </div>
+            <div class="percent" id="percent1">0%</div>
+            <div class="loading-text">Carregando...</div>
+        </div>
+    </div>
+
+    <div class="header">
+        <div class="header-left">
+            <div class="menu-icon bi bi-list"></div>
+            <div class="search-toggle-icon bi bi-search" data-toggle="header_search"></div>
+            <div class="header-search">
+                <form>
+                    <div class="form-group mb-0">
+                        <i class="dw dw-search2 search-icon"></i>
+                        <input type="text" class="form-control search-input" placeholder="Search Here" />
+                        <div class="dropdown">
+                            <a class="dropdown-toggle no-arrow" href="#" role="button" data-toggle="dropdown">
+                                <i class="ion-arrow-down-c"></i>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <div class="form-group row">
+                                    <label class="col-sm-12 col-md-2 col-form-label">De</label>
+                                    <div class="col-sm-12 col-md-10">
+                                        <input class="form-control form-control-sm form-control-line" type="text" />
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-12 col-md-2 col-form-label">Para</label>
+                                    <div class="col-sm-12 col-md-10">
+                                        <input class="form-control form-control-sm form-control-line" type="text" />
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-12 col-md-2 col-form-label">Sujeito</label>
+                                    <div class="col-sm-12 col-md-10">
+                                        <input class="form-control form-control-sm form-control-line" type="text" />
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <button class="btn btn-primary">Pesquisar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="dashboard-setting user-notification">
+                <div class="dropdown">
+                    <a class="dropdown-toggle no-arrow" href="javascript:;" data-toggle="right-sidebar">
+                        <i class="dw dw-settings2"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="user-info-dropdown">
+                <div class="dropdown">
+                    <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown">
+                        <span class="user-icon" id="user-profile-pic-container">
+                            <img src="vendors/images/photo1.jpg" id="user-profile-pic" class="profile-pic-header" alt="Foto de Perfil" style="display: none;" />
+                            <div id="user-profile-pic-spinner" class="profile-pic-placeholder">
+                                <div class="spinner"></div>
+                            </div>
+                        </span>
+                        <span class="user-name">Carregando...</span>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list">
+                        <a class="dropdown-item" href="profile.html"><i class="dw dw-user1"></i> Perfil</a>
+                        <a class="dropdown-item" href="profile.html"><i class="dw dw-settings2"></i>Configurações</a>
+                        <a class="dropdown-item" href="faq.html"><i class="dw dw-help"></i> Ajuda</a>
+                        <a class="dropdown-item" href="#" id="logout-link"><i class="dw dw-logout"></i> Sair</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="right-sidebar">
+        <div class="sidebar-title">
+            <h3 class="weight-600 font-16 text-blue">
+                Configuração de Layout
+                <span class="btn-block font-weight-400 font-12">Personalização</span>
+            </h3>
+            <div class="close-sidebar" data-toggle="right-sidebar-close">
+                <i class="icon-copy ion-close-round"></i>
+            </div>
+        </div>
+        <div class="right-sidebar-body customscroll">
+            <div class="right-sidebar-body-content">
+                <h4 class="weight-600 font-18 pb-10">Fundo</h4>
+                <div class="sidebar-btn-group pb-30 mb-10">
+                    <a href="javascript:void(0);" class="btn btn-outline-primary header-white active">Claro</a>
+                    <a href="javascript:void(0);" class="btn btn-outline-primary header-dark">Escuro</a>
+                </div>
+
+                <h4 class="weight-600 font-18 pb-10">Menu Lateral</h4>
+                <div class="sidebar-btn-group pb-30 mb-10">
+                    <a href="javascript:void(0);" class="btn btn-outline-primary sidebar-light">Claro</a>
+                    <a href="javascript:void(0);" class="btn btn-outline-primary sidebar-dark active">Escuro</a>
+                </div>
+
+                <h4 class="weight-600 font-18 pb-10">Icone Dropdown</h4>
+                <div class="sidebar-radio-group pb-10 mb-10">
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input type="radio" id="sidebaricon-1" name="menu-dropdown-icon" class="custom-control-input" value="icon-style-1" checked="" />
+                        <label class="custom-control-label" for="sidebaricon-1"><i class="fa fa-angle-down"></i></label>
+                    </div>
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input type="radio" id="sidebaricon-2" name="menu-dropdown-icon" class="custom-control-input" value="icon-style-2" />
+                        <label class="custom-control-label" for="sidebaricon-2"><i class="ion-plus-round"></i></label>
+                    </div>
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input type="radio" id="sidebariconlist-3" name="menu-list-icon" class="custom-control-input" value="icon-list-style-3" />
+                        <label class="custom-control-label" for="sidebariconlist-3"><i class="fa fa-angle-double-right"></i></label>
+                    </div>
+                </div>
+
+                <h4 class="weight-600 font-18 pb-10">Icones do Menu</h4>
+                <div class="sidebar-radio-group pb-30 mb-10">
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input type="radio" id="sidebariconlist-1" name="menu-list-icon" class="custom-control-input" value="icon-list-style-1" checked="" />
+                        <label class="custom-control-label" for="sidebariconlist-1"><i class="ion-minus-round"></i></label>
+                    </div>
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input type="radio" id="sidebariconlist-2" name="menu-list-icon" class="custom-control-input" value="icon-list-style-2" />
+                        <label class="custom-control-label" for="sidebariconlist-2"><i class="fa fa-circle-o" aria-hidden="true"></i></label>
+                    </div>
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input type="radio" id="sidebariconlist-3" name="menu-list-icon" class="custom-control-input" value="icon-list-style-3" />
+                        <label class="custom-control-label" for="sidebariconlist-3"><i class="dw dw-check"></i></label>
+                    </div>
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input type="radio" id="sidebariconlist-4" name="menu-list-icon" class="custom-control-input" value="icon-list-style-4" checked="" />
+                        <label class="custom-control-label" for="sidebariconlist-4"><i class="icon-copy dw dw-next-2"></i></label>
+                    </div>
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input type="radio" id="sidebariconlist-5" name="menu-list-icon" class="custom-control-input" value="icon-list-style-5" />
+                        <label class="custom-control-label" for="sidebariconlist-5"><i class="dw dw-fast-forward-1"></i></label>
+                    </div>
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input type="radio" id="sidebariconlist-6" name="menu-list-icon" class="custom-control-input" value="icon-list-style-6" />
+                        <label class="custom-control-label" for="sidebariconlist-6"><i class="dw dw-next"></i></label>
+                    </div>
+                </div>
+
+                <div class="reset-options pt-30 text-center">
+                    <button class="btn btn-danger" id="reset-settings">
+                        Resetar Configurações
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="left-side-bar">
+        <div class="brand-logo">
+            <a href="indexx.html">
+                <img src="w (1).png" alt="" class="dark-logo" />
+                <img src="w (1).png" alt="" class="light-logo" />
+            </a>
+            <div class="close-sidebar" data-toggle="left-sidebar-close">
+                <i class="ion-close-round"></i>
+            </div>
+        </div>
+        <div class="menu-block customscroll">
+            <div class="sidebar-menu">
+                <ul id="accordion-menu">
+                    <li>
+                        <a href="indexx.html" class="dropdown-toggle no-arrow">
+                            <span class="micon bi bi-house"></span><span class="mtext">Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="catalogo.html" class="dropdown-toggle no-arrow">
+                            <span class="micon bi bi-grid"></span><span class="mtext">Catálogo de Serviços</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="contratos.html" class="dropdown-toggle no-arrow">
+                            <span class="micon bi bi-journal-check"></span><span class="mtext">Meus Pedidos</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="chat-list.html" class="dropdown-toggle no-arrow">
+                            <span class="micon bi bi-chat-dots"></span>
+                            <span class="mtext">Chat de Pedidos</span>
+                            <span id="unread-chat-count-sidebar-cliente" class="badge badge-pill badge-danger" style="display: none; margin-left: 5px;">0</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="avaliar-prestador.html" class="dropdown-toggle no-arrow">
+                            <span class="micon bi bi-star-fill"></span>
+                            <span class="mtext">Avaliar Prestadores</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="profile.html" class="dropdown-toggle no-arrow">
+                            <span class="micon bi bi-person"></span>
+                            <span class="mtext">Meu Perfil</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="notificacoes.html" class="dropdown-toggle no-arrow active">
+                            <span class="micon bi bi-bell"></span>
+                            <span class="mtext">Notificações</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="mobile-menu-overlay"></div>
+
+    <div class="main-container">
+        <div class="xs-pd-20-10 pd-ltr-20">
+            <div class="page-header">
+                <div class="row">
+                    <div class="col-md-6 col-sm-12">
+                        <div class="title">
+                            <h4>Minhas Notificações</h4>
+                        </div>
+                        <nav aria-label="breadcrumb" role="navigation">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="indexx.html">Dashboard</a></li>
+                                <li class="breadcrumb-item active" aria-current="page">Notificações</li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="pd-20 card-box mb-30">
+                        <h4 class="h4 text-blue mb-20">Últimas Notificações</h4>
+                        <div id="notifications-list">
+                            <div class="no-notifications" style="display: none;">
+                                <i class="dw dw-notification-1" style="font-size: 3em; margin-bottom: 15px;"></i>
+                                <p>Você não tem novas notificações.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-wrap pd-20 mb-20 card-box">
+                Plataforma WYN-TECH
+            </div>
+        </div>
+    </div>
+
+    <div id="toastContainer" style="position: fixed; top: 20px; right: 20px; z-index: 9999;"></div>
+
+    <script src="vendors/scripts/core.js"></script>
+    <script src="vendors/scripts/script.min.js"></script>
+    <script src="vendors/scripts/process.js"></script>
+    <script src="vendors/scripts/layout-settings.js"></script>
+    <script>
+        const BACKEND_BASE_URL = 'https://wyn-backend.onrender.com';
+        let usuarioLogado = null;
+
+        // Função para exibir toast notifications
+        function showToast(message, type = 'success') {
+            const toastContainer = document.getElementById('toastContainer');
+            if (!toastContainer) {
+                console.error("[NOTIFICATIONS] Toast container não encontrado!");
+                return;
+            }
+
+            const toastElement = document.createElement('div');
+            toastElement.classList.add('toast');
+            toastElement.setAttribute('role', 'alert');
+            toastElement.setAttribute('aria-live', 'assertive');
+            toastElement.setAttribute('aria-atomic', 'true');
+            toastElement.setAttribute('data-delay', '5000');
+
+            toastElement.innerHTML = `
+                <div class="toast-header ${type === 'success' ? 'bg-success text-white' : type === 'danger' ? 'bg-danger text-white' : 'bg-info text-white'}">
+                    <strong class="mr-auto">${type === 'success' ? 'Sucesso' : type === 'danger' ? 'Erro' : 'Informação'}</strong>
+                    <small>Agora</small>
+                    <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="toast-body">
+                    ${message}
+                </div>
+            `;
+
+            toastContainer.appendChild(toastElement);
+            $(toastElement).toast('show');
+            $(toastElement).on('hidden.bs.toast', function () {
+                $(this).remove();
+            });
+        }
+
+        async function carregarPerfilUsuario() {
+            const token = localStorage.getItem('token');
+            const usuarioCache = localStorage.getItem('usuario');
+
+            const nomeSpan = document.querySelector(".user-name");
+            const userProfilePicImg = document.getElementById("user-profile-pic");
+            const userProfilePicSpinner = document.getElementById("user-profile-pic-spinner");
+
+            if (!token || !usuarioCache) {
+                console.warn("Usuário não autenticado. Redirecionando para login.");
+                window.location.href = "login.html";
+                return;
+            }
+
+            if (userProfilePicImg) userProfilePicImg.style.display = 'none';
+            if (userProfilePicSpinner) userProfilePicSpinner.style.display = 'flex';
+
+            try {
+                usuarioLogado = JSON.parse(usuarioCache);
+                if (nomeSpan && usuarioLogado?.nome) {
+                    nomeSpan.textContent = usuarioLogado.nome;
+                }
+                if (userProfilePicImg && usuarioLogado?.foto_perfil_url) {
+                    userProfilePicImg.src = usuarioLogado.foto_perfil_url;
+                    userProfilePicImg.style.display = 'block';
+                    if (userProfilePicSpinner) userProfilePicSpinner.style.display = 'none';
+                    userProfilePicImg.onerror = function() {
+                        this.onerror = null;
+                        this.src = "vendors/images/photo1.jpg";
+                        this.style.display = 'block';
+                        if (userProfilePicSpinner) userProfilePicSpinner.style.display = 'none';
+                    };
+                } else if (userProfilePicImg) {
+                    userProfilePicImg.src = "vendors/images/photo1.jpg";
+                    userProfilePicImg.style.display = 'block';
+                    if (userProfilePicSpinner) userProfilePicSpinner.style.display = 'none';
+                }
+
+                const res = await fetch(`${BACKEND_BASE_URL}/perfil`, {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+
+                const resClone = res.clone();
+
+                if (!res.ok) {
+                    if (res.status === 401 || res.status === 403) {
+                        console.error("Token inválido ou expirado. Redirecionando para login.");
+                        showToast("Sua sessão expirou. Por favor, faça login novamente.", 'danger');
+                        window.location.href = "login.html";
+                        return;
+                    }
+                    const errorText = await resClone.text();
+                    console.error("Erro HTTP ao buscar perfil:", res.status, errorText);
+                    throw new Error(`Erro HTTP ao buscar perfil: ${res.status}`);
+                }
+
+                let data = {};
+                try {
+                    data = await res.json();
+                } catch(jsonError) {
+                    console.error("Erro ao parsear JSON do perfil:", await resClone.text());
+                    throw new Error("Resposta de perfil inválida.");
+                }
+
+                if (data.tipo !== 'usuario' || !data.usuario?._id) {
+                    console.error("Token válido, mas não corresponde a um usuário cliente.");
+                    showToast("Acesso negado para este tipo de usuário.", 'danger');
+                    window.location.href = "login-prestador.html";
+                    return;
+                }
+
+                usuarioLogado = data.usuario;
+                if (usuarioLogado?.nome && nomeSpan) {
+                    nomeSpan.textContent = usuarioLogado.nome;
+                }
+                if (userProfilePicImg && usuarioLogado?.foto_perfil_url) {
+                    userProfilePicImg.src = usuarioLogado.foto_perfil_url;
+                    userProfilePicImg.style.display = 'block';
+                    if (userProfilePicSpinner) userProfilePicSpinner.style.display = 'none';
+                    userProfilePicImg.onerror = function() {
+                        this.onerror = null;
+                        this.src = "vendors/images/photo1.jpg";
+                        this.style.display = 'block';
+                        if (userProfilePicSpinner) userProfilePicSpinner.style.display = 'none';
+                    };
+                } else if (userProfilePicImg) {
+                    userProfilePicImg.src = "vendors/images/photo1.jpg";
+                    userProfilePicImg.style.display = 'block';
+                    if (userProfilePicSpinner) userProfilePicSpinner.style.display = 'none';
+                }
+
+                console.log("Perfil do usuário carregado:", usuarioLogado);
+                carregarNotificacoes(); // Carrega as notificações após o perfil
+            } catch (err) {
+                console.error('Erro ao carregar perfil do usuário:', err);
+                if (usuarioLogado) {
+                    showToast('Erro ao validar sessão do usuário. Pode haver problemas na conexão.', 'danger');
+                } else {
+                    showToast('Ocorreu um erro ao carregar informações do usuário.', 'danger');
+                }
+                if (userProfilePicImg) userProfilePicImg.style.display = 'block';
+                if (userProfilePicSpinner) userProfilePicSpinner.style.display = 'none';
+            }
+        }
+
+        // Função de Logout
+        document.getElementById('logout-link').addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.removeItem('token');
+            localStorage.removeItem('usuario');
+            window.location.href = 'login.html';
+        });
+
+        // Mapeamento de tipos de notificação para ícones e títulos
+        const notificationTypeMap = {
+            'new_message': { icon: 'dw dw-chat', title: 'Nova Mensagem' },
+            'new_solicitation': { icon: 'dw dw-add-user', title: 'Nova Solicitação de Serviço' },
+            'solicitation_accepted': { icon: 'dw dw-check', title: 'Solicitação Aceita' },
+            'solicitation_rejected': { icon: 'dw dw-cancel', title: 'Solicitação Recusada' },
+            'payment_received': { icon: 'dw dw-money-2', title: 'Pagamento Recebido' },
+            'service_concluded': { icon: 'dw dw-check-circle', title: 'Serviço Concluído' },
+            'new_review': { icon: 'dw dw-star', title: 'Nova Avaliação' },
+            'password_reset': { icon: 'dw dw-lock', title: 'Redefinição de Senha' },
+            'default': { icon: 'dw dw-notification', title: 'Notificação' }
+        };
+
+        async function carregarNotificacoes() {
+            const notificationsList = document.getElementById('notifications-list');
+            const noNotificationsMessage = notificationsList.querySelector('.no-notifications');
+            const token = localStorage.getItem('token');
+
+            if (!token || !usuarioLogado) {
+                console.warn("Não é possível carregar notificações: Usuário não logado.");
+                notificationsList.innerHTML = ''; // Limpa a lista
+                if (noNotificationsMessage) noNotificationsMessage.style.display = 'block';
+                return;
+            }
+
+            try {
+                const response = await fetch(`${BACKEND_BASE_URL}/api/notifications/${usuarioLogado.tipo}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (!response.ok) {
+                    console.error(`Erro HTTP ao buscar notificações: ${response.status}`);
+                    showToast("Erro ao carregar notificações.", 'danger');
+                    notificationsList.innerHTML = '';
+                    if (noNotificationsMessage) noNotificationsMessage.style.display = 'block';
+                    return;
+                }
+
+                const notifications = await response.json();
+                notificationsList.innerHTML = ''; // Limpa a lista antes de adicionar novas
+
+                if (notifications.length === 0) {
+                    if (noNotificationsMessage) noNotificationsMessage.style.display = 'block';
+                } else {
+                    if (noNotificationsMessage) noNotificationsMessage.style.display = 'none';
+                    notifications.forEach(notification => {
+                        const typeInfo = notificationTypeMap[notification.type] || notificationTypeMap['default'];
+                        const notificationElement = document.createElement('div');
+                        notificationElement.classList.add('notification-item');
+                        if (!notification.lida) {
+                            notificationElement.classList.add('unread');
+                        }
+                        notificationElement.dataset.notificationId = notification._id;
+
+                        const date = new Date(notification.timestamp);
+                        const formattedDate = date.toLocaleDateString('pt-BR', {
+                            day: '2-digit', month: '2-digit', year: 'numeric',
+                            hour: '2-digit', minute: '2-digit'
+                        });
+
+                        notificationElement.innerHTML = `
+                            <div class="notification-icon"><i class="${typeInfo.icon}"></i></div>
+                            <div class="notification-content">
+                                <h5>${typeInfo.title}</h5>
+                                <p>${notification.message || notification.summary}</p>
+                                <div class="notification-meta">
+                                    <span>${formattedDate}</span>
+                                </div>
+                            </div>
+                            <div class="notification-actions">
+                                ${!notification.lida ? `<button class="btn-mark-read" data-id="${notification._id}">Marcar como Lida</button>` : ''}
+                                ${notification.referenciaId ? `<button class="btn-view-details" data-id="${notification._id}" data-ref-id="${notification.referenciaId}" data-ref-model="${notification.referenciaModel}">Ver Detalhes</button>` : ''}
+                            </div>
+                        `;
+                        notificationsList.appendChild(notificationElement);
+                    });
+
+                    // Adiciona event listeners para os botões
+                    notificationsList.querySelectorAll('.btn-mark-read').forEach(button => {
+                        button.addEventListener('click', async (event) => {
+                            const notificationId = event.target.dataset.id;
+                            await markNotificationAsRead(notificationId);
+                        });
+                    });
+
+                    notificationsList.querySelectorAll('.btn-view-details').forEach(button => {
+                        button.addEventListener('click', (event) => {
+                            const refId = event.target.dataset.refId;
+                            const refModel = event.target.dataset.refModel;
+                            handleNotificationDetails(refId, refModel);
+                        });
+                    });
+                }
+
+            } catch (error) {
+                console.error("Erro ao carregar notificações:", error);
+                showToast("Erro ao carregar notificações.", 'danger');
+                notificationsList.innerHTML = '';
+                if (noNotificationsMessage) noNotificationsMessage.style.display = 'block';
+            }
+        }
+
+        async function markNotificationAsRead(notificationId) {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+
+            try {
+                const response = await fetch(`${BACKEND_BASE_URL}/api/notifications/${notificationId}/mark-as-read`, {
+                    method: 'PUT',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (response.ok) {
+                    showToast("Notificação marcada como lida.", 'success');
+                    // Atualiza o item na UI
+                    const notificationElement = document.querySelector(`.notification-item[data-notification-id="${notificationId}"]`);
+                    if (notificationElement) {
+                        notificationElement.classList.remove('unread');
+                        const markReadButton = notificationElement.querySelector('.btn-mark-read');
+                        if (markReadButton) {
+                            markReadButton.remove(); // Remove o botão "Marcar como Lida"
+                        }
+                    }
+                } else {
+                    const errorData = await response.json();
+                    showToast(errorData.message || "Erro ao marcar notificação como lida.", 'danger');
+                }
+            } catch (error) {
+                console.error("Erro ao marcar notificação como lida:", error);
+                showToast("Erro de conexão ao marcar notificação como lida.", 'danger');
+            }
+        }
+
+        function handleNotificationDetails(referenciaId, referenciaModel) {
+            console.log(`Ver detalhes: ID=${referenciaId}, Modelo=${referenciaModel}`);
+            // Lógica para redirecionar ou exibir detalhes com base no modelo de referência
+            switch (referenciaModel) {
+                case 'Servico':
+                    // Redireciona para a página de detalhes do serviço/pedido
+                    window.location.href = `contratos.html?serviceId=${referenciaId}`; // Exemplo: Supondo que contratos.html pode exibir detalhes de um serviço específico
+                    break;
+                case 'Message':
+                    // Redireciona para o chat específico ou lista de chats
+                    window.location.href = `chat-list.html?serviceId=${referenciaId}`; // Exemplo: Abrir chat específico
+                    break;
+                case 'Avaliacao':
+                    // Redireciona para a página de avaliações ou detalhes da avaliação
+                    window.location.href = `avaliar-prestador.html?reviewId=${referenciaId}`; // Exemplo
+                    break;
+                default:
+                    showToast("Não há detalhes específicos para este tipo de notificação.", 'info');
+                    break;
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            carregarPerfilUsuario();
+        });
+    </script>
+</body>
+</html>
