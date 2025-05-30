@@ -596,7 +596,7 @@
                             <th>Não Lidas</th>
                         </tr>
                     </thead>
-                    <tbody id="services-list-body">
+                    <tbody>
                         </tbody>
                 </table>
             </div>
@@ -631,7 +631,7 @@
         let usuarioLogado = null;
         let usuarioTipo = null;
         let unreadChatPollingInterval = null;
-
+        let dataTableInstance = null; // Variável para armazenar a instância do DataTables
 
         // Função para exibir toast notifications (copiada das outras telas)
         function showToast(message, type = 'success') {
@@ -644,7 +644,6 @@
                 newToastContainer.style.right = '20px';
                 newToastContainer.style.zIndex = '1050';
                 document.body.appendChild(newToastContainer);
-                // Re-select the container
                 toastContainer = document.getElementById('toastContainer');
             }
 
@@ -740,7 +739,6 @@
                     throw new Error("Resposta de perfil inválida.");
                 }
 
-                // CORREÇÃO: Garante que a propriedade 'tipo' seja incluída no usuarioLogado
                 if (data.tipo === 'usuario' && data.usuario?._id) {
                     usuarioLogado = { ...data.usuario, tipo: data.tipo };
                     usuarioTipo = 'usuario';
@@ -802,13 +800,19 @@
             const loading = document.getElementById("loading-services");
             const feedback = document.getElementById("feedback-services");
             const empty = document.getElementById("empty-services");
-            const servicesListBody = document.getElementById("services-list-body");
+            const servicesTable = $('#services-table');
             const token = localStorage.getItem("token");
 
             loading.style.display = "block";
             feedback.style.display = "none";
             empty.style.display = "none";
-            servicesListBody.innerHTML = "";
+
+            // Destroi a instância anterior do DataTables se existir
+            if ($.fn.DataTable.isDataTable('#services-table')) {
+                dataTableInstance.destroy();
+                // Limpa o tbody após a destruição para garantir que não há lixo
+                servicesTable.find('tbody').empty();
+            }
 
             if (!token || !usuarioLogado || !usuarioTipo) {
                 feedback.textContent = "Autenticação necessária para carregar chats.";
@@ -816,10 +820,6 @@
                 loading.style.display = "none";
                 console.warn("[CHAT LIST] carregarListaServicosParaChat: Token, usuário ou tipo faltando.");
                 return;
-            }
-
-            if ($.fn.DataTable.isDataTable('#services-table')) {
-                $('#services-table').DataTable().destroy();
             }
 
             try {
@@ -852,7 +852,6 @@
                 let servicos = await response.json();
                 console.log("[CHAT LIST] Lista de serviços para chat carregada:", servicos);
 
-                // Para cada serviço, tenta buscar a última mensagem e a contagem de não lidas
                 const servicesWithChatInfo = await Promise.all(servicos.map(async servico => {
                     let lastMessage = null;
                     let unreadCount = 0;
@@ -882,81 +881,93 @@
                     servico.status !== 'cancelado'
                 );
 
-                // Ordena os serviços: primeiro os com mensagens não lidas (mais recentes), depois os demais (mais recentes)
                 servicosComChatAtivo.sort((a, b) => {
                     const dateA = a.lastMessage ? new Date(a.lastMessage.data_envio) : new Date(a.data_solicitacao);
                     const dateB = b.lastMessage ? new Date(b.lastMessage.data_envio) : new Date(b.data_solicitacao);
 
-                    // Prioriza chats com mensagens não lidas
                     if (a.unreadCount > 0 && b.unreadCount === 0) return -1;
                     if (a.unreadCount === 0 && b.unreadCount > 0) return 1;
 
-                    // Depois, ordena por data (mais recente primeiro)
                     return dateB.getTime() - dateA.getTime();
                 });
 
+                const tableData = servicosComChatAtivo.map(servico => {
+                    let participanteNome = 'Desconhecido';
+                    if (usuarioTipo === 'usuario' && servico.nome_prestador) {
+                        participanteNome = servico.nome_prestador;
+                    } else if (usuarioTipo === 'prestador' && servico.nome_cliente) {
+                        participanteNome = servico.nome_cliente;
+                    }
 
-                if (servicosComChatAtivo.length === 0) {
+                    const statusMap = {
+                        'aguardando_pagamento_cliente': 'Aguardando Pagamento',
+                        'aguardando_confirmacao_pagamento': 'Pagamento em Processamento',
+                        'aceito_pelo_prestador': 'Em Andamento',
+                        'concluido_pelo_prestador': 'Concluído',
+                        'avaliado_pelo_cliente': 'Avaliado',
+                    };
+
+                    const ultimaMensagemTexto = servico.lastMessage ? servico.lastMessage.conteudo : 'Nenhuma mensagem';
+                    const ultimaMensagemTime = servico.lastMessage ? new Date(servico.lastMessage.data_envio).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : '';
+
+                    // Retorna um array de dados para cada linha
+                    return [
+                        servico.tipo_servico || 'Serviço sem Nome',
+                        participanteNome,
+                        statusMap[servico.status] || servico.status,
+                        `<div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span>${ultimaMensagemTexto.substring(0, 50)}${ultimaMensagemTexto.length > 50 ? '...' : ''}</span>
+                        </div>
+                        <small class="text-muted">${ultimaMensagemTime}</small>`,
+                        servico.unreadCount > 0 ? `<span class="unread-badge">${servico.unreadCount}</span>` : ''
+                    ];
+                });
+
+                if (tableData.length === 0) {
                     empty.style.display = "block";
                 } else {
                     empty.style.display = "none";
-                    servicosComChatAtivo.forEach(servico => {
-                        const row = document.createElement('tr');
-                        row.dataset.serviceId = servico._id;
-                        row.classList.add('service-row');
-
-                        let participanteNome = 'Desconhecido';
-                        if (usuarioTipo === 'usuario' && servico.nome_prestador) {
-                            participanteNome = servico.nome_prestador;
-                        } else if (usuarioTipo === 'prestador' && servico.nome_cliente) {
-                            participanteNome = servico.nome_cliente;
-                        }
-
-                        const statusMap = {
-                            'aguardando_pagamento_cliente': 'Aguardando Pagamento',
-                            'aguardando_confirmacao_pagamento': 'Pagamento em Processamento',
-                            'aceito_pelo_prestador': 'Em Andamento',
-                            'concluido_pelo_prestador': 'Concluído',
-                            'avaliado_pelo_cliente': 'Avaliado',
-                        };
-
-                        const ultimaMensagemTexto = servico.lastMessage ? servico.lastMessage.conteudo : 'Nenhuma mensagem';
-                        const ultimaMensagemTime = servico.lastMessage ? new Date(servico.lastMessage.data_envio).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : '';
-
-                        row.innerHTML = `
-                            <td class="table-plus">${servico.tipo_servico || 'Serviço sem Nome'}</td>
-                            <td>${participanteNome}</td>
-                            <td>${statusMap[servico.status] || servico.status}</td>
-                            <td>
-                                <div style="display: flex; justify-content: space-between; align-items: center;">
-                                    <span>${ultimaMensagemTexto.substring(0, 50)}${ultimaMensagemTexto.length > 50 ? '...' : ''}</span>
-                                    ${servico.unreadCount > 0 ? `<span class="unread-badge">${servico.unreadCount}</span>` : ''}
-                                </div>
-                                <small class="text-muted">${ultimaMensagemTime}</small>
-                            </td>
-                        `;
-                        servicesListBody.appendChild(row);
-                    });
-
-                    $('#services-table').DataTable({
+                    // Inicializa o DataTables com os dados
+                    dataTableInstance = servicesTable.DataTable({
                         responsive: true,
                         paging: true,
                         searching: true,
                         ordering: true,
                         info: true,
+                        data: tableData, // Passa os dados aqui
+                        columns: [ // Define as colunas
+                            { title: "Serviço" },
+                            { title: "Participante" },
+                            { title: "Status" },
+                            { title: "Última Mensagem" },
+                            { title: "Não Lidas" }
+                        ],
+                        columnDefs: [
+                            { targets: [0, 1, 2, 3, 4], className: 'dt-body-left' }, // Alinha o texto à esquerda
+                            { targets: 3, orderSequence: ['desc', 'asc'] } // Ordena a coluna "Última Mensagem" por padrão decrescente
+                        ],
+                        order: [[3, 'desc']], // Ordena pela 4ª coluna (índice 3) decrescente por padrão
                         language: {
                             url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/pt-BR.json'
                         }
                     });
 
-                    document.querySelectorAll('#services-table tbody tr.service-row').forEach(row => {
-                        row.addEventListener('click', function() {
-                            const serviceId = this.dataset.serviceId;
-                            if (serviceId) {
-                                console.log("[CHAT LIST] Clicou na linha do serviço:", serviceId);
-                                window.location.href = `chat.html?serviceId=${serviceId}`;
-                            }
-                        });
+                    // Adiciona listener de clique nas linhas da tabela APÓS a inicialização do DataTables
+                    servicesTable.find('tbody').on('click', 'tr', function() {
+                        const data = dataTableInstance.row(this).data(); // Obtém os dados da linha clicada
+                        // O serviceId não está diretamente nos dados da célula, precisamos mapeá-lo
+                        // Uma forma é armazenar o ID no próprio objeto de dados que é passado para o DataTables
+                        // ou buscar o ID a partir do `servicosComChatAtivo` original.
+                        // Para simplificar agora, vamos buscar o serviço original pelo nome do serviço.
+                        const serviceName = data[0]; // Nome do serviço é a primeira coluna
+                        const clickedService = servicosComChatAtivo.find(s => (s.tipo_servico || 'Serviço sem Nome') === serviceName);
+
+                        if (clickedService && clickedService._id) {
+                            console.log("[CHAT LIST] Clicou na linha do serviço:", clickedService._id);
+                            window.location.href = `chat.html?serviceId=${clickedService._id}`;
+                        } else {
+                            console.warn("[CHAT LIST] Não foi possível encontrar o ID do serviço para a linha clicada.");
+                        }
                     });
                 }
 
