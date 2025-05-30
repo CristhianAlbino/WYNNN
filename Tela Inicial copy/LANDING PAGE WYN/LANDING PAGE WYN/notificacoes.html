@@ -412,7 +412,6 @@
         const BACKEND_BASE_URL = 'https://wyn-backend.onrender.com';
         let usuarioLogado = null;
 
-        // Função para exibir toast notifications
         function showToast(message, type = 'success') {
             const toastContainer = document.getElementById('toastContainer');
             if (!toastContainer) {
@@ -465,7 +464,9 @@
             if (userProfilePicSpinner) userProfilePicSpinner.style.display = 'flex';
 
             try {
+                // Tenta parsear do cache para obter o ID e nome/foto rapidamente
                 usuarioLogado = JSON.parse(usuarioCache);
+                
                 if (nomeSpan && usuarioLogado?.nome) {
                     nomeSpan.textContent = usuarioLogado.nome;
                 }
@@ -518,7 +519,9 @@
                     return;
                 }
 
-                usuarioLogado = data.usuario;
+                // CORREÇÃO: Garante que a propriedade 'tipo' seja incluída no usuarioLogado
+                usuarioLogado = { ...data.usuario, tipo: data.tipo };
+
                 if (usuarioLogado?.nome && nomeSpan) {
                     nomeSpan.textContent = usuarioLogado.nome;
                 }
@@ -578,14 +581,15 @@
             const noNotificationsMessage = notificationsList.querySelector('.no-notifications');
             const token = localStorage.getItem('token');
 
-            if (!token || !usuarioLogado) {
-                console.warn("Não é possível carregar notificações: Usuário não logado.");
+            if (!token || !usuarioLogado || !usuarioLogado.tipo) { // Verifica se usuarioLogado.tipo existe
+                console.warn("Não é possível carregar notificações: Usuário não logado ou tipo de usuário indefinido.");
                 notificationsList.innerHTML = ''; // Limpa a lista
                 if (noNotificationsMessage) noNotificationsMessage.style.display = 'block';
                 return;
             }
 
             try {
+                // Usa usuarioLogado.tipo para a URL
                 const response = await fetch(`${BACKEND_BASE_URL}/api/notifications/${usuarioLogado.tipo}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -674,13 +678,12 @@
 
                 if (response.ok) {
                     showToast("Notificação marcada como lida.", 'success');
-                    // Atualiza o item na UI
                     const notificationElement = document.querySelector(`.notification-item[data-notification-id="${notificationId}"]`);
                     if (notificationElement) {
                         notificationElement.classList.remove('unread');
                         const markReadButton = notificationElement.querySelector('.btn-mark-read');
                         if (markReadButton) {
-                            markReadButton.remove(); // Remove o botão "Marcar como Lida"
+                            markReadButton.remove();
                         }
                     }
                 } else {
@@ -695,19 +698,15 @@
 
         function handleNotificationDetails(referenciaId, referenciaModel) {
             console.log(`Ver detalhes: ID=${referenciaId}, Modelo=${referenciaModel}`);
-            // Lógica para redirecionar ou exibir detalhes com base no modelo de referência
             switch (referenciaModel) {
                 case 'Servico':
-                    // Redireciona para a página de detalhes do serviço/pedido
-                    window.location.href = `contratos.html?serviceId=${referenciaId}`; // Exemplo: Supondo que contratos.html pode exibir detalhes de um serviço específico
+                    window.location.href = `contratos.html?serviceId=${referenciaId}`;
                     break;
                 case 'Message':
-                    // Redireciona para o chat específico ou lista de chats
-                    window.location.href = `chat-list.html?serviceId=${referenciaId}`; // Exemplo: Abrir chat específico
+                    window.location.href = `chat-list.html?serviceId=${referenciaId}`;
                     break;
                 case 'Avaliacao':
-                    // Redireciona para a página de avaliações ou detalhes da avaliação
-                    window.location.href = `avaliar-prestador.html?reviewId=${referenciaId}`; // Exemplo
+                    window.location.href = `avaliar-prestador.html?reviewId=${referenciaId}`;
                     break;
                 default:
                     showToast("Não há detalhes específicos para este tipo de notificação.", 'info');
