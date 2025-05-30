@@ -123,8 +123,15 @@
                  margin-top: 10px;
                  border-top: 1px solid #eee;
                  padding-top: 10px;
-                 display: flex; /* Para alinhar a foto e o nome */
-                 align-items: center;
+                 display: flex; 
+                 flex-direction: column; /* Conteúdo do provider empilhado */
+                 align-items: flex-start; /* Alinha à esquerda */
+            }
+            
+            .service-card .provider-details { /* Wrapper para foto e nome do prestador */
+                display: flex;
+                align-items: center;
+                margin-bottom: 5px; /* Espaço antes da avaliação */
             }
 
             .service-card .provider-info img {
@@ -133,7 +140,32 @@
                  border-radius: 50%;
                  object-fit: cover;
                  margin-right: 8px;
-                 margin-bottom: 0; /* Remove margin-bottom herdado */
+                 margin-bottom: 0; 
+            }
+
+            /* Estilos para a avaliação por estrelas */
+            .provider-rating-container {
+                display: flex;
+                align-items: center;
+                margin-top: 2px; /* Pequeno espaço acima da avaliação */
+            }
+
+            .star-rating {
+                color: #ffc107; /* Cor dourada para estrelas */
+                font-size: 14px; /* Tamanho das estrelas */
+                line-height: 1; 
+            }
+
+            .star-rating .fa-star,
+            .star-rating .fa-star-half-alt,
+            .star-rating .far.fa-star { /* far.fa-star para estrela vazia do Font Awesome */
+                margin-right: 1px; /* Espaço entre estrelas */
+            }
+
+            .rating-text {
+                font-size: 11px; /* Tamanho do texto da avaliação */
+                color: #6c757d; /* Cor cinza para o texto */
+                margin-left: 5px; /* Espaço após as estrelas */
             }
 
 
@@ -936,6 +968,34 @@
                 }
             }
 
+            // Função para gerar o HTML da avaliação por estrelas
+            function generateStarRatingHTML(rating, totalReviews) {
+                let starsHtml = '';
+                const maxStars = 5;
+                // Arredonda a nota para o 0.5 mais próximo (ex: 4.2 -> 4.0, 4.3 -> 4.5, 4.7 -> 4.5, 4.8 -> 5.0)
+                const roundedRating = Math.round(rating * 2) / 2;
+
+                for (let i = 1; i <= maxStars; i++) {
+                    if (roundedRating >= i) { // Se a nota arredondada for maior ou igual ao contador da estrela
+                        starsHtml += '<i class="fas fa-star"></i>'; // Estrela cheia
+                    } else if (roundedRating >= i - 0.5) { // Se a nota arredondada for maior ou igual ao contador da estrela menos 0.5 (para meia estrela)
+                        starsHtml += '<i class="fas fa-star-half-alt"></i>'; // Meia estrela
+                    } else {
+                        starsHtml += '<i class="far fa-star"></i>'; // Estrela vazia (usando 'far' para Font Awesome Regular)
+                    }
+                }
+
+                let ratingTextHtml = '';
+                if (totalReviews > 0) {
+                    // Exibe a nota com uma casa decimal e o total de avaliações
+                    ratingTextHtml = `(${rating.toFixed(1)} de ${maxStars} | ${totalReviews} ${totalReviews === 1 ? 'avaliação' : 'avaliações'})`;
+                } else {
+                    ratingTextHtml = '(Nenhuma avaliação)';
+                }
+
+                return { starsHtml, ratingTextHtml };
+            }
+
 
             // Função para exibir toast notifications (copiada de outras telas)
             function showToast(message, type = 'success') {
@@ -1293,6 +1353,11 @@
                         // Trunca a descrição
                         const truncatedDescription = truncateText(servico.descricao, MAX_DESCRIPTION_LENGTH);
 
+                        // Gera o HTML da avaliação por estrelas
+                        const ratingInfo = generateStarRatingHTML(
+                            servico.media_avaliacoes_prestador || 0, 
+                            servico.total_avaliacoes_prestador || 0
+                        );
 
                         serviceCard.innerHTML = `
                             <div class="service-card">
@@ -1301,8 +1366,18 @@
                                 <p>${truncatedDescription || 'Sem descrição.'}</p>
                                 <p class="price">Faixa de Preço: ${precoTexto}</p>
                                 <div class="provider-info">
-                                     ${servico.foto_perfil_prestador_url ? `<img src="${servico.foto_perfil_prestador_url}" alt="Foto de Perfil do Prestador" onerror="this.onerror=null;this.src='vendors/images/photo4.jpg';"/>` : `<img src="vendors/images/photo4.jpg" alt="Foto de Perfil Padrão"/>`}
-                                     <span>Prestador: ${servico.nome_prestador || 'Desconhecido'}</span>
+                                     <div class="provider-details">
+                                        ${servico.foto_perfil_prestador_url ? `<img src="${servico.foto_perfil_prestador_url}" alt="Foto de Perfil do Prestador" onerror="this.onerror=null;this.src='vendors/images/photo4.jpg';"/>` : `<img src="vendors/images/photo4.jpg" alt="Foto de Perfil Padrão"/>`}
+                                        <span>${servico.nome_prestador || 'Desconhecido'}</span>
+                                     </div>
+                                     <div class="provider-rating-container">
+                                        <div class="star-rating">
+                                            ${ratingInfo.starsHtml}
+                                        </div>
+                                        <span class="rating-text">
+                                            ${ratingInfo.ratingTextHtml}
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                         `;
@@ -1814,6 +1889,8 @@ Atualizações de status de serviço (pagamento confirmado, serviço aceito/recu
 Novas mensagens de chat.
 
 Novas avaliações recebidas.
+
+Password_reset: Confirmação de redefinição de senha.
 
 Contador: O ícone do sino exibe um contador de notificações não lidas.
 
