@@ -1075,7 +1075,7 @@
                    if (!response.ok) {
                         const errorText = await response.text();
                         console.error("[ADMIN DASHBOARD] Erro HTTP ao buscar dados do gráfico admin:", response.status, errorText);
-                        throw new Error(errorText || `Erro HTTP ao buscar dados do gráfico: ${response.status}`);
+                        throw new Error(errorText || `Erro HTTP: ${response.status}`);
                    }
 
                    const dadosGrafico = await response.json(); // Espera um formato como { labels: ['Status A', 'Status B'], data: [10, 25] }
@@ -1243,6 +1243,15 @@
 
         // --- Funções para Carregar Dados das Tabelas ---
         // Estas funções buscam dados do backend e preenchem as tabelas HTML
+
+        // Função auxiliar para truncar texto
+        function truncateText(text, maxLength) {
+            if (!text) return '';
+            if (text.length > maxLength) {
+                return text.substring(0, maxLength) + '...';
+            }
+            return text;
+        }
 
         // Carrega a lista de usuários e preenche a tabela
         async function carregarUsuarios() {
@@ -1472,8 +1481,7 @@
                             <td>${servico._id.substring(0, 6)}...</td>
                             <td>${servico.usuario_id?.nome || 'Cliente Desconhecido'}</td>
                             <td>${servico.prestador_id?.nome || 'Prestador Não Atribuído'}</td>
-                            <td>${servico.tipo_servico || 'Não informado'}</td>
-                            <td>${statusTexto}</td>
+                            <td>${truncateText(servico.tipo_servico, 30) || 'Não informado'}</td> <td>${statusTexto}</td>
                             <td>${dataPedidoFormatada}</td>
                             <td>${valorFormatado}</td>
                             <td>
@@ -1553,12 +1561,9 @@
                         const categorias = servico.categorias && servico.categorias.length > 0 ? servico.categorias.join(', ') : 'Nenhuma';
 
                         row.innerHTML = `
-                            <td>${servico.nome || 'Não informado'}</td>
-                            <td>${servico.prestador_id?.nome || 'Prestador Não Atribuído'}</td>
-                            <td>${servico.descricao || 'Sem descrição'}</td>
-                            <td>${faixaPreco}</td>
-                            <td>${categorias}</td>
-                            <td>
+                            <td>${truncateText(servico.nome, 30) || 'Não informado'}</td> <td>${servico.prestador_id?.nome || 'Prestador Não Atribuído'}</td>
+                            <td>${truncateText(servico.descricao, 50) || 'Sem descrição'}</td> <td>${faixaPreco}</td>
+                            <td>${truncateText(categorias, 30)}</td> <td>
                                 <div class="table-actions">
                                     <a href="#" data-id="${servico._id}" class="btn btn-sm btn-primary edit-servico-oferecido" data-toggle="modal" data-target="#servicoOferecidoModal">Editar</a>
                                     <a href="#" data-id="${servico._id}" class="btn btn-sm btn-danger delete-servico-oferecido">Deletar</a>
@@ -1634,12 +1639,10 @@
 
                         row.innerHTML = `
                             <td>${avaliacao._id.substring(0, 6)}...</td>
-                            <td>${avaliacao.pedido_servico_id?.tipo_servico || 'Serviço Desconhecido'}</td>
-                            <td>${avaliacao.cliente_id?.nome || 'Cliente Desconhecido'}</td>
+                            <td>${truncateText(avaliacao.pedido_servico_id?.tipo_servico, 30) || 'Serviço Desconhecido'}</td> <td>${avaliacao.cliente_id?.nome || 'Cliente Desconhecido'}</td>
                             <td>${avaliacao.prestador_id?.nome || 'Prestador Desconhecido'}</td>
                             <td>${avaliacao.nota}</td>
-                            <td>${avaliacao.comentario || 'Sem comentário'}</td>
-                            <td>${dataAvaliacaoFormatada}</td>
+                            <td>${truncateText(avaliacao.comentario, 50) || 'Sem comentário'}</td> <td>${dataAvaliacaoFormatada}</td>
                             <td>
                                 <div class="table-actions">
                                     <a href="#" data-id="${avaliacao._id}" class="btn btn-sm btn-danger delete-avaliacao">Deletar</a>
@@ -2257,10 +2260,8 @@
                         <p><strong>Cliente:</strong> ${servico.nome_cliente || 'Desconhecido'} (${servico.usuario_id?.email || 'Email não informado'})</p>
                         <p><strong>Prestador Atribuído:</strong> ${servico.nome_prestador || 'Não Atribuído'} (${servico.prestador_id?.email || 'Email não informado'})</p>
                         <p><strong>Tipo de Serviço:</strong> ${servico.tipo_servico || 'Não informado'}</p>
-                        <p><strong>Descrição:</strong> ${servico.descricao_servico || 'Sem descrição'}</p>
-                        <p><strong>Endereço do Serviço:</strong> ${servico.endereco_servico || 'Não informado'}</p>
-                        <p><strong>Notas Adicionais:</strong> ${servico.notas_adicionais || 'Nenhuma'}</p>
-                        <p><strong>Urgente:</strong> ${servico.urgente ? 'Sim' : 'Não'}</p>
+                        <p><strong>Descrição:</strong> ${truncateText(servico.descricao_servico, 150) || 'Sem descrição'}</p> <p><strong>Endereço do Serviço:</strong> ${servico.endereco_servico || 'Não informado'}</p>
+                        <p><strong>Notas Adicionais:</strong> ${truncateText(servico.notas_adicionais, 150) || 'Nenhuma'}</p> <p><strong>Urgente:</strong> ${servico.urgente ? 'Sim' : 'Não'}</p>
                         <p><strong>Status:</strong> ${statusTexto}</p>
                         <p><strong>Valor Acordado:</strong> ${valorFormatado}</p>
                         <p><strong>Data da Solicitação:</strong> ${dataSolicitacao}</p>
@@ -2270,8 +2271,7 @@
                         <p><strong>Data de Conclusão:</strong> ${dataConclusao}</p>
                         ${servico.payment_link ? `<p><strong>Link de Pagamento:</strong> <a href="${servico.payment_link}" target="_blank">Abrir Link</a></p>` : ''}
                         ${servico.avaliacao_cliente !== null ? `<p><strong>Avaliação do Cliente:</strong> ${servico.avaliacao_cliente} estrelas</p>` : ''}
-                        ${servico.comentario_cliente ? `<p><strong>Comentário do Cliente:</strong> ${servico.comentario_cliente}</p>` : ''}
-                        <hr>
+                        ${servico.comentario_cliente ? `<p><strong>Comentário do Cliente:</strong> ${truncateText(servico.comentario_cliente, 150)}</p>` : ''} <hr>
                         ${comprovantesHtml}
                     `;
 
