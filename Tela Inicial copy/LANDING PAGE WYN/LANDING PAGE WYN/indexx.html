@@ -49,6 +49,8 @@
 		<link rel="stylesheet" type="text/css" href="vendors/styles/style.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" xintegrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0x0Ugau/r+PRGFNfN/P1M2k/L/W84b36d0K7+v7z/z0q0+A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 
         <style>
             /* Adiciona estilo para a foto de perfil no header */
@@ -251,6 +253,40 @@
             @keyframes spin {
                 0% { transform: rotate(0deg); }
                 100% { transform: rotate(360deg); }
+            }
+
+            /* Estilos para a seção de Atividades Recentes */
+            .activity-item {
+                display: flex;
+                align-items: flex-start;
+                margin-bottom: 15px;
+            }
+
+            .activity-icon {
+                font-size: 1.5rem;
+                margin-right: 15px;
+                color: #007bff; /* Cor primária para os ícones */
+            }
+
+            .activity-content {
+                flex-grow: 1;
+            }
+
+            .activity-content h6 {
+                margin-bottom: 5px;
+                font-weight: 600;
+            }
+
+            .activity-content p {
+                margin-bottom: 0;
+                font-size: 0.9em;
+                color: #666;
+            }
+
+            .activity-time {
+                font-size: 0.8em;
+                color: #999;
+                text-align: right;
             }
 
 
@@ -710,7 +746,7 @@
 			<div class="xs-pd-20-10 pd-ltr-20">
 				<div class="title pb-20">
 					<div class="welcome-message card-box p-4 mb-20">
-						<h1 class="h3 text-center mb-20">Bem-vindo à Plataforma WYN</h1>
+						<h1 class="h3 text-center mb-20" id="welcome-title">Bem-vindo à Plataforma WYN</h1>
 						<p class="text-center font-16">Estamos felizes em tê-lo aqui. Use nosso painel para gerenciar suas solicitações.</p>
 					</div>
 
@@ -810,17 +846,19 @@
 							</a>
 						</div>
                          <div class="col-xl-3 col-lg-3 col-md-6 mb-20">
-                             <div class="card-box height-100-p widget-style3">
-                                 <div class="d-flex flex-wrap">
-                                     <div class="widget-data">
-                                         <div class="weight-700 font-24 text-dark" id="total-notificacoes">0</div>
-                                         <div class="font-14 text-secondary weight-500">Notificações</div>
-                                     </div>
-                                     <div class="widget-icon">
-                                         <div class="icon" data-color="#3498db"> <i class="icon-copy dw dw-notification"></i> </div>
+                             <a href="notificacoes.html" style="text-decoration: none;">
+                                 <div class="card-box height-100-p widget-style3 cursor-pointer">
+                                     <div class="d-flex flex-wrap">
+                                         <div class="widget-data">
+                                             <div class="weight-700 font-24 text-dark" id="total-notificacoes">0</div>
+                                             <div class="font-14 text-secondary weight-500">Notificações</div>
+                                         </div>
+                                         <div class="widget-icon">
+                                             <div class="icon" data-color="#3498db"> <i class="icon-copy dw dw-notification"></i> </div>
+                                         </div>
                                      </div>
                                  </div>
-                             </div>
+                             </a>
                          </div>
                          <div class="col-xl-3 col-lg-3 col-md-6 mb-20">
                               <div class="card-box height-100-p widget-style3">
@@ -836,19 +874,70 @@
                               </div>
                          </div>
                          <div class="col-xl-3 col-lg-3 col-md-6 mb-20">
-                              <div class="card-box height-100-p widget-style3">
-                                  <div class="d-flex flex-wrap">
-                                      <div class="widget-data">
-                                          <div class="weight-700 font-24 text-dark" id="total-mensagens">0</div>
-                                          <div class="font-14 text-secondary weight-500">Mensagens Não Lidas</div>
-                                      </div>
-                                      <div class="widget-icon">
-                                          <div class="icon" data-color="#e74c3c"> <i class="icon-copy dw dw-chat"></i> </div>
+                              <a href="chat-list.html" style="text-decoration: none;">
+                                  <div class="card-box height-100-p widget-style3 cursor-pointer">
+                                      <div class="d-flex flex-wrap">
+                                          <div class="widget-data">
+                                              <div class="weight-700 font-24 text-dark" id="total-mensagens">0</div>
+                                              <div class="font-14 text-secondary weight-500">Mensagens Não Lidas</div>
+                                          </div>
+                                          <div class="widget-icon">
+                                              <div class="icon" data-color="#e74c3c"> <i class="icon-copy dw dw-chat"></i> </div>
+                                          </div>
                                       </div>
                                   </div>
-                              </div>
+                              </a>
                          </div>
 					</div>
+
+                    <div class="row pb-20">
+                        <div class="col-lg-6 col-md-12 mb-20">
+                            <div class="card-box height-100-p pd-20">
+                                <h4 class="h4 text-blue mb-20">Status dos Pedidos</h4>
+                                <canvas id="orderStatusChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-12 mb-20">
+                            <div class="card-box height-100-p pd-20">
+                                <h4 class="h4 text-blue mb-20">Evolução de Gastos (Últimos 6 Meses)</h4>
+                                <canvas id="spendingEvolutionChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row pb-20">
+                        <div class="col-md-12 mb-20">
+                            <div class="card-box height-100-p pd-20">
+                                <h4 class="h4 text-blue mb-20">Atividades Recentes</h4>
+                                <div id="recent-activities-list">
+                                    <div class="activity-item">
+                                        <div class="activity-icon"><i class="icon-copy dw dw-check"></i></div>
+                                        <div class="activity-content">
+                                            <h6>Serviço de Eletricista Concluído</h6>
+                                            <p>Seu pedido de eletricista para instalação de tomadas foi concluído. Avalie agora!</p>
+                                        </div>
+                                        <div class="activity-time">1 hora atrás</div>
+                                    </div>
+                                    <div class="activity-item">
+                                        <div class="activity-icon"><i class="icon-copy dw dw-chat"></i></div>
+                                        <div class="activity-content">
+                                            <h6>Nova Mensagem no Chat</h6>
+                                            <p>Você tem uma nova mensagem do prestador João Silva sobre o serviço de pintura.</p>
+                                        </div>
+                                        <div class="activity-time">3 horas atrás</div>
+                                    </div>
+                                    <div class="activity-item">
+                                        <div class="activity-icon"><i class="icon-copy dw dw-clock"></i></div>
+                                        <div class="activity-content">
+                                            <h6>Pedido de Jardinagem Aceito</h6>
+                                            <p>Seu pedido de jardinagem foi aceito pelo prestador Maria Flor. Aguardando agendamento.</p>
+                                        </div>
+                                        <div class="activity-time">1 dia atrás</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
 					<script>
 						let usuarioLogado = null; // Variável para armazenar os dados do usuário logado
@@ -863,6 +952,7 @@
 							const usuarioCache = localStorage.getItem('usuario'); // Chave correta para usuário
 
                             const nomeSpan = document.querySelector(".user-name");
+                            const welcomeTitle = document.getElementById("welcome-title"); // Elemento do título de boas-vindas
                             const userProfilePicImg = document.getElementById("user-profile-pic"); // Pega a tag img da foto
                             const userProfilePicSpinner = document.getElementById("user-profile-pic-spinner"); // Pega o spinner
 
@@ -884,6 +974,8 @@
 								 
 								 if (nomeSpan && usuarioLogado?.nome) {
 									 nomeSpan.textContent = usuarioLogado.nome;
+                                     // Personaliza a mensagem de boas-vindas
+                                     if (welcomeTitle) welcomeTitle.textContent = `Bem-vindo(a), ${usuarioLogado.nome} à Plataforma WYN!`;
 								 }
                                  // Exibe a foto de perfil do cache se existir (temporariamente, antes da chamada ao backend)
                                  if (userProfilePicImg && usuarioLogado?.foto_perfil_url) {
@@ -946,6 +1038,8 @@
 								// Atualiza o nome na interface
 								if (usuarioLogado?.nome && nomeSpan) {
 									nomeSpan.textContent = usuarioLogado.nome;
+                                    // Personaliza a mensagem de boas-vindas com o nome do usuário
+                                    if (welcomeTitle) welcomeTitle.textContent = `Bem-vindo(a), ${usuarioLogado.nome} à Plataforma WYN!`;
 								}
                                 // Atualiza a foto de perfil com a URL retornada pelo backend
                                  if (userProfilePicImg && usuarioLogado?.foto_perfil_url) {
@@ -1061,6 +1155,32 @@
 								let totalAvaliacoesPendentes = 0; // Serviços concluídos que ainda não foram avaliados
                                 let valorTotalPedidos = 0; // Para calcular o valor total
 
+                                // Dados para o gráfico de status dos pedidos
+                                const statusCounts = {
+                                    'Pendente': 0,
+                                    'Aceito pelo Prestador': 0,
+                                    'Concluído': 0,
+                                    'Recusado': 0,
+                                    'Cancelado': 0,
+                                    'Avaliado': 0
+                                };
+
+                                // Dados para o gráfico de evolução de gastos (mock para os últimos 6 meses)
+                                // Em um cenário real, isso viria do backend com valores reais por mês.
+                                const spendingData = {
+                                    labels: [], // Ex: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun']
+                                    values: []  // Ex: [100, 150, 200, 120, 180, 250]
+                                };
+                                // Gerar labels dos últimos 6 meses
+                                const months = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+                                const today = new Date();
+                                for (let i = 5; i >= 0; i--) { // Últimos 6 meses
+                                    const d = new Date(today.getFullYear(), today.getMonth() - i, 1);
+                                    spendingData.labels.push(months[d.getMonth()]);
+                                    spendingData.values.push(Math.floor(Math.random() * 300) + 50); // Dados mockados
+                                }
+
+
 								servicos.forEach((servico) => {
 									if (servico.status === 'pendente') totalPendentes++;
 									// Consideramos concluído se o prestador marcou como concluído OU se o cliente já avaliou
@@ -1075,6 +1195,15 @@
                                     if (servico.valor_servico && !isNaN(servico.valor_servico)) {
                                          valorTotalPedidos += servico.valor_servico;
                                     }
+
+                                    // Contar status para o gráfico
+                                    const mappedStatus = statusMapCliente[servico.status] || 'Outros';
+                                    if (statusCounts[mappedStatus] !== undefined) {
+                                        statusCounts[mappedStatus]++;
+                                    } else {
+                                        // Adiciona o status ao objeto se não existir (para lidar com novos status)
+                                        statusCounts[mappedStatus] = 1;
+                                    }
 								});
 
 								// Atualizar os elementos dos cards com os contadores calculados
@@ -1086,26 +1215,15 @@
 
 
                                 // --- CHAMADA PARA CONTAR NOTIFICAÇÕES (REQUER BACKEND) ---
-                                // ESTA CHAMADA ESTÁ COMENTADA POIS O ENDPOINT AINDA PRECISA SER CRIADO NO BACKEND
-                                /*
-                                // Contagem de Notificações (exemplo)
-                                fetch(`${BACKEND_BASE_URL}/api/notificacoes/quantidade`, { headers: { 'Authorization': `Bearer ${token}` } }) // Endpoint hipotético
-                                    .then(res => {
-                                         if (!res.ok) {
-                                              console.error(`Erro HTTP ao buscar notificações: ${res.status}`);
-                                              throw new Error("Erro ao buscar notificações.");
-                                         }
-                                         return res.json();
-                                     })
-                                    .then(data => {
-                                         if(totalNotificacoesEl) totalNotificacoesEl.innerText = data.total || 0;
-                                     })
-                                    .catch(err => {
-                                         console.error("Erro ao buscar notificações:", err);
-                                         if(totalNotificacoesEl) totalNotificacoesEl.innerText = 'Erro'; // Exibe "Erro" no card
-                                     });
-                                */
-                                // --- FIM DA CHAMADA PARA NOTIFICAÇÕES ---
+                                // Este é um placeholder. A contagem real de notificações viria do backend.
+                                // Por enquanto, definimos um valor fixo ou baseado em alguma lógica mock.
+                                if(totalNotificacoesEl) totalNotificacoesEl.innerText = Math.floor(Math.random() * 5); // Exemplo: 0 a 4 notificações mockadas
+
+
+                                // Renderizar Gráficos
+                                renderOrderStatusChart(statusCounts);
+                                renderSpendingEvolutionChart(spendingData);
+                                renderRecentActivities(servicos); // Passa os serviços para a função de atividades
 
 
 							} catch (error) {
@@ -1184,6 +1302,178 @@
                                 console.log("Polling de mensagens não lidas parado.");
                             }
                         });
+
+
+                        // --- FUNÇÕES DE GRÁFICOS (Chart.js) ---
+
+                        // Gráfico de Status dos Pedidos (Pizza)
+                        function renderOrderStatusChart(statusCounts) {
+                            const ctx = document.getElementById('orderStatusChart').getContext('2d');
+                            const labels = Object.keys(statusCounts);
+                            const data = Object.values(statusCounts);
+
+                            new Chart(ctx, {
+                                type: 'pie',
+                                data: {
+                                    labels: labels,
+                                    datasets: [{
+                                        data: data,
+                                        backgroundColor: [
+                                            '#f39c12', // Pendente (Laranja)
+                                            '#3498db', // Aceito (Azul)
+                                            '#2ecc71', // Concluído (Verde)
+                                            '#e74c3c', // Recusado (Vermelho)
+                                            '#95a5a6', // Cancelado (Cinza)
+                                            '#9b59b6'  // Avaliado (Roxo)
+                                        ],
+                                        hoverOffset: 4
+                                    }]
+                                },
+                                options: {
+                                    responsive: true,
+                                    plugins: {
+                                        legend: {
+                                            position: 'top',
+                                        },
+                                        title: {
+                                            display: false,
+                                            text: 'Status dos Pedidos'
+                                        }
+                                    }
+                                }
+                            });
+                        }
+
+                        // Gráfico de Evolução de Gastos (Barras)
+                        function renderSpendingEvolutionChart(spendingData) {
+                            const ctx = document.getElementById('spendingEvolutionChart').getContext('2d');
+                            new Chart(ctx, {
+                                type: 'bar',
+                                data: {
+                                    labels: spendingData.labels,
+                                    datasets: [{
+                                        label: 'Total Gasto (R$)',
+                                        data: spendingData.values,
+                                        backgroundColor: '#007bff', // Azul primário
+                                        borderColor: '#007bff',
+                                        borderWidth: 1
+                                    }]
+                                },
+                                options: {
+                                    responsive: true,
+                                    plugins: {
+                                        legend: {
+                                            display: false,
+                                        },
+                                        title: {
+                                            display: false,
+                                            text: 'Evolução de Gastos'
+                                        }
+                                    },
+                                    scales: {
+                                        y: {
+                                            beginAtZero: true,
+                                            title: {
+                                                display: true,
+                                                text: 'Valor (R$)'
+                                            }
+                                        },
+                                        x: {
+                                            title: {
+                                                display: true,
+                                                text: 'Mês'
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+                        }
+
+                        // Função para renderizar Atividades Recentes
+                        function renderRecentActivities(servicos) {
+                            const activitiesList = document.getElementById('recent-activities-list');
+                            if (!activitiesList) return;
+
+                            // Limpa as atividades mockadas existentes
+                            activitiesList.innerHTML = '';
+
+                            // Mock de atividades mais detalhado para demonstração
+                            const mockActivities = [
+                                {
+                                    icon: 'dw dw-check',
+                                    title: 'Serviço Concluído',
+                                    description: 'Seu pedido de Eletricista para instalação foi concluído. Avalie agora!',
+                                    time: '1 hora atrás'
+                                },
+                                {
+                                    icon: 'dw dw-chat',
+                                    title: 'Nova Mensagem',
+                                    description: 'Você tem uma nova mensagem no chat do pedido de Pintura.',
+                                    time: '3 horas atrás'
+                                },
+                                {
+                                    icon: 'dw dw-clock',
+                                    title: 'Pedido Aceito',
+                                    description: 'Seu pedido de Jardinagem foi aceito pelo prestador.',
+                                    time: '1 dia atrás'
+                                },
+                                {
+                                    icon: 'dw dw-notification',
+                                    title: 'Lembrete de Pagamento',
+                                    description: 'Você tem um pagamento pendente para o serviço de Encanador.',
+                                    time: '2 dias atrás'
+                                }
+                            ];
+
+                            // Adiciona as atividades mockadas
+                            mockActivities.forEach(activity => {
+                                const activityItem = document.createElement('div');
+                                activityItem.classList.add('activity-item');
+                                activityItem.innerHTML = `
+                                    <div class="activity-icon"><i class="${activity.icon}"></i></div>
+                                    <div class="activity-content">
+                                        <h6>${activity.title}</h6>
+                                        <p>${activity.description}</p>
+                                    </div>
+                                    <div class="activity-time">${activity.time}</div>
+                                `;
+                                activitiesList.appendChild(activityItem);
+                            });
+
+                            // Em um cenário real, você processaria os 'servicos' para gerar atividades dinamicamente
+                            // Exemplo (simplificado):
+                            /*
+                            servicos.slice(0, 3).forEach(servico => { // Pega os 3 últimos serviços
+                                const activityItem = document.createElement('div');
+                                activityItem.classList.add('activity-item');
+                                let icon = 'dw dw-notification';
+                                let title = 'Atualização de Pedido';
+                                let description = `Seu pedido de ${servico.nome_servico} está com status: ${statusMapCliente[servico.status]}.`;
+                                let time = 'Recentemente'; // Você precisaria de um campo de data no serviço
+
+                                if (servico.status === 'concluido_pelo_prestador') {
+                                    icon = 'dw dw-check';
+                                    title = 'Serviço Concluído';
+                                    description = `O serviço de ${servico.nome_servico} foi concluído. Avalie agora!`;
+                                } else if (servico.status === 'aceito_pelo_prestador') {
+                                    icon = 'dw dw-clock';
+                                    title = 'Pedido Aceito';
+                                    description = `Seu pedido de ${servico.nome_servico} foi aceito.`;
+                                }
+                                // Adicione mais condições para outros status
+
+                                activityItem.innerHTML = `
+                                    <div class="activity-icon"><i class="${icon}"></i></div>
+                                    <div class="activity-content">
+                                        <h6>${title}</h6>
+                                        <p>${description}</p>
+                                    </div>
+                                    <div class="activity-time">${time}</div>
+                                `;
+                                activitiesList.appendChild(activityItem);
+                            });
+                            */
+                        }
 
 
 						// Chamar carregarPerfilUsuario ao carregar a página
