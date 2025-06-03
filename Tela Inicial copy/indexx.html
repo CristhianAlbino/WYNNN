@@ -305,6 +305,196 @@
                 width: 100%;
             }
         }
+
+        /* Estilos do rodapé */
+        .site-footer {
+            background-color: #212121; /* Cor de fundo escura para contraste */
+            color: #f0f0f0; /* Cor do texto clara */
+            padding: 4rem 0; /* Espaçamento interno */
+            font-family: 'Poppins', sans-serif; /* Fonte consistente */
+        }
+
+        .site-footer .container {
+            max-width: 1200px; /* Largura máxima do conteúdo */
+            margin: 0 auto; /* Centralizar */
+            padding: 0 1rem; /* Espaçamento lateral */
+        }
+
+        .footer-content {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between; /* Espaço entre as colunas */
+            gap: 2rem; /* Espaçamento entre as colunas */
+        }
+
+        .footer-col {
+            flex: 1; /* Permite que as colunas se expandam */
+            min-width: 200px; /* Largura mínima para as colunas */
+        }
+
+        .footer-logo img {
+            max-width: 150px; /* Tamanho do logo */
+            margin-bottom: 1rem;
+        }
+
+        .footer-text p {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #b0b0b0;
+        }
+
+        .footer-widget-heading h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: #ff6c0f; /* Cor de destaque para os títulos */
+            position: relative;
+        }
+
+        .footer-widget-heading h3::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -8px;
+            height: 3px;
+            width: 50px;
+            background-color: #ff6c0f; /* Linha de destaque */
+        }
+
+        .footer-col ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-col ul li {
+            margin-bottom: 0.75rem;
+        }
+
+        .footer-col ul li a {
+            color: #b0b0b0;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-col ul li a:hover {
+            color: #ff6c0f; /* Efeito hover */
+        }
+
+        .subscribe-form {
+            position: relative;
+            margin-top: 1.5rem;
+        }
+
+        .subscribe-form input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: none;
+            border-radius: 5px;
+            background-color: #333;
+            color: #f0f0f0;
+            font-size: 1rem;
+        }
+
+        .subscribe-form input::placeholder {
+            color: #888;
+        }
+
+        .subscribe-form button {
+            position: absolute;
+            right: 0;
+            top: 0;
+            background-color: #ff6c0f;
+            border: none;
+            color: white;
+            padding: 0.8rem 1rem;
+            border-radius: 0 5px 5px 0;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .subscribe-form button:hover {
+            background-color: #e05e0a;
+        }
+
+        .copyright-area {
+            background-color: #1a1a1a; /* Fundo mais escuro para a área de copyright */
+            padding: 1.5rem 0;
+            margin-top: 3rem; /* Espaçamento do conteúdo acima */
+        }
+
+        .copyright-content {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            color: #b0b0b0;
+        }
+
+        .copyright-text p {
+            margin: 0;
+        }
+
+        .copyright-text a {
+            color: #ff6c0f;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .copyright-text a:hover {
+            text-decoration: underline;
+        }
+
+        .footer-menu ul {
+            display: flex;
+            padding: 0;
+            list-style: none;
+        }
+
+        .footer-menu ul li {
+            margin-left: 1.5rem;
+        }
+
+        .footer-menu ul li a {
+            color: #b0b0b0;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-menu ul li a:hover {
+            color: #ff6c0f;
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .footer-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .footer-col {
+                margin-bottom: 2rem;
+            }
+
+            .footer-widget-heading h3::before {
+                left: 50%;
+                transform: translateX(-50%);
+            }
+
+            .copyright-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .footer-menu ul {
+                margin-top: 1rem;
+                justify-content: center;
+            }
+
+            .footer-menu ul li {
+                margin: 0 0.75rem;
+            }
+        }
     </style>
 
 </head>
@@ -454,7 +644,7 @@
                 </div>
             </div>
         </section>
-   
+
 
         <section class="for-providers-section">
              <div class="container">
@@ -641,12 +831,13 @@ Garante a qualidade e estabilidade da aplicação.</p>
                         </div>
                     </div>
                 </div>
-        <footer class="site-footer" id="contact-section"> <div class="container">
+        <footer class="site-footer" id="contact-section">
+            <div class="container">
                 <div class="footer-content">
                     <div class="footer-col logo-col">
                         <div class="footer-logo">
-                            <a href="/indexx.html"><img src="/w (1).png" class="img-fluid"
-                                    alt="logo WYN"></a>
+                            <!-- Certifique-se de que o caminho da imagem está correto -->
+                            <a href="/indexx.html"><img src="/w (1).png" class="img-fluid" alt="logo WYN"></a>
                         </div>
                         <div class="footer-text">
                             <p>A Melhor forma de encontrar serviços</p>
@@ -654,14 +845,16 @@ Garante a qualidade e estabilidade da aplicação.</p>
                     </div>
                     <div class="footer-col links-col">
                         <div class="footer-widget-heading">
-                            <h3>Links Uteis</h3>
+                            <h3>Links Úteis</h3>
                         </div>
                         <ul>
-                            <li><a href="/indexx.html">Inicio</a></li>
+                            <li><a href="/indexx.html">Início</a></li>
                             <li><a href="#how-it-works-section">Como Funciona</a></li>
-                            <li><a href="#services-section">Serviços</a></li>
-                            <li><a href="#our-team-section">Sobre</a></li> <li> <li><a href="#our-team-section">Nosso Time</a></li> <li><a href="/Seleção/dist/index.html">Login/Cadastro</a></li>
-                             <li><a href="#upcoming-categories-section">Em breve</a></li> </ul>
+                            <li><a href="#popular-categories-section">Serviços</a></li>
+                            <li><a href="#our-team-section">Sobre Nós</a></li>
+                            <li><a href="#upcoming-categories-section">Em breve</a></li>
+                            <li><a href="/Seleção/dist/index.html">Login/Cadastro</a></li>
+                        </ul>
                     </div>
                     <div class="footer-col subscribe-col">
                         <div class="footer-widget-heading">
@@ -672,7 +865,7 @@ Garante a qualidade e estabilidade da aplicação.</p>
                         </div>
                         <div class="subscribe-form">
                             <form action="#">
-                                <input type="email" placeholder="Email Address">
+                                <input type="email" placeholder="Endereço de Email">
                                 <button type="submit"><i class="fab fa-telegram-plane"></i></button>
                             </form>
                         </div>
@@ -683,16 +876,16 @@ Garante a qualidade e estabilidade da aplicação.</p>
                 <div class="container">
                     <div class="copyright-content">
                         <div class="copyright-text">
-                            <p>Copyright © 2024, All Right Reserved <a href="/Termos e Condições.docx">Veja
-                                    mais</a></p>
+                            <p>Copyright © 2024, Todos os Direitos Reservados <a href="/Termos e Condições.docx">Veja mais</a></p>
                         </div>
                         <div class="footer-menu">
                             <ul>
-                                <li><a href="/indexx.html">Inicio</a></li>
+                                <li><a href="/indexx.html">Início</a></li>
                                 <li><a href="/Termos e Condições.docx">Termos</a></li>
                                 <li><a href="/Termos e Condições.docx">Privacidade</a></li>
                                 <li><a href="/LANDING PAGE WYN/LANDING PAGE WYN/login.html">Login</a></li>
-                                <li><a href="#contact-us-section">Contate-nos</a></li> </ul>
+                                <li><a href="#contact-us-section">Contate-nos</a></li>
+                            </ul>
                         </div>
                     </div>
                 </div>
