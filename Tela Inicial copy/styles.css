@@ -310,7 +310,7 @@ body.dark-mode .hero-section {
   display: flex;
   align-items: center;
   justify-content: center;
-  animation: Rotate 30s linear infinite; /* Animação de rotação */
+  animation: Rotate 20s linear infinite; /* Animação de rotação */
   transition: border-color 0.3s ease;
 }
 body.dark-mode .big-circle {
