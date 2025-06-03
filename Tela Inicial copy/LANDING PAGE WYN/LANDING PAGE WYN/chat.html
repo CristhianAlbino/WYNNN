@@ -237,6 +237,20 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        /* Estilos para ocultar/mostrar a barra lateral */
+        .left-side-bar {
+            /* Certifique-se de que a barra lateral tem um display inicial adequado, como block ou flex */
+            display: block; /* Ou flex, dependendo do seu layout original */
+        }
+        /* Adicione estas regras CSS para os elementos de menu */
+        #cliente-menu-chat {
+            display: none; /* Inicia oculto, será mostrado via JS se for cliente */
+        }
+
+        #prestador-menu-chat {
+            display: none; /* Inicia oculto, será mostrado via JS se for prestador */
+        }
+
 
         /* Media queries para responsividade */
         @media (max-width: 768px) {
@@ -431,195 +445,7 @@
 							><span class="mtext">Voltar para Chats</span>
 						</a>
 					</li>
-					</ul>
-			</div>
-		</div>
-	</div>
-    <div class="right-sidebar">
-        <div class="sidebar-title">
-            <h3 class="weight-600 font-16 text-blue">
-                Configuração de Layout
-                <span class="btn-block font-weight-400 font-12"
-                    >Personalização</span
-                >
-            </h3>
-            <div class="close-sidebar" data-toggle="right-sidebar-close">
-                <i class="icon-copy ion-close-round"></i>
-            </div>
-        </div>
-        <div class="right-sidebar-body customscroll">
-            <div class="right-sidebar-body-content">
-                <h4 class="weight-600 font-18 pb-10">Fundo</h4>
-                <div class="sidebar-btn-group pb-30 mb-10">
-                    <a
-                        href="javascript:void(0);"
-                        class="btn btn-outline-primary header-white active"
-                        >Claro</a
-                    >
-                    <a
-                        href="javascript:void(0);"
-                        class="btn btn-outline-primary header-dark"
-                        >Escuro</a
-                    >
-                </div>
-
-                <h4 class="weight-600 font-18 pb-10">Menu Lateral</h4> <div class="sidebar-btn-group pb-30 mb-10">
-                    <a
-                        href="javascript:void(0);"
-                        class="btn btn-outline-primary sidebar-light"
-                        >Claro</a
-                    >
-                    <a
-                        href="javascript:void(0);"
-                        class="btn btn-outline-primary sidebar-dark active"
-                        >Escuro</a
-                    >
-                </div>
-
-                <h4 class="weight-600 font-18 pb-10">Icone Dropdown</h4> <div class="sidebar-radio-group pb-10 mb-10">
-                    <div class="custom-control custom-radio custom-control-inline">
-                        <input
-                            type="radio"
-                            id="sidebaricon-1"
-                            name="menu-dropdown-icon"
-                            class="custom-control-input"
-                            value="icon-style-1"
-                            checked=""
-                        />
-                        <label class="custom-control-label" for="sidebaricon-1"
-                            ><i class="fa fa-angle-down"></i
-                        ></label>
-                    </div>
-                    <div class="custom-control custom-radio custom-control-inline">
-                        <input
-                            type="radio"
-                            id="sidebaricon-2"
-                            name="menu-dropdown-icon"
-                            class="custom-control-input"
-                            value="icon-style-2"
-                        />
-                        <label class="custom-control-label" for="sidebaricon-2"
-                            ><i class="ion-plus-round"></i
-                        ></label>
-                    </div>
-                    <div class="custom-control custom-radio custom-control-inline">
-                        <input
-                            type="radio"
-                            id="sidebaricon-3"
-                            name="menu-dropdown-icon"
-
-                            class="custom-control-input"
-                            value="icon-style-3"
-                        />
-                        <label class="custom-control-label" for="sidebaricon-3"
-                            ><i class="fa fa-angle-double-right"></i
-                        ></label>
-                    </div>
-                </div>
-
-                <h4 class="weight-600 font-18 pb-10">Icones do Menu</h4>
-                <div class="sidebar-radio-group pb-30 mb-10">
-                    <div class="custom-control custom-radio custom-control-inline">
-                        <input
-                            type="radio"
-                            id="sidebariconlist-1"
-                            name="menu-list-icon"
-                            class="custom-control-input"
-                            value="icon-list-style-1"
-                            checked=""
-                        />
-                        <label class="custom-control-label" for="sidebariconlist-1"
-                            ><i class="ion-minus-round"></i
-                        ></label>
-                    </div>
-                    <div class="custom-control custom-radio custom-control-inline">
-                        <input
-                            type="radio"
-                            id="sidebariconlist-2"
-                            name="menu-list-icon"
-                            class="custom-control-input"
-                            value="icon-list-style-2"
-                        />
-                        <label class="custom-control-label" for="sidebariconlist-2"
-                            ><i class="fa fa-circle-o" aria-hidden="true"></i
-                        ></label>
-                    </div>
-                    <div class="custom-control custom-radio custom-control-inline">
-                        <input
-                            type="radio"
-                            id="sidebariconlist-3"
-                            name="menu-list-icon"
-                            class="custom-control-input"
-                            value="icon-list-style-3"
-                        />
-                        <label class="custom-control-label" for="sidebariconlist-3"
-                            ><i class="dw dw-check"></i
-                        ></label>
-                    </div>
-                    <div class="custom-control custom-radio custom-control-inline">
-                        <input
-                            type="radio"
-                            id="sidebariconlist-4"
-                            name="menu-list-icon"
-                            class="custom-control-input"
-                            value="icon-list-style-4"
-                            checked=""
-                        />
-                        <label class="custom-control-label" for="sidebariconlist-4"
-                            ><i class="icon-copy dw dw-next-2"></i
-                        ></label>
-                    </div>
-                    <div class="custom-control custom-radio custom-control-inline">
-                        <input
-                            type="radio"
-                            id="sidebariconlist-5"
-                            name="menu-list-icon"
-                            class="custom-control-input"
-                            value="icon-list-style-5"
-                        />
-                        <label class="custom-control-label" for="sidebariconlist-5"
-                            ><i class="dw dw-fast-forward-1"></i
-                        ></label>
-                    </div>
-                    <div class="custom-control custom-radio custom-control-inline">
-                        <input
-                            type="radio"
-                            id="sidebariconlist-6"
-                            name="menu-list-icon"
-                            class="custom-control-input"
-                            value="icon-list-style-6"
-                        />
-                        <label class="custom-control-label" for="sidebariconlist-6"
-                            ><i class="dw dw-next"></i
-                        ></label>
-                    </div>
-                </div>
-
-                <div class="reset-options pt-30 text-center">
-                    <button class="btn btn-danger" id="reset-settings">
-                        Resetar Configurações
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="left-side-bar">
-        <div class="brand-logo">
-            <a href="indexx.html"> <img src="w (1).png" alt="" class="dark-logo" />
-                <img
-                    src="w (1).png"
-                    alt=""
-                    class="light-logo"
-                />
-            </a>
-            <div class="close-sidebar" data-toggle="left-sidebar-close">
-                <i class="ion-close-round"></i>
-            </div>
-        </div>
-        <div class="menu-block customscroll">
-            <div class="sidebar-menu">
-                <ul id="accordion-menu">
+                    <!-- Menu do Cliente -->
                     <li id="cliente-menu-chat">
                         <li>
                             <a href="indexx.html" class="dropdown-toggle no-arrow">
@@ -664,6 +490,7 @@
                             </a>
                         </li>
                     </li>
+                    <!-- Menu do Prestador -->
                      <li id="prestador-menu-chat" style="display: none;">
                          <li>
                              <a href="index.html" class="dropdown-toggle no-arrow"> <span class="micon bi bi-house"></span
@@ -905,6 +732,9 @@
 
                 console.log(`Perfil de ${usuarioTipo} carregado:`, usuarioLogado);
 
+                // Chama a função para configurar a visibilidade do menu após carregar o perfil
+                configurarVisibilidadeMenu();
+
                 // Carrega os detalhes do serviço e as mensagens
                 carregarDetalhesServico();
                 carregarMensagens();
@@ -914,6 +744,39 @@
                 showToast('Ocorreu um erro ao carregar informações do perfil.', 'danger');
             }
         }
+
+        // Nova função para configurar a visibilidade do menu lateral
+        function configurarVisibilidadeMenu() {
+            const clienteMenu = document.getElementById('cliente-menu-chat');
+            const prestadorMenu = document.getElementById('prestador-menu-chat');
+            const adminLinkHeader = document.querySelector('.admin-link-header'); // Link do admin no cabeçalho
+
+            if (clienteMenu && prestadorMenu) {
+                if (usuarioTipo === 'usuario') {
+                    clienteMenu.style.display = 'block';
+                    prestadorMenu.style.display = 'none';
+                    if (adminLinkHeader) adminLinkHeader.style.display = 'none'; // Esconde link admin para cliente
+                } else if (usuarioTipo === 'prestador') {
+                    clienteMenu.style.display = 'none';
+                    prestadorMenu.style.display = 'block';
+                    if (adminLinkHeader) adminLinkHeader.style.display = 'none'; // Esconde link admin para prestador
+                } else {
+                    // Se não for nem usuário nem prestador (ex: deslogado ou erro), esconde ambos
+                    clienteMenu.style.display = 'none';
+                    prestadorMenu.style.display = 'none';
+                    if (adminLinkHeader) adminLinkHeader.style.display = 'none'; // Esconde link admin
+                }
+            } else {
+                console.error("Elementos de menu (cliente-menu-chat ou prestador-menu-chat) não encontrados.");
+            }
+
+            // Exibir o link de admin apenas se o usuário for um admin (você pode adicionar uma lógica aqui)
+            // Por exemplo, se você tiver um campo `isAdmin` no objeto usuarioLogado
+            if (usuarioLogado && usuarioLogado.isAdmin) { // Exemplo: se o usuário logado for um admin
+                if (adminLinkHeader) adminLinkHeader.style.display = 'block';
+            }
+        }
+
 
         async function carregarDetalhesServico() {
             if (!serviceId || !localStorage.getItem('token')) {
@@ -978,7 +841,7 @@
 
              console.log("Chat carregado para o serviço ID:", serviceId);
 
-             carregarPerfil();
+             carregarPerfil(); // Esta função agora também chama configurarVisibilidadeMenu()
 
              pollingInterval = setInterval(carregarMensagens, 3000);
 
