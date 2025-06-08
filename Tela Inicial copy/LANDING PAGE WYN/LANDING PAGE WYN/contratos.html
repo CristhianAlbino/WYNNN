@@ -210,12 +210,17 @@
 							role="button"
 							data-toggle="dropdown"
 						>
-							<span class="user-icon">
-								<img src="vendors/images/photo1.jpg" id="user-profile-pic" class="profile-pic-header" alt="" />
+							<span class="user-icon" id="user-profile-pic-container">
+                                <img src="vendors/images/photo1.jpg" id="user-profile-pic" class="profile-pic-header" alt="Foto de Perfil" style="display: none;" />
+                                <div id="user-profile-pic-spinner" class="profile-pic-placeholder">
+                                    <div class="spinner"></div>
+                                </div>
 							</span>
-							<span class="user-name">Cliente</span>
+							<span class="user-name">Carregando...</span>
 						</a>
-						<div class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list">
+						<div
+							class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list"
+						>
 							<a class="dropdown-item" href="profile.html"
 								><i class="dw dw-user1"></i> Perfil</a
 							>
