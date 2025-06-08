@@ -749,31 +749,21 @@
         function configurarVisibilidadeMenu() {
             const clienteMenu = document.getElementById('cliente-menu-chat');
             const prestadorMenu = document.getElementById('prestador-menu-chat');
-            const adminLinkHeader = document.querySelector('.admin-link-header'); // Link do admin no cabeçalho
 
             if (clienteMenu && prestadorMenu) {
                 if (usuarioTipo === 'usuario') {
                     clienteMenu.style.display = 'block';
                     prestadorMenu.style.display = 'none';
-                    if (adminLinkHeader) adminLinkHeader.style.display = 'none'; // Esconde link admin para cliente
                 } else if (usuarioTipo === 'prestador') {
                     clienteMenu.style.display = 'none';
                     prestadorMenu.style.display = 'block';
-                    if (adminLinkHeader) adminLinkHeader.style.display = 'none'; // Esconde link admin para prestador
                 } else {
                     // Se não for nem usuário nem prestador (ex: deslogado ou erro), esconde ambos
                     clienteMenu.style.display = 'none';
                     prestadorMenu.style.display = 'none';
-                    if (adminLinkHeader) adminLinkHeader.style.display = 'none'; // Esconde link admin
                 }
             } else {
                 console.error("Elementos de menu (cliente-menu-chat ou prestador-menu-chat) não encontrados.");
-            }
-
-            // Exibir o link de admin apenas se o usuário for um admin (você pode adicionar uma lógica aqui)
-            // Por exemplo, se você tiver um campo `isAdmin` no objeto usuarioLogado
-            if (usuarioLogado && usuarioLogado.isAdmin) { // Exemplo: se o usuário logado for um admin
-                if (adminLinkHeader) adminLinkHeader.style.display = 'block';
             }
         }
 
