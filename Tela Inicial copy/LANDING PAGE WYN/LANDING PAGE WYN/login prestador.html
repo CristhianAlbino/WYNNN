@@ -10,11 +10,41 @@
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v2.1.9/css/unicons.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="login.css">
+    <!-- Font Awesome para ícones de seta -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" xintegrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0x0Ugau/r+PRGFNfN/P1M2k/L/W84b36d0K7+v7z/z0q0+A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+      /* Estilo para o botão/link de voltar */
+      .back-arrow {
+        position: absolute;
+        top: 20px; /* Ajuste a posição superior */
+        left: 20px; /* Ajuste a posição esquerda */
+        font-size: 1.5em; /* Tamanho do ícone */
+        color: #ff8902; /* Cor do seu tema */
+        cursor: pointer;
+        text-decoration: none; /* Remove sublinhado */
+        z-index: 100; /* Garante que esteja acima de outros elementos */
+        transition: color 0.3s ease; /* Efeito hover */
+      }
+      .back-arrow:hover {
+        color: #ffa500; /* Cor mais clara no hover */
+        text-decoration: none;
+      }
+
+      /* Ajuste para o header se necessário, para não sobrepor a seta */
+      header nav {
+          position: relative; /* Garante que a seta se posicione em relação a ela */
+          padding-left: 60px; /* Adiciona espaço para a seta */
+      }
+    </style>
 </head>
 <body>
     <header>
         <nav>
-            <a href="https://bright-douhua-66bc14.netlify.app/" class="Logo">WYN</a>
+            <!-- Seta de voltar ao início -->
+            <a href="https://bright-douhua-66bc14.netlify.app/" class="back-arrow" title="Voltar ao Início">
+                <i class="fa-solid fa-arrow-left"></i>
+            </a>
+            <a href="https://bright-douhua-66bc14.netlify.app/" class="Logo">WYN PRESTADOR</a>
         </nav>
     </header>
 
@@ -200,47 +230,6 @@
                 btnCadastrar.textContent = 'Cadastrar';
             }
         });
-
-
-         // Se você tem login de USUÁRIO e PRESTADOR na mesma página, você precisa:
-         // 1. Garantir que os inputs de email/senha tenham nomes diferentes para cada formulário.
-         // 2. Ter dois event listeners separados, um para o botão de login de usuário e outro para o de prestador.
-         // 3. Cada listener deve chamar o endpoint backend correto (/login ou /login-prestador)
-         // 4. Cada listener deve salvar o token e o objeto retornado (usuario ou prestador)
-         //    nas chaves CORRETAS do localStorage ("usuario" ou "prestador").
-
-         // Exemplo de listener para login de USUÁRIO (se você tiver um formulário e botão específicos para isso nesta página)
-         /*
-         document.getElementById('btnLoginUsuario').addEventListener('click', async (e) => {
-              e.preventDefault();
-              const email = document.querySelector('input[name="emailUsuario"]').value; // Nome do input de email de usuário
-              const senha = document.querySelector('input[name="senhaUsuario"]').value; // Nome do input de senha de usuário
-
-              try {
-                  const response = await fetch('https://wyn-backend.onrender.com/login', { // Endpoint de LOGIN DE USUÁRIO // --- URL ATUALIZADA ---
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({ email, senha })
-                  });
-
-                  const data = await response.json();
-
-                  if (response.ok && data.token && data.usuario) {
-                      localStorage.setItem("token", data.token);
-                      localStorage.setItem("usuario", JSON.stringify(data.usuario)); // Salva como 'usuario'
-
-                      alert(data.message);
-                      window.location.href = "index.html"; // Redireciona para a página inicial do USUÁRIO
-                  } else {
-                      alert(data.message || "Credenciais inválidas ou erro ao fazer login.");
-                  }
-              } catch (error) {
-                  console.error(error);
-                  alert("Erro ao conectar ao servidor.");
-              }
-         });
-         */
-
     </script>
 
 </body>

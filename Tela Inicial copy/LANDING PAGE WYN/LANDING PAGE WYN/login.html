@@ -10,10 +10,40 @@
   <link rel="stylesheet" href="https://unicons.iconscout.com/release/v2.1.9/css/unicons.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css">
   <link rel="stylesheet" href="login.css">
+  <!-- Font Awesome para ícones de seta -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" xintegrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0x0Ugau/r+PRGFNfN/P1M2k/L/W84b36d0K7+v7z/z0q0+A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <style>
+    /* Estilo para o botão/link de voltar */
+    .back-arrow {
+      position: absolute;
+      top: 20px; /* Ajuste a posição superior */
+      left: 20px; /* Ajuste a posição esquerda */
+      font-size: 1.5em; /* Tamanho do ícone */
+      color: #ff8902; /* Cor do seu tema */
+      cursor: pointer;
+      text-decoration: none; /* Remove sublinhado */
+      z-index: 100; /* Garante que esteja acima de outros elementos */
+      transition: color 0.3s ease; /* Efeito hover */
+    }
+    .back-arrow:hover {
+      color: #ffa500; /* Cor mais clara no hover */
+      text-decoration: none;
+    }
+
+    /* Ajuste para o header se necessário, para não sobrepor a seta */
+    header nav {
+        position: relative; /* Garante que a seta se posicione em relação a ela */
+        padding-left: 60px; /* Adiciona espaço para a seta */
+    }
+  </style>
 </head>
 <body>
   <header>
     <nav>
+      <!-- Seta de voltar ao início -->
+      <a href="https://bright-douhua-66bc14.netlify.app/" class="back-arrow" title="Voltar ao Início">
+          <i class="fa-solid fa-arrow-left"></i>
+      </a>
       <a href="https://bright-douhua-66bc14.netlify.app/" class="Logo">WYN Login</a>
     </nav>
   </header>
@@ -139,7 +169,6 @@
       formData.append('telefone', form.querySelector('input[name="telefone"]').value);
       // Pega o valor do input 'emailCadastro' mas adiciona ao FormData com o nome 'email'
       formData.append('email', form.querySelector('input[name="emailCadastro"]').value); // <-- CORRIGIDO AQUI
-      // Pega o valor do input 'senhaCadastro' mas adiciona ao FormData com o nome 'senha'
       formData.append('senha', form.querySelector('input[name="senhaCadastro"]').value); // <-- CORRIGIDO AQUI
 
       // Adiciona o arquivo de foto de perfil se ele existir
