@@ -26,7 +26,7 @@
     "nodemailer": "^7.0.3",
     "openai": "^5.13.1",
     "socket.io": "^4.8.1",
-    "socket.io-client": "^4.8.1",
+    "socket.io-client": "^4.8.3",
     "twilio": "^5.5.1"
   },
   "devDependencies": {
