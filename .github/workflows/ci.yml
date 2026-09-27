@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+
+jobs:
+  repository:
+    name: Repository hygiene
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify clean repository structure
+        shell: bash
+        run: |
+          test -f frontend/index.html
+          test -f backend/package.json
+          test -f backend/.env.example
+
+          if git ls-files | grep -E '(^|/)node_modules/'; then
+            echo "node_modules must not be tracked"
+            exit 1
+          fi
+
+          if git ls-files | grep -E '^backend/uploads/.+' | grep -v 'backend/uploads/.gitkeep'; then
+            echo "Runtime uploads must not be tracked"
+            exit 1
+          fi
+
+  backend:
+    name: Backend checks
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+      - run: npm ci --ignore-scripts
+      - run: npm run check
