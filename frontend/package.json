@@ -51,7 +51,7 @@
 		"gulp-install": "^1.1.0",
 		"install": "^0.12.1",
 		"npm": "^6.14.11",
-		"node-sass": "^5.0.0",
+		"node-sass": "^9.0.0",
 		"onscreen": "^1.1.3"
 	}
 }
